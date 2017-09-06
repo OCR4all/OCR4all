@@ -1,14 +1,14 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>OCR4all_Web - Übersicht</title>
-</head>
-<body>
+<t:html>
+    <t:head>
+    <title>OCR4all_Web - Übersicht</title>
+    </t:head>
+    <t:body>
     <center>
         <h1>Übersicht</h1>
     </center>
-</body>
-</html>
+    </t:body>
+</t:html>
+
