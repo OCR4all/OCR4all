@@ -1,5 +1,4 @@
 <%@tag description="Page Body Tag" pageEncoding="UTF-8"%>
-
 <body>
     <nav>
         <div class="container">
