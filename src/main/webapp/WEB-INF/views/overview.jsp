@@ -13,7 +13,7 @@
                         $('#projectDir').addClass('invalid');
                     }
                     else {
-                        $.get( "/ajax/overview/list", { "projectDir": $('#projectDir').val() } )
+                        $.get( "ajax/overview/list", { "projectDir": $('#projectDir').val() } )
                         .done(function( data ) {
                             // TODO: jQuery DataTable
                             console.log(data);
