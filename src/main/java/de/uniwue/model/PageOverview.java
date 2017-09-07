@@ -1,10 +1,7 @@
 package de.uniwue.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class PageOverview {
-    private String id = null;
+    private String pageId = null;
     private boolean preprocessed = false;
     private boolean segmented = false;
     private boolean segmentsExtracted = false;
@@ -13,13 +10,21 @@ public class PageOverview {
     
     @Override
     public String toString() {
-        return "PageOverview [id=" + id + ", preprocessed=" + preprocessed + ", segmented=" + segmented
+        return "PageOverview [id=" + pageId + ", preprocessed=" + preprocessed + ", segmented=" + segmented
                 + ", segmentsExtracted=" + segmentsExtracted + ", linesExtracted=" + linesExtracted + ", hasGT=" + hasGT
                 + "]";
     }
 
-    public PageOverview(String id) {
-        this.id = id;
+    public PageOverview(String pageId) {
+        this.pageId = pageId;
+    }
+
+    public String getPageId() {
+        return pageId;
+    }
+
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
     }
 
     public boolean isPreprocessed() {

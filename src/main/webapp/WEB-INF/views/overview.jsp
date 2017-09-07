@@ -8,15 +8,24 @@
 
         <script type="text/javascript">
             $( document ).ready(function() {
-                $( "button" ).click(function() {
+                $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         $('#projectDir').addClass('invalid');
                     }
                     else {
                         $.get( "ajax/overview/list", { "projectDir": $('#projectDir').val() } )
                         .done(function( data ) {
-                            // TODO: jQuery DataTable
-                            console.log(data);
+                            $('#overviewTable').DataTable( {
+                                data: data,
+                                columns: [
+                                    { title: "Page Identifier", data: "pageId" },
+                                    { title: "Preprocessed", data: "preprocessed" },
+                                    { title: "Segmented", data: "segmented" },
+                                    { title: "Segments Extracted", data: "segmentsExtracted" },
+                                    { title: "Lines Extracted", data: "linesExtracted" },
+                                    { title: "Has GT", data: "hasGT" },
+                                ]
+                            });
                         })
                         .fail(function( data ) {
                             // TODO: error handling
@@ -44,6 +53,9 @@
                     </button>
                 </div>
             </div>
+        </div>
+        <div class="container">
+            <table id="overviewTable" class="display" width="100%"></table>
         </div>
     </t:body>
 </t:html>

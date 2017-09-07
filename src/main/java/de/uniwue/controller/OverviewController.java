@@ -1,7 +1,7 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.ArrayList;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +21,10 @@ public class OverviewController {
         return mv;
     }
     @RequestMapping(value = "/ajax/overview/list" , method = RequestMethod.GET)
-    public @ResponseBody Map<String, PageOverview> jsonOverview(@RequestParam("projectDir") String projectDir) throws IOException{
+    public @ResponseBody ArrayList<PageOverview> jsonOverview(@RequestParam("projectDir") String projectDir) throws IOException{
         OverviewHelper view = new OverviewHelper(projectDir);
         view.initialize();
         //@RequestMapping automatically transforms object to json format
-        return view.getOverview();
+        return new ArrayList<PageOverview>(view.getOverview().values());
     }
 }
