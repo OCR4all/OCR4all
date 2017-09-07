@@ -10,8 +10,22 @@
         <title>OCR4all_Web - Overview</title>
     </t:head>
     <t:body>
-        <center>
-            <h1>Overview</h1>
-        </center>
+        <div class="container">
+            <h3 class="header">Overview</h3>
+            <form action="#">
+                <div class="row">
+                    <div class="input-field col s8">
+                        <i class="material-icons prefix">folder</i>
+                        <input id="icon_prefix" type="text" class="validate">
+                        <label for="icon_prefix">Please insert the path to the project directory on the filesystem</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <button class="btn waves-effect waves-light" type="submit" name="action">Go
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </t:body>
 </t:html>
