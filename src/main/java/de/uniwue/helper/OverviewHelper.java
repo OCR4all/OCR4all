@@ -19,10 +19,10 @@ public class OverviewHelper {
         this.pathToProject = pathToProject;
     }
     public void initialize() throws IOException {
-        final File folder = new File(pathToProject+"/Original");
+        final File folder = new File(pathToProject+File.separator+"Original");
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isFile()) {
-                String[] parts = fileEntry.toString().split("/");
+                String[] parts = fileEntry.toString().split(File.separator);
                 overview.put(parts[parts.length-1], new PageOverview(fileEntry.toString()));
             }
         }
@@ -40,4 +40,3 @@ public class OverviewHelper {
         return pathToProject;
     }
 }
-

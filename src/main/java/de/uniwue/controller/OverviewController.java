@@ -28,4 +28,3 @@ public class OverviewController {
         return view.getOverview();
     }
 }
-

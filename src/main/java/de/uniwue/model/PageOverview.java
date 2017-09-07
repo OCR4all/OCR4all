@@ -62,4 +62,3 @@ public class PageOverview {
         this.hasGT = hasGT;
     }
 }
-
