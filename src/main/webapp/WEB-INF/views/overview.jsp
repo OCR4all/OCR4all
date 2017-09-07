@@ -3,12 +3,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <t:html>
     <t:head>
-    <title>OCR4all_Web - Übersicht</title>
+        <!-- jQuery DataTables -->
+        <link rel="stylesheet" type="text/css" href="resources/css/datatables.min.css">
+        <script type="text/javascript" charset="utf8" src="resources/js/datatables.min.js"></script>
+
+        <title>OCR4all_Web - Overview</title>
     </t:head>
     <t:body>
-    <center>
-        <h1>Übersicht</h1>
-    </center>
+        <center>
+            <h1>Overview</h1>
+        </center>
     </t:body>
 </t:html>
-
