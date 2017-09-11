@@ -20,31 +20,39 @@ public class OverviewHelper {
     }
 
     public void initialize() throws IOException {
-        final File folder = new File(pathToProject+File.separator+"Original");
-        for (final File fileEntry : folder.listFiles()) {
-            if (fileEntry.isFile()) {
-                overview.put(fileEntry.getName(), new PageOverview(FilenameUtils.removeExtension(fileEntry.getName())));
+        String path = pathToProject+File.separator+"Original";
+        if (new File(path).exists()) {
+            final File folder = new File(path);
+            for (final File fileEntry : folder.listFiles()) {
+                if (fileEntry.isFile()) {
+                    overview.put(fileEntry.getName(), new PageOverview(FilenameUtils.removeExtension(fileEntry.getName())));
+                }
             }
+            checkPreprocessed();
+            checkSegmented();
         }
-        checkPreprocessed();
-        checkSegmented();
+        else {
+            throw new IOException("Folder does not exist!");
+        }
     }
 
     public void checkPreprocessed() {
         String [] preprocesSteps = {"Binary","Despeckled","Gray"};
-        for(String i: preprocesSteps) {
+        for (String i: preprocesSteps) {
             for (String key : overview.keySet()) {
                 if(!new File(pathToProject+File.separator+"PreProc"+File.separator+i+File.separator+key).exists()) {
                     overview.get(key).setPreprocessed(false);}
             }
         }
     }
+
     public void checkSegmented() {
         for (String key : overview.keySet()) {
             if(!new File(pathToProject+File.separator+"OCR"+File.separator+overview.get(key).getPageId()+".xml").exists()) {
                 overview.get(key).setSegmented(false);}
         }
     }
+
     public List<String> getFileNames(String path) {
         List<String> results = new ArrayList<String>();
         File[] files = new File(path).listFiles();
@@ -53,9 +61,10 @@ public class OverviewHelper {
             if (file.isFile()) {
                 results.add(file.getName());
             }
-        }        
+        }
         return results;
     }
+
     public Map<String, PageOverview> getOverview() {
         return overview;
     }

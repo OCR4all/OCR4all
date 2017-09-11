@@ -3,6 +3,8 @@ package de.uniwue.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,9 +23,13 @@ public class OverviewController {
         return mv;
     }
     @RequestMapping(value = "/ajax/overview/list" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<PageOverview> jsonOverview(@RequestParam("projectDir") String projectDir) throws IOException{
+    public @ResponseBody ArrayList<PageOverview> jsonOverview(@RequestParam("projectDir") String projectDir, HttpServletResponse response) throws IOException{
         OverviewHelper view = new OverviewHelper(projectDir);
-        view.initialize();
+        try {
+            view.initialize();
+        } catch (IOException e) {
+            response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+        }
         //@RequestMapping automatically transforms object to json format
         return new ArrayList<PageOverview>(view.getOverview().values());
     }

@@ -4,7 +4,6 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
     <display-name>Archetype Created Web Application</display-name>
-
     <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>
