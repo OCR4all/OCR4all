@@ -7,7 +7,7 @@
         <script type="text/javascript" charset="utf8" src="resources/js/datatables.min.js"></script>
 
         <script type="text/javascript">
-            $( document ).ready(function() {
+            $(document).ready(function() {
                 $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         $('#projectDir').addClass('invalid').focus();
@@ -16,7 +16,7 @@
                         $.get( "ajax/overview/list", { "projectDir": $('#projectDir').val() } )
                         .done(function( data ) {
                             // Allow reinitializing DataTable with new data
-                            if ($.fn.DataTable.isDataTable("#overviewTable")) {
+                            if( $.fn.DataTable.isDataTable("#overviewTable") ) {
                                 $('#overviewTable').DataTable().clear().destroy();
                             }
 
@@ -29,7 +29,18 @@
                                     { title: "Segments Extracted", data: "segmentsExtracted" },
                                     { title: "Lines Extracted", data: "linesExtracted" },
                                     { title: "Has GT", data: "hasGT" },
-                                ]
+                                ],
+                                createdRow: function( row, data, index ){
+                                    $('td:first-child', row).html('<a href="pageOverview?pageId=' + data.pageId + '">' + data.pageId + '</a>');
+                                    $.each( $('td:not(:first-child)', row), function( idx, td ) {
+                                        if( $(td).html() === 'true' ) {
+                                            $(td).html('<i class="material-icons green-text">check</i>');
+                                        }
+                                        else {
+                                            $(td).html('<i class="material-icons red-text">clear</i>');
+                                        }
+                                    });
+                                }
                             });
                         })
                         .fail(function( data ) {
