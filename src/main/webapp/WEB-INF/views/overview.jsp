@@ -48,6 +48,11 @@
                         })
                     }
                 });
+
+                // Trigger overview table fetching on pageload
+                if( $.trim($('#projectDir').val()).length !== 0 ) {
+                    $("button").trigger( "click" );
+                }
             });
         </script>
 
