@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
+
 import de.uniwue.model.PageOverview;
 
 public class OverviewHelper {
@@ -21,7 +23,7 @@ public class OverviewHelper {
         final File folder = new File(pathToProject+File.separator+"Original");
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isFile()) {
-                overview.put(fileEntry.getName(), new PageOverview(fileEntry.getName().substring(0, fileEntry.getName().length()-4)));
+                overview.put(fileEntry.getName(), new PageOverview(FilenameUtils.removeExtension(fileEntry.getName())));
             }
         }
         checkPreprocessed();
