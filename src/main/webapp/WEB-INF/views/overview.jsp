@@ -60,22 +60,26 @@
     </t:head>
     <t:body>
         <div class="container">
-            <h3 class="header">Overview</h3>
-            <div class="row">
-                <div class="input-field col s8">
-                    <i class="material-icons prefix">folder</i>
-                    <input id="projectDir" name="projectDir" type="text" class="validate" value="${projectDir}">
-                    <label for="projectDir" data-error="Directory path is empty or could not be accessed on the filesystem">Please insert the path to the project directory on the filesystem</label>
-                </div>
-                <div class="input-field col s4">
-                    <button class="btn waves-effect waves-light" type="submit" name="action">Go
-                        <i class="material-icons right">send</i>
-                    </button>
+            <div class="section">
+                <h4 class="header">Selection</h4>
+                <div class="row">
+                    <div class="input-field col s8">
+                        <i class="material-icons prefix">folder</i>
+                        <input id="projectDir" name="projectDir" type="text" class="validate" value="${projectDir}">
+                        <label for="projectDir" data-error="Directory path is empty or could not be accessed on the filesystem">Please insert the path to the project directory on the filesystem</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <button class="btn waves-effect waves-light" type="submit" name="action">Go
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </div>
                 </div>
             </div>
+            <div class="section">
+                <h4 class="header">Overview</h4>
+                <table id="overviewTable" class="display" width="100%"></table>
+            </div>
         </div>
-        <div class="container">
-            <table id="overviewTable" class="display" width="100%"></table>
-        </div>
+            
     </t:body>
 </t:html>
