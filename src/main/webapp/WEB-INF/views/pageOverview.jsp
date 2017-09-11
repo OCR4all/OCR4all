@@ -7,6 +7,7 @@
     <t:body>
         <div class="container">
             <h3 class="header">Page Overview - ${param.pageId}</h3>
+            <p>${test}</p>
         </div>
     </t:body>
 </t:html>

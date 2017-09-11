@@ -3,6 +3,7 @@ package de.uniwue.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -25,8 +26,10 @@ public class OverviewController {
     }
 
     @RequestMapping("/pageOverview")
-    public ModelAndView showPageOverview() throws IOException {
+    public ModelAndView showPageOverview(HttpServletRequest request) throws IOException {
         ModelAndView mv = new ModelAndView("pageOverview");
+        String pageId = request.getParameter("pageId");
+        //mv.addObject("test", new String("test123"));
         return mv;
     } 
 
