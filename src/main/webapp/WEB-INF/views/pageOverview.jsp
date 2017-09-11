@@ -8,6 +8,8 @@
         <div class="container">
             <h3 class="header">Page Overview - ${param.pageId}</h3>
             <p>${test}</p>
+            <p>${segmented}</p>
+            <img src="data:image/jpeg;base64,${image.Binary}">
         </div>
     </t:body>
 </t:html>
