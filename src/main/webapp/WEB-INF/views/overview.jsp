@@ -59,7 +59,7 @@
             <div class="row">
                 <div class="input-field col s8">
                     <i class="material-icons prefix">folder</i>
-                    <input id="projectDir" name="projectDir" type="text" class="validate">
+                    <input id="projectDir" name="projectDir" type="text" class="validate" value="${projectDir}">
                     <label for="projectDir" data-error="Directory path is empty or could not be accessed on the filesystem">Please insert the path to the project directory on the filesystem</label>
                 </div>
                 <div class="input-field col s4">
