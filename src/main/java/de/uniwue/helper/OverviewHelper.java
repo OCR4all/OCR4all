@@ -2,7 +2,9 @@ package de.uniwue.helper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.uniwue.model.PageOverview;
@@ -19,15 +21,39 @@ public class OverviewHelper {
         final File folder = new File(pathToProject+File.separator+"Original");
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isFile()) {
-                overview.put(fileEntry.getName(), new PageOverview(fileEntry.getName()));
+                overview.put(fileEntry.getName(), new PageOverview(fileEntry.getName().substring(0, fileEntry.getName().length()-4)));
             }
         }
+        checkPreprocessed();
+        checkSegmented();
     }
 
     public void checkPreprocessed() {
-        
+        String [] preprocesSteps = {"Binary","Despeckled","Gray"};
+        for(String i: preprocesSteps) {
+            for (String key : overview.keySet()) {
+                if(!new File(pathToProject+File.separator+"PreProc"+File.separator+i+File.separator+key).exists()) {
+                    overview.get(key).setPreprocessed(false);}
+            }
+        }
     }
-
+    public void checkSegmented() {
+        for (String key : overview.keySet()) {
+            if(!new File(pathToProject+File.separator+"OCR"+File.separator+overview.get(key).getPageId()+".xml").exists()) {
+                overview.get(key).setSegmented(false);}
+        }
+    }
+    public List<String> getFileNames(String path) {
+        List<String> results = new ArrayList<String>();
+        File[] files = new File(path).listFiles();
+        
+        for (File file : files) {
+            if (file.isFile()) {
+                results.add(file.getName());
+            }
+        }        
+        return results;
+    }
     public Map<String, PageOverview> getOverview() {
         return overview;
     }

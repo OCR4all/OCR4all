@@ -2,8 +2,8 @@ package de.uniwue.model;
 
 public class PageOverview {
     private String pageId = null;
-    private boolean preprocessed = false;
-    private boolean segmented = false;
+    private boolean preprocessed = true;
+    private boolean segmented = true;
     private boolean segmentsExtracted = false;
     private boolean linesExtracted = false;
     private boolean hasGT = false;
