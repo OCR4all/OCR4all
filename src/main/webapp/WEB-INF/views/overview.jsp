@@ -10,7 +10,7 @@
             $( document ).ready(function() {
                 $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
-                        $('#projectDir').addClass('invalid');
+                        $('#projectDir').addClass('invalid').focus();
                     }
                     else {
                         $.get( "ajax/overview/list", { "projectDir": $('#projectDir').val() } )
@@ -33,8 +33,7 @@
                             });
                         })
                         .fail(function( data ) {
-                            // TODO: error handling
-                            console.log(data);
+                            $('#projectDir').addClass('invalid');
                         })
                     }
                 });
@@ -50,7 +49,7 @@
                 <div class="input-field col s8">
                     <i class="material-icons prefix">folder</i>
                     <input id="projectDir" name="projectDir" type="text" class="validate">
-                    <label for="projectDir" data-error="Not a valid directory path">Please insert the path to the project directory on the filesystem</label>
+                    <label for="projectDir" data-error="Directory path is empty or could not be accessed on the filesystem">Please insert the path to the project directory on the filesystem</label>
                 </div>
                 <div class="input-field col s4">
                     <button class="btn waves-effect waves-light" type="submit" name="action">Go
