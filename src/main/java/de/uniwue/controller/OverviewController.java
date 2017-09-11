@@ -2,9 +2,7 @@ package de.uniwue.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,26 +33,24 @@ public class OverviewController {
     @RequestMapping("/pageOverview")
     public ModelAndView showPageOverview(HttpServletRequest request) throws IOException {
         ModelAndView mv = new ModelAndView("pageOverview");
+
         String pageId = request.getParameter("pageId")+".png";
-        PageOverview pageOverview=view.getOverview().get(pageId);
+        PageOverview pageOverview = view.getOverview().get(pageId);
+        mv.addObject("pageOverview", pageOverview);
+
         Map<String,String> image = new HashMap<String, String>();
         File f =  new File(request.getSession().getAttribute("projectDir").toString()+File.separator+"Original"+File.separator+pageId);
-        image.put("Orginal",view.encodeFileToBase64Binary(f));
+        image.put("Original", view.encodeFileToBase64Binary(f));
         String [] preprocesSteps = {"Binary","Despeckled","Gray"};
         for (String i: preprocesSteps) {
             f =  new File(request.getSession().getAttribute("projectDir").toString()+File.separator+"PreProc"+File.separator+i+File.separator+pageId);
-            
             if( f.exists())
-                image.put(i,view.encodeFileToBase64Binary(f));
+                image.put(i, view.encodeFileToBase64Binary(f));
         }
-        mv.addObject("preprocessed", pageOverview.isPreprocessed());
-        mv.addObject("segmented", pageOverview.isSegmented());
-        mv.addObject("segmentsExtracted", pageOverview.isSegmentsExtracted());
-        mv.addObject("linesExtracted", pageOverview.isLinesExtracted());
-        mv.addObject("hasGT", pageOverview.isHasGT());
         mv.addObject("image", image);
+
         return mv;
-    } 
+    }
 
     @RequestMapping(value = "/ajax/overview/list" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<PageOverview> jsonOverview(@RequestParam("projectDir") String projectDir, HttpSession session, HttpServletResponse response) throws IOException{
