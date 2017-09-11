@@ -15,6 +15,11 @@
                     else {
                         $.get( "ajax/overview/list", { "projectDir": $('#projectDir').val() } )
                         .done(function( data ) {
+                            // Allow reinitializing DataTable with new data
+                            if ($.fn.DataTable.isDataTable("#overviewTable")) {
+                                $('#overviewTable').DataTable().clear().destroy();
+                            }
+
                             $('#overviewTable').DataTable( {
                                 data: data,
                                 columns: [
