@@ -15,7 +15,7 @@
         <div class="container">
             <div class="section">
                 <h4 class="header">Page Overview</h4>
-                <table class="striped">
+                <table class="striped centered">
                     <thead>
                         <tr>
                             <th>Page Identifier</th>

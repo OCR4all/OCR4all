@@ -77,7 +77,7 @@
             </div>
             <div class="section">
                 <h4 class="header">Overview</h4>
-                <table id="overviewTable" class="display" width="100%"></table>
+                <table id="overviewTable" class="display centered" width="100%"></table>
             </div>
         </div>
             
