@@ -41,6 +41,20 @@ public class OverviewHelper {
         }
     }
 
+    public void initialize(String pageID) throws IOException {
+        String path = pathToProject+File.separator+"Original"+File.separator+pageID+".png";
+        if (new File(path).exists()) {
+             overview.put(new File(path).getName(), new PageOverview(FilenameUtils.removeExtension(new File(path).getName())));
+            checkPreprocessed();
+            checkSegmented();
+            checkSegmentsExtracted();
+            checkLinesExtracted();
+        }
+        else {
+            throw new IOException("Folder does not exist!");
+        }
+    }
+
     public void checkPreprocessed() {
         String [] preprocesSteps = {"Binary","Despeckled","Gray"};
         for (String key : overview.keySet()) {
@@ -109,6 +123,7 @@ public class OverviewHelper {
         return pageContent;
         
     }
+
     public List<String> getFileNames(String path) {
         List<String> results = new ArrayList<String>();
         File[] files = new File(path).listFiles();
@@ -132,7 +147,7 @@ public class OverviewHelper {
     public String getPathToProject() {
         return pathToProject;
     }
-    
+
     public String encodeFileToBase64Binary(File file){
         String encodedfile = null;
         try {
