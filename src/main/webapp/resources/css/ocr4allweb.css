@@ -8,6 +8,9 @@ ul.side-nav {
   font-size: 25px;
   padding: 0 32px 34px 32px
 }
+.side-nav li.active, nav ul a:hover {
+  background-color: #8c9eff;
+}
 
 /* Fixed side navigation */
 header, main, footer {
