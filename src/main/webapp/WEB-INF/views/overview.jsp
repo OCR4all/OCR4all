@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <t:html>
     <t:head>
         <!-- jQuery DataTables -->
@@ -13,7 +14,7 @@
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
-                        $.get( "ajax/overview/list", { "projectDir": $('#projectDir').val() } )
+                        $.get( "ajax/overview/list", { "projectDir": $('#projectDir').val(), "imageType": $('#imageType').val() } )
                         .done(function( data ) {
                             // Allow reinitializing DataTable with new data
                             if( $.fn.DataTable.isDataTable("#overviewTable") ) {
@@ -53,6 +54,9 @@
                 if( $.trim($('#projectDir').val()).length !== 0 ) {
                     $("button").trigger( "click" );
                 }
+
+                // Initialize select form
+                $('select').material_select();
             });
         </script>
 
@@ -62,13 +66,26 @@
         <div class="container">
             <div class="section">
                 <div class="row">
-                    <div class="input-field col s8">
+                    <div class="input-field col s6">
                         <i class="material-icons prefix">folder</i>
                         <input id="projectDir" name="projectDir" type="text" class="validate" value="${projectDir}">
-                        <label for="projectDir" data-error="Directory path is empty or could not be accessed on the filesystem">Please insert the path to the project directory on the filesystem</label>
+                        <label for="projectDir" data-error="Directory path is empty or could not be accessed on the filesystem">Project directory path</label>
                     </div>
-                    <div class="input-field col s4">
-                        <button class="btn waves-effect waves-light" type="submit" name="action">Go
+                    <div class="input-field col s3">
+                        <c:choose>
+                            <c:when test='${imageType}'><c:set value='selected="selected"' var="graySel"></c:set></c:when>
+                            <c:otherwise><c:set value='selected="selected"' var="binarySel"></c:set></c:otherwise>
+                        </c:choose>
+                        <i class="material-icons prefix">image</i>
+                        <select id="imageType" name="imageType">
+                            <option value="binary" ${binarySel}>Binary</option>
+                            <option value="gray" ${graySel}>Gray</option>
+                        </select>
+                        <label>Project image type</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <button class="btn waves-effect waves-light right" type="submit" name="action">
+                            Load
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
@@ -78,6 +95,5 @@
                 <table id="overviewTable" class="display centered" width="100%"></table>
             </div>
         </div>
-            
     </t:body>
 </t:html>
