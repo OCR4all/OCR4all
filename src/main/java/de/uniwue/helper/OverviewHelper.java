@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.jasper.xmlparser.SymbolTable;
 
 import de.uniwue.model.PageOverview;
 
@@ -102,11 +101,10 @@ public class OverviewHelper {
             File[] files = dir.listFiles((d, name) -> name.endsWith(".bin.png"));
             String[] filename = new String[files.length];
                 for (int file = 0; file < files.length;file++) {
-                    filename[file]=FilenameUtils.getBaseName(files[file].toString().substring(0, files[file].toString().length()-9));
+                    filename[file]=FilenameUtils.getBaseName(files[file].toString().substring(0, files[file].toString().length()-8));
                 }
                 pageContent.put(FilenameUtils.getBaseName(directories[folder].toString()), filename);
             }
-        System.out.println(pageContent);
         }
         return pageContent;
         
