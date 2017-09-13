@@ -70,7 +70,7 @@
                     </div>
                     <div class="col s6">
                         <h4>Segments</h4>
-                        <c:forEach items="${lines}" var="seg">
+                         <c:forEach items="${lines}" var="seg">
                             <c:forEach items="${seg}" var="line">
                             ${line.key}<br>
                             ${line.value}<br>
