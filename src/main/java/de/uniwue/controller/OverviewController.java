@@ -36,7 +36,7 @@ public class OverviewController {
         String pageId = request.getParameter("pageId")+".png";
         OverviewHelper view = new OverviewHelper(projectDir);
         try {
-            view.initialize();
+            view.initialize(request.getParameter("pageId"));
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
