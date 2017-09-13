@@ -2,6 +2,7 @@
 .classpath
 .project
 .settings/
+.tern-project
 
 # Intellij
 .idea/
