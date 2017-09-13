@@ -38,25 +38,38 @@
                 </table>
             </div>
             <div class="section">
-                <h4>Images</h4>
-                <div id="images" class="col s12">
-                    <div class="row">
-                        <div class="col s3">
-                            <img class="materialboxed" width="100%" src="data:image/jpeg;base64, ${image.Original}">
-                            <p>Original</p>
-                        </div>
-                        <div class="col s3">
-                            <img class="materialboxed" width="100%" src="data:image/jpeg;base64, ${image.Binary}">
-                            <p>Binary</p>
-                        </div>
-                        <div class="col s3">
-                           <img class="materialboxed" width="100%" src="data:image/jpeg;base64, ${image.Despeckled}">
-                            <p>Despeckled</p>
-                        </div>
-                        <div class="col s3">
-                            <img class="materialboxed" width="100%" src="data:image/jpeg;base64, ${image.Gray}">
-                            <p>Gray</p>
-                        </div>
+                <div class="row">
+                    <div class="col s6">
+                        <h4>Images</h4>
+                        <ul class="collapsible popout" data-collapsible="accordion">
+                            <li>
+                                <div class="collapsible-header"><i class="material-icons">image</i>Original</div>
+                                <div class="collapsible-body">
+                                    <img class="materialboxed" width="100%" src="data:image/jpeg;base64, ${image.Original}">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header active"><i class="material-icons">image</i>Binary</div>
+                                <div class="collapsible-body">
+                                    <img class="materialboxed" width="100%" src="data:image/jpeg;base64, ${image.Binary}">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header"><i class="material-icons">image</i>Gray</div>
+                                <div class="collapsible-body">
+                                    <img class="materialboxed" width="100%" src="data:image/jpeg;base64, ${image.Gray}">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header"><i class="material-icons">image</i>Despeckled</div>
+                                <div class="collapsible-body">
+                                    <img class="materialboxed" width="100%" src="data:image/jpeg;base64, ${image.Despeckled}">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col s6">
+                        <h4>Segments</h4>
                     </div>
                 </div>
             </div>

@@ -17,7 +17,7 @@
     <!--Project OCR4All_Web related-->
     <link type="text/css" rel="stylesheet" href="resources/css/ocr4allweb.css">
 
-    <!--Side navigation-->
+    <!--Collapsible elements (e.g. side navigation)-->
     <script type="text/javascript">
         $('.collapsible').collapsible();
     </script>
