@@ -34,6 +34,7 @@ public class OverviewHelper {
             checkPreprocessed();
             checkSegmented();
             checkSegmentsExtracted();
+            checkLinesExtracted();
         }
         else {
             throw new IOException("Folder does not exist!");
@@ -54,7 +55,6 @@ public class OverviewHelper {
     public void checkSegmented() {
         for (String key : overview.keySet()) {
             overview.get(key).setSegmented(true);
-            System.out.println(overview.get(key).isSegmented());
             if(!new File(pathToProject+File.separator+"OCR"+File.separator+overview.get(key).getPageId()+".xml").exists()) 
                 overview.get(key).setSegmented(false);
         }
@@ -66,6 +66,29 @@ public class OverviewHelper {
             if(!new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(key).getPageId()).isDirectory())
                 overview.get(key).setSegmentsExtracted(false);
         }
+    }
+
+    public void checkLinesExtracted() {
+        for (String key: overview.keySet()) {
+            overview.get(key).setLinesExtracted(true);
+            if (overview.get(key).isSegmentsExtracted()) {
+                File[] directories = new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(key).getPageId()).listFiles(File::isDirectory);
+                if (directories.length != 0 ) {
+                    File dir = new File(directories[0].toString());
+                    File[] files = dir.listFiles((d, name) -> name.endsWith("bin.png"));
+                    if (files.length == 0)
+                        overview.get(key).setLinesExtracted(false);
+                }
+                else {
+                    overview.get(key).setLinesExtracted(false);
+                }
+            }
+            else
+                overview.get(key).setLinesExtracted(false);
+        }
+    }
+
+    public void checkHasGT() {
     }
 
     public List<String> getFileNames(String path) {
