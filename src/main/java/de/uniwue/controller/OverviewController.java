@@ -48,7 +48,7 @@ public class OverviewController {
                 image.put(i, view.encodeFileToBase64Binary(f));
         }
         mv.addObject("image", image);
-
+        mv.addObject("lines",view.pageContent(pageId));
         return mv;
     }
 

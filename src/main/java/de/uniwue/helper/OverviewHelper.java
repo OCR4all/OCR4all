@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.jasper.xmlparser.SymbolTable;
 
 import de.uniwue.model.PageOverview;
 
@@ -91,6 +92,25 @@ public class OverviewHelper {
     public void checkHasGT() {
     }
 
+    public Map<String,String[]> pageContent(String id){
+        Map<String,String[]> pageContent = new HashMap<String, String[]>();
+        if(new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(id).getPageId()).exists()) {
+
+        File[] directories = new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(id).getPageId()).listFiles(File::isDirectory);
+        for (int folder = 0;folder < directories.length;folder++) {
+            File dir = new File(directories[folder].toString());
+            File[] files = dir.listFiles((d, name) -> name.endsWith(".bin.png"));
+            String[] filename = new String[files.length];
+                for (int file = 0; file < files.length;file++) {
+                    filename[file]=FilenameUtils.getBaseName(files[file].toString().substring(0, files[file].toString().length()-9));
+                }
+                pageContent.put(FilenameUtils.getBaseName(directories[folder].toString()), filename);
+            }
+        System.out.println(pageContent);
+        }
+        return null;
+        
+    }
     public List<String> getFileNames(String path) {
         List<String> results = new ArrayList<String>();
         File[] files = new File(path).listFiles();
