@@ -33,6 +33,7 @@ public class OverviewHelper {
             }
             checkPreprocessed();
             checkSegmented();
+            checkSegmentsExtracted();
         }
         else {
             throw new IOException("Folder does not exist!");
@@ -41,18 +42,29 @@ public class OverviewHelper {
 
     public void checkPreprocessed() {
         String [] preprocesSteps = {"Binary","Despeckled","Gray"};
-        for (String i: preprocesSteps) {
-            for (String key : overview.keySet()) {
-                if(!new File(pathToProject+File.separator+"PreProc"+File.separator+i+File.separator+key).exists()) {
-                    overview.get(key).setPreprocessed(false);}
+        for (String key : overview.keySet()) {
+            overview.get(key).setPreprocessed(true);
+            for (String i: preprocesSteps) {
+                if(!new File(pathToProject+File.separator+"PreProc"+File.separator+i+File.separator+key).exists()) 
+                    overview.get(key).setPreprocessed(false);
             }
         }
     }
 
     public void checkSegmented() {
         for (String key : overview.keySet()) {
-            if(!new File(pathToProject+File.separator+"OCR"+File.separator+overview.get(key).getPageId()+".xml").exists()) {
-                overview.get(key).setSegmented(false);}
+            overview.get(key).setSegmented(true);
+            System.out.println(overview.get(key).isSegmented());
+            if(!new File(pathToProject+File.separator+"OCR"+File.separator+overview.get(key).getPageId()+".xml").exists()) 
+                overview.get(key).setSegmented(false);
+        }
+    }
+
+    public void checkSegmentsExtracted() {
+        for (String key: overview.keySet()) {
+            overview.get(key).setSegmentsExtracted(true);
+            if(!new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(key).getPageId()).isDirectory())
+                overview.get(key).setSegmentsExtracted(false);
         }
     }
 
@@ -79,21 +91,22 @@ public class OverviewHelper {
     public String getPathToProject() {
         return pathToProject;
     }
+    
     public String encodeFileToBase64Binary(File file){
-    String encodedfile = null;
-    try {
-        FileInputStream fileInputStreamReader = new FileInputStream(file);
-        byte[] bytes = new byte[(int)file.length()];
-        fileInputStreamReader.read(bytes);
-        encodedfile = Base64.getEncoder().encodeToString(bytes);
-    } catch (FileNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        String encodedfile = null;
+        try {
+            FileInputStream fileInputStreamReader = new FileInputStream(file);
+            byte[] bytes = new byte[(int)file.length()];
+            fileInputStreamReader.read(bytes);
+            encodedfile = Base64.getEncoder().encodeToString(bytes);
+            fileInputStreamReader.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return encodedfile;
     }
-
-    return encodedfile;
-}
 }
