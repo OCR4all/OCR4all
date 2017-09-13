@@ -1,4 +1,4 @@
-<%@tag description="Page Head Tag" pageEncoding="UTF-8"%>
+<%@ tag description="Page Head Tag" pageEncoding="UTF-8" %>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -16,6 +16,11 @@
 
     <!--Project OCR4All_Web related-->
     <link type="text/css" rel="stylesheet" href="resources/css/ocr4allweb.css">
+
+    <!--Side navigation-->
+    <script type="text/javascript">
+        $('.collapsible').collapsible();
+    </script>
 
     <jsp:doBody />
 </head>

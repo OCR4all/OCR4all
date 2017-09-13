@@ -11,10 +11,9 @@
 
         <title>OCR4all_Web - Page Overview</title>
     </t:head>
-    <t:body>
+    <t:body heading="Page Overview">
         <div class="container">
             <div class="section">
-                <h4 class="header">Page Overview</h4>
                 <table class="striped centered">
                     <thead>
                         <tr>

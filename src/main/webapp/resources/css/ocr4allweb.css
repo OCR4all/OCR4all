@@ -1,0 +1,46 @@
+/* Side navigation settings*/
+ul.side-nav {
+  padding-top: 40px;
+  width: 260px;
+}
+.site-description {
+  display: block;
+  font-size: 25px;
+  padding: 0 32px 34px 32px
+}
+
+/* Fixed side navigation */
+header, main, footer {
+  padding-left: 260px;
+}
+@media only screen and (max-width : 992px) {
+  header, main, footer {
+    padding-left: 0px;
+  }
+}
+
+/* Reduced site margin */
+@media only screen and (min-width : 993px) {
+  .container {
+    width: 85%;
+  }
+}
+
+/* Adjusted top announcement */
+.fixed-announcement .announcement {
+  background-color: #000;
+}
+.fixed-announcement .announcement .container {
+  color: #fff;
+  padding: 8px 0;
+}
+
+/* Adjusted top navigation */
+nav.top-nav {
+  height: 122px;
+  line-height: 64px;
+}
+nav.top-nav a.page-title {
+  line-height: 122px;
+  font-size: 48px;
+}

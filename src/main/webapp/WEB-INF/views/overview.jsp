@@ -58,10 +58,9 @@
 
         <title>OCR4all_Web - Overview</title>
     </t:head>
-    <t:body>
+    <t:body heading="Project Overview">
         <div class="container">
             <div class="section">
-                <h4 class="header">Selection</h4>
                 <div class="row">
                     <div class="input-field col s8">
                         <i class="material-icons prefix">folder</i>
@@ -76,7 +75,6 @@
                 </div>
             </div>
             <div class="section">
-                <h4 class="header">Overview</h4>
                 <table id="overviewTable" class="display centered" width="100%"></table>
             </div>
         </div>
