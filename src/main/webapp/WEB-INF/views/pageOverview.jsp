@@ -70,12 +70,24 @@
                     </div>
                     <div class="col s6">
                         <h4>Segments</h4>
-                         <c:forEach items="${lines}" var="seg">
-                            ${seg.key}<br>
-                            <c:forEach var="arrayVar" items="${seg.value}">
-                                <li>${arrayVar}</li>
+                        <ul class="collapsible popout" data-collapsible="accordion">
+                            <c:forEach items="${segments}" var="seg">
+                            <li>
+                                <div class="collapsible-header"><i class="material-icons">art_track</i>${seg.key}</div>
+                                <div class="collapsible-body">
+                                    <ul class="collapsible popout" data-collapsible="accordion">
+                                        <c:forEach var="line" items="${seg.value}">
+                                            <li>
+                                                <div class="collapsible-header"><i class="material-icons">short_text</i>${line}</div>
+                                                <div class="collapsible-body">
+                                                </div>
+                                            </li>
+                                        </c:forEach>
+                                    </ul>
+                                </div>
+                            </li>
                             </c:forEach>
-                         </c:forEach>
+                        </ul>
                     </div>
                 </div>
             </div>

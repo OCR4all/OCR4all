@@ -53,6 +53,7 @@ public class OverviewController {
                 image.put(i, view.encodeFileToBase64Binary(f));
         }
         mv.addObject("image", image);
+        mv.addObject("segments",view.pageContent(pageId));
 
         return mv;
     }
