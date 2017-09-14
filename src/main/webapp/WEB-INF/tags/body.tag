@@ -1,5 +1,6 @@
 <%@ tag description="Page Body Tag" pageEncoding="UTF-8" %>
 <%@ attribute name="heading" required="true" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <body>
     <header>
         <nav class="top-nav">
@@ -27,6 +28,16 @@
     </header>
 
     <main>
-        <jsp:doBody />
+        <c:choose>
+            <%-- In case of an error in the controller, show its message and hide site content --%>
+            <c:when test="${not empty error}">
+                <div class="container red-text">
+                    <h4>Error</h4>
+                    <p>${error}</p>
+                </div>
+            </c:when>
+            <%-- If no error exists, display site content --%>
+            <c:otherwise><jsp:doBody /></c:otherwise>
+        </c:choose>
     </main>
 </body>
