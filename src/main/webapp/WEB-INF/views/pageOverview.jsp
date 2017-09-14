@@ -8,6 +8,9 @@
                 // Initialize image boxes
                 $('.materialboxed').materialbox();
 
+                // Initialize collapsible elements
+                $('.collapsible').collapsible();
+
                 <c:choose>
                     <%-- Open Gray image if it is set in session --%>
                     <c:when test='${imageType == "Gray"}'>
@@ -52,7 +55,7 @@
             <div class="section">
                 <div class="row">
                     <div class="col s6">
-                        <h4>Images</h4>
+                        <h4 class="center">Images</h4>
                         <ul id="images" class="collapsible popout" data-collapsible="accordion">
                             <li>
                                 <div class="collapsible-header"><i class="material-icons">image</i>Original</div>
@@ -81,7 +84,7 @@
                         </ul>
                     </div>
                     <div class="col s6">
-                        <h4>Segments</h4>
+                        <h4 class="center">Segments</h4>
                         <ul id="segments" class="collapsible popout" data-collapsible="accordion">
                             <c:forEach items="${segments}" var="seg">
                             <li>

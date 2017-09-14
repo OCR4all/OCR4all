@@ -20,8 +20,6 @@
     <!--Collapsible elements (e.g. side navigation)-->
     <script type="text/javascript">
         $(document).ready(function() {
-            $('.collapsible').collapsible();
-
             // Sidebar active handler
             var pageTitle = $('.page-title').text();
             $(".side-nav li a").each(function() {
