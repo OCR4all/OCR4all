@@ -4,13 +4,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.comparator.NameFileComparator;
 
 import de.uniwue.model.PageOverview;
 
@@ -109,18 +114,19 @@ public class OverviewHelper {
     }
 
     public Map<String,String[]> pageContent(String id){
-        Map<String,String[]> pageContent = new HashMap<String, String[]>();
+        Map<String,String[]> pageContent = new TreeMap<String, String[]>();
         if(new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(id).getPageId()).exists()) {
+            File[] directories = new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(id).getPageId()).listFiles(File::isDirectory);
 
-        File[] directories = new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(id).getPageId()).listFiles(File::isDirectory);
-        for (int folder = 0;folder < directories.length;folder++) {
-            File dir = new File(directories[folder].toString());
-            File[] files = dir.listFiles((d, name) -> name.endsWith(".bin.png"));
-            String[] filename = new String[files.length];
+            for (int folder = 0;folder < directories.length;folder++) {
+                File dir = new File(directories[folder].toString());
+                File[] files = dir.listFiles((d, name) -> name.endsWith(".bin.png"));
+                List<String> filenames = new ArrayList<String>();
                 for (int file = 0; file < files.length;file++) {
-                    filename[file]=FilenameUtils.getBaseName(files[file].toString().substring(0, files[file].toString().length()-8));
+                    filenames.add(FilenameUtils.getBaseName(files[file].toString().substring(0, files[file].toString().length()-8)));
                 }
-                pageContent.put(FilenameUtils.getBaseName(directories[folder].toString()), filename);
+                java.util.Collections.sort(filenames);
+                pageContent.put((directories[folder].getName()), filenames.toArray(new String[filenames.size()]));
             }
         }
         return pageContent;
