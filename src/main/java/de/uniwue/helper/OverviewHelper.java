@@ -17,9 +17,11 @@ import de.uniwue.model.PageOverview;
 public class OverviewHelper {
     private Map<String,PageOverview> overview = new HashMap<String, PageOverview>();
     private String pathToProject;
-
-    public OverviewHelper(String pathToProject) {
+    private String imageType;
+    
+    public OverviewHelper(String pathToProject, String imageType) {
         this.pathToProject = pathToProject;
+        this.setImageType(imageType);
     }
 
     public void initialize() throws IOException {
@@ -56,13 +58,10 @@ public class OverviewHelper {
     }
 
     public void checkPreprocessed() {
-        String [] preprocesSteps = {"Binary","Despeckled","Gray"};
         for (String key : overview.keySet()) {
             overview.get(key).setPreprocessed(true);
-            for (String i: preprocesSteps) {
-                if(!new File(pathToProject+File.separator+"PreProc"+File.separator+i+File.separator+key).exists()) 
+                if(!new File(pathToProject+File.separator+"PreProc"+File.separator+imageType+File.separator+key).exists()) 
                     overview.get(key).setPreprocessed(false);
-            }
         }
     }
 
@@ -89,7 +88,11 @@ public class OverviewHelper {
                 File[] directories = new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(key).getPageId()).listFiles(File::isDirectory);
                 if (directories.length != 0 ) {
                     File dir = new File(directories[0].toString());
-                    File[] files = dir.listFiles((d, name) -> name.endsWith("bin.png"));
+                    File[] files;
+                    if(imageType.equals("Binary"))
+                        files = dir.listFiles((d, name) -> name.endsWith("bin.png"));
+                    else
+                        files = dir.listFiles((d, name) -> name.endsWith("nrm.png"));
                     if (files.length == 0)
                         overview.get(key).setLinesExtracted(false);
                 }
@@ -164,5 +167,13 @@ public class OverviewHelper {
             e.printStackTrace();
         }
         return encodedfile;
+    }
+
+    public String getImageType() {
+        return imageType;
+    }
+
+    public void setImageType(String imageType) {
+        this.imageType = imageType;
     }
 }

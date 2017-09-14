@@ -33,27 +33,29 @@ public class OverviewController {
         ModelAndView mv = new ModelAndView("pageOverview");
 
         String projectDir = request.getSession().getAttribute("projectDir").toString();
-        String pageId = request.getParameter("pageId")+".png";
-        OverviewHelper view = new OverviewHelper(projectDir);
+        String pageId = request.getParameter("pageId");
+        OverviewHelper view = new OverviewHelper(projectDir,request.getSession().getAttribute("imageType").toString());
+
         try {
             view.initialize(request.getParameter("pageId"));
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        PageOverview pageOverview = view.getOverview().get(pageId);
+
+        PageOverview pageOverview = view.getOverview().get(pageId+".png");
         mv.addObject("pageOverview", pageOverview);
 
         Map<String,String> image = new HashMap<String, String>();
-        File f =  new File(projectDir+File.separator+"Original"+File.separator+pageId);
+        File f =  new File(projectDir+File.separator+"Original"+File.separator+pageId+".png");
         image.put("Original", view.encodeFileToBase64Binary(f));
         String [] preprocesSteps = {"Binary","Despeckled","Gray"};
         for (String i: preprocesSteps) {
-            f =  new File(projectDir+File.separator+"PreProc"+File.separator+i+File.separator+pageId);
+            f =  new File(projectDir+File.separator+"PreProc"+File.separator+i+File.separator+pageId+".png");
             if (f.exists())
                 image.put(i, view.encodeFileToBase64Binary(f));
         }
         mv.addObject("image", image);
-        mv.addObject("segments",view.pageContent(pageId));
+        mv.addObject("segments",view.pageContent(pageId+".png"));
 
         return mv;
     }
@@ -67,8 +69,7 @@ public class OverviewController {
         // Store project directory in session (serves as entry point)
         session.setAttribute("projectDir", projectDir);
         session.setAttribute("imageType", imageType);
-
-        OverviewHelper view = new OverviewHelper(projectDir);
+        OverviewHelper view = new OverviewHelper(projectDir,imageType);
         try {
             view.initialize();
         } catch (IOException e) {

@@ -73,14 +73,14 @@
                     </div>
                     <div class="input-field col s3">
                         <c:choose>
-                            <c:when test='${imageType == "gray"}'><c:set value='selected="selected"' var="graySel"></c:set></c:when>
+                            <c:when test='${imageType == "Gray"}'><c:set value='selected="selected"' var="graySel"></c:set></c:when>
                             <c:otherwise><c:set value='selected="selected"' var="binarySel"></c:set></c:otherwise>
                         </c:choose>
                         <i class="material-icons prefix">image</i>
                         <select id="imageType" name="imageType">
-                            <option value="binary" ${binarySel}>Binary</option>
-                            <option value="gray" ${graySel}>Gray</option>
-                        </select>
+                            <option value="Binary" ${binarySel}>Binary</option>
+                            <option value="Gray" ${graySel}>Gray</option>
+					</select>
                         <label>Project image type</label>
                     </div>
                     <div class="input-field col s3">
