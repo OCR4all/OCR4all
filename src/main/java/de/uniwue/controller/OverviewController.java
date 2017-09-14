@@ -1,10 +1,7 @@
 package de.uniwue.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import de.uniwue.helper.ImageHelper;
 import de.uniwue.helper.OverviewHelper;
 import de.uniwue.model.PageOverview;
 
@@ -50,7 +46,6 @@ public class OverviewController {
 
         String imageType = (String)request.getSession().getAttribute("imageType");
         OverviewHelper view = new OverviewHelper(projectDir, imageType);
-        ImageHelper imageHelper = new ImageHelper();
         try {
             view.initialize(pageId);
         } catch (IOException e) {
@@ -60,21 +55,8 @@ public class OverviewController {
         }
 
         String pageImage = pageId + ".png";
-        PageOverview pageOverview = view.getOverview().get(pageImage);
-        mv.addObject("pageOverview", pageOverview);
-
-        Map<String,String> pageImages = new HashMap<String, String>();
-        File f =  new File(projectDir + File.separator + "Original" + File.separator + pageImage);
-        pageImages.put("Original", imageHelper.encodeFileToBase64Binary(f));
-        String [] preprocesSteps = {"Binary", "Despeckled", "Gray"};
-        for (String pPS: preprocesSteps) {
-            f = new File(projectDir + File.separator + "PreProc" + File.separator
-                    + pPS + File.separator + pageImage);
-            if (f.exists())
-                pageImages.put(pPS, imageHelper.encodeFileToBase64Binary(f));
-        }
-        mv.addObject("image", pageImages);
-        mv.addObject("segments",view.pageContent(pageImage));
+        mv.addObject("pageOverview", view.getOverview().get(pageImage));
+        mv.addObject("segments", view.pageContent(pageImage));
 
         return mv;
     }
@@ -88,6 +70,7 @@ public class OverviewController {
         // Store project directory in session (serves as entry point)
         session.setAttribute("projectDir", projectDir);
         session.setAttribute("imageType", imageType);
+
         OverviewHelper view = new OverviewHelper(projectDir,imageType);
         try {
             view.initialize();
