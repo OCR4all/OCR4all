@@ -37,13 +37,13 @@ public class ImageController {
     @RequestMapping(value = "/ajax/image/segment" , method = RequestMethod.GET)
     public @ResponseBody String getImageOfSegment(
                 @RequestParam("pageId") String pageId,
-                @RequestParam("segmentId") String segmentId,
+                @RequestParam("segmentId") String imageId,
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
         String projectDir = (String)session.getAttribute("projectDir");
         String imageType = session.getAttribute("imageType").toString();
         ImageHelper imageHelper = new ImageHelper();
-        String image64 = imageHelper.getSegmentImage(projectDir, pageId, segmentId, imageType);
+        String image64 = imageHelper.getSegmentImage(projectDir, pageId, imageId, imageType);
         // To trigger AJAX fail (and therefore show errors)
         if (image64 == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -58,13 +58,13 @@ public class ImageController {
     public @ResponseBody String getImageOfLine(
                 @RequestParam("pageId") String pageId,
                 @RequestParam("segmentId") String segmentId,
-                @RequestParam("lineId") String lineId,
+                @RequestParam("lineId") String imageId,
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
         String projectDir = (String)session.getAttribute("projectDir");
         String imageType = session.getAttribute("imageType").toString();
         ImageHelper imageHelper = new ImageHelper();
-        String image64 = imageHelper.getLineImage(projectDir, pageId, segmentId, lineId, imageType);
+        String image64 = imageHelper.getLineImage(projectDir, pageId, segmentId, imageId, imageType);
         // To trigger AJAX fail (and therefore show errors)
         if (image64 == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
