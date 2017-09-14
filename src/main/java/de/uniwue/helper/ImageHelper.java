@@ -28,4 +28,29 @@ public class ImageHelper {
         }
         return encodedfile;
     }
+    public String getImage(String projectDir, String pageID, String imageID) {
+        String base64Image = null;
+        if(imageID.equals("Original")) {
+            File f =  new File(projectDir + File.separator + "Original" + File.separator + pageID+".png");
+            base64Image=encodeFileToBase64Binary(f);
+        }
+        else {
+            File f = null;
+            if(imageID.equals("Gray")) {
+                f = new File(projectDir + File.separator + "PreProc" + File.separator
+                        + "Gray" + File.separator + pageID+".png");
+            }
+            if(imageID.equals("Binary")) {
+                f = new File(projectDir + File.separator + "PreProc" + File.separator
+                        + "Binary" + File.separator + pageID+".png");
+            }
+            if(imageID.equals("Despeckled")) {
+                f = new File(projectDir + File.separator + "PreProc" + File.separator
+                        + "Despeckled" + File.separator + pageID+".png");
+            }
+            if (f.exists())
+                base64Image=encodeFileToBase64Binary(f);
+        }
+        return base64Image;
+    }
 }
