@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.uniwue.helper.ImageHelper;
 import de.uniwue.helper.OverviewHelper;
 import de.uniwue.model.PageOverview;
 
@@ -49,6 +50,7 @@ public class OverviewController {
 
         String imageType = (String)request.getSession().getAttribute("imageType");
         OverviewHelper view = new OverviewHelper(projectDir, imageType);
+        ImageHelper imageHelper = new ImageHelper();
         try {
             view.initialize(pageId);
         } catch (IOException e) {
@@ -63,13 +65,13 @@ public class OverviewController {
 
         Map<String,String> pageImages = new HashMap<String, String>();
         File f =  new File(projectDir + File.separator + "Original" + File.separator + pageImage);
-        pageImages.put("Original", view.encodeFileToBase64Binary(f));
+        pageImages.put("Original", imageHelper.encodeFileToBase64Binary(f));
         String [] preprocesSteps = {"Binary", "Despeckled", "Gray"};
         for (String pPS: preprocesSteps) {
             f = new File(projectDir + File.separator + "PreProc" + File.separator
                     + pPS + File.separator + pageImage);
             if (f.exists())
-                pageImages.put(pPS, view.encodeFileToBase64Binary(f));
+                pageImages.put(pPS, imageHelper.encodeFileToBase64Binary(f));
         }
         mv.addObject("image", pageImages);
         mv.addObject("segments",view.pageContent(pageImage));
