@@ -33,7 +33,6 @@ public class ImageHelper {
         File f = null;
         if(imageID.equals("Original")) {
             f =  new File(projectDir + File.separator + "Original" + File.separator + pageID+".png");
-            base64Image=encodeFileToBase64Binary(f);
         }
         else {
             if(imageID.equals("Gray")) {
@@ -66,6 +65,19 @@ public class ImageHelper {
             base64Image=encodeFileToBase64Binary(f);
 
         return base64Image;
-        
     }
+
+    public String getLineImage(String projectDir, String pageID, String segmentID, String lineID, String imageType) {
+        String base64Image = null;
+        File f = null;
+        if(imageType.equals("Gray")) 
+            f = new File(projectDir+File.separator+"OCR"+File.separator+"Pages"+File.separator+pageID+File.separator+segmentID+File.separator+lineID+".nrm.png");
+        if(imageType.equals("Binary")) 
+            f = new File(projectDir+File.separator+"OCR"+File.separator+"Pages"+File.separator+pageID+File.separator+segmentID+File.separator+lineID+".bin.png");
+        if (f.exists())
+            base64Image=encodeFileToBase64Binary(f);
+
+        return base64Image;
+    }
+
 }

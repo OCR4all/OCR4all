@@ -22,13 +22,16 @@ public class ImageController {
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
         String projectDir = (String)session.getAttribute("projectDir");
+        // To trigger AJAX fail (and therefore show errors)
+        ImageHelper imageHelper = new ImageHelper();
+        String image64 = imageHelper.getPageImage(projectDir, pageId, imageId);
+        if (image64 == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
         if (projectDir == null) {
-            // To trigger AJAX fail (and therefore show errors)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        ImageHelper imageHelper = new ImageHelper();
-
-        return imageHelper.getPageImage(projectDir, pageId, imageId);
+        return image64;
     }
 
     @RequestMapping(value = "/ajax/image/segment" , method = RequestMethod.GET)
@@ -38,13 +41,37 @@ public class ImageController {
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
         String projectDir = (String)session.getAttribute("projectDir");
-        if (projectDir == null) {
-            // To trigger AJAX fail (and therefore show errors)
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
         String imageType = session.getAttribute("imageType").toString();
         ImageHelper imageHelper = new ImageHelper();
+        String image64 = imageHelper.getSegmentImage(projectDir, pageId, segmentId, imageType);
+        // To trigger AJAX fail (and therefore show errors)
+        if (image64 == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+        if (projectDir == null) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        return image64;
+    }
 
-        return imageHelper.getSegmentImage(projectDir, pageId, segmentId, imageType);
+    @RequestMapping(value = "/ajax/image/line" , method = RequestMethod.GET)
+    public @ResponseBody String getImageOfLine(
+                @RequestParam("pageId") String pageId,
+                @RequestParam("segmentId") String segmentId,
+                @RequestParam("lineId") String lineId,
+                HttpSession session, HttpServletResponse response
+            ) throws IOException {
+        String projectDir = (String)session.getAttribute("projectDir");
+        String imageType = session.getAttribute("imageType").toString();
+        ImageHelper imageHelper = new ImageHelper();
+        String image64 = imageHelper.getLineImage(projectDir, pageId, segmentId, lineId, imageType);
+        // To trigger AJAX fail (and therefore show errors)
+        if (image64 == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+        if (projectDir == null) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        return image64;
     }
 }
