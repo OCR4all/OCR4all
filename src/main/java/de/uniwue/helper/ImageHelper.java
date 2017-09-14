@@ -28,14 +28,14 @@ public class ImageHelper {
         }
         return encodedfile;
     }
-    public String getImage(String projectDir, String pageID, String imageID) {
+    public String getPageImage(String projectDir, String pageID, String imageID) {
         String base64Image = null;
+        File f = null;
         if(imageID.equals("Original")) {
-            File f =  new File(projectDir + File.separator + "Original" + File.separator + pageID+".png");
+            f =  new File(projectDir + File.separator + "Original" + File.separator + pageID+".png");
             base64Image=encodeFileToBase64Binary(f);
         }
         else {
-            File f = null;
             if(imageID.equals("Gray")) {
                 f = new File(projectDir + File.separator + "PreProc" + File.separator
                         + "Gray" + File.separator + pageID+".png");
@@ -48,9 +48,24 @@ public class ImageHelper {
                 f = new File(projectDir + File.separator + "PreProc" + File.separator
                         + "Despeckled" + File.separator + pageID+".png");
             }
-            if (f.exists())
-                base64Image=encodeFileToBase64Binary(f);
         }
+        if (f.exists())
+            base64Image=encodeFileToBase64Binary(f);
+
         return base64Image;
+    }
+
+    public String getSegmentImage(String projectDir, String pageID, String segmentID, String imageType) {
+        String base64Image = null;
+        File f = null;
+        if(imageType.equals("Gray")) 
+            f = new File(projectDir+File.separator+"OCR"+File.separator+"Pages"+File.separator+pageID+File.separator+segmentID+".nrm.png");
+        if(imageType.equals("Binary")) 
+            f = new File(projectDir+File.separator+"OCR"+File.separator+"Pages"+File.separator+pageID+File.separator+segmentID+".bin.png");
+        if (f.exists())
+            base64Image=encodeFileToBase64Binary(f);
+
+        return base64Image;
+        
     }
 }

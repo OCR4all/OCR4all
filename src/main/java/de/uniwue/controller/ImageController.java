@@ -27,8 +27,24 @@ public class ImageController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         ImageHelper imageHelper = new ImageHelper();
-        //TODO: Load image and send it as Base64 String
 
-        return imageHelper.getImage(projectDir, pageId, imageId);
+        return imageHelper.getPageImage(projectDir, pageId, imageId);
+    }
+
+    @RequestMapping(value = "/ajax/image/segment" , method = RequestMethod.GET)
+    public @ResponseBody String getImageOfSegment(
+                @RequestParam("pageId") String pageId,
+                @RequestParam("segmentId") String segmentId,
+                HttpSession session, HttpServletResponse response
+            ) throws IOException {
+        String projectDir = (String)session.getAttribute("projectDir");
+        if (projectDir == null) {
+            // To trigger AJAX fail (and therefore show errors)
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        String imageType = session.getAttribute("imageType").toString();
+        ImageHelper imageHelper = new ImageHelper();
+
+        return imageHelper.getSegmentImage(projectDir, pageId, segmentId, imageType);
     }
 }
