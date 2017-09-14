@@ -21,18 +21,24 @@
                     var ajaxURL = "ajax/image/" + dataType;
                     var ajaxParams = { "pageId" : pageId, "imageId" : imageId };
                     if(  dataType == "line" ) {
-                        console.log(el);
-                        var segmentId = $(el).parents(".collapsible").eq(1).find(".collapsible-header.active span").first().text();
+                        var segmentId = $(el).parents(".collapsible").eq(1).children("li.active").find(".collapsible-header span").first().text();
                         $.extend(ajaxParams, { "segmentId" : segmentId });
                     }
 
                     // Load requested image and handle error in case of failure
                     $.get( ajaxURL, ajaxParams )
                     .done(function( data ) {
-                        $(el).find('i[data-info="broken-image"]').first().remove();
-                        $(el).find('img').first().attr('src', 'data:image/jpeg;base64, ' + data);
+                        if( data === '' ) {
+                            $(el).find('i[data-info="broken-image"]').first().remove();
+                            $(el).find('img').first().after('<i class="material-icons" data-info="broken-image">broken_image</i>');
+                        }
+                        else {
+                            $(el).find('i[data-info="broken-image"]').first().remove();
+                            $(el).find('img').first().attr('src', 'data:image/jpeg;base64, ' + data);
+                        }
                     })
                     .fail(function( data ) {
+                        $(el).find('i[data-info="broken-image"]').first().remove();
                         $(el).find('img').first().after('<i class="material-icons" data-info="broken-image">broken_image</i>');
                     })
                 }
@@ -90,7 +96,7 @@
                 <div class="row">
                     <div class="col s6">
                         <h4 class="center">Images</h4>
-                        <ul id="images" class="collapsible popout" data-collapsible="accordion" data-type="page">
+                        <ul id="images" class="collapsible" data-collapsible="accordion" data-type="page">
                             <li>
                                 <div class="collapsible-header"><i class="material-icons">image</i><span>Original</span></div>
                                 <div class="collapsible-body">
@@ -119,13 +125,13 @@
                     </div>
                     <div class="col s6">
                         <h4 class="center">Segments</h4>
-                        <ul id="segments" class="collapsible popout" data-collapsible="accordion" data-type="segment">
+                        <ul id="segments" class="collapsible" data-collapsible="accordion" data-type="segment">
                             <c:forEach items="${segments}" var="seg">
                             <li>
                                 <div class="collapsible-header"><i class="material-icons">art_track</i><span>${seg.key}</span></div>
                                 <div class="collapsible-body">
                                     <img class="materialboxed centered" width="75%" />
-                                    <ul id="lines_${seg.key}" class="collapsible popout" data-collapsible="accordion" data-type="line">
+                                    <ul id="lines_${seg.key}" class="collapsible" data-collapsible="accordion" data-type="line">
                                         <c:forEach var="line" items="${seg.value}">
                                             <li>
                                                 <div class="collapsible-header"><i class="material-icons">short_text</i><span>${line}</span></div>
