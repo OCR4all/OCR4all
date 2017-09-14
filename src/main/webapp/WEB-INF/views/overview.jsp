@@ -80,7 +80,7 @@
                         <select id="imageType" name="imageType">
                             <option value="Binary" ${binarySel}>Binary</option>
                             <option value="Gray" ${graySel}>Gray</option>
-					</select>
+                        </select>
                         <label>Project image type</label>
                     </div>
                     <div class="input-field col s3">
