@@ -11,8 +11,19 @@ ul.side-nav {
 .side-nav li.active, nav ul a:hover {
   background-color: #8c9eff;
 }
-
-/* Fixed side navigation */
+a.button-collapse.top-nav {
+  position: absolute;
+  text-align: center;
+  height: 48px;
+  width: 48px;
+  left: 1%;
+  top: 46px;
+  float: none;
+  color: #fff;
+}
+a.button-collapse.top-nav i {
+  font-size: 30px;
+}
 header, main, footer {
   padding-left: 260px;
 }

@@ -20,6 +20,9 @@
     <!--Collapsible elements (e.g. side navigation)-->
     <script type="text/javascript">
         $(document).ready(function() {
+            // Navigation button (used if screen size is too small)
+            $(".button-collapse").sideNav();
+
             // Sidebar active handler
             var pageTitle = $('.page-title').text();
             $(".side-nav li a").each(function() {
