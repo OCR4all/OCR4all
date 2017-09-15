@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
-
+/** Helper class for image based functionality
+*/
 public class ImageHelper {
 
     public ImageHelper() {
     }
-
+    /** Encodes the given file to base64 String
+     * @param File Passed file
+     * @return Returns the image as a base64 string
+    */
     public String encodeFileToBase64Binary(File file) throws IOException {
         String encodedfile = null;
         FileInputStream fileInputStreamReader = new FileInputStream(file);
@@ -19,7 +23,12 @@ public class ImageHelper {
         fileInputStreamReader.close();
         return encodedfile;
     }
-
+    /** Gets the specified page image and encodes it to base64 
+     * @param projectDir Path to the project directory
+     * @param pageID Identifier of the page (e.g 0002)
+     * @param imageID Image identifier (Original, Gray or Despeckled)
+     * @return Returns the image as a base64 string
+    */
     public String getPageImage(String projectDir, String pageID, String imageID) throws IOException {
         String base64Image = null;
         File f = null;
@@ -44,7 +53,13 @@ public class ImageHelper {
 
         return base64Image;
     }
-
+    /** Gets the specified page segment image and encodes it to base64
+     * @param projectDir Path to the project directory
+     * @param pageID Identifier of the page (e.g 0002)
+     * @param segmentID Identifier of the segment (e.g 0002__000__paragraph)
+     * @param imageType Image identifier (Binary or Grey-image)
+     * @return Returns the image as a base64 string
+    */
     public String getSegmentImage(String projectDir, String pageID, String segmentID, String imageType)
             throws IOException {
         String base64Image = null;
@@ -60,7 +75,14 @@ public class ImageHelper {
 
         return base64Image;
     }
-
+    /** Gets the specified page line image of a segment and encodes it to base64
+     * @param projectDir Path to the project directory
+     * @param pageID Identifier of the page (e.g 0002)
+     * @param segmentID Identifier of the segment (e.g 0002__000__paragraph)
+     * @param lineID Identifier of the line (e.g 0002__000__paragraph__000)
+     * @param imageType Image identifier (Binary or Grey-image)
+     * @return Returns the image as a base64 string
+    */
     public String getLineImage(String projectDir, String pageID, String segmentID, String lineID, String imageType)
             throws IOException {
         String base64Image = null;
