@@ -3,7 +3,6 @@ package de.uniwue.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -24,27 +23,32 @@ public class OverviewController {
         ModelAndView mv = new ModelAndView("overview");
         return mv;
     }
-
+    /** Response to send the content of the /pageOverview page
+      * 
+      * @param pageId Identifier of the page (e.g 0002)
+      * @param session Session of the user
+      * @param response Response to the request
+      * @return Returns the content of the /pageOverview page with the specific pageId
+    */
     @RequestMapping("/pageOverview")
-    public ModelAndView showPageOverview(
-                HttpServletRequest request, HttpServletResponse response
+    public ModelAndView showPageOverview(@RequestParam("pageId") String pageId,
+                HttpSession session, HttpServletResponse response
             ) throws IOException {
         ModelAndView mv = new ModelAndView("pageOverview");
 
-        String projectDir = (String)request.getSession().getAttribute("projectDir");
+        String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
 
-        String pageId = request.getParameter("pageId");
-        if (pageId == null) {
+        if (pageId.isEmpty()) {
             mv.addObject("error", "No pageId parameter was passed.\n"
                                 + "Please return to the Project Overview page.");
             return mv;
         }
 
-        String imageType = (String)request.getSession().getAttribute("imageType");
+        String imageType = (String)session.getAttribute("imageType");
         OverviewHelper view = new OverviewHelper(projectDir, imageType);
         try {
             view.initialize(pageId);
@@ -60,7 +64,14 @@ public class OverviewController {
 
         return mv;
     }
-
+    /** Response to send the process status of every page
+      * 
+      * @param projectDir Absolute path to the project
+      * @param imageType Project type (Binary or Gray)
+      * @param session Session of the user
+      * @param response Response to the request
+      * @return Returns the status of every page of the project
+   */
     @RequestMapping(value = "/ajax/overview/list" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<PageOverview> jsonOverview(
                 @RequestParam("projectDir") String projectDir,
