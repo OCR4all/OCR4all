@@ -35,6 +35,14 @@ public final class ProjectDirConfig {
      */
     public final String IMG_EXT = ".png";
     /**
+     * Binary image extension of the project
+     */
+    public final String BIN_IMG_EXT  = ".bin" + IMG_EXT;
+    /**
+     * Normalized gray image extension of the project
+     */
+    public final String GRAY_IMG_EXT = ".nrm" + IMG_EXT;
+    /**
      * Default configuration extension of the project
      */
     public final String CONF_EXT = ".xml";

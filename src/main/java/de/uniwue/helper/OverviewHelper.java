@@ -1,103 +1,162 @@
 package de.uniwue.helper;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.comparator.NameFileComparator;
 
+import de.uniwue.config.ProjectDirConfig;
 import de.uniwue.model.PageOverview;
 
 public class OverviewHelper {
-    private Map<String,PageOverview> overview = new HashMap<String, PageOverview>();
-    private String pathToProject;
+    /**
+     * Stores page overviews of the project
+     *
+     * Structure example:
+     * {
+     *     "0001.png" : {
+     *         "pageId" : 0001,
+     *         "preprocessed" : true,
+     *         "segmented" : false,
+     *         "segmentsExtracted" : false,
+     *         "linesExtracted" : false,
+     *         "hasGT" : false,
+     *     },
+     *     ...
+     * }
+     */
+    private Map<String, PageOverview> overview = new HashMap<String, PageOverview>();
+
+    /**
+     * Image type of the project
+     * Possible values: { Binary, Gray }
+     */
     private String imageType;
-    
+
+    /**
+     * Object to access project directory configuration
+     */
+    private ProjectDirConfig projDirConf;
+
+    /**
+     * Constructor
+     *
+     * @param pathToProject  Absolute path of the project on the filesystem
+     * @param imageType  Image type of the project
+     */
     public OverviewHelper(String pathToProject, String imageType) {
-        this.pathToProject = pathToProject;
-        this.setImageType(imageType);
+        this.imageType = imageType;
+        this.projDirConf = new ProjectDirConfig(pathToProject);
     }
 
+    /**
+     * Generates project status overview for all existing pages
+     *
+     * @throws IOException
+     */
     public void initialize() throws IOException {
-        String path = pathToProject+File.separator+"Original";
+        String path = projDirConf.ORIG_IMG_DIR;
         if (new File(path).exists()) {
             final File folder = new File(path);
             for (final File fileEntry : folder.listFiles()) {
                 if (fileEntry.isFile()) {
-                    overview.put(fileEntry.getName(), new PageOverview(FilenameUtils.removeExtension(fileEntry.getName())));
+                    PageOverview pOverview = new PageOverview(FilenameUtils.removeExtension(fileEntry.getName()));
+                    overview.put(fileEntry.getName(), pOverview);
                 }
             }
             checkPreprocessed();
             checkSegmented();
             checkSegmentsExtracted();
             checkLinesExtracted();
+            checkHasGT();
         }
         else {
             throw new IOException("Folder does not exist!");
         }
     }
 
+    /**
+     * Generates status overview for one page
+     *
+     * @param pageID  Page identifier for which the overview should be generated
+     * @throws IOException
+     */
     public void initialize(String pageID) throws IOException {
-        String path = pathToProject+File.separator+"Original"+File.separator+pageID+".png";
+        String path = projDirConf.ORIG_IMG_DIR + pageID + projDirConf.IMG_EXT;
         if (new File(path).exists()) {
-             overview.put(new File(path).getName(), new PageOverview(FilenameUtils.removeExtension(new File(path).getName())));
+            PageOverview pOverview = new PageOverview(FilenameUtils.removeExtension(new File(path).getName()));
+            overview.put(new File(path).getName(), pOverview);
             checkPreprocessed();
             checkSegmented();
             checkSegmentsExtracted();
             checkLinesExtracted();
+            checkHasGT();
         }
         else {
             throw new IOException("Folder does not exist!");
         }
     }
 
+    /**
+     * Validates preprocessing state and updates project overview
+     */
     public void checkPreprocessed() {
         for (String key : overview.keySet()) {
             overview.get(key).setPreprocessed(true);
-                if(!new File(pathToProject+File.separator+"PreProc"+File.separator+imageType+File.separator+key).exists()) 
-                    overview.get(key).setPreprocessed(false);
+            if (!new File(projDirConf.PREPROC_DIR + imageType + File.separator + key).exists()) 
+                overview.get(key).setPreprocessed(false);
         }
     }
 
+    /**
+     * Validates segmented state and updates project overview
+     */
     public void checkSegmented() {
         for (String key : overview.keySet()) {
             overview.get(key).setSegmented(true);
-            if(!new File(pathToProject+File.separator+"OCR"+File.separator+overview.get(key).getPageId()+".xml").exists()) 
+            if (!new File(projDirConf.OCR_DIR + overview.get(key).getPageId() + projDirConf.CONF_EXT).exists()) 
                 overview.get(key).setSegmented(false);
         }
     }
 
+    /**
+     * Validates segment extracted state and updates project overview
+     */
     public void checkSegmentsExtracted() {
         for (String key: overview.keySet()) {
             overview.get(key).setSegmentsExtracted(true);
-            if(!new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(key).getPageId()).isDirectory())
+            if (!new File(projDirConf.PAGE_DIR + overview.get(key).getPageId()).isDirectory())
                 overview.get(key).setSegmentsExtracted(false);
         }
     }
 
+    /**
+     * Validates line extracted state and updates project overview
+     */
     public void checkLinesExtracted() {
         for (String key: overview.keySet()) {
             overview.get(key).setLinesExtracted(true);
+
             if (overview.get(key).isSegmentsExtracted()) {
-                File[] directories = new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(key).getPageId()).listFiles(File::isDirectory);
-                if (directories.length != 0 ) {
+                File[] directories = new File(projDirConf.PAGE_DIR
+                        + overview.get(key).getPageId()).listFiles(File::isDirectory);
+
+                if (directories.length != 0) {
                     File dir = new File(directories[0].toString());
                     File[] files;
-                    if(imageType.equals("Binary"))
-                        files = dir.listFiles((d, name) -> name.endsWith("bin.png"));
-                    else
-                        files = dir.listFiles((d, name) -> name.endsWith("nrm.png"));
+                    if (imageType.equals("Gray")) {
+                        files = dir.listFiles((d, name) -> name.endsWith(projDirConf.GRAY_IMG_EXT));
+                    }
+                    else {
+                        files = dir.listFiles((d, name) -> name.endsWith(projDirConf.BIN_IMG_EXT));
+                    }
+
                     if (files.length == 0)
                         overview.get(key).setLinesExtracted(false);
                 }
@@ -105,63 +164,63 @@ public class OverviewHelper {
                     overview.get(key).setLinesExtracted(false);
                 }
             }
-            else
+            else {
                 overview.get(key).setLinesExtracted(false);
+            }
         }
     }
 
+    /**
+     * Validates ground truth state and updates project overview
+     * TODO: Implementation. Currently no requirements specified
+     */
     public void checkHasGT() {
     }
 
-    public Map<String,String[]> pageContent(String id){
+    /**
+     * Generates content for one page
+     * This includes its segments and their lines
+     * 
+     * @param pageId  Page identifier for which the content should be generated
+     * @return Sorted map of page content
+     */
+    public Map<String, String[]> pageContent(String pageId) {
         Map<String,String[]> pageContent = new TreeMap<String, String[]>();
-        if(new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(id).getPageId()).exists()) {
-            File[] directories = new File(pathToProject+File.separator+"OCR"+File.separator+"Pages"+File.separator+overview.get(id).getPageId()).listFiles(File::isDirectory);
+        if (new File(projDirConf.PAGE_DIR + overview.get(pageId).getPageId()).exists()) {
+            File[] directories = new File(projDirConf.PAGE_DIR
+                    + overview.get(pageId).getPageId()).listFiles(File::isDirectory);
 
-            for (int folder = 0;folder < directories.length;folder++) {
+            for (int folder = 0; folder < directories.length; folder++) {
                 File dir = new File(directories[folder].toString());
-                File[] files = dir.listFiles((d, name) -> name.endsWith(".bin.png"));
-                List<String> filenames = new ArrayList<String>();
-                for (int file = 0; file < files.length;file++) {
-                    filenames.add(FilenameUtils.getBaseName(files[file].toString().substring(0, files[file].toString().length()-8)));
+                File[] files;
+                int extensionLength = 0;
+                if (imageType.equals("Gray")) {
+                    files = dir.listFiles((d, name) -> name.endsWith(projDirConf.GRAY_IMG_EXT));
+                    extensionLength = projDirConf.GRAY_IMG_EXT.length();
                 }
-                java.util.Collections.sort(filenames);
-                pageContent.put((directories[folder].getName()), filenames.toArray(new String[filenames.size()]));
+                else {
+                    files = dir.listFiles((d, name) -> name.endsWith(projDirConf.BIN_IMG_EXT));
+                    extensionLength = projDirConf.BIN_IMG_EXT.length();
+                }
+
+                List<String> fileNames = new ArrayList<String>();
+                for (int file = 0; file < files.length; file++) {
+                    fileNames.add(FilenameUtils.getBaseName(
+                            files[file].toString().substring(0, files[file].toString().length() - extensionLength)));
+                }
+                Collections.sort(fileNames);
+                pageContent.put((directories[folder].getName()), fileNames.toArray(new String[fileNames.size()]));
             }
         }
         return pageContent;
-        
     }
 
-    public List<String> getFileNames(String path) {
-        List<String> results = new ArrayList<String>();
-        File[] files = new File(path).listFiles();
-        
-        for (File file : files) {
-            if (file.isFile()) {
-                results.add(file.getName());
-            }
-        }
-        return results;
-    }
-
+    /**
+     * Gets the page overviews of the project
+     *
+     * @return Map of page overviews
+     */
     public Map<String, PageOverview> getOverview() {
         return overview;
-    }
-
-    public void setOverview(Map<String, PageOverview> overview) {
-        this.overview = overview;
-    }
-
-    public String getPathToProject() {
-        return pathToProject;
-    }
-
-    public String getImageType() {
-        return imageType;
-    }
-
-    public void setImageType(String imageType) {
-        this.imageType = imageType;
     }
 }
