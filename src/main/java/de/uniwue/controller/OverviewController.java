@@ -16,22 +16,34 @@ import org.springframework.web.servlet.ModelAndView;
 import de.uniwue.helper.OverviewHelper;
 import de.uniwue.model.PageOverview;
 
+/**
+ * Controller class for pages of overview module
+ * Use response.setStatus to trigger AJAX fail (and therefore show errors)
+ */
 @Controller
 public class OverviewController {
+    /**
+     * Response to the request to send content of the project root
+     *
+     * @return Returns the content of the project overview page
+     */
     @RequestMapping("/")
     public ModelAndView showOverview() throws IOException {
         ModelAndView mv = new ModelAndView("overview");
         return mv;
     }
-    /** Response to send the content of the /pageOverview page
-      * 
-      * @param pageId Identifier of the page (e.g 0002)
-      * @param session Session of the user
-      * @param response Response to the request
-      * @return Returns the content of the /pageOverview page with the specific pageId
-    */
+
+    /**
+     * Response to the request to send the content of the /pageOverview page
+     *
+     * @param pageId Identifier of the page (e.g 0002)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the content of the /pageOverview page with the specific pageId
+     */
     @RequestMapping("/pageOverview")
-    public ModelAndView showPageOverview(@RequestParam("pageId") String pageId,
+    public ModelAndView showPageOverview(
+                @RequestParam("pageId") String pageId,
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
         ModelAndView mv = new ModelAndView("pageOverview");
@@ -64,14 +76,16 @@ public class OverviewController {
 
         return mv;
     }
-    /** Response to send the process status of every page
-      * 
-      * @param projectDir Absolute path to the project
-      * @param imageType Project type (Binary or Gray)
-      * @param session Session of the user
-      * @param response Response to the request
-      * @return Returns the status of every page of the project
-   */
+
+    /**
+     * Response to the request to send the process status of every page
+     *
+     * @param projectDir Absolute path to the project
+     * @param imageType Project type (Binary or Gray)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the status of every page of the project
+     */
     @RequestMapping(value = "/ajax/overview/list" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<PageOverview> jsonOverview(
                 @RequestParam("projectDir") String projectDir,
@@ -86,7 +100,6 @@ public class OverviewController {
         try {
             view.initialize();
         } catch (IOException e) {
-            // To trigger AJAX fail (and therefore show errors)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
