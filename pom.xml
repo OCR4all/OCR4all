@@ -10,6 +10,10 @@
 
     <properties>
         <spring.version>4.0.1.RELEASE</spring.version>
+
+        <!-- Java version -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -72,7 +76,15 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Javax Servlet (JSP due to Tomcat dependency) -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
+
     <build>
         <finalName>OCR4all_Web</finalName>
     </build>
