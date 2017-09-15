@@ -41,8 +41,8 @@ public class ImageController {
         }
         String image64 = null;
         try {
-            ImageHelper imageHelper = new ImageHelper();
-            image64 = imageHelper.getPageImage(projectDir, pageId, imageId);
+            ImageHelper imageHelper = new ImageHelper(projectDir);
+            image64 = imageHelper.getPageImage(pageId, imageId);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -75,8 +75,8 @@ public class ImageController {
         }
         String image64 = null;
         try {
-            ImageHelper imageHelper = new ImageHelper();
-            image64 = imageHelper.getSegmentImage(projectDir, pageId, imageId, imageType);
+            ImageHelper imageHelper = new ImageHelper(projectDir);
+            image64 = imageHelper.getSegmentImage(pageId, imageId, imageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -112,8 +112,8 @@ public class ImageController {
         }
         String image64 = null;
         try {
-            ImageHelper imageHelper = new ImageHelper();
-            image64 = imageHelper.getLineImage(projectDir, pageId, segmentId, imageId, imageType);
+            ImageHelper imageHelper = new ImageHelper(projectDir);
+            image64 = imageHelper.getLineImage(pageId, segmentId, imageId, imageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
