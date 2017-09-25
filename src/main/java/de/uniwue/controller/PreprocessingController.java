@@ -1,6 +1,8 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import de.uniwue.helper.PreprocessingHelper;
 
 /**
  * Controller class for pages of preprocessing module
@@ -54,7 +58,12 @@ public class PreprocessingController {
         if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-
+        PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
+        List<String> my = new ArrayList<String>();
+        my.add("0001");
+        my.add("0002");
+        my.add("0014");
+        preproHelper.preprocessPage(my);
         return;
     }
 }
