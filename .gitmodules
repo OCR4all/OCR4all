@@ -1,0 +1,3 @@
+[submodule "src/main/resources/ocropy"]
+	path = src/main/resources/ocropy
+	url = https://github.com/tmbdev/ocropy.git
