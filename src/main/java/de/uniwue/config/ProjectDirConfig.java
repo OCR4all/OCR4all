@@ -53,6 +53,10 @@ public final class ProjectDirConfig {
      * Absolute path to original page images (is made absolute in Constructor)
      */
     public String ORIG_IMG_DIR = "Original" + File.separator;
+    /**
+     * Absolute path to the project dir (is made absolute in Constructor)
+     */
+    public String PROJECT_DIR ="";
 
     /**** Preprocessing directories ****/
 

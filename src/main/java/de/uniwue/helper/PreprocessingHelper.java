@@ -3,12 +3,16 @@ package de.uniwue.helper;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.io.FilenameUtils;
+
 import de.uniwue.config.ProjectDirConfig;
 
 /**
@@ -54,5 +58,21 @@ public class PreprocessingHelper {
 
         return outputStream;
 
+    }
+    public void preprocessAllPages() throws ExecuteException, IOException {
+        if (new File(projDirConf.ORIG_IMG_DIR).exists()) {
+            final File folder = new File(projDirConf.ORIG_IMG_DIR);
+            File[] files;
+            List<String> identifiers = new ArrayList<String>();
+            files = folder.listFiles((d, name) -> name.endsWith(projDirConf.IMG_EXT));
+            for(int i = 0; i < files.length; i++) {
+                //ToDO check if nmr_image exists (When not a binary-only project)
+                if(!new File(projDirConf.BINR_IMG_DIR+files[i].getName()).exists())
+                    identifiers.add(FilenameUtils.removeExtension(files[i].getName()));
+            }
+            Collections.sort(identifiers);
+            preprocessPage(identifiers);
+        
+        }
     }
 }

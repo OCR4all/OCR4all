@@ -63,7 +63,7 @@ public class PreprocessingController {
         my.add("0001");
         my.add("0002");
         my.add("0014");
-        preproHelper.preprocessPage(my);
+        preproHelper.preprocessAllPages();
         return;
     }
 }
