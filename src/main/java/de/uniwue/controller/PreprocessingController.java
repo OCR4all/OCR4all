@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.io.SequenceInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import de.uniwue.helper.PreprocessingHelper;
@@ -56,17 +59,25 @@ public class PreprocessingController {
      */
     @RequestMapping(value = "/ajax/preprocessing/execute", method = RequestMethod.GET)
     public @ResponseBody void executePreprocessing(
-                HttpSession session, HttpServletResponse response
-            ) throws IOException {
+           @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
+           HttpSession session, HttpServletResponse response
+           ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
+        
+        List<String> args;
+        if (cmdArgs == null)
+           args = new ArrayList<String>();
+        else
+            args = Arrays.asList(cmdArgs);
         if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
         session.setAttribute("preproHelper", preproHelper);
-        preproHelper.preprocessAllPages();
-        return;
+        preproHelper.preprocessAllPages(args);
+
     }
+
     /**
      * Response to the request to return the progress status of the preprocess service
      *
@@ -89,6 +100,7 @@ public class PreprocessingController {
      * @param response Response to the request
      * @return
      */
+
     @RequestMapping(value = "/ajax/preprocessing/console" , method = RequestMethod.GET)
     public @ResponseBody String jsonConsole( 
                 HttpSession session, HttpServletResponse response

@@ -41,8 +41,14 @@ public class PreprocessingHelper {
      * @param pageId Identifier of the page (e.g 0002)
      * @throws IOException
      */
-    public void preprocessPage(String pageId) throws IOException {
-        CommandLine cmdLine = CommandLine.parse("ocropus-nlbin " + projDirConf.ORIG_IMG_DIR + pageId + projDirConf.IMG_EXT + " -o "+ projDirConf.PREPROC_DIR);
+    public void preprocessPage(String pageId,List<String> args) throws IOException {
+        CommandLine cmdLine = new CommandLine("ocropus-nlbin");
+        cmdLine.addArgument(projDirConf.ORIG_IMG_DIR + pageId + projDirConf.IMG_EXT);
+        cmdLine.addArgument("-o");
+        cmdLine.addArgument(projDirConf.PREPROC_DIR);
+        for(String arg : args) {
+            cmdLine.addArgument(arg);
+        }
         DefaultExecutor executor = new DefaultExecutor();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         executor.setStreamHandler(new PumpStreamHandler(os));
@@ -67,7 +73,7 @@ public class PreprocessingHelper {
      *
      * @throws IOException
      */
-    public void preprocessAllPages() throws IOException {
+    public void preprocessAllPages(List<String> args) throws IOException {
         File origDir = new File(projDirConf.ORIG_IMG_DIR);
         if (!origDir.exists())
             return;
@@ -92,7 +98,7 @@ public class PreprocessingHelper {
             //TODO: Check if nmr_image exists (When not a binary-only project)
             File binImg = new File(projDirConf.BINR_IMG_DIR + pageFile.getName());
             if(!binImg.exists())
-                preprocessPage(FilenameUtils.removeExtension(pageFile.getName()));
+                preprocessPage(FilenameUtils.removeExtension(pageFile.getName()),args);
             progress = (int) (i/totalPages*100);
             i = i+1;
         }
