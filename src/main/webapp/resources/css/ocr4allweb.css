@@ -64,3 +64,9 @@ img.centered {
   display: block;
   margin: 0 auto;
 }
+
+/* Table modifiers */
+table.compact * {
+  padding: 0px !important;
+  margin:  5px !important;
+}
