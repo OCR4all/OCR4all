@@ -102,7 +102,6 @@ public class PreprocessingHelper {
             progress = (int) (i/totalPages*100);
             i = i+1;
         }
-        progress = -1;
         return;
     }
     /**

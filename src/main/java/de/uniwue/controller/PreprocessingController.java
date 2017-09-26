@@ -90,8 +90,12 @@ public class PreprocessingController {
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
 
-        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-        return preproHelper.getProgress();
+        if (session.getAttribute("preproHelper") == null) 
+            return -1;
+        else {
+            PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
+            return preproHelper.getProgress();
+        }
     }
     /**
      * Response to the request to return the commandline output of the preprocess service
@@ -105,15 +109,17 @@ public class PreprocessingController {
     public @ResponseBody String jsonConsole( 
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
-        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-        InputStream input = new SequenceInputStream(Collections.enumeration(preproHelper.getStreams()));
-        Reader reader = new InputStreamReader(input);
-        BufferedReader r = new BufferedReader(reader);
         String cmdOutput = "";
-        while (r.readLine() != null) {
-            cmdOutput = cmdOutput +r.readLine();
+        if (session.getAttribute("preproHelper") != null) {
+            PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
+            InputStream input = new SequenceInputStream(Collections.enumeration(preproHelper.getStreams()));
+            Reader reader = new InputStreamReader(input);
+            BufferedReader r = new BufferedReader(reader);
+            while (r.readLine() != null) {
+                cmdOutput = cmdOutput +r.readLine();
+            }
+            r.close();
         }
-        r.close();
         return cmdOutput;
     }
 
