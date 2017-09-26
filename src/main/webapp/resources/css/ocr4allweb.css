@@ -70,3 +70,9 @@ table.compact * {
   padding: 0px !important;
   margin:  5px !important;
 }
+
+/* Progress bar adjustments */
+.progress {
+  background-color: #c7cfff;
+  height: 20px;
+}
