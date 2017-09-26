@@ -1,78 +1,102 @@
 package de.uniwue.helper;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectDirConfig;
 
 /**
  * Helper class for preprocessing pages, which also calls the ocrubus-nlbin function 
- * 
- *  */
+ */
 public class PreprocessingHelper {
-
     /**
      * Object to access project directory configuration
      */
     private ProjectDirConfig projDirConf;
 
+    /**
+     * Constructor
+     *
+     * @param projectDir Path to the project directory
+     */
     public PreprocessingHelper(String projectDir) {
         projDirConf = new ProjectDirConfig(projectDir);
     }
 
-    public OutputStream preprocessPage(List<String> identifier) throws ExecuteException, IOException {
-        System.out.println("Preprocessing gestartet");
-        OutputStream outputStream = null;
+    /**
+     * Executes image preprocessing of one page with "ocropus-nlbin".
+     * This process creates the preprocessed and moves them to the favored location.
+     *
+     * @param pageId Identifier of the page (e.g 0002)
+     * @param out Output stream of controller (to pass output to JSP)
+     * @throws IOException
+     */
+    public void preprocessPage(String pageId, OutputStream out) throws IOException {
+        ProcessBuilder builder = new ProcessBuilder("ocropus-nlbin " + projDirConf.ORIG_IMG_DIR + pageId 
+                + projDirConf.IMG_EXT + " -o "+projDirConf.PREPROC_DIR);
+        Process p = builder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-        if (!new File(projDirConf.BINR_IMG_DIR).exists())
-            new File(projDirConf.BINR_IMG_DIR).mkdir();
-        if (!new File(projDirConf.GRAY_IMG_DIR).exists())
-            new File(projDirConf.GRAY_IMG_DIR).mkdir();
-        new File(projDirConf.GRAY_IMG_DIR).mkdir();
-
-        for (String id : identifier) {
-            CommandLine cmdLine = CommandLine.parse("ocropus-nlbin " + projDirConf.ORIG_IMG_DIR + id
-                    + projDirConf.IMG_EXT + " -o "+projDirConf.PREPROC_DIR);
-
-            DefaultExecutor executor = new DefaultExecutor();
-            executor.execute(cmdLine);
-            executor.setStreamHandler(new PumpStreamHandler(outputStream));
-
-            //hardcoded 0001 because of Ocrupus
-            if (new File(projDirConf.PREPROC_DIR+"0001"+projDirConf.BIN_IMG_EXT).exists())
-                new File(projDirConf.PREPROC_DIR+"0001"+projDirConf.BIN_IMG_EXT).renameTo(new File(projDirConf.BINR_IMG_DIR+id+projDirConf.IMG_EXT));
-            if (new File(projDirConf.PREPROC_DIR+"0001"+projDirConf.GRAY_IMG_EXT).exists())
-                new File(projDirConf.PREPROC_DIR+"0001"+projDirConf.GRAY_IMG_EXT).renameTo(new File(projDirConf.GRAY_IMG_DIR+id+projDirConf.IMG_EXT));
-
+        // Update output stream of PreprocesingController.executePreprocessing
+        String line;
+        while ((line = reader.readLine ()) != null) {
+            out.write(line.getBytes());
+            out.flush();
         }
 
-        return outputStream;
+        // Hardcoded 0001 because of Ocropus naming convention. We call "ocropus-nlbin"
+        // for each file individually and given images are named with incremented numbers.
 
+        File binImg = new File(projDirConf.PREPROC_DIR + "0001" + projDirConf.BIN_IMG_EXT);
+        if (binImg.exists())
+            binImg.renameTo(new File(projDirConf.BINR_IMG_DIR + pageId + projDirConf.IMG_EXT));
+
+        File grayImg = new File(projDirConf.PREPROC_DIR + "0001" + projDirConf.GRAY_IMG_EXT);
+        if (grayImg.exists())
+            grayImg.renameTo(new File(projDirConf.GRAY_IMG_DIR + pageId + projDirConf.IMG_EXT));
+
+        return;
     }
-    public void preprocessAllPages() throws ExecuteException, IOException {
-        if (new File(projDirConf.ORIG_IMG_DIR).exists()) {
-            final File folder = new File(projDirConf.ORIG_IMG_DIR);
-            File[] files;
-            List<String> identifiers = new ArrayList<String>();
-            files = folder.listFiles((d, name) -> name.endsWith(projDirConf.IMG_EXT));
-            for(int i = 0; i < files.length; i++) {
-                //ToDO check if nmr_image exists (When not a binary-only project)
-                if(!new File(projDirConf.BINR_IMG_DIR+files[i].getName()).exists())
-                    identifiers.add(FilenameUtils.removeExtension(files[i].getName()));
-            }
-            Collections.sort(identifiers);
-            preprocessPage(identifiers);
-        
+
+    /**
+     * Executes image preprocessing of all pages.
+     * This process creates the preprocessed directory structure.
+     *
+     * @param out Output stream of controller (to pass output to JSP)
+     * @throws IOException
+     */
+    public void preprocessAllPages(OutputStream out) throws IOException {
+        File origDir = new File(projDirConf.ORIG_IMG_DIR);
+        if (!origDir.exists())
+            return;
+
+        File preprocDir = new File(projDirConf.PREPROC_DIR);
+        if (!preprocDir.exists())
+            preprocDir.mkdir();
+
+        File binDir = new File(projDirConf.BINR_IMG_DIR);
+        if (!binDir.exists())
+            binDir.mkdir();
+
+        File grayDir = new File(projDirConf.GRAY_IMG_DIR);
+        if (!grayDir.exists())
+            grayDir.mkdir();
+
+        File[] pageFiles = origDir.listFiles((d, name) -> name.endsWith(projDirConf.IMG_EXT));
+        Arrays.sort(pageFiles);
+        for(File pageFile : pageFiles) {
+            //TODO: Check if nmr_image exists (When not a binary-only project)
+            File binImg = new File(projDirConf.BINR_IMG_DIR + pageFile.getName());
+            if(!binImg.exists())
+                preprocessPage(FilenameUtils.removeExtension(pageFile.getName()), out);
         }
+
+        return;
     }
 }

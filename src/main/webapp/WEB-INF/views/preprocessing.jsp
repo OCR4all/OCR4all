@@ -5,22 +5,30 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 var inProgress = false;
+
                 $("button").click(function() {
                     if( inProgress === true ) {
                         //TODO: Error handling
                     }
                     else {
-                        inProgress = true;
+                        var xhr = new XMLHttpRequest();
 
-                        $.get( "ajax/preprocessing/execute", { } )
-                        .done(function( data ) {
-                            //TODO: Output handling
-                            inProgress = false;
-                        })
-                        .fail(function( data ) {
+                        xhr.seenBytes = 0;
+                        xhr.onreadystatechange = function() {
+                            //  loading                 finished
+                            if( xhr.readyState === 3 || xhr.readyState === 4 ) {
+                                var newData = xhr.response.substr(xhr.seenBytes);
+                                //TODO: Update HTML content
+                                console.log(newData);
+                                xhr.seenBytes = xhr.responseText.length;
+                            }
+                        };
+                        xhr.addEventListener("error", function(e) {
                             //TODO: Error handling
-                            inProgress = false;
-                        })
+                        });
+
+                        xhr.open('GET', 'ajax/preprocessing/execute');
+                        xhr.send();
                     }
                 });
             });

@@ -22,5 +22,8 @@ http://www.springframework.org/schema/context/spring-context-3.0.xsd">
   </bean>
 
   <mvc:resources mapping="/resources/**" location="/resources/" />
-  <mvc:annotation-driven />
+  <mvc:annotation-driven>
+    <!-- Set async timeout to 1h (workaround for long lasting requests) -->
+    <mvc:async-support default-timeout="3600000"/>
+  </mvc:annotation-driven>
 </beans>
