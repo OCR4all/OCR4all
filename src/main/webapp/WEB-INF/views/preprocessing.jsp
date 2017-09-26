@@ -72,6 +72,11 @@
                         // Show status view
                         $('.collapsible').collapsible('open', 1);
 
+                        $.post( "ajax/preprocessing/execute?" + jQuery.param(getParams()) )
+                        .fail(function( data ) {
+                            //TODO: Error handling
+                        })
+
                         // Update preprocessing status. Interval will be terminated in
                         // updateProgressBar(), if process is finished.
                         progressInterval = setInterval(updateProgressBar, 1000);

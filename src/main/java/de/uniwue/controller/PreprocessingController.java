@@ -57,7 +57,7 @@ public class PreprocessingController {
      * @param response Response to the request
      * @return
      */
-    @RequestMapping(value = "/ajax/preprocessing/execute", method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/preprocessing/execute", method = RequestMethod.POST)
     public @ResponseBody void executePreprocessing(
            @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
            HttpSession session, HttpServletResponse response
