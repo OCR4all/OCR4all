@@ -31,4 +31,9 @@
             org.springframework.web.context.ContextLoaderListener
         </listener-class>
     </listener>
+
+    <session-config>
+        <!-- Increase session timeout t0 6h (importance of session variables) -->
+        <session-timeout>360</session-timeout>
+    </session-config>
 </web-app>
