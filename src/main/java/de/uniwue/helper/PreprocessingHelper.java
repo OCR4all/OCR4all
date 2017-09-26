@@ -1,13 +1,17 @@
 package de.uniwue.helper;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import de.uniwue.config.ProjectDirConfig;
 
@@ -20,7 +24,7 @@ public class PreprocessingHelper {
      */
     private ProjectDirConfig projDirConf;
     private int progress = -1;
-
+    private List<InputStream> streams = new ArrayList<InputStream>();
     /**
      * Constructor
      *
@@ -35,29 +39,18 @@ public class PreprocessingHelper {
      * This process creates the preprocessed and moves them to the favored location.
      *
      * @param pageId Identifier of the page (e.g 0002)
-     * @param out Output stream of controller (to pass output to JSP)
      * @throws IOException
      */
-    public void preprocessPage(String pageId, OutputStream out) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder("ocropus-nlbin",projDirConf.ORIG_IMG_DIR + pageId 
-                + projDirConf.IMG_EXT, "-o",projDirConf.PREPROC_DIR);
-        Process p = builder.start();
-        System.out.println(builder.command().toString());
-        //System.out.println("here");
-        //Process p = Runtime.getRuntime().exec("ocropus-nlbin " +  projDirConf.ORIG_IMG_DIR + pageId + projDirConf.IMG_EXT
-        //        + " -o " + projDirConf.PREPROC_DIR);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-        // Update output stream of PreprocesingController.executePreprocessing
-        String line;
-        while ((line = reader.readLine ()) != null) {
-            out.write(line.getBytes());
-            out.flush();
-        }
+    public void preprocessPage(String pageId) throws IOException {
+        CommandLine cmdLine = CommandLine.parse("ocropus-nlbin " + projDirConf.ORIG_IMG_DIR + pageId + projDirConf.IMG_EXT + " -o "+ projDirConf.PREPROC_DIR);
+        DefaultExecutor executor = new DefaultExecutor();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        executor.setStreamHandler(new PumpStreamHandler(os));
+        executor.execute(cmdLine);
+        streams.add(os.toInputStream());
 
         // Hardcoded 0001 because of Ocropus naming convention. We call "ocropus-nlbin"
         // for each file individually and given images are named with incremented numbers.
-
         File binImg = new File(projDirConf.PREPROC_DIR + "0001" + projDirConf.BIN_IMG_EXT);
         if (binImg.exists())
             binImg.renameTo(new File(projDirConf.BINR_IMG_DIR + pageId + projDirConf.IMG_EXT));
@@ -65,7 +58,6 @@ public class PreprocessingHelper {
         File grayImg = new File(projDirConf.PREPROC_DIR + "0001" + projDirConf.GRAY_IMG_EXT);
         if (grayImg.exists())
             grayImg.renameTo(new File(projDirConf.GRAY_IMG_DIR + pageId + projDirConf.IMG_EXT));
-
         return;
     }
 
@@ -73,10 +65,9 @@ public class PreprocessingHelper {
      * Executes image preprocessing of all pages.
      * This process creates the preprocessed directory structure.
      *
-     * @param out Output stream of controller (to pass output to JSP)
      * @throws IOException
      */
-    public void preprocessAllPages(OutputStream out) throws IOException {
+    public void preprocessAllPages() throws IOException {
         File origDir = new File(projDirConf.ORIG_IMG_DIR);
         if (!origDir.exists())
             return;
@@ -101,14 +92,21 @@ public class PreprocessingHelper {
             //TODO: Check if nmr_image exists (When not a binary-only project)
             File binImg = new File(projDirConf.BINR_IMG_DIR + pageFile.getName());
             if(!binImg.exists())
-                preprocessPage(FilenameUtils.removeExtension(pageFile.getName()), out);
+                preprocessPage(FilenameUtils.removeExtension(pageFile.getName()));
             progress = (int) (i/totalPages*100);
-            System.out.println(progress);
             i = i+1;
         }
         progress = -1;
         return;
     }
+    /**
+     * Returns the InputStreams of the commandLine output
+     * @return Returns the InputStreams of the commandLine output
+     */
+    public List<InputStream> getStreams() {
+        return streams;
+    }
+
     /**
      * Returns the progress of the job
      * @return progress of preprocessAllPages function

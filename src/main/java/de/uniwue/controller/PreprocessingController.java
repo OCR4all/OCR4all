@@ -1,8 +1,13 @@
 package de.uniwue.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.io.Reader;
+import java.io.SequenceInputStream;
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -10,14 +15,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-
-import de.uniwue.helper.OverviewHelper;
 import de.uniwue.helper.PreprocessingHelper;
-import de.uniwue.model.PageOverview;
 
 /**
  * Controller class for pages of preprocessing module
@@ -55,7 +55,7 @@ public class PreprocessingController {
      * @return
      */
     @RequestMapping(value = "/ajax/preprocessing/execute", method = RequestMethod.GET)
-    public @ResponseBody StreamingResponseBody executePreprocessing(
+    public @ResponseBody void executePreprocessing(
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
@@ -64,27 +64,45 @@ public class PreprocessingController {
         }
         PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
         session.setAttribute("preproHelper", preproHelper);
-        return new StreamingResponseBody() {
-            @Override
-            public void writeTo(OutputStream out) throws IOException {
-                // Stream seems to flush initially at ~2kb.
-                // This is a workaround to get the important content ASAP.
-                // TODO: Verify or replace this solution (maybe with Websockets)
-                for(int i = 0; i < 1000; i++ ) {
-                    out.write(" ".getBytes());
-                }
-
-                // Pass OutputStream to allow PreprocessingHelper to update page content
-                preproHelper.preprocessAllPages(out);
-            }
-        };
+        preproHelper.preprocessAllPages();
+        return;
     }
+    /**
+     * Response to the request to return the progress status of the preprocess service
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return
+     */
     @RequestMapping(value = "/ajax/preprocessing/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonOverview( 
+    public @ResponseBody int jsonProgress( 
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
 
         PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
         return preproHelper.getProgress();
     }
+    /**
+     * Response to the request to return the commandline output of the preprocess service
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return
+     */
+    @RequestMapping(value = "/ajax/preprocessing/console" , method = RequestMethod.GET)
+    public @ResponseBody String jsonConsole( 
+                HttpSession session, HttpServletResponse response
+            ) throws IOException {
+        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
+        InputStream input = new SequenceInputStream(Collections.enumeration(preproHelper.getStreams()));
+        Reader reader = new InputStreamReader(input);
+        BufferedReader r = new BufferedReader(reader);
+        String cmdOutput = "";
+        while (r.readLine() != null) {
+            cmdOutput = cmdOutput +r.readLine();
+        }
+        r.close();
+        return cmdOutput;
+    }
+
 }
