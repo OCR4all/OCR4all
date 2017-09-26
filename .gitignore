@@ -15,3 +15,6 @@
 # Maven
 log/
 target/
+
+# Python
+.pynative

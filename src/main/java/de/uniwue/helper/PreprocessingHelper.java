@@ -19,6 +19,7 @@ public class PreprocessingHelper {
      * Object to access project directory configuration
      */
     private ProjectDirConfig projDirConf;
+    private int progress = -1;
 
     /**
      * Constructor
@@ -38,9 +39,13 @@ public class PreprocessingHelper {
      * @throws IOException
      */
     public void preprocessPage(String pageId, OutputStream out) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder("ocropus-nlbin " + projDirConf.ORIG_IMG_DIR + pageId 
-                + projDirConf.IMG_EXT + " -o "+projDirConf.PREPROC_DIR);
+        ProcessBuilder builder = new ProcessBuilder("ocropus-nlbin",projDirConf.ORIG_IMG_DIR + pageId 
+                + projDirConf.IMG_EXT, "-o",projDirConf.PREPROC_DIR);
         Process p = builder.start();
+        System.out.println(builder.command().toString());
+        //System.out.println("here");
+        //Process p = Runtime.getRuntime().exec("ocropus-nlbin " +  projDirConf.ORIG_IMG_DIR + pageId + projDirConf.IMG_EXT
+        //        + " -o " + projDirConf.PREPROC_DIR);
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
         // Update output stream of PreprocesingController.executePreprocessing
@@ -90,13 +95,26 @@ public class PreprocessingHelper {
 
         File[] pageFiles = origDir.listFiles((d, name) -> name.endsWith(projDirConf.IMG_EXT));
         Arrays.sort(pageFiles);
+        int totalPages = pageFiles.length;
+        double i = 0;
         for(File pageFile : pageFiles) {
             //TODO: Check if nmr_image exists (When not a binary-only project)
             File binImg = new File(projDirConf.BINR_IMG_DIR + pageFile.getName());
             if(!binImg.exists())
                 preprocessPage(FilenameUtils.removeExtension(pageFile.getName()), out);
+            progress = (int) (i/totalPages*100);
+            System.out.println(progress);
+            i = i+1;
         }
-
+        progress = -1;
         return;
     }
+    /**
+     * Returns the progress of the job
+     * @return progress of preprocessAllPages function
+     */
+    public int getProgress() {
+        return progress;
+    }
+
 }
