@@ -6,6 +6,7 @@
             $(document).ready(function() {
                 var inProgress = false;
                 var progressInterval = null;
+                var consoleOutput = "";
 
                 // Fetch all modified parameters and return them appropriately
                 function getParams() {
@@ -21,9 +22,10 @@
                     return params;
                 }
 
-                function updateProgressBar(initial) {
+                function updateStatus(initial) {
                     initial = initial || false;
 
+                    // Update preprocessing progress in status collapsible
                     $.get( "ajax/preprocessing/progress" )
                     .done(function( data ) {
                         progress = data;
@@ -47,6 +49,15 @@
                         // Update process bar
                         $('.determinate').attr("style", "width: " + data + "%");
                         inProgress = true;
+                        // Update console output
+                        $.get( "ajax/preprocessing/console" )
+                        .done(function( data ) {
+                            consoleOutput += data;
+                            $('.console pre').html(consoleOutput);
+                        })
+                        .fail(function( data ) {
+                            //TODO: Error handling
+                        })
 
                         // Terminate interval loop
                         if( data >= 100 ) {
@@ -61,8 +72,8 @@
                     })
                 }
                 // Initial call to set progress variable
-                updateProgressBar(true);
-                progressInterval = setInterval(updateProgressBar, 1000);
+                updateStatus(true);
+                progressInterval = setInterval(updateStatus, 1000);
 
                 $("button").click(function() {
                     if( inProgress === true ) {
@@ -79,7 +90,7 @@
 
                         // Update preprocessing status. Interval will be terminated in
                         // updateProgressBar(), if process is finished.
-                        progressInterval = setInterval(updateProgressBar, 1000);
+                        progressInterval = setInterval(updateStatus, 1000);
                     }
                 });
             });
