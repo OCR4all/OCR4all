@@ -9,6 +9,8 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
+                var updateInterval = null;
+
                 $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         $('#projectDir').addClass('invalid').focus();
@@ -21,7 +23,8 @@
                                 $('#overviewTable').DataTable().clear().destroy();
                             }
 
-                            $('#overviewTable').DataTable( {
+                            var overviewTable = $('#overviewTable').DataTable( {
+                                ajax: data.json,
                                 data: data,
                                 columns: [
                                     { title: "Page Identifier", data: "pageId" },
@@ -43,6 +46,13 @@
                                     });
                                 }
                             });
+
+                            // Update overview continuously
+                            if( updateInterval === null ) {
+                                updateInterval = setInterval( function () {
+                                    $("button").click();
+                                }, 10000 );
+                            }
                         })
                         .fail(function( data ) {
                             $('#projectDir').addClass('invalid');
