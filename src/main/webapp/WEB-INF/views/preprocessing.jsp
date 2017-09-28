@@ -61,7 +61,11 @@
                         $.get( "ajax/preprocessing/console" )
                         .done(function( data ) {
                             consoleOutput += data;
-                            $('.console pre').html(consoleOutput).show();
+                            $('.console pre').html(consoleOutput);
+
+                            if( !$('.console pre').is(":visible") )
+                                $('.console pre').show();
+
                             // Scroll to bottom if user does not mouseover
                             if( !$('.console pre').is(":hover") )
                                 $('.console pre').scrollTop($('.console pre').prop("scrollHeight"));
@@ -93,7 +97,8 @@
                     }
                     else {
                         // Show status view
-                        $('.collapsible').collapsible('open', 1);
+                        if( !$('.collapsible').find('li').eq(1).hasClass('active') )
+                            $('.collapsible').collapsible('open', 1);
 
                         $.post( "ajax/preprocessing/execute?" + jQuery.param(getParams()) )
                         .fail(function( data ) {
@@ -114,6 +119,7 @@
                         $.post( "ajax/preprocessing/cancel" )
                         .done(function( data ) {
                             $('#modal_successfulcancel').modal('open');
+                            $('.status span').html("No Preprocessing process running").attr("class", "");
                         })
                         .fail(function( data ) {
                             $('#modal_failcancel').modal('open');
