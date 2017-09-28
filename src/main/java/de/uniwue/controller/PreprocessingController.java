@@ -14,6 +14,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.exec.ExecuteException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -78,7 +79,14 @@ public class PreprocessingController {
 
     }
 
-    @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.GET)
+    /**
+     * Response to the request to cancel the preprocessing
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return
+     */
+    @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancelPreprocessing(
            HttpSession session, HttpServletResponse response
            ) throws IOException {
@@ -87,10 +95,8 @@ public class PreprocessingController {
         if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
-        session.setAttribute("preproHelper", preproHelper);
+        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
         preproHelper.cancelPreprocessAllPages();
-
     }
 
     /**

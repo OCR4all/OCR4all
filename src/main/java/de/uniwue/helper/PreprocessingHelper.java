@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FilenameUtils;
@@ -28,6 +29,7 @@ public class PreprocessingHelper {
     private List<InputStream> streams = new ArrayList<InputStream>();
     private DefaultExecutor executor; 
     private ExecuteWatchdog watchdog; 
+    private boolean stop = false;
 
 
     /**
@@ -38,6 +40,7 @@ public class PreprocessingHelper {
     public PreprocessingHelper(String projectDir) {
         projDirConf = new ProjectDirConfig(projectDir);
         executor = new DefaultExecutor();
+        executor.setExitValues(new int[] { 0, 1, 143 });
         watchdog = new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);
         executor.setWatchdog(watchdog);
     }
@@ -81,6 +84,7 @@ public class PreprocessingHelper {
      * @throws IOException
      */
     public void preprocessAllPages(List<String> args) throws IOException {
+        stop = false;
         File origDir = new File(projDirConf.ORIG_IMG_DIR);
         if (!origDir.exists())
             return;
@@ -103,6 +107,10 @@ public class PreprocessingHelper {
         double i = 1;
         progress = 1;
         for(File pageFile : pageFiles) {
+            if (stop == true) {
+                progress = -1;
+                return;
+            }
             //TODO: Check if nmr_image exists (When not a binary-only project)
             File binImg = new File(projDirConf.BINR_IMG_DIR + pageFile.getName());
             if(!binImg.exists())
@@ -129,8 +137,12 @@ public class PreprocessingHelper {
         return progress;
     }
 
+    /**
+     *  Cancels the preprocessAllPages process
+     */
     public void cancelPreprocessAllPages() {
             if(watchdog.isWatching()) {
+                stop = true;
                 watchdog.destroyProcess();
             }
     }
