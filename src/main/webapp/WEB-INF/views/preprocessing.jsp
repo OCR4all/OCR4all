@@ -8,6 +8,9 @@
                 var progressInterval = null;
                 var consoleOutput = "";
 
+                // Init inprogress modal
+                $('.modal').modal();
+
                 // Fetch all modified parameters and return them appropriately
                 function getParams() {
                     var params = { 'cmdArgs': [] };
@@ -33,7 +36,8 @@
                             if( initial !== false ) $('.collapsible').collapsible('open', 0);
                             inProgress = false;
                             clearInterval(progressInterval);
-                            return; //TODO: Error handling
+                            $('.status span').html("ERROR: Invalid AJAX response").attr("class", "red-text");
+                            return;
                         }
 
                         if( data < 0 ) {
@@ -45,10 +49,14 @@
                             return;
                         }
 
+                        if( inProgress === false ) {
+                            inProgress = true;
+                            $('.status span').html("Ongoing").attr("class", "orange-text");
+                        }
+
                         if( initial !== false ) $('.collapsible').collapsible('open', 1);
                         // Update process bar
                         $('.determinate').attr("style", "width: " + data + "%");
-                        inProgress = true;
                         // Update console output
                         $.get( "ajax/preprocessing/console" )
                         .done(function( data ) {
@@ -56,19 +64,20 @@
                             $('.console pre').html(consoleOutput);
                         })
                         .fail(function( data ) {
-                            //TODO: Error handling
+                            $('.console pre').html("ERROR: Failed to load status").attr("class", "red-text");
                         })
 
                         // Terminate interval loop
                         if( data >= 100 ) {
                             inProgress = false;
                             clearInterval(progressInterval);
+                            $('.status span').html("Completed").attr("class", "green-text");
                         }
                     })
                     .fail(function( data ) {
                         inProgress = false;
                         clearInterval(progressInterval);
-                        //TODO: Error handling
+                        $('.status span').html("ERROR: Failed to load status").attr("class", "red-text");
                     })
                 }
                 // Initial call to set progress variable
@@ -77,7 +86,7 @@
 
                 $("button").click(function() {
                     if( inProgress === true ) {
-                        //TODO: Error handling
+                        $('#modal_inprogress').modal('open');
                     }
                     else {
                         // Show status view
@@ -85,7 +94,7 @@
 
                         $.post( "ajax/preprocessing/execute?" + jQuery.param(getParams()) )
                         .fail(function( data ) {
-                            //TODO: Error handling
+                            $('.status span').html("ERROR: Error during process execution").attr("class", "red-text");
                         })
 
                         // Update preprocessing status. Interval will be terminated in
@@ -229,6 +238,7 @@
                      <li>
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
                         <div class="collapsible-body">
+                            <div class="status"><p>Status: <span>No Preprocessing process running</span></p></div>
                             <div class="progress">
                                 <div class="determinate"></div>
                             </div>
@@ -236,6 +246,20 @@
                         </div>
                     </li>
                 </ul>
+
+                <!-- In progress information -->
+                <div id="modal_inprogress" class="modal">
+                    <div class="modal-content">
+                        <h4>Information</h4>
+                        <p>
+                            There already exists an ongoing Preprocessing process.<br/>
+                            Please wait until the currenct one is finished or cancel it.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
 
                 <button class="btn waves-effect waves-light" type="submit" name="action">
                     Start
