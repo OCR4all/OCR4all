@@ -14,7 +14,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.exec.ExecuteException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -126,7 +125,6 @@ public class PreprocessingController {
      * @param response Response to the request
      * @return
      */
-
     @RequestMapping(value = "/ajax/preprocessing/console" , method = RequestMethod.GET)
     public @ResponseBody String jsonConsole( 
                 HttpSession session, HttpServletResponse response

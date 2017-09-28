@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FilenameUtils;
@@ -25,12 +24,31 @@ public class PreprocessingHelper {
      * Object to access project directory configuration
      */
     private ProjectDirConfig projDirConf;
-    private int progress = -1;
-    private List<InputStream> streams = new ArrayList<InputStream>();
-    private DefaultExecutor executor; 
-    private ExecuteWatchdog watchdog; 
-    private boolean stop = false;
 
+    /**
+     * Progress of the process
+     */
+    private int progress = -1;
+
+    /**
+     * Streams, which handle the console output
+     */
+    private List<InputStream> streams = new ArrayList<InputStream>();
+
+    /**
+     * Object to execute external commands
+     */
+    private DefaultExecutor executor; 
+
+    /**
+     * Object, which observes the process
+     */
+    private ExecuteWatchdog watchdog;
+
+    /**
+     * status if the process should be cancelled
+     */
+    private boolean stop = false;
 
     /**
      * Constructor
@@ -40,6 +58,7 @@ public class PreprocessingHelper {
     public PreprocessingHelper(String projectDir) {
         projDirConf = new ProjectDirConfig(projectDir);
         executor = new DefaultExecutor();
+        // Exitcode 143 added to avoid, when the process is canceled that an error is thrown
         executor.setExitValues(new int[] { 0, 1, 143 });
         watchdog = new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);
         executor.setWatchdog(watchdog);
