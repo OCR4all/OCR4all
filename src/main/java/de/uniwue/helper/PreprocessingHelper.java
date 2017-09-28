@@ -1,6 +1,5 @@
 package de.uniwue.helper;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +12,6 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import de.uniwue.config.ProjectDirConfig;
@@ -82,7 +80,7 @@ public class PreprocessingHelper {
             cmdLine.addArgument(arg);
         }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        executor.setStreamHandler(new PumpStreamHandler(os, os));
+        executor.setStreamHandler(new PumpStreamHandler(os));
         executor.execute(cmdLine);
 
         streams.add(os.toInputStream());
