@@ -78,6 +78,21 @@ public class PreprocessingController {
 
     }
 
+    @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.GET)
+    public @ResponseBody void cancelPreprocessing(
+           HttpSession session, HttpServletResponse response
+           ) throws IOException {
+        String projectDir = (String) session.getAttribute("projectDir");
+        
+        if (projectDir == null || projectDir.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
+        session.setAttribute("preproHelper", preproHelper);
+        preproHelper.cancelPreprocessAllPages();
+
+    }
+
     /**
      * Response to the request to return the progress status of the preprocess service
      *
@@ -97,6 +112,7 @@ public class PreprocessingController {
             return preproHelper.getProgress();
         }
     }
+
     /**
      * Response to the request to return the commandline output of the preprocess service
      *
@@ -116,7 +132,7 @@ public class PreprocessingController {
             Reader reader = new InputStreamReader(input);
             BufferedReader r = new BufferedReader(reader);
             while (r.readLine() != null) {
-                cmdOutput = cmdOutput +r.readLine();
+                cmdOutput = cmdOutput +r.readLine() + System.lineSeparator();
             }
             r.close();
         }

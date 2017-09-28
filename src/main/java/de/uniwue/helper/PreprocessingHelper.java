@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -25,6 +26,10 @@ public class PreprocessingHelper {
     private ProjectDirConfig projDirConf;
     private int progress = -1;
     private List<InputStream> streams = new ArrayList<InputStream>();
+    private DefaultExecutor executor; 
+    private ExecuteWatchdog watchdog; 
+
+
     /**
      * Constructor
      *
@@ -32,6 +37,9 @@ public class PreprocessingHelper {
      */
     public PreprocessingHelper(String projectDir) {
         projDirConf = new ProjectDirConfig(projectDir);
+        executor = new DefaultExecutor();
+        watchdog = new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);
+        executor.setWatchdog(watchdog);
     }
 
     /**
@@ -49,7 +57,6 @@ public class PreprocessingHelper {
         for(String arg : args) {
             cmdLine.addArgument(arg);
         }
-        DefaultExecutor executor = new DefaultExecutor();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         executor.setStreamHandler(new PumpStreamHandler(os));
         executor.execute(cmdLine);
@@ -93,7 +100,8 @@ public class PreprocessingHelper {
         File[] pageFiles = origDir.listFiles((d, name) -> name.endsWith(projDirConf.IMG_EXT));
         Arrays.sort(pageFiles);
         int totalPages = pageFiles.length;
-        double i = 0;
+        double i = 1;
+        progress = 1;
         for(File pageFile : pageFiles) {
             //TODO: Check if nmr_image exists (When not a binary-only project)
             File binImg = new File(projDirConf.BINR_IMG_DIR + pageFile.getName());
@@ -104,6 +112,7 @@ public class PreprocessingHelper {
         }
         return;
     }
+
     /**
      * Returns the InputStreams of the commandLine output
      * @return Returns the InputStreams of the commandLine output
@@ -118,6 +127,12 @@ public class PreprocessingHelper {
      */
     public int getProgress() {
         return progress;
+    }
+
+    public void cancelPreprocessAllPages() {
+            if(watchdog.isWatching()) {
+                watchdog.destroyProcess();
+            }
     }
 
 }
