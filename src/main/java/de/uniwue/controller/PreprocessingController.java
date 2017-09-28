@@ -14,6 +14,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -63,19 +64,15 @@ public class PreprocessingController {
            HttpSession session, HttpServletResponse response
            ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
-
+        
+        List<String> args;
+        if (cmdArgs == null)
+           args = new ArrayList<String>();
+        else
+            args = Arrays.asList(cmdArgs);
         if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-
-        List<String> args;
-        if (cmdArgs == null) {
-           args = new ArrayList<String>();
-        }
-        else {
-            args = Arrays.asList(cmdArgs);
-        }
-
         PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
         session.setAttribute("preproHelper", preproHelper);
         preproHelper.preprocessAllPages(args);
@@ -94,10 +91,10 @@ public class PreprocessingController {
            HttpSession session, HttpServletResponse response
            ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
-
-        if (projectDir == null || projectDir.isEmpty())
+        
+        if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
+        }
         PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
         preproHelper.cancelPreprocessAllPages();
     }
@@ -114,11 +111,12 @@ public class PreprocessingController {
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
 
-        if (session.getAttribute("preproHelper") == null)
+        if (session.getAttribute("preproHelper") == null) 
             return -1;
-
-        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-        return preproHelper.getProgress();
+        else {
+            PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
+            return preproHelper.getProgress();
+        }
     }
 
     /**
@@ -128,6 +126,7 @@ public class PreprocessingController {
      * @param response Response to the request
      * @return
      */
+
     @RequestMapping(value = "/ajax/preprocessing/console" , method = RequestMethod.GET)
     public @ResponseBody String jsonConsole( 
                 HttpSession session, HttpServletResponse response
@@ -136,12 +135,7 @@ public class PreprocessingController {
         if (session.getAttribute("preproHelper") != null) {
             PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
             InputStream input = new SequenceInputStream(Collections.enumeration(preproHelper.getStreams()));
-            Reader reader = new InputStreamReader(input);
-            BufferedReader r = new BufferedReader(reader);
-            while (r.readLine() != null) {
-                cmdOutput = cmdOutput +r.readLine() + System.lineSeparator();
-            }
-            r.close();
+            cmdOutput = IOUtils.toString(input, "UTF-8");
         }
         return cmdOutput;
     }
