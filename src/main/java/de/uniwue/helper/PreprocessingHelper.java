@@ -46,7 +46,7 @@ public class PreprocessingHelper {
     private ExecuteWatchdog watchdog;
 
     /**
-     * status if the process should be cancelled
+     * Status if the process should be cancelled
      */
     private boolean stop = false;
 
@@ -86,6 +86,7 @@ public class PreprocessingHelper {
 
         // Hardcoded 0001 because of Ocropus naming convention. We call "ocropus-nlbin"
         // for each file individually and given images are named with incremented numbers.
+
         File binImg = new File(projDirConf.PREPROC_DIR + "0001" + projDirConf.BIN_IMG_EXT);
         if (binImg.exists())
             binImg.renameTo(new File(projDirConf.BINR_IMG_DIR + pageId + projDirConf.IMG_EXT));
@@ -93,6 +94,7 @@ public class PreprocessingHelper {
         File grayImg = new File(projDirConf.PREPROC_DIR + "0001" + projDirConf.GRAY_IMG_EXT);
         if (grayImg.exists())
             grayImg.renameTo(new File(projDirConf.GRAY_IMG_DIR + pageId + projDirConf.IMG_EXT));
+
         return;
     }
 
@@ -130,6 +132,7 @@ public class PreprocessingHelper {
                 progress = -1;
                 return;
             }
+
             //TODO: Check if nmr_image exists (When not a binary-only project)
             File binImg = new File(projDirConf.BINR_IMG_DIR + pageFile.getName());
             if(!binImg.exists())
@@ -142,6 +145,7 @@ public class PreprocessingHelper {
 
     /**
      * Returns the InputStreams of the commandLine output
+     *
      * @return Returns the InputStreams of the commandLine output
      */
     public List<InputStream> getStreams() {
@@ -150,6 +154,7 @@ public class PreprocessingHelper {
 
     /**
      * Returns the progress of the job
+     *
      * @return progress of preprocessAllPages function
      */
     public int getProgress() {
@@ -157,13 +162,12 @@ public class PreprocessingHelper {
     }
 
     /**
-     *  Cancels the preprocessAllPages process
+     * Cancels the preprocessAllPages process
      */
     public void cancelPreprocessAllPages() {
-            if(watchdog.isWatching()) {
-                stop = true;
-                watchdog.destroyProcess();
-            }
+        if (watchdog.isWatching()) {
+            stop = true;
+            watchdog.destroyProcess();
+        }
     }
-
 }

@@ -63,15 +63,19 @@ public class PreprocessingController {
            HttpSession session, HttpServletResponse response
            ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
-        
-        List<String> args;
-        if (cmdArgs == null)
-           args = new ArrayList<String>();
-        else
-            args = Arrays.asList(cmdArgs);
+
         if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
+        List<String> args;
+        if (cmdArgs == null) {
+           args = new ArrayList<String>();
+        }
+        else {
+            args = Arrays.asList(cmdArgs);
+        }
+
         PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
         session.setAttribute("preproHelper", preproHelper);
         preproHelper.preprocessAllPages(args);
@@ -90,10 +94,10 @@ public class PreprocessingController {
            HttpSession session, HttpServletResponse response
            ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
-        
-        if (projectDir == null || projectDir.isEmpty()) {
+
+        if (projectDir == null || projectDir.isEmpty())
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
+
         PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
         preproHelper.cancelPreprocessAllPages();
     }
@@ -110,12 +114,11 @@ public class PreprocessingController {
                 HttpSession session, HttpServletResponse response
             ) throws IOException {
 
-        if (session.getAttribute("preproHelper") == null) 
+        if (session.getAttribute("preproHelper") == null)
             return -1;
-        else {
-            PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-            return preproHelper.getProgress();
-        }
+
+        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
+        return preproHelper.getProgress();
     }
 
     /**
