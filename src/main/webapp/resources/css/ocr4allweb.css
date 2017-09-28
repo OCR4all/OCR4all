@@ -76,3 +76,11 @@ table.compact * {
   background-color: #c7cfff;
   height: 20px;
 }
+
+/* Console log pre tag */
+.console pre {
+  display: none;
+  height: 400px;
+  overflow-y: scroll;
+  background-color: #d3d3d3;
+}

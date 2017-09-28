@@ -8,7 +8,7 @@
                 var progressInterval = null;
                 var consoleOutput = "";
 
-                // Init inprogress modal
+                // Initialize modals
                 $('.modal').modal();
 
                 // Fetch all modified parameters and return them appropriately
@@ -61,7 +61,10 @@
                         $.get( "ajax/preprocessing/console" )
                         .done(function( data ) {
                             consoleOutput += data;
-                            $('.console pre').html(consoleOutput);
+                            $('.console pre').html(consoleOutput).show();
+                            // Scroll to bottom if user does not mouseover
+                            if( !$('.console pre').is(":hover") )
+                                $('.console pre').scrollTop($('.console pre').prop("scrollHeight"));
                         })
                         .fail(function( data ) {
                             $('.console pre').html("ERROR: Failed to load status").attr("class", "red-text");
@@ -84,7 +87,7 @@
                 updateStatus(true);
                 progressInterval = setInterval(updateStatus, 1000);
 
-                $("button").click(function() {
+                $("#execute").click(function() {
                     if( inProgress === true ) {
                         $('#modal_inprogress').modal('open');
                     }
@@ -100,6 +103,21 @@
                         // Update preprocessing status. Interval will be terminated in
                         // updateProgressBar(), if process is finished.
                         progressInterval = setInterval(updateStatus, 1000);
+                    }
+                });
+
+                $("#cancel").click(function() {
+                    if( inProgress !== true ) {
+                        $('#modal_noprocess').modal('open');
+                    }
+                    else {
+                        $.post( "ajax/preprocessing/cancel" )
+                        .done(function( data ) {
+                            $('#modal_successfulcancel').modal('open');
+                        })
+                        .fail(function( data ) {
+                            $('#modal_failcancel').modal('open');
+                        })
                     }
                 });
             });
@@ -235,7 +253,7 @@
                             </table>
                         </div>
                     </li>
-                     <li>
+                    <li>
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Preprocessing process running</span></p></div>
@@ -247,24 +265,58 @@
                     </li>
                 </ul>
 
+                <button id="execute" class="btn waves-effect waves-light">
+                    Execute
+                    <i class="material-icons right">chevron_right</i>
+                </button>
+                <button id="cancel" class="btn waves-effect waves-light">
+                    Cancel
+                    <i class="material-icons right">cancel</i>
+                </button>
+
                 <!-- In progress information -->
                 <div id="modal_inprogress" class="modal">
                     <div class="modal-content">
                         <h4>Information</h4>
                         <p>
                             There already exists an ongoing Preprocessing process.<br/>
-                            Please wait until the currenct one is finished or cancel it.
+                            Please wait until the current one is finished or cancel it.
                         </p>
                     </div>
                     <div class="modal-footer">
                         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                     </div>
                 </div>
-
-                <button class="btn waves-effect waves-light" type="submit" name="action">
-                    Start
-                    <i class="material-icons right">send</i>
-                </button>
+                <!-- No current process information -->
+                <div id="modal_noprocess" class="modal">
+                    <div class="modal-content">
+                        <h4>Information</h4>
+                        <p>There exists no ongoing Preprocessing process.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
+                <!-- Successful cancel information -->
+                <div id="modal_successfulcancel" class="modal">
+                    <div class="modal-content">
+                        <h4>Information</h4>
+                        <p>The Preprocessing process was cancelled successfully.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
+                <!-- Failed cancel information -->
+                <div id="modal_failcancel" class="modal">
+                    <div class="modal-content red-text">
+                        <h4>Error</h4>
+                        <p>The Preprocessing process could not be cancelled.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
             </div>
         </div>
     </t:body>
