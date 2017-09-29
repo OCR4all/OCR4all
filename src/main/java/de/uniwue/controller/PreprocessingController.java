@@ -136,7 +136,7 @@ public class PreprocessingController {
         String cmdOutput = "";
         if (session.getAttribute("preproHelper") != null) {
             PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-            InputStream input = new SequenceInputStream(Collections.enumeration(preproHelper.getStreams()));
+            InputStream input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHelper().getStreams()));
             cmdOutput = IOUtils.toString(input, "UTF-8");
         }
         return cmdOutput;

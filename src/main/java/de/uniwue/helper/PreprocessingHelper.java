@@ -2,17 +2,11 @@ package de.uniwue.helper;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import de.uniwue.config.ProjectDirConfig;
 
@@ -31,24 +25,14 @@ public class PreprocessingHelper {
     private int progress = -1;
 
     /**
-     * Streams, which handle the console output
-     */
-    private List<InputStream> streams = new ArrayList<InputStream>();
-
-    /**
-     * Object to execute external commands
-     */
-    private DefaultExecutor executor; 
-
-    /**
-     * Object, which observes the process
-     */
-    private ExecuteWatchdog watchdog;
-
-    /**
      * Status if the process should be cancelled
      */
     private boolean stop = false;
+
+    /**
+     * Helper, who is managing the process
+     */
+    ProcessHelper processHelper;
 
     /**
      * Constructor
@@ -57,11 +41,8 @@ public class PreprocessingHelper {
      */
     public PreprocessingHelper(String projectDir) {
         projDirConf = new ProjectDirConfig(projectDir);
-        executor = new DefaultExecutor();
-        // Exitcode 143 added to avoid, when the process is canceled that an error is thrown
-        executor.setExitValues(new int[] { 0, 1, 143 });
-        watchdog = new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);
-        executor.setWatchdog(watchdog);
+        processHelper = new ProcessHelper();
+
     }
 
     /**
@@ -72,21 +53,16 @@ public class PreprocessingHelper {
      * @throws IOException
      */
     public void preprocessPage(String pageId,List<String> args) throws IOException {
-        CommandLine cmdLine = new CommandLine("ocropus-nlbin");
-        cmdLine.addArgument(projDirConf.ORIG_IMG_DIR + pageId + projDirConf.IMG_EXT);
-        cmdLine.addArgument("-o");
-        cmdLine.addArgument(projDirConf.PREPROC_DIR);
+        List<String> cpArgs = new ArrayList<String>(); 
+        cpArgs.add(projDirConf.ORIG_IMG_DIR + pageId + projDirConf.IMG_EXT);
+        cpArgs.add("-o");
+        cpArgs.add(projDirConf.PREPROC_DIR);
         for(String arg : args) {
-            cmdLine.addArgument(arg);
+            cpArgs.add(arg);
         }
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        executor.setStreamHandler(new PumpStreamHandler(os));
-        executor.execute(cmdLine);
-
-        streams.add(os.toInputStream());
-
-        // Hardcoded 0001 because of Ocropus naming convention. We call "ocropus-nlbin"
-        // for each file individually and given images are named with incremented numbers.
+        processHelper.setCommandLine("ocropus-nlbin", cpArgs);
+        processHelper.setConsoleOutput(true);
+        processHelper.start();
 
         File binImg = new File(projDirConf.PREPROC_DIR + "0001" + projDirConf.BIN_IMG_EXT);
         if (binImg.exists())
@@ -145,15 +121,6 @@ public class PreprocessingHelper {
     }
 
     /**
-     * Returns the InputStreams of the commandLine output
-     *
-     * @return Returns the InputStreams of the commandLine output
-     */
-    public List<InputStream> getStreams() {
-        return streams;
-    }
-
-    /**
      * Returns the progress of the job
      *
      * @return progress of preprocessAllPages function
@@ -162,13 +129,16 @@ public class PreprocessingHelper {
         return progress;
     }
 
+    public ProcessHelper getProcessHelper() {
+        return processHelper;
+    }
+
     /**
      * Cancels the preprocessAllPages process
      */
     public void cancelPreprocessAllPages() {
-        if (watchdog.isWatching()) {
+        if (processHelper.cancelProcess() == true) {
             stop = true;
-            watchdog.destroyProcess();
         }
     }
 }
