@@ -11,6 +11,8 @@
             $(document).ready(function() {
                 $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
+                        if( !$('.collapsible').find('li').eq(0).hasClass('active') )
+                            $('.collapsible').collapsible('open', 0);
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
@@ -24,7 +26,11 @@
                                 "type"   : "GET",
                                 "url"    : "ajax/overview/list?" + "projectDir=" + $('#projectDir').val() + "&imageType=" + $('#imageType').val(),
                                 "dataSrc": function (data) { return data; },
-                                "error"  : function() { $('#projectDir').addClass('invalid'); }
+                                "error"  : function() {
+                                    if( !$('.collapsible').find('li').eq(0).hasClass('active') )
+                                        $('.collapsible').collapsible('open', 0);
+                                    $('#projectDir').addClass('invalid');
+                                }
                             },
                             columns: [
                                 { title: "Page Identifier", data: "pageId" },
@@ -46,6 +52,8 @@
                                 });
                             },
                             initComplete: function() {
+                                if( !$('.collapsible').find('li').eq(1).hasClass('active') )
+                                    $('.collapsible').collapsible('open', 1);
                                 // Update overview continuously
                                 setInterval( function() {
                                     overviewTable.ajax.reload(null, false);
@@ -58,6 +66,8 @@
                 // Trigger overview table fetching on pageload
                 if( $.trim($('#projectDir').val()).length !== 0 ) {
                     $("button").trigger( "click" );
+                } else {
+                    $('.collapsible').collapsible('open', 0);
                 }
 
                 // Initialize select form
@@ -70,34 +80,61 @@
     <t:body heading="Project Overview">
         <div class="container">
             <div class="section">
-                <div class="row">
-                    <div class="input-field col s6">
-                        <i class="material-icons prefix">folder</i>
-                        <input id="projectDir" name="projectDir" type="text" class="validate" value="${projectDir}">
-                        <label for="projectDir" data-error="Directory path is empty or could not be accessed on the filesystem">Project directory path</label>
-                    </div>
-                    <div class="input-field col s3">
-                        <c:choose>
-                            <c:when test='${imageType == "Gray"}'><c:set value='selected="selected"' var="graySel"></c:set></c:when>
-                            <c:otherwise><c:set value='selected="selected"' var="binarySel"></c:set></c:otherwise>
-                        </c:choose>
-                        <i class="material-icons prefix">image</i>
-                        <select id="imageType" name="imageType">
-                            <option value="Binary" ${binarySel}>Binary</option>
-                            <option value="Gray" ${graySel}>Gray</option>
-                        </select>
-                        <label>Project image type</label>
-                    </div>
-                    <div class="input-field col s3">
-                        <button class="btn waves-effect waves-light right" type="submit" name="action">
-                            Load
-                            <i class="material-icons right">send</i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="section">
-                <table id="overviewTable" class="display centered" width="100%"></table>
+                <ul class="collapsible" data-collapsible="accordion">
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
+                        <div class="collapsible-body">
+                            <table class="compact">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <p>
+                                                Project directory path
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <div class="input-field">
+                                                <i class="material-icons prefix">folder</i>
+                                                <input id="projectDir" type="text" class="validate suffix" value="${projectDir}" />
+                                                <label for="projectDir" data-error="Directory path is empty or could not be accessed on the filesystem"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Project image type</p>
+                                        </td>
+                                        <td>
+                                            <div class="input-field col s3">
+                                                <i class="material-icons prefix">image</i>
+                                                <c:choose>
+                                                    <c:when test='${imageType == "Gray"}'><c:set value='selected="selected"' var="graySel"></c:set></c:when>
+                                                    <c:otherwise><c:set value='selected="selected"' var="binarySel"></c:set></c:otherwise>
+                                                </c:choose>
+                                                <select id="imageType" name="imageType" class="suffix">
+                                                    <option value="Binary" ${binarySel}>Binary</option>
+                                                    <option value="Gray" ${graySel}>Gray</option>
+                                                </select>
+                                                <label></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">dehaze</i>Overview</div>
+                        <div class="collapsible-body">
+                            <table id="overviewTable" class="display centered" width="100%"></table>
+                        </div>
+                    </li>
+                </ul>
+
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                    Load
+                    <i class="material-icons right">send</i>
+                </button>
             </div>
         </div>
     </t:body>

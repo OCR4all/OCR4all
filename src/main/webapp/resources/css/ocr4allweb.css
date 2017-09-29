@@ -66,9 +66,15 @@ img.centered {
 }
 
 /* Table modifiers */
-table.compact * {
-  padding: 0px !important;
-  margin:  5px !important;
+table.compact td, table.compact div, table.compact p {
+  padding: 0px;
+  margin:  5px;
+}
+table.compact .prefix {
+  padding-top: 0.5rem;
+}
+table.compact .suffix {
+  margin-left: 3rem;
 }
 
 /* Progress bar adjustments */
