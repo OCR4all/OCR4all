@@ -11,6 +11,26 @@
                 // Initialize modals
                 $('.modal').modal();
 
+                // Error handling for parameter input fields
+                $('input[type="text"]').on('change', function() {
+                    var num = $(this).val();
+                    if( !$.isNumeric(num) ){
+                        if( num !== "" ) {
+                            $(this).addClass('invalid').focus();
+                        }
+                        else {
+                            $(this).removeClass('invalid');
+                        }
+                    }
+                    else if( Math.floor(num) != num ) {
+                        if( $(this).attr('data-type') === "int" ) 
+                            $(this).addClass('invalid').focus();
+                    }
+                    else {
+                        $(this).removeClass('invalid');
+                    }
+                });
+
                 // Fetch all modified parameters and return them appropriately
                 function getParams() {
                     var params = { 'cmdArgs': [] };
@@ -96,6 +116,11 @@
                         $('#modal_inprogress').modal('open');
                     }
                     else {
+                        if( $('input[type="text"]').hasClass('invalid') ){
+                            $('#modal_errorhandling').modal('open');	
+                            return;
+                        }
+
                         // Show status view
                         if( !$('.collapsible').find('li').eq(1).hasClass('active') )
                             $('.collapsible').collapsible('open', 1);
@@ -159,7 +184,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--threshold" type="text" />
-                                                <label for="--threshold">Default: 0.5</label>
+                                                <label for="--threshold" data-type="float" data-error="Has to be float (. sep)">Default: 0.5 (Float value)</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -168,7 +193,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--zoom" type="text" />
-                                                <label for="--zoom">Default: 0.5</label>
+                                                <label for="--zoom" data-type="float" data-error="Has to be float (. sep)">Default: 0.5 (Float value)</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -177,16 +202,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--escale" type="text" />
-                                                <label for="--escale">Default: 1.0</label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><p>Scale for estimating a mask over the text region</p></td>
-                                        <td>
-                                            <div class="input-field">
-                                                <input id="--escale" type="text" />
-                                                <label for="--escale">Default: 1.0</label>
+                                                <label for="--escale" data-type="float" data-error="Has to be float (. sep)">Default: 1.0 (Float value)</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -195,7 +211,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--bignore" type="text" />
-                                                <label for="--bignore">Default: 0.1</label>
+                                                <label for="--bignore" data-type="float" data-error="Has to be float (. sep)">Default: 0.1 (Float value)</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -204,7 +220,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--perc" type="text" />
-                                                <label for="--perc">Default: 80</label>
+                                                <label for="--perc" data-type="float" data-error="Has to be float (. sep)">Default: 80 (Float value))</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -213,7 +229,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--range" type="text" />
-                                                <label for="--range">Default: 20</label>
+                                                <label for="--range" data-type="int" data-error="Has to be integer">Default: 20 (Integer value)</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -222,7 +238,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--maxskew" type="text" />
-                                                <label for="--maxskew">Default: 2</label>
+                                                <label for="--maxskew" data-type="float" data-error="Has to be float (. sep)">Default: 2 (Float value)</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -240,7 +256,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--lo" type="text" />
-                                                <label for="--lo">Default: 5</label>
+                                                <label for="--lo" data-type="float" data-error="Has to be float (. sep)">Default: 5 (Float value)</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -249,7 +265,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--hi" type="text" />
-                                                <label for="--hi">Default: 90</label>
+                                                <label for="--hi" data-type="float" data-error="Has to be float (. sep)">Default: 90 (Float value)</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -258,7 +274,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--skewsteps" type="text" />
-                                                <label for="--skewsteps">Default: 8</label>
+                                                <label for="--skewsteps" data-type="int" data-error="Has to be integer">Default: 8 (Integer value)</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -292,8 +308,21 @@
                     <div class="modal-content">
                         <h4>Information</h4>
                         <p>
-                            There already exists an ongoing Preprocessing process.<br/>
-                            Please wait until the current one is finished or cancel it.
+                            There are errors in your settings input.<br/>
+                            Please resolve them and try again.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
+                <!-- Error handling-->
+                <div id="modal_errorhandling" class="modal">
+                    <div class="modal-content">
+                        <h4>Information</h4>
+                        <p>
+                            There exists an error in the input.<br/>
+                            Please fix it and try again.
                         </p>
                     </div>
                     <div class="modal-footer">
