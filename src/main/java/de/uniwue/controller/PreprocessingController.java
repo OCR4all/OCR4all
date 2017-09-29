@@ -76,8 +76,11 @@ public class PreprocessingController {
 
         PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
         session.setAttribute("preproHelper", preproHelper);
-        preproHelper.preprocessAllPages(args);
-
+        try {
+            preproHelper.preprocessAllPages(args);
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

@@ -102,6 +102,8 @@
 
                         $.post( "ajax/preprocessing/execute?" + jQuery.param(getParams()) )
                         .fail(function( data ) {
+                            inProgress = false;
+                            clearInterval(progressInterval);
                             $('.status span').html("ERROR: Error during process execution").attr("class", "red-text");
                         })
 
@@ -118,10 +120,15 @@
                     else {
                         $.post( "ajax/preprocessing/cancel" )
                         .done(function( data ) {
-                            $('#modal_successfulcancel').modal('open');
+                            inProgress = false;
+                            clearInterval(progressInterval);
                             $('.status span').html("No Preprocessing process running").attr("class", "");
+                            $('#modal_successfulcancel').modal('open');
                         })
                         .fail(function( data ) {
+                            inProgress = false;
+                            clearInterval(progressInterval);
+                            $('.status span').html("ERROR: Error during process cancelling").attr("class", "red-text");
                             $('#modal_failcancel').modal('open');
                         })
                     }
