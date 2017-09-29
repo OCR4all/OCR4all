@@ -50,8 +50,8 @@ public class ProcessHelper {
         executor.setExitValues(new int[] { 0, 1, 143 });
         watchdog = new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);
         executor.setWatchdog(watchdog);
-        
     }
+
     /**
      * Sets the Command Line
      */
@@ -61,6 +61,7 @@ public class ProcessHelper {
             cmdLine.addArgument(arg);
         }
     }
+
     /**
      * Starts the process
      */
@@ -74,6 +75,7 @@ public class ProcessHelper {
         else 
             executor.execute(cmdLine);
     }
+
     /**
      * Sets the ConsoleOutput
      */
@@ -84,7 +86,7 @@ public class ProcessHelper {
     /**
      * Cancels the process
      */
-    public boolean cancelProcess() {
+    public boolean stop() {
         if (watchdog.isWatching()) {
             watchdog.destroyProcess();
            return true;

@@ -129,6 +129,10 @@ public class PreprocessingHelper {
         return progress;
     }
 
+    /**
+     * Handles the process
+     * @return Returns the process Helper
+     */
     public ProcessHelper getProcessHelper() {
         return processHelper;
     }
@@ -137,7 +141,7 @@ public class PreprocessingHelper {
      * Cancels the preprocessAllPages process
      */
     public void cancelPreprocessAllPages() {
-        if (processHelper.cancelProcess() == true) {
+        if (processHelper.stop() == true) {
             stop = true;
         }
     }
