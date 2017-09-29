@@ -9,54 +9,49 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                var updateInterval = null;
-
                 $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
-                        $.get( "ajax/overview/list", { "projectDir": $('#projectDir').val(), "imageType": $('#imageType').val() } )
-                        .done(function( data ) {
-                            // Allow reinitializing DataTable with new data
-                            if( $.fn.DataTable.isDataTable("#overviewTable") ) {
-                                $('#overviewTable').DataTable().clear().destroy();
-                            }
+                        // Allow reinitializing DataTable with new data
+                        if( $.fn.DataTable.isDataTable("#overviewTable") ) {
+                            $('#overviewTable').DataTable().clear().destroy();
+                        }
 
-                            var overviewTable = $('#overviewTable').DataTable( {
-                                ajax: data.json,
-                                data: data,
-                                columns: [
-                                    { title: "Page Identifier", data: "pageId" },
-                                    { title: "Preprocessed", data: "preprocessed" },
-                                    { title: "Segmented", data: "segmented" },
-                                    { title: "Segments Extracted", data: "segmentsExtracted" },
-                                    { title: "Lines Extracted", data: "linesExtracted" },
-                                    { title: "Has GT", data: "hasGT" },
-                                ],
-                                createdRow: function( row, data, index ){
-                                    $('td:first-child', row).html('<a href="pageOverview?pageId=' + data.pageId + '">' + data.pageId + '</a>');
-                                    $.each( $('td:not(:first-child)', row), function( idx, td ) {
-                                        if( $(td).html() === 'true' ) {
-                                            $(td).html('<i class="material-icons green-text">check</i>');
-                                        }
-                                        else {
-                                            $(td).html('<i class="material-icons red-text">clear</i>');
-                                        }
-                                    });
-                                }
-                            });
-
-                            // Update overview continuously
-                            if( updateInterval === null ) {
-                                updateInterval = setInterval( function () {
-                                    $("button").click();
-                                }, 10000 );
-                            }
-                        })
-                        .fail(function( data ) {
-                            $('#projectDir').addClass('invalid');
-                        })
+                        var overviewTable = $('#overviewTable').DataTable( {
+                            ajax : {
+                                "type"   : "GET",
+                                "url"    : "ajax/overview/list?" + "projectDir=" + $('#projectDir').val() + "&imageType=" + $('#imageType').val(),
+                                "dataSrc": function (data) { return data; },
+                                "error"  : function() { $('#projectDir').addClass('invalid'); }
+                            },
+                            columns: [
+                                { title: "Page Identifier", data: "pageId" },
+                                { title: "Preprocessed", data: "preprocessed" },
+                                { title: "Segmented", data: "segmented" },
+                                { title: "Segments Extracted", data: "segmentsExtracted" },
+                                { title: "Lines Extracted", data: "linesExtracted" },
+                                { title: "Has GT", data: "hasGT" },
+                            ],
+                            createdRow: function( row, data, index ){
+                                $('td:first-child', row).html('<a href="pageOverview?pageId=' + data.pageId + '">' + data.pageId + '</a>');
+                                $.each( $('td:not(:first-child)', row), function( idx, td ) {
+                                    if( $(td).html() === 'true' ) {
+                                        $(td).html('<i class="material-icons green-text">check</i>');
+                                    }
+                                    else {
+                                        $(td).html('<i class="material-icons red-text">clear</i>');
+                                    }
+                                });
+                            },
+                            initComplete: function() {
+                                // Update overview continuously
+                                setInterval( function() {
+                                    overviewTable.ajax.reload(null, false);
+                                }, 10000);
+                            },
+                        });
                     }
                 });
 
