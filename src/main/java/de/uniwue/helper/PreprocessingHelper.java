@@ -114,7 +114,7 @@ public class PreprocessingHelper {
             File binImg = new File(projDirConf.BINR_IMG_DIR + pageFile.getName());
             if(!binImg.exists())
                 preprocessPage(FilenameUtils.removeExtension(pageFile.getName()),args);
-            progress = (int) (i/totalPages*100);
+            progress = (int) (i / totalPages * 100);
             i = i+1;
         }
         return;

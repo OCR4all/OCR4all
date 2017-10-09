@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.im4java.core.IM4JavaException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import de.uniwue.helper.ImageHelper;
+
 
 /**
  * Controller class for image based request/response functionality
@@ -28,12 +30,15 @@ public class ImageController {
      * @param session Session of the user
      * @param response Response to the request
      * @return Returns the required image as a base64 string
+     * @throws IM4JavaException 
+     * @throws InterruptedException 
+     * @throws MagickException 
      */
     @RequestMapping(value = "/ajax/image/page", method = RequestMethod.GET)
     public @ResponseBody String getImageOfPage(
                 @RequestParam("pageId") String pageId,
                 @RequestParam("imageId") String imageId, HttpSession session, HttpServletResponse response
-            ) throws IOException {
+            ) throws IOException, InterruptedException, IM4JavaException {
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty() || pageId == null || pageId.isEmpty()
                 || imageId == null || imageId.isEmpty()) {
