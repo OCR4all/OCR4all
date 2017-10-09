@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.TreeMap;
+
+import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectDirConfig;
 
@@ -118,5 +121,32 @@ public class ImageHelper {
         if (f.exists())
             base64Image = encodeFileToBase64Binary(f);
         return base64Image;
+    }
+
+    /**
+     * Gets all pages of the project and the images of the given type encoded in base64
+     *
+     * @param imageType Type of the images in the list
+     * @return Map of page IDs with their images as base64 string
+     * @throws IOException
+     */
+    public TreeMap<String, String> getImageList(String imageType) throws IOException {
+        TreeMap<String, String> imageList = new TreeMap<String, String>();
+
+        String imagePath = null;
+        switch(imageType) {
+            case "Original":   imagePath = projDirConf.ORIG_IMG_DIR; break;
+            case "Binary":     imagePath = projDirConf.BINR_IMG_DIR; break;
+            case "Gray":       imagePath = projDirConf.GRAY_IMG_EXT; break;
+            case "Despeckled": imagePath = projDirConf.DESP_IMG_DIR; break;
+            default: break;
+        }
+
+        final File folder = new File(imagePath);
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isFile())
+                imageList.put(FilenameUtils.removeExtension(fileEntry.getName()), encodeFileToBase64Binary(fileEntry));
+        }
+        return imageList;
     }
 }

@@ -1,6 +1,7 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -124,5 +125,33 @@ public class ImageController {
         if (image64 == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return image64;
+    }
+
+    /**
+     * Response to the request to return a list of all binary images as base64 strings
+     *
+     * @param imageType Type of the images in the list
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns a list of page IDs with their images as base64 string
+     */
+    @RequestMapping(value = "/ajax/image/list", method = RequestMethod.GET)
+    public @ResponseBody TreeMap<String, String> getBinaryImageList(
+                @RequestParam("imageType") String imageType,
+                HttpSession session, HttpServletResponse response
+            ) throws IOException {
+        String projectDir = (String) session.getAttribute("projectDir");
+        if (projectDir == null || projectDir.isEmpty() || imageType == null || imageType.isEmpty())
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        TreeMap<String, String> imageList = new TreeMap<String, String>();
+        try {
+            ImageHelper imageHelper = new ImageHelper(projectDir);
+            imageList = imageHelper.getImageList("Binary");
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+
+        return imageList;
     }
 }
