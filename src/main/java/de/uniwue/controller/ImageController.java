@@ -1,6 +1,7 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -25,7 +26,6 @@ public class ImageController {
      * Response to the request to return the specified page image as base64 string
      *
      * @param pageId Identifier of the page (e.g 0002)
-     * @param segmentID Identifier of the segment (e.g 0002__000__paragraph)
      * @param imageId Image identifier (Original, Gray or Despeckled)
      * @param session Session of the user
      * @param response Response to the request
@@ -39,11 +39,13 @@ public class ImageController {
                 @RequestParam("pageId") String pageId,
                 @RequestParam("imageId") String imageId, HttpSession session, HttpServletResponse response
             ) throws IOException, InterruptedException, IM4JavaException {
+
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty() || pageId == null || pageId.isEmpty()
                 || imageId == null || imageId.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
@@ -51,9 +53,9 @@ public class ImageController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
+
         if (image64 == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
         return image64;
     }
 
@@ -78,6 +80,7 @@ public class ImageController {
                 || pageId == null || pageId.isEmpty() || imageId == null || imageId.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
@@ -85,9 +88,9 @@ public class ImageController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
+
         if (image64 == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
         return image64;
     }
 
@@ -115,6 +118,7 @@ public class ImageController {
                 || imageId == null || imageId.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
@@ -122,9 +126,37 @@ public class ImageController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
+
         if (image64 == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
         return image64;
+    }
+
+    /**
+     * Response to the request to return a list of all binary images as base64 strings
+     *
+     * @param imageType Type of the images in the list
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns a list of page IDs with their images as base64 string
+     */
+    @RequestMapping(value = "/ajax/image/list", method = RequestMethod.GET)
+    public @ResponseBody TreeMap<String, String> getBinaryImageList(
+                @RequestParam("imageType") String imageType,
+                HttpSession session, HttpServletResponse response
+            ) throws IOException {
+        String projectDir = (String) session.getAttribute("projectDir");
+        if (projectDir == null || projectDir.isEmpty() || imageType == null || imageType.isEmpty())
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        TreeMap<String, String> imageList = new TreeMap<String, String>();
+        try {
+            ImageHelper imageHelper = new ImageHelper(projectDir);
+            imageList = imageHelper.getImageList("Binary");
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+
+        return imageList;
     }
 }

@@ -30,13 +30,10 @@ public class PreprocessingController {
      * Response to the request to send the content of the /Preprocessing page
      *
      * @param session Session of the user
-     * @param response Response to the request
-     * @return Returns the content of the /Preprocessing page with the specific pageId
+     * @return Returns the content of the /Preprocessing page
      */
     @RequestMapping("/Preprocessing")
-    public ModelAndView showPreprocessing(
-                HttpSession session, HttpServletResponse response
-            ) throws IOException {
+    public ModelAndView showPreprocessing(HttpSession session) throws IOException {
         ModelAndView mv = new ModelAndView("preprocessing");
 
         String projectDir = (String)session.getAttribute("projectDir");
@@ -57,8 +54,8 @@ public class PreprocessingController {
      */
     @RequestMapping(value = "/ajax/preprocessing/execute", method = RequestMethod.POST)
     public @ResponseBody void executePreprocessing(
-           @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
-           HttpSession session, HttpServletResponse response
+               @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
+               HttpSession session, HttpServletResponse response
            ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
 
@@ -92,7 +89,7 @@ public class PreprocessingController {
      */
     @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancelPreprocessing(
-           HttpSession session, HttpServletResponse response
+               HttpSession session, HttpServletResponse response
            ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
 
@@ -107,13 +104,10 @@ public class PreprocessingController {
      * Response to the request to return the progress status of the preprocess service
      *
      * @param session Session of the user
-     * @param response Response to the request
      * @return
      */
     @RequestMapping(value = "/ajax/preprocessing/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonProgress( 
-                HttpSession session, HttpServletResponse response
-            ) throws IOException {
+    public @ResponseBody int jsonProgress(HttpSession session) throws IOException {
 
         if (session.getAttribute("preproHelper") == null)
             return -1;
@@ -126,13 +120,10 @@ public class PreprocessingController {
      * Response to the request to return the commandline output of the preprocess service
      *
      * @param session Session of the user
-     * @param response Response to the request
      * @return
      */
     @RequestMapping(value = "/ajax/preprocessing/console" , method = RequestMethod.GET)
-    public @ResponseBody String jsonConsole( 
-                HttpSession session, HttpServletResponse response
-            ) throws IOException {
+    public @ResponseBody String jsonConsole(HttpSession session) throws IOException {
         String cmdOutput = "";
         if (session.getAttribute("preproHelper") != null) {
             PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
@@ -141,5 +132,4 @@ public class PreprocessingController {
         }
         return cmdOutput;
     }
-
 }

@@ -90,3 +90,38 @@ table.compact .suffix {
   overflow-y: scroll;
   background-color: #d3d3d3;
 }
+
+/* List of images on the right */
+.image-list {
+  position: absolute;
+  left : auto;
+  right: -273px;
+  top: 122px;
+  overflow-y: auto;
+  height: auto;
+  height: -moz-calc(100% - 122px);
+  height: -webkit-calc(100% - 122px);
+  height: -o-calc(100% - 122px);
+  height: calc(100% - 122px);
+  padding-top: 10px !important;
+  text-align: center;
+}
+.image-list .heading {
+  font-size: 25px;
+  padding: 0 32px;
+}
+.image-list label {
+  margin-left: 10px;
+  padding-left: 30px;
+  height: 15px;
+}
+.image-list li {
+  padding-top: 15px;
+}
+.image-list li>a {
+  height: auto;
+  padding-bottom: 5px;
+}
+.includes-list {
+  padding-right: 260px;
+}
