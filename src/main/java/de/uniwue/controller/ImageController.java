@@ -23,7 +23,6 @@ public class ImageController {
      * Response to the request to return the specified page image as base64 string
      *
      * @param pageId Identifier of the page (e.g 0002)
-     * @param segmentID Identifier of the segment (e.g 0002__000__paragraph)
      * @param imageId Image identifier (Original, Gray or Despeckled)
      * @param session Session of the user
      * @param response Response to the request
@@ -32,13 +31,15 @@ public class ImageController {
     @RequestMapping(value = "/ajax/image/page", method = RequestMethod.GET)
     public @ResponseBody String getImageOfPage(
                 @RequestParam("pageId") String pageId,
-                @RequestParam("imageId") String imageId, HttpSession session, HttpServletResponse response
+                @RequestParam("imageId") String imageId,
+                HttpSession session, HttpServletResponse response
             ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty() || pageId == null || pageId.isEmpty()
                 || imageId == null || imageId.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
@@ -46,9 +47,9 @@ public class ImageController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
+
         if (image64 == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
         return image64;
     }
 
@@ -73,6 +74,7 @@ public class ImageController {
                 || pageId == null || pageId.isEmpty() || imageId == null || imageId.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
@@ -80,9 +82,9 @@ public class ImageController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
+
         if (image64 == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
         return image64;
     }
 
@@ -110,6 +112,7 @@ public class ImageController {
                 || imageId == null || imageId.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
@@ -117,9 +120,9 @@ public class ImageController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
+
         if (image64 == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
         return image64;
     }
 }
