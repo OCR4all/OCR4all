@@ -1,9 +1,9 @@
 package de.uniwue.controller;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.util.TreeMap;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -29,6 +29,7 @@ public class ImageController {
      * @param imageId Image identifier (Original, Gray or Despeckled)
      * @param session Session of the user
      * @param response Response to the request
+     * @param request Request
      * @return Returns the required image as a base64 string
      * @throws IM4JavaException 
      * @throws InterruptedException 
@@ -37,7 +38,7 @@ public class ImageController {
     @RequestMapping(value = "/ajax/image/page", method = RequestMethod.GET)
     public @ResponseBody String getImageOfPage(
                 @RequestParam("pageId") String pageId,
-                @RequestParam("imageId") String imageId, HttpSession session, HttpServletResponse response
+                @RequestParam("imageId") String imageId, HttpSession session, HttpServletResponse response, HttpServletRequest request
             ) throws IOException, InterruptedException {
 
         String projectDir = (String) session.getAttribute("projectDir");
@@ -49,7 +50,13 @@ public class ImageController {
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
-            imageHelper.setDimension(new Dimension(516,664));
+            //imageHelper.setDimension(new Dimension(516,664));
+            String height = request.getParameter("height");
+            String width = request.getParameter("width");
+            if (height != null)
+                imageHelper.setHeight(Integer.parseInt(height));
+            if (width != null)
+                imageHelper.setHeight(Integer.parseInt(width));
             image64 = imageHelper.getPageImage(pageId, imageId);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -67,13 +74,14 @@ public class ImageController {
      * @param imageId Identifier of the segment (e.g 0002__000__paragraph)
      * @param session Session of the user
      * @param response Response to the request
+     * @param request Request
      * @return Returns the required image as a base64 string
      */
     @RequestMapping(value = "/ajax/image/segment", method = RequestMethod.GET)
     public @ResponseBody String getImageOfSegment(
                 @RequestParam("pageId") String pageId,
                 @RequestParam("imageId") String imageId,
-                HttpSession session, HttpServletResponse response
+                HttpSession session, HttpServletResponse response, HttpServletRequest request
             ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
         String imageType = session.getAttribute("imageType").toString();
@@ -85,6 +93,12 @@ public class ImageController {
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
+            String height = request.getParameter("height");
+            String width = request.getParameter("width");
+            if (height != null)
+                imageHelper.setHeight(Integer.parseInt(height));
+            if (width != null)
+                imageHelper.setHeight(Integer.parseInt(width));
             image64 = imageHelper.getSegmentImage(pageId, imageId, imageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -103,6 +117,7 @@ public class ImageController {
      * @param imageId Identifier of the line (e.g 0002__000__paragraph__000)
      * @param session Session of the user
      * @param response Response to the request
+     * @param request Request
      * @return Returns the required image as a base64 string
      */
     @RequestMapping(value = "/ajax/image/line", method = RequestMethod.GET)
@@ -110,7 +125,7 @@ public class ImageController {
                 @RequestParam("pageId") String pageId,
                 @RequestParam("segmentId") String segmentId,
                 @RequestParam("imageId") String imageId,
-                HttpSession session, HttpServletResponse response
+                HttpSession session, HttpServletResponse response, HttpServletRequest request
             ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
         String imageType = session.getAttribute("imageType").toString();
@@ -124,6 +139,12 @@ public class ImageController {
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
             image64 = imageHelper.getLineImage(pageId, segmentId, imageId, imageType);
+            String height = request.getParameter("height");
+            String width = request.getParameter("width");
+            if (height != null)
+                imageHelper.setHeight(Integer.parseInt(height));
+            if (width != null)
+                imageHelper.setHeight(Integer.parseInt(width));
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }

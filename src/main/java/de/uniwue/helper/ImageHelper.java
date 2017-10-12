@@ -31,7 +31,11 @@ public class ImageHelper {
     /**
      * Resizing image to this dimension
      */
-    private Dimension dimension = null;
+
+    private int height = -1;
+
+    private int width = -1;
+    
 
     /**
      * Constructor
@@ -87,11 +91,40 @@ public class ImageHelper {
     }
 
     /**
-     * Sets the dimension
-     * @param dimension
+     * Calculates the dimension of the image if only height or width is handed over
+     * @param img The image to be scaled
      */
-    public void setDimension(Dimension dimension) {
-        this.dimension = dimension;
+    private Dimension getDimension(BufferedImage img) {
+        Dimension dimension = null;
+        if(height != -1 || width != -1) {
+            if(height != -1 && width != -1) {
+                return new Dimension(width,height);
+            }
+            else if (height == -1) {
+                double factor = img.getWidth()/width;
+                return new Dimension(width,(int) (img.getHeight()/factor));
+            }
+            else {
+                double factor = img.getHeight()/height;
+                 return new Dimension((int) (img.getWidth()/factor),height);
+            }
+        }
+        return dimension;
+    }
+    /**
+     * Sets height
+     * @param height
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    /**
+     * Setswidth
+     * @param width
+     */
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     /**
@@ -169,8 +202,13 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getScaledImageAsBase64(String path) throws IOException {
+        //Faster if no scaling is needed
+        if (height == -1 && width == -1)
+            return getImageAsBase64 (new File(path));
+        //When scaling is needed
         BufferedImage img = null;
         img = ImageIO.read(new File(path));
+        Dimension dimension = getDimension(img);
         if (dimension != null) {
             img = scaleImage(img,dimension);
         }
