@@ -19,7 +19,7 @@
                     var pageId  = $('input[name="pageId"]').val();
                     var imageId = $(el).find(".collapsible-header span").first().text();
                     var ajaxURL = "ajax/image/" + dataType;
-                    var ajaxParams = { "pageId" : pageId, "imageId" : imageId };
+                    var ajaxParams = { "pageId" : pageId, "imageId" : imageId, "width" : 518};
                     if(  dataType == "line" ) {
                         var segmentId = $(el).parents(".collapsible").eq(1).children("li.active").find(".collapsible-header span").first().text();
                         $.extend(ajaxParams, { "segmentId" : segmentId });

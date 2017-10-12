@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.TreeMap;
 
@@ -15,6 +16,11 @@ import org.apache.commons.io.FilenameUtils;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import de.uniwue.config.ProjectDirConfig;
 
@@ -31,7 +37,11 @@ public class ImageHelper {
     /**
      * Resizing image to this dimension
      */
-    private Dimension dimension = null;
+
+    private int height = -1;
+
+    private int width = -1;
+    
 
     /**
      * Constructor
@@ -64,9 +74,7 @@ public class ImageHelper {
      * @param pageID Identifier of the page (e.g 0002)
      * @param imageID Image identifier (Original, Gray or Despeckled)
      * @return Returns the image as a base64 string
-     * @throws IM4JavaException 
      * @throws InterruptedException 
-     * @throws MagickException 
      */
     public String getPageImage(String pageID, String imageID) throws IOException, InterruptedException {
 
@@ -87,11 +95,40 @@ public class ImageHelper {
     }
 
     /**
-     * Sets the dimension
-     * @param dimension
+     * Calculates the dimension of the image if only height or width is handed over
+     * @param img The image to be scaled
      */
-    public void setDimension(Dimension dimension) {
-        this.dimension = dimension;
+    private Dimension getDimension(BufferedImage img) {
+        Dimension dimension = null;
+        if(height != -1 || width != -1) {
+            if(height != -1 && width != -1) {
+                return new Dimension(width,height);
+            }
+            else if (height == -1) {
+                double factor = img.getWidth()/width;
+                return new Dimension(width,(int) (img.getHeight()/factor));
+            }
+            else {
+                double factor = img.getHeight()/height;
+                 return new Dimension((int) (img.getWidth()/factor),height);
+            }
+        }
+        return dimension;
+    }
+    /**
+     * Sets height
+     * @param height
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    /**
+     * Setswidth
+     * @param width
+     */
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     /**
@@ -169,8 +206,13 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getScaledImageAsBase64(String path) throws IOException {
+        //Faster if no scaling is needed
+        if (height == -1 && width == -1)
+            return getImageAsBase64 (new File(path));
+        //When scaling is needed
         BufferedImage img = null;
         img = ImageIO.read(new File(path));
+        Dimension dimension = getDimension(img);
         if (dimension != null) {
             img = scaleImage(img,dimension);
         }
@@ -243,5 +285,31 @@ public class ImageHelper {
         float sx = dim.width / (float) width;
         float sy = dim.height / (float) height;
         return Math.min(sx, sy);
+    }
+
+    public static Mat despeckle(Mat binary, double maxArea) {
+        Mat inverted = new Mat();
+        Core.bitwise_not(binary, inverted);
+
+        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(inverted, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        Mat result = binary.clone();
+
+        if (contours.size() > 1) {
+            ArrayList<MatOfPoint> toRemove = new ArrayList<MatOfPoint>();
+
+            for (MatOfPoint contour : contours) {
+                double area = Imgproc.contourArea(contour);
+
+                if (area < maxArea) {
+                    toRemove.add(contour);
+                }
+            }
+
+            Imgproc.drawContours(result, toRemove, -1, new Scalar(255), -1);
+        }
+
+        return result;
     }
 }
