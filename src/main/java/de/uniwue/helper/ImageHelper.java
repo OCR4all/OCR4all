@@ -16,7 +16,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import de.uniwue.config.ProjectDirConfig;
-import feature.ImageResize;
+import de.uniwue.feature.ImageResize;
 
 
 /**

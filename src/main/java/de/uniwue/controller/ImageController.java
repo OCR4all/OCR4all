@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import de.uniwue.feature.ImageResize;
 import de.uniwue.helper.ImageHelper;
-import feature.ImageResize;
 
 
 /**
