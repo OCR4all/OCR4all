@@ -39,7 +39,7 @@
                 });
 
                 // Fetch all page images and add them to the list
-                $.get( "ajax/image/list", { "imageType" : "Binary" } )
+                $.get( "ajax/image/list", { "imageType" : "Binary", "width" : 150 } )
                 .done(function( data ) {
                     $.each(data, function(pageId, pageImage) {
                         var li = '<li>';
@@ -60,7 +60,7 @@
 
                 // Function to load page image on demand via AJAX
                 function loadPageImage(divEl, pageId, imageType) {
-                    $.get( "ajax/image/page", { "pageId" : pageId, "imageId" : imageType } )
+                    $.get( "ajax/image/page", { "pageId" : pageId, "imageId" : imageType, "width" : 395 } )
                     .done(function( data ) {
                         if( data === '' ) {
                             $(divEl).find('img').first().attr('src', '');
