@@ -38,7 +38,6 @@ public class ImageHelper {
      *
      * @param projectDir Path to the project directory
      */
-
     public ImageHelper(String projectDir) {
         projDirConf = new ProjectDirConfig(projectDir);
     }
@@ -49,7 +48,7 @@ public class ImageHelper {
      * @param File Passed file
      * @return Returns the image as a base64 string
      */
-    public String encodeFileToBase64Binary(File file) throws IOException {
+    public String getImageAsBase64(File file) throws IOException {
         String encodedfile = null;
         FileInputStream fileInputStreamReader = new FileInputStream(file);
         byte[] bytes = new byte[(int) file.length()];
@@ -72,20 +71,21 @@ public class ImageHelper {
     public String getPageImage(String pageID, String imageID) throws IOException, InterruptedException {
 
         if (imageID.equals("Original")) {
-            return scaldedBase64Image(projDirConf.ORIG_IMG_DIR + pageID + projDirConf.IMG_EXT);
+            return getScaledImageAsBase64(projDirConf.ORIG_IMG_DIR + pageID + projDirConf.IMG_EXT);
         }
         else {
             if (imageID.equals("Gray")) {
-                return scaldedBase64Image(projDirConf.GRAY_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
+                return getScaledImageAsBase64(projDirConf.GRAY_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
             }
             else if (imageID.equals("Despeckled")) {
-                return scaldedBase64Image(projDirConf.DESP_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
+                return getScaledImageAsBase64(projDirConf.DESP_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
             }
             else {
-                return scaldedBase64Image(projDirConf.BINR_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
+                return getScaledImageAsBase64(projDirConf.BINR_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
             }
         }
     }
+
     /**
      * Sets the dimension
      * @param dimension
@@ -106,10 +106,10 @@ public class ImageHelper {
             throws IOException {
 
         if (imageType.equals("Gray")) {
-            return scaldedBase64Image(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.GRAY_IMG_EXT);
+            return getScaledImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.GRAY_IMG_EXT);
         }
         else {
-            return scaldedBase64Image(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.BIN_IMG_EXT);
+            return getScaledImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.BIN_IMG_EXT);
         }
     }
 
@@ -126,10 +126,10 @@ public class ImageHelper {
             throws IOException {
         String base64Image = null;
         if (imageType.equals("Gray"))
-            return scaldedBase64Image(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
+            return getScaledImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
                     + File.separator + lineID + projDirConf.GRAY_IMG_EXT);
         if (imageType.equals("Binary"))
-            return scaldedBase64Image(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
+            return getScaledImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
                     + File.separator + lineID + projDirConf.BIN_IMG_EXT);
         return base64Image;
     }
@@ -156,28 +156,26 @@ public class ImageHelper {
         final File folder = new File(imagePath);
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isFile())
-                imageList.put(FilenameUtils.removeExtension(fileEntry.getName()), encodeFileToBase64Binary(fileEntry));
+                imageList.put(FilenameUtils.removeExtension(fileEntry.getName()), getImageAsBase64(fileEntry));
         }
         return imageList;
 
     }
+
     /**
      * Downscales given image and encodes it to base64
      * @param path path to the image
      * @return Base 64 String of the resized Image
      * @throws IOException
      */
-    public String scaldedBase64Image(String path) throws IOException {
+    public String getScaledImageAsBase64(String path) throws IOException {
         BufferedImage img = null;
-        try {
-            img = ImageIO.read(new File(path));
-        } catch (IOException e) {
-        }
+        img = ImageIO.read(new File(path));
         if (dimension != null) {
             img = scaleImage(img,dimension);
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(img, "png", baos);
+        ImageIO.write(img, projDirConf.IMG_FRMT, baos);
         
         byte[] b= baos.toByteArray();
         String resultBase64Encoded = Base64.getEncoder().encodeToString(b);
