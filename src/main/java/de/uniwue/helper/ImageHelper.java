@@ -1,5 +1,8 @@
 package de.uniwue.helper;
 
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,10 +15,6 @@ import org.apache.commons.io.FilenameUtils;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.im4java.core.ConvertCmd;
-import org.im4java.core.IM4JavaException;
-import org.im4java.core.IMOperation;
-import org.im4java.core.Stream2BufferedImage;
 
 import de.uniwue.config.ProjectDirConfig;
 
@@ -28,19 +27,18 @@ public class ImageHelper {
      * Object to access project directory configuration
      */
     private ProjectDirConfig projDirConf;
+
     /**
-     * Desired height of the image 
+     * Resizing image to this dimension
      */
-    private int height = -1;
-    /**
-     * widht of the image
-     */
-    private int width = -1;
+    private Dimension dimension = null;
+
     /**
      * Constructor
      *
      * @param projectDir Path to the project directory
      */
+
     public ImageHelper(String projectDir) {
         projDirConf = new ProjectDirConfig(projectDir);
     }
@@ -71,30 +69,29 @@ public class ImageHelper {
      * @throws InterruptedException 
      * @throws MagickException 
      */
-    public String getPageImage(String pageID, String imageID) throws IOException, InterruptedException, IM4JavaException {
-        String base64Image = null;
-        File f = null;
+    public String getPageImage(String pageID, String imageID) throws IOException, InterruptedException {
+
         if (imageID.equals("Original")) {
-            f = new File(projDirConf.ORIG_IMG_DIR + pageID + projDirConf.IMG_EXT);
-            return transformImage(f);
-            //String encoded = Base64.getEncoder().encodeToString(test(pageID,imageID));
-            //return encoded;
+            return scaldedBase64Image(projDirConf.ORIG_IMG_DIR + pageID + projDirConf.IMG_EXT);
         }
         else {
             if (imageID.equals("Gray")) {
-                f = new File(projDirConf.GRAY_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
+                return scaldedBase64Image(projDirConf.GRAY_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
             }
             else if (imageID.equals("Despeckled")) {
-                f = new File(projDirConf.DESP_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
+                return scaldedBase64Image(projDirConf.DESP_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
             }
             else {
-                f = new File(projDirConf.BINR_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
+                return scaldedBase64Image(projDirConf.BINR_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
             }
         }
-
-        if (f.exists())
-            base64Image = encodeFileToBase64Binary(f);
-        return base64Image;
+    }
+    /**
+     * Sets the dimension
+     * @param dimension
+     */
+    public void setDimension(Dimension dimension) {
+        this.dimension = dimension;
     }
 
     /**
@@ -107,18 +104,13 @@ public class ImageHelper {
      */
     public String getSegmentImage(String pageID, String segmentID, String imageType)
             throws IOException {
-        String base64Image = null;
-        File f = null;
+
         if (imageType.equals("Gray")) {
-            f = new File(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.GRAY_IMG_EXT);
+            return scaldedBase64Image(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.GRAY_IMG_EXT);
         }
         else {
-            f = new File(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.BIN_IMG_EXT);
+            return scaldedBase64Image(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.BIN_IMG_EXT);
         }
-
-        if (f.exists())
-            base64Image = encodeFileToBase64Binary(f);
-        return base64Image;
     }
 
     /**
@@ -133,55 +125,13 @@ public class ImageHelper {
     public String getLineImage(String pageID, String segmentID, String lineID, String imageType)
             throws IOException {
         String base64Image = null;
-        File f = null;
         if (imageType.equals("Gray"))
-            f = new File(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
+            return scaldedBase64Image(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
                     + File.separator + lineID + projDirConf.GRAY_IMG_EXT);
         if (imageType.equals("Binary"))
-            f = new File(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
+            return scaldedBase64Image(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
                     + File.separator + lineID + projDirConf.BIN_IMG_EXT);
-
-        if (f.exists())
-            base64Image = encodeFileToBase64Binary(f);
         return base64Image;
-    }
-
-    public String transformImage(File path) throws IOException, InterruptedException, IM4JavaException{
-        IMOperation op = new IMOperation();
-        op.addImage();
-        if(height != -1 || width != -1) {
-            if (height != -1 && width != -1) {
-                op.resize(width,height);
-            }
-            else if (height != -1) {
-                op.resize(null,height);
-            }
-            else
-                op.resize(width,null);
-        }
-        op.addImage("png:-");
-        BufferedImage images = ImageIO.read(path);
-        ConvertCmd convert = new ConvertCmd();
-        Stream2BufferedImage s2b = new Stream2BufferedImage();
-        convert.setOutputConsumer(s2b);
-
-        convert.run(op, images);
-        BufferedImage img = s2b.getImage();
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(img, "png", baos);
-        
-        byte[] b= baos.toByteArray();
-        String resultBase64Encoded = Base64.getEncoder().encodeToString(b);
-        return resultBase64Encoded;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
     }
 
     /**
@@ -210,5 +160,90 @@ public class ImageHelper {
         }
         return imageList;
 
+    }
+    /**
+     * Downscales given image and encodes it to base64
+     * @param path path to the image
+     * @return Base 64 String of the resized Image
+     * @throws IOException
+     */
+    public String scaldedBase64Image(String path) throws IOException {
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File(path));
+        } catch (IOException e) {
+        }
+        if (dimension != null) {
+            img = scaleImage(img,dimension);
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(img, "png", baos);
+        
+        byte[] b= baos.toByteArray();
+        String resultBase64Encoded = Base64.getEncoder().encodeToString(b);
+        return resultBase64Encoded;
+    }
+
+    /**
+     * Downscales images
+     * Fastest way to scale pictures is with the Nearest Neighbor algorithm
+     * Source code from: http://www.locked.de/2009/06/08/fast-image-scaling-in-java/ 
+     * @param img Bufferd image
+     * @param d Dimension of the downsized image
+     * @return Downsized image
+     */
+    public BufferedImage scaleImage(BufferedImage img, Dimension d) {
+        img = scaleByHalf(img, d);
+        img = scaleExact(img, d);
+        return img;
+    }
+
+    private BufferedImage scaleByHalf(BufferedImage img, Dimension d) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        float factor = getBinFactor(w, h, d);
+
+        // make new size
+        w *= factor;
+        h *= factor;
+        BufferedImage scaled = new BufferedImage(w, h,
+                BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = scaled.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g.drawImage(img, 0, 0, w, h, null);
+        g.dispose();
+        return scaled;
+    }
+
+    private BufferedImage scaleExact(BufferedImage img, Dimension d) {
+        float factor = getFactor(img.getWidth(), img.getHeight(), d);
+
+        // create the image
+        int w = (int) (img.getWidth() * factor);
+        int h = (int) (img.getHeight() * factor);
+        BufferedImage scaled = new BufferedImage(w, h,
+                BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D g = scaled.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.drawImage(img, 0, 0, w, h, null);
+        g.dispose();
+        return scaled;
+    }
+
+    float getBinFactor(int width, int height, Dimension dim) {
+        float factor = 1;
+        float target = getFactor(width, height, dim);
+        if (target <= 1) { while (factor / 2 > target) { factor /= 2; }
+        } else { while (factor * 2 < target) { factor *= 2; }         }
+        return factor;
+    }
+
+    float getFactor(int width, int height, Dimension dim) {
+        float sx = dim.width / (float) width;
+        float sy = dim.height / (float) height;
+        return Math.min(sx, sy);
     }
 }

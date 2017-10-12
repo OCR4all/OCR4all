@@ -1,12 +1,12 @@
 package de.uniwue.controller;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.im4java.core.IM4JavaException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,7 +38,7 @@ public class ImageController {
     public @ResponseBody String getImageOfPage(
                 @RequestParam("pageId") String pageId,
                 @RequestParam("imageId") String imageId, HttpSession session, HttpServletResponse response
-            ) throws IOException, InterruptedException, IM4JavaException {
+            ) throws IOException, InterruptedException {
 
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty() || pageId == null || pageId.isEmpty()
@@ -49,6 +49,7 @@ public class ImageController {
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
+            imageHelper.setDimension(new Dimension(516,664));
             image64 = imageHelper.getPageImage(pageId, imageId);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
