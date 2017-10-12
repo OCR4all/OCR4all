@@ -50,13 +50,12 @@ public class ImageController {
         String image64 = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
-            //imageHelper.setDimension(new Dimension(516,664));
             String height = request.getParameter("height");
             String width = request.getParameter("width");
             if (height != null)
                 imageHelper.setHeight(Integer.parseInt(height));
             if (width != null)
-                imageHelper.setHeight(Integer.parseInt(width));
+                imageHelper.setWidth(Integer.parseInt(width));
             image64 = imageHelper.getPageImage(pageId, imageId);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -98,7 +97,7 @@ public class ImageController {
             if (height != null)
                 imageHelper.setHeight(Integer.parseInt(height));
             if (width != null)
-                imageHelper.setHeight(Integer.parseInt(width));
+                imageHelper.setWidth(Integer.parseInt(width));
             image64 = imageHelper.getSegmentImage(pageId, imageId, imageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -144,7 +143,7 @@ public class ImageController {
             if (height != null)
                 imageHelper.setHeight(Integer.parseInt(height));
             if (width != null)
-                imageHelper.setHeight(Integer.parseInt(width));
+                imageHelper.setWidth(Integer.parseInt(width));
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }

@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.TreeMap;
 
@@ -15,6 +16,11 @@ import org.apache.commons.io.FilenameUtils;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import de.uniwue.config.ProjectDirConfig;
 
@@ -68,9 +74,7 @@ public class ImageHelper {
      * @param pageID Identifier of the page (e.g 0002)
      * @param imageID Image identifier (Original, Gray or Despeckled)
      * @return Returns the image as a base64 string
-     * @throws IM4JavaException 
      * @throws InterruptedException 
-     * @throws MagickException 
      */
     public String getPageImage(String pageID, String imageID) throws IOException, InterruptedException {
 
@@ -281,5 +285,31 @@ public class ImageHelper {
         float sx = dim.width / (float) width;
         float sy = dim.height / (float) height;
         return Math.min(sx, sy);
+    }
+
+    public static Mat despeckle(Mat binary, double maxArea) {
+        Mat inverted = new Mat();
+        Core.bitwise_not(binary, inverted);
+
+        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(inverted, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        Mat result = binary.clone();
+
+        if (contours.size() > 1) {
+            ArrayList<MatOfPoint> toRemove = new ArrayList<MatOfPoint>();
+
+            for (MatOfPoint contour : contours) {
+                double area = Imgproc.contourArea(contour);
+
+                if (area < maxArea) {
+                    toRemove.add(contour);
+                }
+            }
+
+            Imgproc.drawContours(result, toRemove, -1, new Scalar(255), -1);
+        }
+
+        return result;
     }
 }
