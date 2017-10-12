@@ -1,9 +1,5 @@
 package de.uniwue.helper;
 
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,9 +9,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -23,6 +16,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import de.uniwue.config.ProjectDirConfig;
+import feature.ImageResize;
 
 
 /**
@@ -35,13 +29,9 @@ public class ImageHelper {
     private ProjectDirConfig projDirConf;
 
     /**
-     * Resizing image to this dimension
+     * Image resizing object to access resizing functionality
      */
-
-    private int height = -1;
-
-    private int width = -1;
-    
+    private ImageResize imageResize = null;
 
     /**
      * Constructor
@@ -53,239 +43,137 @@ public class ImageHelper {
     }
 
     /**
-     * Encodes the given file to base64 String
+     * Sets image resizing object
      *
-     * @param File Passed file
-     * @return Returns the image as a base64 string
+     * @param imageResize
      */
-    public String getImageAsBase64(File file) throws IOException {
-        String encodedfile = null;
+    public void setImageResize(ImageResize imageResize) {
+        this.imageResize = imageResize;
+    }
+
+    /**
+     * Returns the filesystem path of the given image type
+     *
+     * @param imageType Type of the image
+     * @return Absolute filesystem path to the image
+     */
+    private String getImagePathByType(String imageType) {
+        String imagePath = null;
+        switch(imageType) {
+            case "Original":   imagePath = projDirConf.ORIG_IMG_DIR; break;
+            case "Binary":     imagePath = projDirConf.BINR_IMG_DIR; break;
+            case "Gray":       imagePath = projDirConf.GRAY_IMG_DIR; break;
+            case "Despeckled": imagePath = projDirConf.DESP_IMG_DIR; break;
+            default: break;
+        }
+        return imagePath;
+    }
+
+    /**
+     * Returns the file extension of the given image type
+     *
+     * @param imageType Type of the image
+     * @return Image file extension
+     */
+    private String getImageExtensionByType(String imageType) {
+        String imageExtension = null;
+        switch(imageType) {
+            case "Binary": imageExtension = projDirConf.GRAY_IMG_EXT; break;
+            case "Gray":   imageExtension = projDirConf.BIN_IMG_EXT;  break;
+            default: break;
+        }
+        return imageExtension;
+    }
+
+    /**
+     * Reads an image file and stores it into a byte array 
+     *
+     * @param path Filesystem path to the image
+     * @return Byte array representation of the image file
+     * @throws IOException
+     */
+    private byte[] readImageFile(String path) throws IOException {
+        File file = new File(path);
         FileInputStream fileInputStreamReader = new FileInputStream(file);
         byte[] bytes = new byte[(int) file.length()];
         fileInputStreamReader.read(bytes);
-        encodedfile = Base64.getEncoder().encodeToString(bytes);
         fileInputStreamReader.close();
-        return encodedfile;
+        return bytes;
     }
 
     /**
-     * Gets the specified page image and encodes it to base64
+     * Encodes the given image file to a base64 string
+     *
+     * @param path Filesystem path to the image
+     * @return Returns the image as a base64 string
+     * @throws IOException
+     */
+    private String getImageAsBase64(String path) throws IOException {
+        // Resizing is required
+        if (imageResize != null)
+            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(path));
+
+        return Base64.getEncoder().encodeToString(readImageFile(path));
+    }
+
+    /**
+     * Gets the specified page image as base64 string
      *
      * @param pageID Identifier of the page (e.g 0002)
-     * @param imageID Image identifier (Original, Gray or Despeckled)
+     * @param imageType Type of the image
      * @return Returns the image as a base64 string
-     * @throws InterruptedException 
+     * @throws IOException
      */
-    public String getPageImage(String pageID, String imageID) throws IOException, InterruptedException {
-
-        if (imageID.equals("Original")) {
-            return getScaledImageAsBase64(projDirConf.ORIG_IMG_DIR + pageID + projDirConf.IMG_EXT);
-        }
-        else {
-            if (imageID.equals("Gray")) {
-                return getScaledImageAsBase64(projDirConf.GRAY_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
-            }
-            else if (imageID.equals("Despeckled")) {
-                return getScaledImageAsBase64(projDirConf.DESP_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
-            }
-            else {
-                return getScaledImageAsBase64(projDirConf.BINR_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
-            }
-        }
+    public String getPageImage(String pageID, String imageType) throws IOException {
+        return getImageAsBase64(getImagePathByType(imageType) + pageID + projDirConf.IMG_EXT);
     }
 
     /**
-     * Calculates the dimension of the image if only height or width is handed over
-     * @param img The image to be scaled
-     */
-    private Dimension getDimension(BufferedImage img) {
-        Dimension dimension = null;
-        if(height != -1 || width != -1) {
-            if(height != -1 && width != -1) {
-                return new Dimension(width,height);
-            }
-            else if (height == -1) {
-                double factor = img.getWidth()/width;
-                return new Dimension(width,(int) (img.getHeight()/factor));
-            }
-            else {
-                double factor = img.getHeight()/height;
-                 return new Dimension((int) (img.getWidth()/factor),height);
-            }
-        }
-        return dimension;
-    }
-    /**
-     * Sets height
-     * @param height
-     */
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    /**
-     * Setswidth
-     * @param width
-     */
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    /**
-     * Gets the specified page segment image and encodes it to base64
+     * Gets the specified page segment image as base64 string
      *
      * @param pageID Identifier of the page (e.g 0002)
      * @param segmentID Identifier of the segment (e.g 0002__000__paragraph)
-     * @param imageType Image identifier (Binary or Grey-image)
+     * @param imageType Type of the image
      * @return Returns the image as a base64 string
+     * @throws IOException
      */
-    public String getSegmentImage(String pageID, String segmentID, String imageType)
-            throws IOException {
-
-        if (imageType.equals("Gray")) {
-            return getScaledImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.GRAY_IMG_EXT);
-        }
-        else {
-            return getScaledImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.BIN_IMG_EXT);
-        }
+    public String getSegmentImage(String pageID, String segmentID, String imageType) throws IOException {
+        return getImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + getImageExtensionByType(imageType));
     }
 
     /**
-     * Gets the specified page line image of a segment and encodes it to base64
+     * Gets the specified page line image of a segment as base64 string
      *
      * @param pageID Identifier of the page (e.g 0002)
      * @param segmentID Identifier of the segment (e.g 0002__000__paragraph)
      * @param lineID Identifier of the line (e.g 0002__000__paragraph__000)
-     * @param imageType Image identifier (Binary or Grey-image)
+     * @param imageType Type of the image
      * @return Returns the image as a base64 string
+     * @throws IOException
      */
-    public String getLineImage(String pageID, String segmentID, String lineID, String imageType)
-            throws IOException {
-        String base64Image = null;
-        if (imageType.equals("Gray"))
-            return getScaledImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
-                    + File.separator + lineID + projDirConf.GRAY_IMG_EXT);
-        if (imageType.equals("Binary"))
-            return getScaledImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
-                    + File.separator + lineID + projDirConf.BIN_IMG_EXT);
-        return base64Image;
+    public String getLineImage(String pageID, String segmentID, String lineID, String imageType) throws IOException {
+        return getImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
+                + File.separator + lineID + getImageExtensionByType(imageType));
     }
 
     /**
-     * Gets all pages of the project and the images of the given type encoded in base64
+     * Gets all pages of the project and the images of the given type as base64 strings
      *
-     * @param imageType Type of the images in the list
+     * @param imageType Type of the images
      * @return Map of page IDs with their images as base64 string
      * @throws IOException
      */
     public TreeMap<String, String> getImageList(String imageType) throws IOException {
         TreeMap<String, String> imageList = new TreeMap<String, String>();
 
-        String imagePath = null;
-        switch(imageType) {
-            case "Original":   imagePath = projDirConf.ORIG_IMG_DIR; break;
-            case "Binary":     imagePath = projDirConf.BINR_IMG_DIR; break;
-            case "Gray":       imagePath = projDirConf.GRAY_IMG_EXT; break;
-            case "Despeckled": imagePath = projDirConf.DESP_IMG_DIR; break;
-            default: break;
-        }
-
-        final File folder = new File(imagePath);
+        final File folder = new File(getImagePathByType(imageType));
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isFile())
-                imageList.put(FilenameUtils.removeExtension(fileEntry.getName()), getImageAsBase64(fileEntry));
+                imageList.put(FilenameUtils.removeExtension(fileEntry.getName()), getImageAsBase64(fileEntry.getAbsolutePath()));
         }
         return imageList;
-
     }
 
-    /**
-     * Downscales given image and encodes it to base64
-     * @param path path to the image
-     * @return Base 64 String of the resized Image
-     * @throws IOException
-     */
-    public String getScaledImageAsBase64(String path) throws IOException {
-        //Faster if no scaling is needed
-        if (height == -1 && width == -1)
-            return getImageAsBase64 (new File(path));
-        //When scaling is needed
-        BufferedImage img = null;
-        img = ImageIO.read(new File(path));
-        Dimension dimension = getDimension(img);
-        if (dimension != null) {
-            img = scaleImage(img,dimension);
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(img, projDirConf.IMG_FRMT, baos);
-        
-        byte[] b= baos.toByteArray();
-        String resultBase64Encoded = Base64.getEncoder().encodeToString(b);
-        return resultBase64Encoded;
-    }
-
-    /**
-     * Downscales images
-     * Fastest way to scale pictures is with the Nearest Neighbor algorithm
-     * Source code from: http://www.locked.de/2009/06/08/fast-image-scaling-in-java/ 
-     * @param img Bufferd image
-     * @param d Dimension of the downsized image
-     * @return Downsized image
-     */
-    public BufferedImage scaleImage(BufferedImage img, Dimension d) {
-        img = scaleByHalf(img, d);
-        img = scaleExact(img, d);
-        return img;
-    }
-
-    private BufferedImage scaleByHalf(BufferedImage img, Dimension d) {
-        int w = img.getWidth();
-        int h = img.getHeight();
-        float factor = getBinFactor(w, h, d);
-
-        // make new size
-        w *= factor;
-        h *= factor;
-        BufferedImage scaled = new BufferedImage(w, h,
-                BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = scaled.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        g.drawImage(img, 0, 0, w, h, null);
-        g.dispose();
-        return scaled;
-    }
-
-    private BufferedImage scaleExact(BufferedImage img, Dimension d) {
-        float factor = getFactor(img.getWidth(), img.getHeight(), d);
-
-        // create the image
-        int w = (int) (img.getWidth() * factor);
-        int h = (int) (img.getHeight() * factor);
-        BufferedImage scaled = new BufferedImage(w, h,
-                BufferedImage.TYPE_INT_RGB);
-
-        Graphics2D g = scaled.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g.drawImage(img, 0, 0, w, h, null);
-        g.dispose();
-        return scaled;
-    }
-
-    float getBinFactor(int width, int height, Dimension dim) {
-        float factor = 1;
-        float target = getFactor(width, height, dim);
-        if (target <= 1) { while (factor / 2 > target) { factor /= 2; }
-        } else { while (factor * 2 < target) { factor *= 2; }         }
-        return factor;
-    }
-
-    float getFactor(int width, int height, Dimension dim) {
-        float sx = dim.width / (float) width;
-        float sy = dim.height / (float) height;
-        return Math.min(sx, sy);
-    }
 
     public static Mat despeckle(Mat binary, double maxArea) {
         Mat inverted = new Mat();

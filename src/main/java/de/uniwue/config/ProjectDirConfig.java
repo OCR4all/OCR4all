@@ -35,10 +35,6 @@ public final class ProjectDirConfig {
      */
     public final String IMG_EXT = ".png";
     /**
-     * Default image extension of the project
-     */
-    public final String IMG_FRMT = "png";
-    /**
      * Binary image extension of the project
      */
     public final String BIN_IMG_EXT  = ".bin" + IMG_EXT;

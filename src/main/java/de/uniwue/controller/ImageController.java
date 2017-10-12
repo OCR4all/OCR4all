@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import de.uniwue.helper.ImageHelper;
+import feature.ImageResize;
 
 
 /**
@@ -31,15 +32,14 @@ public class ImageController {
      * @param response Response to the request
      * @param request Request
      * @return Returns the required image as a base64 string
-     * @throws IM4JavaException 
-     * @throws InterruptedException 
-     * @throws MagickException 
+     * @throws IOException 
      */
     @RequestMapping(value = "/ajax/image/page", method = RequestMethod.GET)
     public @ResponseBody String getImageOfPage(
                 @RequestParam("pageId") String pageId,
-                @RequestParam("imageId") String imageId, HttpSession session, HttpServletResponse response, HttpServletRequest request
-            ) throws IOException, InterruptedException {
+                @RequestParam("imageId") String imageId,
+                HttpSession session, HttpServletResponse response, HttpServletRequest request
+            ) throws IOException {
 
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty() || pageId == null || pageId.isEmpty()
@@ -47,23 +47,20 @@ public class ImageController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
-        String image64 = null;
+        String base64Image = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
-            String height = request.getParameter("height");
-            String width = request.getParameter("width");
-            if (height != null)
-                imageHelper.setHeight(Integer.parseInt(height));
-            if (width != null)
-                imageHelper.setWidth(Integer.parseInt(width));
-            image64 = imageHelper.getPageImage(pageId, imageId);
+            Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
+            Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
+            imageHelper.setImageResize(new ImageResize(width, height));
+            base64Image = imageHelper.getPageImage(pageId, imageId);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
 
-        if (image64 == null)
+        if (base64Image == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return image64;
+        return base64Image;
     }
 
     /**
@@ -75,6 +72,7 @@ public class ImageController {
      * @param response Response to the request
      * @param request Request
      * @return Returns the required image as a base64 string
+     * @throws IOException
      */
     @RequestMapping(value = "/ajax/image/segment", method = RequestMethod.GET)
     public @ResponseBody String getImageOfSegment(
@@ -89,23 +87,20 @@ public class ImageController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
-        String image64 = null;
+        String base64Image = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
-            String height = request.getParameter("height");
-            String width = request.getParameter("width");
-            if (height != null)
-                imageHelper.setHeight(Integer.parseInt(height));
-            if (width != null)
-                imageHelper.setWidth(Integer.parseInt(width));
-            image64 = imageHelper.getSegmentImage(pageId, imageId, imageType);
+            Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
+            Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
+            imageHelper.setImageResize(new ImageResize(width, height));
+            base64Image = imageHelper.getSegmentImage(pageId, imageId, imageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
 
-        if (image64 == null)
+        if (base64Image == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return image64;
+        return base64Image;
     }
 
     /**
@@ -118,6 +113,7 @@ public class ImageController {
      * @param response Response to the request
      * @param request Request
      * @return Returns the required image as a base64 string
+     * @throws IOException
      */
     @RequestMapping(value = "/ajax/image/line", method = RequestMethod.GET)
     public @ResponseBody String getImageOfLine(
@@ -134,23 +130,20 @@ public class ImageController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
-        String image64 = null;
+        String base64Image = null;
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
-            image64 = imageHelper.getLineImage(pageId, segmentId, imageId, imageType);
-            String height = request.getParameter("height");
-            String width = request.getParameter("width");
-            if (height != null)
-                imageHelper.setHeight(Integer.parseInt(height));
-            if (width != null)
-                imageHelper.setWidth(Integer.parseInt(width));
+            Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
+            Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
+            imageHelper.setImageResize(new ImageResize(width, height));
+            base64Image = imageHelper.getLineImage(pageId, segmentId, imageId, imageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
 
-        if (image64 == null)
+        if (base64Image == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return image64;
+        return base64Image;
     }
 
     /**
@@ -159,12 +152,14 @@ public class ImageController {
      * @param imageType Type of the images in the list
      * @param session Session of the user
      * @param response Response to the request
+     * @param request Request
      * @return Returns a list of page IDs with their images as base64 string
+     * @throws IOException
      */
     @RequestMapping(value = "/ajax/image/list", method = RequestMethod.GET)
     public @ResponseBody TreeMap<String, String> getBinaryImageList(
                 @RequestParam("imageType") String imageType,
-                HttpSession session, HttpServletResponse response
+                HttpSession session, HttpServletResponse response, HttpServletRequest request
             ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty() || imageType == null || imageType.isEmpty())
@@ -173,6 +168,9 @@ public class ImageController {
         TreeMap<String, String> imageList = new TreeMap<String, String>();
         try {
             ImageHelper imageHelper = new ImageHelper(projectDir);
+            Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
+            Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
+            imageHelper.setImageResize(new ImageResize(width, height));
             imageList = imageHelper.getImageList("Binary");
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
