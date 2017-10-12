@@ -220,7 +220,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--perc" type="text" />
-                                                <label for="--perc" data-type="float" data-error="Has to be float (. sep)">Default: 80 (Float value))</label>
+                                                <label for="--perc" data-type="float" data-error="Has to be float (. sep)">Default: 80 (Float value)</label>
                                             </div>
                                         </td>
                                     </tr>
