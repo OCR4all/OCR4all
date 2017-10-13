@@ -38,6 +38,15 @@
                     $('#selectAll').prop('checked', checked);
                 });
 
+                function getSelectedPages() {
+                    var selectedPages = [];
+                    $.each($('input[type="checkbox"]').not('#selectAll'), function() {
+                        if( $(this).is(':checked') )
+                            selectedPages.push($(this).attr('data-pageid'));
+                    });
+                    return selectedPages;
+                }
+
                 var skip = 0;
                 var limit = 10;
                 var imageListAjaxInProgress = false;
@@ -53,7 +62,7 @@
                             var li = '<li>';
                             li    += 'Page ' + pageId;
                             li    += '<a href="#!" data-pageid="' + pageId + '"><img width="100" src="data:image/jpeg;base64, ' + pageImage + '" /></a>';
-                            li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" />';
+                            li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" data-pageid="' + pageId + '" />';
                             li    += '<label for="page' + pageId + '"></label>';
                             li    += '</li>';
                             $('#imageList').append(li);
@@ -100,7 +109,6 @@
                     $(divEl).find('i[data-info="broken-image"]').first().remove();
                     var preloaderId = (imageType == 'Despeckled') ? 'despeckledPreloader' : 'binaryPreloader'; 
                     $('#' + preloaderId).removeClass('hide');
-
 
                     var imageAjaxReq = $.get( ajaxUrl, ajaxParams )
                     .done(function( data ) {
@@ -149,26 +157,116 @@
                         loadPageImage($('#despeckledImg').parent('div'), $('.image-list li>a.active').attr('data-pageid'), "Despeckled");
                 });
 
+                var inProgress = false;
+                var progressInterval = null;
+                // Function to handle despeckling progress
+                function updateStatus(initial) {
+                    initial = initial || false;
+
+                    // Update despeckling progress in status collapsible
+                    $.get( "ajax/despeckling/progress" )
+                    .done(function( data ) {
+                        progress = data;
+                        if( Math.floor(data) != data || !$.isNumeric(data) ) {
+                            if( initial !== false ) $('.collapsible').collapsible('open', 0);
+                            inProgress = false;
+                            clearInterval(progressInterval);
+                            $('.status span').html("ERROR: Invalid AJAX response").attr("class", "red-text");
+                            return;
+                        }
+
+                        if( data < 0 ) {
+                            inProgress = false;
+                            clearInterval(progressInterval);
+                            // No ongoing preprocessing
+                            $('.determinate').attr("style", "width: 0%");
+                            return;
+                        }
+
+                        if( inProgress === false ) {
+                            inProgress = true;
+                            $('.status span').html("Ongoing").attr("class", "orange-text");
+                        }
+
+                        if( initial !== false ) $('.collapsible').collapsible('open', 2);
+                        // Update process bar
+                        $('.determinate').attr("style", "width: " + data + "%");
+
+                        // Terminate interval loop
+                        if( data >= 100 ) {
+                            inProgress = false;
+                            clearInterval(progressInterval);
+                            $('.status span').html("Completed").attr("class", "green-text");
+                        }
+                    })
+                    .fail(function( data ) {
+                        inProgress = false;
+                        clearInterval(progressInterval);
+                        $('.status span').html("ERROR: Failed to load status").attr("class", "red-text");
+                    })
+                }
+                // Initial call to set progress variable
+                updateStatus(true);
+                progressInterval = setInterval(updateStatus, 1000);
+
+
                 // Process handling (execute despeckling for all pages with current settings)
                 $("#execute").click(function() {
-                    // Show status
-                    $('.collapsible-header:eq(1)').removeClass('active');
-                    $('.collapsible-header:eq(2)').addClass('active');
-                    $('.collapsible').collapsible({accordion: false});
+                    if( inProgress === true ) {
+                        $('#modal_inprogress').modal('open');
+                    }
+                    else {
+                        var selectedPages = getSelectedPages();
+                        if( selectedPages.length === 0 ) {
+                            $('#modal_errorhandling').modal('open');
+                            return;
+                        }
 
-                    //TODO: Execute despeckling process
+                        // Show status (and hide image preview)
+                        if( $('.collapsible').find('.collapsible-header').eq(1).hasClass('active') )
+                            $('.collapsible').find('.collapsible-header').eq(1).click();
+                        if( !$('.collapsible').find('.collapsible-header').eq(2).hasClass('active') )
+                            $('.collapsible').find('.collapsible-header').eq(2).click();
+                        $(window).scrollTop(0);
+
+                        var ajaxParams = { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val(), "pageIds[]" : selectedPages };
+                        $.post( "ajax/despeckling/execute", ajaxParams )
+                        .fail(function( data ) {
+                            inProgress = false;
+                            clearInterval(progressInterval);
+                            $('.status span').html("ERROR: Error during process execution").attr("class", "red-text");
+                        })
+
+                        // Update despeckling status. Interval will be terminated in
+                        // updateStatus(), if process is finished.
+                        progressInterval = setInterval(updateStatus, 1000);
+                    }
                 });
                 $("#cancel").click(function() {
-                    // Show status
-                    $('.collapsible-header:eq(1)').removeClass('active');
-                    $('.collapsible-header:eq(2)').addClass('active');
-                    $('.collapsible').collapsible({accordion: false});
-
-                    //TODO: Cancel despeckling process
+                    if( inProgress !== true ) {
+                        $('#modal_noprocess').modal('open');
+                    }
+                    else {
+                        $.post( "ajax/despeckling/cancel" )
+                        .done(function( data ) {
+                            inProgress = false;
+                            clearInterval(progressInterval);
+                            $('.status span').html("No Preprocessing process running").attr("class", "");
+                            $('#modal_successfulcancel').modal('open');
+                        })
+                        .fail(function( data ) {
+                            inProgress = false;
+                            clearInterval(progressInterval);
+                            $('.status span').html("ERROR: Error during process cancelling").attr("class", "red-text");
+                            $('#modal_failcancel').modal('open');
+                        })
+                    }
                 });
 
                 // Initialize select form
                 $('select').material_select();
+                // Initialize modals
+                $('.modal').modal();
             });
         </script>
     </t:head>
@@ -270,13 +368,70 @@
                 </ul>
 
                 <button id="execute" class="btn waves-effect waves-light">
-                    Execute for all pages
+                    Execute for selected pages
                     <i class="material-icons right">chevron_right</i>
                 </button>
                 <button id="cancel" class="btn waves-effect waves-light">
                     Cancel
                     <i class="material-icons right">cancel</i>
                 </button>
+
+                <!-- In progress information -->
+                <div id="modal_inprogress" class="modal">
+                    <div class="modal-content">
+                        <h4>Information</h4>
+                        <p>
+                            There already is a running Despeckling process.<br/>
+                            Please wait until it is finished or cancel it.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
+                <!-- Error handling -->
+                <div id="modal_errorhandling" class="modal">
+                    <div class="modal-content red-text">
+                        <h4>Information</h4>
+                        <p>
+                            No pages were selected.<br/>
+                            Please select pages to despeckle and try again.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
+                <!-- No current process information -->
+                <div id="modal_noprocess" class="modal">
+                    <div class="modal-content">
+                        <h4>Information</h4>
+                        <p>There exists no ongoing Despeckling process.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
+                <!-- Successful cancel information -->
+                <div id="modal_successfulcancel" class="modal">
+                    <div class="modal-content">
+                        <h4>Information</h4>
+                        <p>The Despeckling process was cancelled successfully.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
+                <!-- Failed cancel information -->
+                <div id="modal_failcancel" class="modal">
+                    <div class="modal-content red-text">
+                        <h4>Error</h4>
+                        <p>The Despeckling process could not be cancelled.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                    </div>
+                </div>
             </div>
         </div>
     </t:body>
