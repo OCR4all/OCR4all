@@ -58,6 +58,7 @@
                     $('#imageList').append(li);
                 })
 
+                var despeckledAjaxReq = null;
                 // Function to load page image on demand via AJAX
                 function loadPageImage(divEl, pageId, imageType) {
                     var ajaxUrl = (imageType == 'Despeckled') ? "ajax/image/preview/despeckled" : "ajax/image/page";
@@ -65,11 +66,17 @@
                     if( imageType == 'Despeckled' ) {
                         $.extend(ajaxParams, { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val() });
                         $.extend(ajaxParams, { "illustrationType" : $('select[name="illustrationType"]').val() });
+
+                        // Abort last despeckling AJAX request
+                        // This prevents issues with delayed image loading
+                        if( despeckledAjaxReq !== null )
+                            despeckledAjaxReq.abort();
+                        despeckledAjaxReq = null;
                     }
 
                     $(divEl).find('img').first().attr('src', '');
                     $(divEl).find('i[data-info="broken-image"]').first().remove();
-                    $.get( ajaxUrl, ajaxParams )
+                    var imageAjaxReq = $.get( ajaxUrl, ajaxParams )
                     .done(function( data ) {
                         if( data === '' ) {
                             $(divEl).find('img').first().after('<i class="material-icons" data-info="broken-image">broken_image</i>');
@@ -81,6 +88,9 @@
                     .fail(function( data ) {
                         $(divEl).find('img').first().after('<i class="material-icons" data-info="broken-image">broken_image</i>');
                     })
+
+                    if( imageType == 'Despeckled' )
+                        despeckledAjaxReq = imageAjaxReq;
                 }
 
                 // Handle onclick event for pages in page image list
