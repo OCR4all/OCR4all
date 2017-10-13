@@ -133,7 +133,7 @@
                         })
 
                         // Update preprocessing status. Interval will be terminated in
-                        // updateProgressBar(), if process is finished.
+                        // updateStatus(), if process is finished.
                         progressInterval = setInterval(updateStatus, 1000);
                     }
                 });
@@ -308,8 +308,8 @@
                     <div class="modal-content">
                         <h4>Information</h4>
                         <p>
-                            There are errors in your settings input.<br/>
-                            Please resolve them and try again.
+                            There already is a running Preprocessing process.<br/>
+                            Please wait until it is finished or cancel it.
                         </p>
                     </div>
                     <div class="modal-footer">
@@ -318,7 +318,7 @@
                 </div>
                 <!-- Error handling-->
                 <div id="modal_errorhandling" class="modal">
-                    <div class="modal-content">
+                    <div class="modal-content red-text">
                         <h4>Information</h4>
                         <p>
                             There exists an error in the input.<br/>
