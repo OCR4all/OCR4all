@@ -62,7 +62,7 @@
                 // Function to load page image on demand via AJAX
                 function loadPageImage(divEl, pageId, imageType) {
                     var ajaxUrl = (imageType == 'Despeckled') ? "ajax/image/preview/despeckled" : "ajax/image/page";
-                    var ajaxParams = { "pageId" : pageId, "imageId" : imageType, "width" : 395 };
+                    var ajaxParams = { "pageId" : pageId, "imageId" : imageType, "width" : 960 };
                     if( imageType == 'Despeckled' ) {
                         $.extend(ajaxParams, { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val() });
                         $.extend(ajaxParams, { "illustrationType" : $('select[name="illustrationType"]').val() });
@@ -74,8 +74,13 @@
                         despeckledAjaxReq = null;
                     }
 
+                    // Handle preloader to indicate that the despeckled image loading is still in progress
                     $(divEl).find('img').first().attr('src', '');
                     $(divEl).find('i[data-info="broken-image"]').first().remove();
+                    var preloaderId = (imageType == 'Despeckled') ? 'despeckledPreloader' : 'binaryPreloader'; 
+                    $('#' + preloaderId).removeClass('hide');
+
+
                     var imageAjaxReq = $.get( ajaxUrl, ajaxParams )
                     .done(function( data ) {
                         if( data === '' ) {
@@ -84,9 +89,17 @@
                         else {
                             $(divEl).find('img').first().attr('src', 'data:image/jpeg;base64, ' + data);
                         }
+
+                        // Cleanup preloader (loading process finished)
+                        var preloaderId = (imageType == 'Despeckled') ? 'despeckledPreloader' : 'binaryPreloader'; 
+                        $('#' + preloaderId).addClass('hide');
                     })
                     .fail(function( data ) {
                         $(divEl).find('img').first().after('<i class="material-icons" data-info="broken-image">broken_image</i>');
+
+                        // Cleanup preloader (loading process finished)
+                        var preloaderId = (imageType == 'Despeckled') ? 'despeckledPreloader' : 'binaryPreloader'; 
+                        $('#' + preloaderId).addClass('hide');
                     })
 
                     if( imageType == 'Despeckled' )
@@ -95,8 +108,11 @@
 
                 // Handle onclick event for pages in page image list
                 $('#imageList').on('click', 'a', function() {
-                    $('.collapsible-header').last().addClass('active');
-                    $('.collapsible').collapsible({accordion: false});
+                    // Show image preview
+                    if( !$('.collapsible-header:eq(1)').hasClass('active') ) {
+                        $('.collapsible-header:eq(1)').addClass('active');
+                        $('.collapsible').collapsible({accordion: false});
+                    }
 
                     $('.image-list li>a.active').removeClass('active');
                     $(this).addClass('active');
@@ -110,6 +126,24 @@
                 $('input, select').on('change', function() {
                     if( $('.image-list li>a.active').length === 1 )
                         loadPageImage($('#despeckledImg').parent('div'), $('.image-list li>a.active').attr('data-pageid'), "Despeckled");
+                });
+
+                // Process handling (execute despeckling for all pages with current settings)
+                $("#execute").click(function() {
+                    // Show status
+                    $('.collapsible-header:eq(1)').removeClass('active');
+                    $('.collapsible-header:eq(2)').addClass('active');
+                    $('.collapsible').collapsible({accordion: false});
+
+                    //TODO: Execute despeckling process
+                });
+                $("#cancel").click(function() {
+                    // Show status
+                    $('.collapsible-header:eq(1)').removeClass('active');
+                    $('.collapsible-header:eq(2)').addClass('active');
+                    $('.collapsible').collapsible({accordion: false});
+
+                    //TODO: Cancel despeckling process
                 });
 
                 // Initialize select form
@@ -165,19 +199,63 @@
                             <div class="row center">
                                 <div class="col s1"></div>
                                 <div class="col s4">
-                                    <h5>Original</h5>
-                                    <img id="originalImg" width="100%" src="" />
+                                    <h5>Binary</h5>
+                                    <img id="originalImg" class="materialboxed" width="100%" src="" />
+                                    <div id="binaryPreloader" class="preloader-wrapper active small hide">
+                                        <div class="spinner-layer spinner-blue-only">
+                                            <div class="circle-clipper left">
+                                                <div class="circle"></div>
+                                            </div>
+                                            <div class="gap-patch">
+                                                <div class="circle"></div>
+                                            </div>
+                                            <div class="circle-clipper right">
+                                                <div class="circle"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col s2"></div>
                                 <div class="col s4">
                                     <h5>Despeckled</h5>
-                                    <img id="despeckledImg" width="100%" src="" />
+                                    <img id="despeckledImg" class="materialboxed" width="100%" src="" />
+                                    <div id="despeckledPreloader" class="preloader-wrapper active small hide">
+                                        <div class="spinner-layer spinner-blue-only">
+                                            <div class="circle-clipper left">
+                                                <div class="circle"></div>
+                                            </div>
+                                            <div class="gap-patch">
+                                                <div class="circle"></div>
+                                            </div>
+                                            <div class="circle-clipper right">
+                                                <div class="circle"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col s1"></div>
                             </div>
                         </div>
                     </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
+                        <div class="collapsible-body">
+                            <div class="status"><p>Status: <span>No Despeckling process running</span></p></div>
+                            <div class="progress">
+                                <div class="determinate"></div>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
+
+                <button id="execute" class="btn waves-effect waves-light">
+                    Execute for all pages
+                    <i class="material-icons right">chevron_right</i>
+                </button>
+                <button id="cancel" class="btn waves-effect waves-light">
+                    Cancel
+                    <i class="material-icons right">cancel</i>
+                </button>
             </div>
         </div>
     </t:body>
