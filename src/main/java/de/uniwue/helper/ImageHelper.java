@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -97,10 +98,10 @@ public class ImageHelper {
      * @throws IOException
      */
     private String getImageAsBase64(String path) throws IOException {
-            byte[] return_buff = imageResize.getScaledImage(path);
-            if (return_buff != null)
-                return Base64.getEncoder().encodeToString(imageResize.getScaledImage(path));
-            return "";
+        byte[] return_buff = imageResize.getScaledImage(path);
+        if (return_buff != null)
+            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(path));
+        return "";
     }
 
     /**
@@ -172,15 +173,16 @@ public class ImageHelper {
         return imageList;
     }
 
-    /** Despeckling of a Binary image
-     * 
-     * @param binary Binary image
-     * @param maxArea maximum size of the contours to be removed
-     * @param modus standard: the result image shows the resulting binary image | 
-     *              marked: the result image shows the resulting binary image and additionally represents the removed contours
+    /**
+     * Despeckling of a Binary image
+     *
+     * @param binary Mat of the binary image
+     * @param maxContourRemovalSize maximum size of the contours to be removed
+     * @param illustrationType standard: the result image shows the resulting binary image | 
+     *                          marked:  the result image shows the resulting binary image and additionally represents the removed contours
      * @return Resulting binary image
      */
-    public Mat despeckle(Mat binary, double maxArea, String modus) {
+    public Mat despeckle(Mat binary, double maxContourRemovalSize, String illustrationType) {
         Mat inverted = new Mat();
         Core.bitwise_not(binary, inverted);
 
@@ -190,44 +192,53 @@ public class ImageHelper {
         Mat result = binary.clone();
         if (contours.size() > 1) {
             ArrayList<MatOfPoint> toRemove = new ArrayList<MatOfPoint>();
-
             for (MatOfPoint contour : contours) {
                 double area = Imgproc.contourArea(contour);
-
-                if (area < maxArea) {
+                if (area < maxContourRemovalSize) {
                     toRemove.add(contour);
                 }
             }
-            if(modus.equals("marked")) {
+
+            if (illustrationType.equals("marked")) {
+                // Convert to BGR image to be able to draw contours in red
                 Imgproc.cvtColor(result, result, Imgproc.COLOR_GRAY2BGR);
                 Imgproc.drawContours(result, toRemove, -1, new Scalar(0, 0, 255), -1);
             }
-            else
+            else {
                 Imgproc.drawContours(result, toRemove, -1, new Scalar(255), -1);
-
+            }
         }
 
         return result;
     }
 
-    /** Binary despeckling and base64 encoding
-     * 
-     * @param pageID Identifier of the page (e.g 0002)
-     * @param maxArea Maximum size of the contours to be removed
-     * @param modus Standard: the result image shows the resulting binary image | 
-     *              Marked: the result image shows the resulting binary image and additionally represents the removed contours
+    /**
+     * Binary despeckling and base64 encoding
+     *
+     * @param pageId Identifier of the page (e.g 0002)
+     * @param maxContourRemovalSize Maximum size of the contours to be removed
+     * @param illustrationType standard: the result image shows the resulting binary image | 
+     *                          marked:  the result image shows the resulting binary image and additionally represents the removed contours
      * @return Resulting binary image as base64 string
      * @throws IOException 
      */
-    public String getPreviewDespeckleAsBase64(String pageID, double maxArea, String modus) throws IOException {
+    public String getPreviewDespeckleAsBase64(String pageId, double maxContourRemovalSize, String illustrationType) throws IOException {
+        // Load OpenCV library first (!important)
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
-        Mat mat = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
+
+        // Convert to gray channel only (binary images sometimes seem to have RGB channels)
+        Mat binImage = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
         Mat bwImage = new Mat();
-        Imgproc.cvtColor(mat, bwImage, Imgproc.COLOR_RGB2GRAY);
-        mat = despeckle(bwImage, maxArea, modus);
+        Imgproc.cvtColor(binImage, bwImage, Imgproc.COLOR_RGB2GRAY);
+
+        Mat despImage = despeckle(bwImage, maxContourRemovalSize, illustrationType);
+
         if (imageResize != null)
-            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(mat));
-        return "";
+            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(despImage));
+
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".png", despImage, matOfByte);
+        return Base64.getEncoder().encodeToString(matOfByte.toArray());
     }
 }

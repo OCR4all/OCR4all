@@ -28,6 +28,11 @@ public final class ProjectDirConfig {
         }
     }
 
+    /**
+     * Constructor (only final variables contain the correct values)
+     */
+    public ProjectDirConfig() { }
+
     /**** Extensions ****/
 
     /**

@@ -32,14 +32,13 @@ public class ImageController {
      * @param response Response to the request
      * @param request Request
      * @return Returns the required image as a base64 string
-     * @throws IOException 
      */
     @RequestMapping(value = "/ajax/image/page", method = RequestMethod.GET)
     public @ResponseBody String getImageOfPage(
                 @RequestParam("pageId") String pageId,
                 @RequestParam("imageId") String imageId,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
-            ) throws IOException {
+            ) {
 
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty() || pageId == null || pageId.isEmpty()
@@ -72,14 +71,13 @@ public class ImageController {
      * @param response Response to the request
      * @param request Request
      * @return Returns the required image as a base64 string
-     * @throws IOException
      */
     @RequestMapping(value = "/ajax/image/segment", method = RequestMethod.GET)
     public @ResponseBody String getImageOfSegment(
                 @RequestParam("pageId") String pageId,
                 @RequestParam("imageId") String imageId,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
-            ) throws IOException {
+            ) {
         String projectDir = (String) session.getAttribute("projectDir");
         String imageType = session.getAttribute("imageType").toString();
         if (projectDir == null || projectDir.isEmpty() || imageType == null || imageType.isEmpty()
@@ -113,7 +111,6 @@ public class ImageController {
      * @param response Response to the request
      * @param request Request
      * @return Returns the required image as a base64 string
-     * @throws IOException
      */
     @RequestMapping(value = "/ajax/image/line", method = RequestMethod.GET)
     public @ResponseBody String getImageOfLine(
@@ -121,7 +118,7 @@ public class ImageController {
                 @RequestParam("segmentId") String segmentId,
                 @RequestParam("imageId") String imageId,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
-            ) throws IOException {
+            ) {
         String projectDir = (String) session.getAttribute("projectDir");
         String imageType = session.getAttribute("imageType").toString();
         if (projectDir == null || projectDir.isEmpty() || imageType == null || imageType.isEmpty()
@@ -156,7 +153,6 @@ public class ImageController {
      * @param response Response to the request
      * @param request Request
      * @return Returns a list of page IDs with their images as base64 string
-     * @throws IOException
      */
     @RequestMapping(value = "/ajax/image/list", method = RequestMethod.GET)
     public @ResponseBody TreeMap<String, String> getBinaryImageList(
@@ -164,7 +160,7 @@ public class ImageController {
                 @RequestParam("skip") long skip,
                 @RequestParam("limit") long limit,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
-            ) throws IOException {
+            ) {
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty() || imageType == null || imageType.isEmpty())
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -182,34 +178,41 @@ public class ImageController {
 
         return imageList;
     }
+
     /**
-     * 
+     * Response to the request to return a preview despeckled image as base64 strings
+     *
      * @param pageId Identifier of the page (e.g 0002)
-     * @param illustrationType Standard: the result image shows the resulting binary image | Marked: the result image shows the resulting binary image and additionally represents the removed contours
      * @param maxContourRemovalSize Maximum size of the contours to be removed
+     * @param illustrationType standard: the result image shows the resulting binary image | 
+     *                          marked:  the result image shows the resulting binary image and additionally represents the removed contours
      * @param session Session of the user
      * @param response Response to the request
      * @param request Request
      * @return Returns the required image as a base64 string
-     * @throws IOException
      */
     @RequestMapping(value = "/ajax/image/preview/despeckled", method = RequestMethod.GET)
     public @ResponseBody String getDespecklePreview(
                 @RequestParam("pageId") String pageId,
-                @RequestParam("illustrationType") String illustrationType,
                 @RequestParam("maxContourRemovalSize") double maxContourRemovalSize,
+                @RequestParam("illustrationType") String illustrationType,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
-            ) throws IOException {
+            ) {
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty())
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        String Base64String = null;
-        ImageHelper imageHelper = new ImageHelper(projectDir);
-        Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
-        Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
-        imageHelper.setImageResize(new ImageResize(width, height));
-        Base64String = imageHelper.getPreviewDespeckleAsBase64(pageId, maxContourRemovalSize, illustrationType);
 
-        return Base64String;
+        String base64Image = null;
+        try {
+            ImageHelper imageHelper = new ImageHelper(projectDir);
+            Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
+            Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
+            imageHelper.setImageResize(new ImageResize(width, height));
+            base64Image = imageHelper.getPreviewDespeckleAsBase64(pageId, maxContourRemovalSize, illustrationType);
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+
+        return base64Image;
     }
 }
