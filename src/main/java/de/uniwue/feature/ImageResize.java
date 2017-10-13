@@ -61,17 +61,17 @@ public class ImageResize {
      */
     private Dimension getDimension(BufferedImage img) {
         Dimension dimension = null;
-        if(resizeHeight != -1 || resizeWidth != -1) {
-            if(resizeHeight != -1 && resizeWidth != -1) {
+        if (resizeHeight != -1 || resizeWidth != -1) {
+            if (resizeHeight != -1 && resizeWidth != -1) {
                 return new Dimension(resizeWidth,resizeHeight);
             }
             else if (resizeHeight == -1) {
-                double factor = img.getWidth()/resizeWidth;
-                return new Dimension(resizeWidth,(int) (img.getHeight()/factor));
+                double factor = img.getWidth() / resizeWidth;
+                return new Dimension(resizeWidth,(int) (img.getHeight() / factor));
             }
             else {
-                double factor = img.getHeight()/resizeHeight;
-                 return new Dimension((int) (img.getWidth()/factor),resizeHeight);
+                double factor = img.getHeight() / resizeHeight;
+                 return new Dimension((int) (img.getWidth() / factor),resizeHeight);
             }
         }
         return dimension;

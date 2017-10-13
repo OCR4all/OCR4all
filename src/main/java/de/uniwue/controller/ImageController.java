@@ -178,4 +178,21 @@ public class ImageController {
 
         return imageList;
     }
+
+    @RequestMapping(value = "/ajax/image/preview/despeckled", method = RequestMethod.GET)
+    public @ResponseBody String getDespecklePreview(
+                @RequestParam("pageId") String pageId,
+                @RequestParam("illustrationType") String illustrationType,
+                @RequestParam("maxContourRemovalSize") double maxContourRemovalSize,
+                HttpSession session, HttpServletResponse response, HttpServletRequest request
+            ) throws IOException {
+        String projectDir = (String) session.getAttribute("projectDir");
+        if (projectDir == null || projectDir.isEmpty())
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        String Base64String = null;
+        ImageHelper imageHelper = new ImageHelper(projectDir);
+        Base64String = imageHelper.getPreviewDespeckleAsBase64(pageId, maxContourRemovalSize);
+
+        return Base64String;
+    }
 }

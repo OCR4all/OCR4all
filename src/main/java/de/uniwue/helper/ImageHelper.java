@@ -11,9 +11,12 @@ import org.apache.commons.io.FilenameUtils;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 import de.uniwue.config.ProjectDirConfig;
 import de.uniwue.feature.ImageResize;
@@ -175,7 +178,7 @@ public class ImageHelper {
     }
 
 
-    public static Mat despeckle(Mat binary, double maxArea) {
+    public Mat despeckle(Mat binary, double maxArea) {
         Mat inverted = new Mat();
         Core.bitwise_not(binary, inverted);
 
@@ -199,5 +202,22 @@ public class ImageHelper {
         }
 
         return result;
+    }
+
+    public String getPreviewDespeckleAsBase64(String pageID, double maxArea) {
+        nu.pattern.OpenCV.loadShared();
+        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
+
+        Mat mat = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
+        System.out.println(mat);
+        Mat bwImage = new Mat();
+        Imgproc.cvtColor(mat, bwImage, Imgproc.COLOR_RGB2GRAY);
+        mat = despeckle(bwImage,maxArea);
+        System.out.println(mat);
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".png", mat, matOfByte); 
+        byte[] return_buff = matOfByte.toArray();
+        String Base64String = Base64.getEncoder().encodeToString(return_buff);
+                return Base64String;
     }
 }
