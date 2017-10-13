@@ -60,33 +60,46 @@
 
                 // Function to load page image on demand via AJAX
                 function loadPageImage(divEl, pageId, imageType) {
-                    $.get( "ajax/image/page", { "pageId" : pageId, "imageId" : imageType, "width" : 395 } )
+                    var ajaxUrl = (imageType == 'Despeckled') ? "ajax/image/preview/despeckled" : "ajax/image/page";
+                    var ajaxParams = { "pageId" : pageId, "imageId" : imageType, "width" : 395 };
+                    if( imageType == 'Despeckled' ) {
+                        $.extend(ajaxParams, { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val() });
+                        $.extend(ajaxParams, { "illustrationType" : $('select[name="illustrationType"]').val() });
+                    }
+
+                    $(divEl).find('img').first().attr('src', '');
+                    $(divEl).find('i[data-info="broken-image"]').first().remove();
+                    $.get( ajaxUrl, ajaxParams )
                     .done(function( data ) {
                         if( data === '' ) {
-                            $(divEl).find('img').first().attr('src', '');
-                            $(divEl).find('i[data-info="broken-image"]').first().remove();
                             $(divEl).find('img').first().after('<i class="material-icons" data-info="broken-image">broken_image</i>');
                         }
                         else {
-                            $(divEl).find('i[data-info="broken-image"]').first().remove();
                             $(divEl).find('img').first().attr('src', 'data:image/jpeg;base64, ' + data);
                         }
                     })
                     .fail(function( data ) {
-                        $(divEl).find('img').first().attr('src', '');
-                        $(divEl).find('i[data-info="broken-image"]').first().remove();
                         $(divEl).find('img').first().after('<i class="material-icons" data-info="broken-image">broken_image</i>');
                     })
                 }
 
                 // Handle onclick event for pages in page image list
-                $('#imageList').on('click', 'a', function(e) {
+                $('#imageList').on('click', 'a', function() {
                     $('.collapsible-header').last().addClass('active');
                     $('.collapsible').collapsible({accordion: false});
+
+                    $('.image-list li>a.active').removeClass('active');
+                    $(this).addClass('active');
 
                     // Load full size images
                     loadPageImage($('#originalImg').parent('div'),   $(this).attr('data-pageid'), "Binary");
                     loadPageImage($('#despeckledImg').parent('div'), $(this).attr('data-pageid'), "Despeckled");
+                });
+
+                // Update despeckled image preview when settings are changed
+                $('input, select').on('change', function() {
+                    if( $('.image-list li>a.active').length === 1 )
+                        loadPageImage($('#despeckledImg').parent('div'), $('.image-list li>a.active').attr('data-pageid'), "Despeckled");
                 });
 
                 // Initialize select form
@@ -116,7 +129,7 @@
                                         <td><p>Maximal size for removing contours</p></td>
                                         <td>
                                             <div class="input-field">
-                                                <input id="maxContourRemovalSize" value="100" type="number" />
+                                                <input id="maxContourRemovalSize" name="maxContourRemovalSize" value="100" type="number" />
                                                 <label for="maxContourRemovalSize" data-type="float" data-error="Has to be float (. sep)">Float value</label>
                                             </div>
                                         </td>
@@ -125,7 +138,7 @@
                                         <td><p>Illustration type</p></td>
                                         <td>
                                             <div class="input-field">
-                                                <select id="imageType" name="imageType">
+                                                <select id="illustrationType" name="illustrationType">
                                                     <option value="standard">Show binary image</option>
                                                     <option value="marked">Show binary image including removed speckles</option>
                                                 </select>

@@ -122,6 +122,9 @@ table.compact .suffix {
   height: auto;
   padding-bottom: 5px;
 }
+.image-list li>a.active {
+  background-color: #8c9eff;
+}
 .includes-list {
   padding-right: 260px;
 }
