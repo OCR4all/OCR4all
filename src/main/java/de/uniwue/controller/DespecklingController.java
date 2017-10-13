@@ -1,6 +1,5 @@
 package de.uniwue.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +30,7 @@ public class DespecklingController {
      * @return Returns the content of the /Despeckling page
      */
     @RequestMapping("/Despeckling")
-    public ModelAndView showDespeckling(HttpSession session) throws IOException {
+    public ModelAndView showDespeckling(HttpSession session) {
         ModelAndView mv = new ModelAndView("despeckling");
 
         String projectDir = (String)session.getAttribute("projectDir");
@@ -43,7 +42,7 @@ public class DespecklingController {
         return mv;
     }
 
-    /**
+    /** Response to the request to return the despeckling status and output information
      * 
      * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
      * @param illustrationType Standard: the result image shows the resulting binary image | Marked: the result image shows the resulting binary image and additionally represents the removed contours
@@ -52,14 +51,13 @@ public class DespecklingController {
      * @param response Response to the request
      * @param request Request
      * @return Returns the required image as a base64 string
-     * @throws IOException
      */
-    @RequestMapping(value = "/ajax/despeckling/execute", method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/despeckling/execute", method = RequestMethod.POST)
     public @ResponseBody void executeDispeckling(
-                @RequestParam(value = "pageIds[]", required = false) String[] pageIds,
+                @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam("maxContourRemovalSize") double maxContourRemovalSize,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
-            ) throws IOException {
+            ) {
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty())
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -85,7 +83,7 @@ public class DespecklingController {
     @RequestMapping(value = "/ajax/despeckling/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancelDesoeckling(
                HttpSession session, HttpServletResponse response
-           ) throws IOException {
+           ) {
         String projectDir = (String) session.getAttribute("projectDir");
 
         if (projectDir == null || projectDir.isEmpty())
@@ -102,8 +100,7 @@ public class DespecklingController {
      * @return
      */
     @RequestMapping(value = "/ajax/despeckling/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonProgress(HttpSession session) throws IOException {
-
+    public @ResponseBody int jsonProgress(HttpSession session) {
         if (session.getAttribute("despeckHelper") == null)
             return -1;
 
@@ -111,4 +108,3 @@ public class DespecklingController {
         return despeckHelper.getProgress();
     }
 }
-

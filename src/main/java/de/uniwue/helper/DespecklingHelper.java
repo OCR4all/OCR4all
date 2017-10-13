@@ -9,7 +9,9 @@ import org.opencv.imgproc.Imgproc;
 
 import de.uniwue.config.ProjectDirConfig;
 
-
+/**
+ * Helper class for despeckling module
+ */
 public class DespecklingHelper {
 
     /**
@@ -23,7 +25,7 @@ public class DespecklingHelper {
     private ImageHelper imageHelper;
 
     /**
-     * Status if the process should be cancelled
+     * Status of the progress
      */
     private int progress = -1;
 
@@ -50,7 +52,7 @@ public class DespecklingHelper {
     public void despeckleGivenPages(List<String> pageIdsAsList, double maxArea) {
         int totalPages = pageIdsAsList.size();
         double i = 1;
-        progress = 1;
+        progress = 0;
         File DespDir = new File(projDirConf.DESP_IMG_DIR);
 
         if (!DespDir.exists())
@@ -61,12 +63,12 @@ public class DespecklingHelper {
                 return;
             Mat mat = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
             Mat bwImage = new Mat();
+            // RGB2Gray required for despeckle functionality
             Imgproc.cvtColor(mat, bwImage, Imgproc.COLOR_RGB2GRAY);
             mat = imageHelper.despeckle(bwImage, maxArea, "standard");
             Imgcodecs.imwrite(projDirConf.DESP_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT, mat);
             progress = (int) (i / totalPages * 100);
             i = i + 1;
-
         }
     }
 

@@ -28,7 +28,7 @@ public class OverviewController {
      * @return Returns the content of the project overview page
      */
     @RequestMapping("/")
-    public ModelAndView showOverview() throws IOException {
+    public ModelAndView showOverview() {
         ModelAndView mv = new ModelAndView("overview");
         return mv;
     }
@@ -45,7 +45,7 @@ public class OverviewController {
     public ModelAndView showPageOverview(
                 @RequestParam("pageId") String pageId,
                 HttpSession session, HttpServletResponse response
-            ) throws IOException {
+            ) {
         ModelAndView mv = new ModelAndView("pageOverview");
 
         String projectDir = (String) session.getAttribute("projectDir");
@@ -91,7 +91,7 @@ public class OverviewController {
                 @RequestParam("projectDir") String projectDir,
                 @RequestParam("imageType") String imageType,
                 HttpSession session, HttpServletResponse response
-            ) throws IOException {
+            ) {
         // Store project directory in session (serves as entry point)
         session.setAttribute("projectDir", projectDir);
         session.setAttribute("imageType", imageType);

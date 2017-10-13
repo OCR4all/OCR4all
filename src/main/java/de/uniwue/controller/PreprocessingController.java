@@ -33,7 +33,7 @@ public class PreprocessingController {
      * @return Returns the content of the /Preprocessing page
      */
     @RequestMapping("/Preprocessing")
-    public ModelAndView showPreprocessing(HttpSession session) throws IOException {
+    public ModelAndView showPreprocessing(HttpSession session) {
         ModelAndView mv = new ModelAndView("preprocessing");
 
         String projectDir = (String)session.getAttribute("projectDir");
@@ -56,7 +56,7 @@ public class PreprocessingController {
     public @ResponseBody void executePreprocessing(
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                HttpSession session, HttpServletResponse response
-           ) throws IOException {
+           ) {
         String projectDir = (String) session.getAttribute("projectDir");
 
         if (projectDir == null || projectDir.isEmpty()) {
@@ -90,7 +90,7 @@ public class PreprocessingController {
     @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancelPreprocessing(
                HttpSession session, HttpServletResponse response
-           ) throws IOException {
+           ) {
         String projectDir = (String) session.getAttribute("projectDir");
 
         if (projectDir == null || projectDir.isEmpty())
@@ -107,7 +107,7 @@ public class PreprocessingController {
      * @return
      */
     @RequestMapping(value = "/ajax/preprocessing/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonProgress(HttpSession session) throws IOException {
+    public @ResponseBody int jsonProgress(HttpSession session) {
 
         if (session.getAttribute("preproHelper") == null)
             return -1;
@@ -123,12 +123,17 @@ public class PreprocessingController {
      * @return
      */
     @RequestMapping(value = "/ajax/preprocessing/console" , method = RequestMethod.GET)
-    public @ResponseBody String jsonConsole(HttpSession session) throws IOException {
+    public @ResponseBody String jsonConsole(HttpSession session, HttpServletResponse response) {
         String cmdOutput = "";
         if (session.getAttribute("preproHelper") != null) {
             PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-            InputStream input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHelper().getStreams()));
-            cmdOutput = IOUtils.toString(input, "UTF-8");
+            try {
+                InputStream input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHelper().getStreams()));
+                cmdOutput = IOUtils.toString(input, "UTF-8");
+            }
+            catch (IOException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
         }
         return cmdOutput;
     }

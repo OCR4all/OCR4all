@@ -103,7 +103,7 @@ public class PreprocessingHelper {
         Arrays.sort(pageFiles);
         int totalPages = pageFiles.length;
         double i = 1;
-        progress = 1;
+        progress = 0;
         for(File pageFile : pageFiles) {
             if (stop == true) {
                 progress = -1;
