@@ -178,7 +178,17 @@ public class ImageController {
 
         return imageList;
     }
-
+    /**
+     * 
+     * @param pageId Identifier of the page (e.g 0002)
+     * @param illustrationType Standard: the result image shows the resulting binary image | Marked: the result image shows the resulting binary image and additionally represents the removed contours
+     * @param maxContourRemovalSize Maximum size of the contours to be removed
+     * @param session Session of the user
+     * @param response Response to the request
+     * @param request Request
+     * @return Returns the required image as a base64 string
+     * @throws IOException
+     */
     @RequestMapping(value = "/ajax/image/preview/despeckled", method = RequestMethod.GET)
     public @ResponseBody String getDespecklePreview(
                 @RequestParam("pageId") String pageId,
@@ -191,7 +201,10 @@ public class ImageController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         String Base64String = null;
         ImageHelper imageHelper = new ImageHelper(projectDir);
-        Base64String = imageHelper.getPreviewDespeckleAsBase64(pageId, maxContourRemovalSize);
+        Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
+        Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
+        imageHelper.setImageResize(new ImageResize(width, height));
+        Base64String = imageHelper.getPreviewDespeckleAsBase64(pageId, maxContourRemovalSize, illustrationType);
 
         return Base64String;
     }

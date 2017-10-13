@@ -1,16 +1,13 @@
 package de.uniwue.feature;
 
 import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 public class ImageResize {
     /**
@@ -38,19 +35,29 @@ public class ImageResize {
      * @return Byte array representation of the scaled image file
      * @throws IOException 
      */
+    
     public byte[] getScaledImage(String path) throws IOException {
-        File imageFile = new File(path);
+        Mat mat = Imgcodecs.imread(path);
+        Dimension dimension = getDimension(mat);
+        if (dimension != null) {
+            Imgproc.resize( mat, mat, new Size(dimension.width, dimension.height) );
+        }
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".png", mat, matOfByte); 
+        byte[] return_buff = matOfByte.toArray();
+        return return_buff;
+    }
 
-        BufferedImage img = null;
-        img = ImageIO.read(imageFile);
+    public byte[] getScaledImage(Mat img) throws IOException {
+
         Dimension dimension = getDimension(img);
         if (dimension != null) {
-            img = scaleImage(img,dimension);
+            Imgproc.resize( img, img, new Size(dimension.width, dimension.height) );
         }
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(img, FilenameUtils.getExtension(imageFile.getName()), baos);
-        return baos.toByteArray();
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".png", img, matOfByte); 
+        byte[] return_buff = matOfByte.toArray();
+        return return_buff;
     }
 
     /**
@@ -59,85 +66,23 @@ public class ImageResize {
      * @param img The image to be scaled
      * @return
      */
-    private Dimension getDimension(BufferedImage img) {
+    private Dimension getDimension(Mat img) {
         Dimension dimension = null;
         if (resizeHeight != -1 || resizeWidth != -1) {
             if (resizeHeight != -1 && resizeWidth != -1) {
                 return new Dimension(resizeWidth,resizeHeight);
             }
             else if (resizeHeight == -1) {
-                double factor = img.getWidth() / resizeWidth;
-                return new Dimension(resizeWidth,(int) (img.getHeight() / factor));
+                double factor = (double) img.cols() / resizeWidth;
+                System.out.println(factor+ "<-- Facotr img.cols "+ img.cols() + " " + resizeWidth );
+                return new Dimension(resizeWidth,(int) (img.rows() / factor));
             }
             else {
-                double factor = img.getHeight() / resizeHeight;
-                 return new Dimension((int) (img.getWidth() / factor),resizeHeight);
+                double factor = img.rows() / resizeHeight;
+                 return new Dimension((int) (img.cols() / factor),resizeHeight);
             }
         }
         return dimension;
     }
 
-    /**
-     * Downscales image
-     * Fastest way to scale pictures is with the Nearest Neighbor algorithm
-     * Source code from: http://www.locked.de/2009/06/08/fast-image-scaling-in-java/ 
-     *
-     * @param img Bufferd image
-     * @param d Dimension of the downsized image
-     * @return Downsized image
-     */
-    private BufferedImage scaleImage(BufferedImage img, Dimension d) {
-        img = scaleByHalf(img, d);
-        img = scaleExact(img, d);
-        return img;
-    }
-
-    private BufferedImage scaleByHalf(BufferedImage img, Dimension d) {
-        int w = img.getWidth();
-        int h = img.getHeight();
-        float factor = getBinFactor(w, h, d);
-
-        // make new size
-        w *= factor;
-        h *= factor;
-        BufferedImage scaled = new BufferedImage(w, h,
-                BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = scaled.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        g.drawImage(img, 0, 0, w, h, null);
-        g.dispose();
-        return scaled;
-    }
-
-    private BufferedImage scaleExact(BufferedImage img, Dimension d) {
-        float factor = getFactor(img.getWidth(), img.getHeight(), d);
-
-        // create the image
-        int w = (int) (img.getWidth() * factor);
-        int h = (int) (img.getHeight() * factor);
-        BufferedImage scaled = new BufferedImage(w, h,
-                BufferedImage.TYPE_INT_RGB);
-
-        Graphics2D g = scaled.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g.drawImage(img, 0, 0, w, h, null);
-        g.dispose();
-        return scaled;
-    }
-
-    private float getBinFactor(int width, int height, Dimension dim) {
-        float factor = 1;
-        float target = getFactor(width, height, dim);
-        if (target <= 1) { while (factor / 2 > target) { factor /= 2; }
-        } else { while (factor * 2 < target) { factor *= 2; }         }
-        return factor;
-    }
-
-    private float getFactor(int width, int height, Dimension dim) {
-        float sx = dim.width / (float) width;
-        float sy = dim.height / (float) height;
-        return Math.min(sx, sy);
-    }
 }

@@ -14,10 +14,9 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.springframework.core.env.SystemEnvironmentPropertySource;
-
 import de.uniwue.config.ProjectDirConfig;
 import de.uniwue.feature.ImageResize;
 
@@ -42,6 +41,8 @@ public class ImageHelper {
      * @param projectDir Path to the project directory
      */
     public ImageHelper(String projectDir) {
+        nu.pattern.OpenCV.loadShared();
+        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
         projDirConf = new ProjectDirConfig(projectDir);
     }
 
@@ -177,8 +178,15 @@ public class ImageHelper {
         return imageList;
     }
 
-
-    public Mat despeckle(Mat binary, double maxArea) {
+    /** Despeckling of a Binary image
+     * 
+     * @param binary Binary image
+     * @param maxArea maximum size of the contours to be removed
+     * @param modus standard: the result image shows the resulting binary image | 
+     *              marked: the result image shows the resulting binary image and additionally represents the removed contours
+     * @return Resulting binary image
+     */
+    public Mat despeckle(Mat binary, double maxArea, String modus) {
         Mat inverted = new Mat();
         Core.bitwise_not(binary, inverted);
 
@@ -186,7 +194,6 @@ public class ImageHelper {
         Imgproc.findContours(inverted, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
         Mat result = binary.clone();
-
         if (contours.size() > 1) {
             ArrayList<MatOfPoint> toRemove = new ArrayList<MatOfPoint>();
 
@@ -197,27 +204,36 @@ public class ImageHelper {
                     toRemove.add(contour);
                 }
             }
+            if(modus.equals("marked")) {
+                Imgproc.cvtColor(result, result, Imgproc.COLOR_GRAY2BGR);
+                Imgproc.drawContours(result, toRemove, -1, new Scalar(0, 0, 255), -1);
+            }
+            else
+                Imgproc.drawContours(result, toRemove, -1, new Scalar(255), -1);
 
-            Imgproc.drawContours(result, toRemove, -1, new Scalar(255), -1);
         }
 
         return result;
     }
 
-    public String getPreviewDespeckleAsBase64(String pageID, double maxArea) {
+    /** Binary despeckling and base64 encoding
+     * 
+     * @param pageID Identifier of the page (e.g 0002)
+     * @param maxArea Maximum size of the contours to be removed
+     * @param modus Standard: the result image shows the resulting binary image | 
+     *              Marked: the result image shows the resulting binary image and additionally represents the removed contours
+     * @return Resulting binary image as base64 string
+     * @throws IOException 
+     */
+    public String getPreviewDespeckleAsBase64(String pageID, double maxArea, String modus) throws IOException {
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
-
         Mat mat = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageID + projDirConf.IMG_EXT);
-        System.out.println(mat);
         Mat bwImage = new Mat();
         Imgproc.cvtColor(mat, bwImage, Imgproc.COLOR_RGB2GRAY);
-        mat = despeckle(bwImage,maxArea);
-        System.out.println(mat);
-        MatOfByte matOfByte = new MatOfByte();
-        Imgcodecs.imencode(".png", mat, matOfByte); 
-        byte[] return_buff = matOfByte.toArray();
-        String Base64String = Base64.getEncoder().encodeToString(return_buff);
-                return Base64String;
+        mat = despeckle(bwImage, maxArea, modus);
+        if (imageResize != null)
+            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(mat));
+        return "";
     }
 }
