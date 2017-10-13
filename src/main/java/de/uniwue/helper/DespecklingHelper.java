@@ -11,30 +11,54 @@ import de.uniwue.config.ProjectDirConfig;
 
 
 public class DespecklingHelper {
+
+    /**
+     * Object to access project directory configuration
+     */
     private ProjectDirConfig projDirConf;
+
+    /**
+     * Helper, who is managing functionality for images
+     */
     private ImageHelper imageHelper;
+
+    /**
+     * Status if the process should be cancelled
+     */
     private int progress = -1;
+
+    /**
+     * Status if the process should be cancelled
+     */
     private boolean stop = false;
 
-    public void setStop(boolean stop) {
-        this.stop = stop;
-    }
+    /**
+     * Constructor
+     *
+     * @param projectDir Path to the project directory
+     */
     public DespecklingHelper(String projectDir) {
         imageHelper = new ImageHelper(projectDir);
         projDirConf = new ProjectDirConfig(projectDir);
     }
+
+    /**
+     * Despeckles pages, that have been passed and saves them
+     * @param pageIdsAsList
+     * @param maxArea
+     */
     public void despeckleGivenPages(List<String> pageIdsAsList, double maxArea) {
         int totalPages = pageIdsAsList.size();
         double i = 1;
         progress = 1;
         File DespDir = new File(projDirConf.DESP_IMG_DIR);
+
         if (!DespDir.exists())
             DespDir.mkdir();
-        
+
         for (String pageId : pageIdsAsList) {
             if (stop == true)
                 return;
-            System.out.println(pageId);
             Mat mat = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
             Mat bwImage = new Mat();
             Imgproc.cvtColor(mat, bwImage, Imgproc.COLOR_RGB2GRAY);
@@ -62,4 +86,5 @@ public class DespecklingHelper {
         stop = true;
         
     }
+
 }
