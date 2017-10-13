@@ -38,25 +38,46 @@
                     $('#selectAll').prop('checked', checked);
                 });
 
-                // Fetch all page images and add them to the list
-                $.get( "ajax/image/list", { "imageType" : "Binary", "width" : 150 } )
-                .done(function( data ) {
-                    $.each(data, function(pageId, pageImage) {
-                        var li = '<li>';
-                        li    += 'Page ' + pageId;
-                        li    += '<a href="#!" data-pageid="' + pageId + '"><img width="100" src="data:image/jpeg;base64, ' + pageImage + '" /></a>';
-                        li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" />';
-                        li    += '<label for="page' + pageId + '"></label>';
+                var skip = 0;
+                var limit = 10;
+                var imageListAjaxInProgress = false;
+                // Continuously fetch all page images and add them to the list
+                function fetchListImages() {
+                    if( imageListAjaxInProgress )
+                        return;
+                    imageListAjaxInProgress = true;
+
+                    $.get( "ajax/image/list", { "imageType" : "Binary", "skip" : skip, "limit" : limit, "width" : 150 } )
+                    .done(function( data ) {
+                        $.each(data, function(pageId, pageImage) {
+                            var li = '<li>';
+                            li    += 'Page ' + pageId;
+                            li    += '<a href="#!" data-pageid="' + pageId + '"><img width="100" src="data:image/jpeg;base64, ' + pageImage + '" /></a>';
+                            li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" />';
+                            li    += '<label for="page' + pageId + '"></label>';
+                            li    += '</li>';
+                            $('#imageList').append(li);
+                        });
+                        // Update counter and enable next load
+                        skip += limit;
+                        imageListAjaxInProgress = false;
+                        // Stop loading of remaining images (all images fetched)
+                        if( data === '' || jQuery.isEmptyObject(data) ) {
+                            clearInterval(imageListInterval);
+                            imageListAjaxInProgress = false;
+                        }
+                    })
+                    .fail(function( data ) {
+                        var li = '<li class="red-text">';
+                        li    += 'Error: Could not load page images';
                         li    += '</li>';
                         $('#imageList').append(li);
-                    });
-                })
-                .fail(function( data ) {
-                    var li = '<li class="red-text">';
-                    li    += 'Error: Could not load page images';
-                    li    += '</li>';
-                    $('#imageList').append(li);
-                })
+                        // Stop loading of remaining images 
+                        clearInterval(imageListInterval);
+                        imageListAjaxInProgress = false;
+                    })
+                }
+                var imageListInterval = setInterval(fetchListImages, 100);
 
                 var despeckledAjaxReq = null;
                 // Function to load page image on demand via AJAX

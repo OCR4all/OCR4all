@@ -147,9 +147,11 @@ public class ImageController {
     }
 
     /**
-     * Response to the request to return a list of all binary images as base64 strings
+     * Response to the request to return a list of binary images as base64 strings
      *
      * @param imageType Type of the images in the list
+     * @param skip Amount of images to skip
+     * @param limit Amount of images to fetch
      * @param session Session of the user
      * @param response Response to the request
      * @param request Request
@@ -159,6 +161,8 @@ public class ImageController {
     @RequestMapping(value = "/ajax/image/list", method = RequestMethod.GET)
     public @ResponseBody TreeMap<String, String> getBinaryImageList(
                 @RequestParam("imageType") String imageType,
+                @RequestParam("skip") long skip,
+                @RequestParam("limit") long limit,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
             ) throws IOException {
         String projectDir = (String) session.getAttribute("projectDir");
@@ -171,7 +175,7 @@ public class ImageController {
             Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
             Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
             imageHelper.setImageResize(new ImageResize(width, height));
-            imageList = imageHelper.getImageList("Binary");
+            imageList = imageHelper.getImageList("Binary", skip, limit);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
