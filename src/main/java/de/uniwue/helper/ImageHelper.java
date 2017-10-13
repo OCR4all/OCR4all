@@ -11,10 +11,8 @@ import org.apache.commons.io.FilenameUtils;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import de.uniwue.config.ProjectDirConfig;
@@ -90,22 +88,6 @@ public class ImageHelper {
     }
 
     /**
-     * Reads an image file and stores it into a byte array 
-     *
-     * @param path Filesystem path to the image
-     * @return Byte array representation of the image file
-     * @throws IOException
-     */
-    private byte[] readImageFile(String path) throws IOException {
-        File file = new File(path);
-        FileInputStream fileInputStreamReader = new FileInputStream(file);
-        byte[] bytes = new byte[(int) file.length()];
-        fileInputStreamReader.read(bytes);
-        fileInputStreamReader.close();
-        return bytes;
-    }
-
-    /**
      * Encodes the given image file to a base64 string
      *
      * @param path Filesystem path to the image
@@ -113,11 +95,10 @@ public class ImageHelper {
      * @throws IOException
      */
     private String getImageAsBase64(String path) throws IOException {
-        // Resizing is required
-        if (imageResize != null)
-            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(path));
-
-        return Base64.getEncoder().encodeToString(readImageFile(path));
+            byte[] return_buff = imageResize.getScaledImage(path);
+            if (return_buff != null)
+                return Base64.getEncoder().encodeToString(imageResize.getScaledImage(path));
+            return "";
     }
 
     /**

@@ -35,19 +35,28 @@ public class ImageResize {
      * @return Byte array representation of the scaled image file
      * @throws IOException 
      */
-    
     public byte[] getScaledImage(String path) throws IOException {
         Mat mat = Imgcodecs.imread(path);
+        byte[] return_buff = null;
+        if (mat.empty())
+            return return_buff;
         Dimension dimension = getDimension(mat);
         if (dimension != null) {
             Imgproc.resize( mat, mat, new Size(dimension.width, dimension.height) );
         }
         MatOfByte matOfByte = new MatOfByte();
         Imgcodecs.imencode(".png", mat, matOfByte); 
-        byte[] return_buff = matOfByte.toArray();
+        return_buff = matOfByte.toArray();
         return return_buff;
     }
 
+    /**
+     * Resizes an image file and stores it into a byte array
+     *
+     * @param img Mat of the img
+     * @return Byte array representation of the scaled image file
+     * @throws IOException 
+     */
     public byte[] getScaledImage(Mat img) throws IOException {
 
         Dimension dimension = getDimension(img);
@@ -74,7 +83,6 @@ public class ImageResize {
             }
             else if (resizeHeight == -1) {
                 double factor = (double) img.cols() / resizeWidth;
-                System.out.println(factor+ "<-- Facotr img.cols "+ img.cols() + " " + resizeWidth );
                 return new Dimension(resizeWidth,(int) (img.rows() / factor));
             }
             else {
