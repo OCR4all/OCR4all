@@ -63,8 +63,8 @@ public class ImageResize {
                 return new Dimension(resizeWidth, (int) (img.rows() / factor));
             }
             else {
-                double factor = img.rows() / resizeHeight;
-                 return new Dimension((int) (img.cols() / factor), resizeHeight);
+                double factor = (double) img.rows() / resizeHeight;
+                return new Dimension((int) (img.cols() / factor), resizeHeight);
             }
         }
         return dimension;
