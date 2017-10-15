@@ -32,6 +32,13 @@
         </listener-class>
     </listener>
 
+    <!-- Starts servlet on startup of the server -->
+       <listener>
+    <listener-class>
+             de.uniwue.helper.startupServletHelper
+        </listener-class>
+   </listener>
+
     <session-config>
         <!-- Increase session timeout t0 6h (importance of session variables) -->
         <session-timeout>360</session-timeout>
