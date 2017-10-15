@@ -8,6 +8,9 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+/**
+ * Class to despeckle images
+ */
 public class ImageDespeckle {
     /**
      * Constructor

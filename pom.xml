@@ -89,15 +89,15 @@
             <version>2.0</version>
             <scope>provided</scope>
         </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.openpnp/opencv -->
+
+        <!-- OpenCV (https://mvnrepository.com/artifact/org.openpnp/opencv) -->
         <dependency>
             <groupId>org.openpnp</groupId>
             <artifactId>opencv</artifactId>
             <version>3.2.0-1</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <finalName>OCR4all_Web</finalName>
     </build>

@@ -7,7 +7,9 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-
+/**
+ * Class to resize images
+ */
 public class ImageResize {
     /**
      * Width to which the image should be resized

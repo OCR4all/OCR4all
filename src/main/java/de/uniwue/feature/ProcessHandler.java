@@ -13,7 +13,7 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 /**
- * Helper class for managing a process
+ * Class for managing a process
  */
 public class ProcessHandler {
     /**

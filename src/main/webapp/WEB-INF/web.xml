@@ -33,9 +33,10 @@
     </listener>
 
     <!-- Starts servlet on startup of the server -->
-       <listener>
-    <listener-class>
-             de.uniwue.helper.startupServletHelper
+    <!-- Workaround for loading libraries on a single place -->
+    <listener>
+        <listener-class>
+            de.uniwue.feature.LibraryLoader
         </listener-class>
    </listener>
 
