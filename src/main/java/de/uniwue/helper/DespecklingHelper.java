@@ -13,7 +13,6 @@ import de.uniwue.feature.ImageDespeckle;
  * Helper class for despeckling module
  */
 public class DespecklingHelper {
-
     /**
      * Object to access project directory configuration
      */
@@ -30,7 +29,7 @@ public class DespecklingHelper {
     private int progress = -1;
 
     /**
-     * Status if the process should be cancelled
+     * Indicates if the process should be cancelled
      */
     private boolean stop = false;
 
@@ -49,25 +48,27 @@ public class DespecklingHelper {
     }
 
     /**
-     * Despeckles pages, that have been passed and saves them
-     * @param pageIdsAsList
-     * @param maxArea
+     * Despeckles given pages and stores them on the filesystem
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param maxContourRemovalSize Maximum size of the contours to be removed
      */
-    public void despeckleGivenPages(List<String> pageIdsAsList, double maxArea) {
-        int totalPages = pageIdsAsList.size();
-        double i = 1;
-        progress = 0;
+    public void despeckleGivenPages(List<String> pageIds, double maxContourRemovalSize) {
         File DespDir = new File(projDirConf.DESP_IMG_DIR);
-
         if (!DespDir.exists())
             DespDir.mkdir();
 
-        for (String pageId : pageIdsAsList) {
+        double i = 1;
+        progress = 0;
+        int totalPages = pageIds.size();
+        for (String pageId : pageIds) {
             if (stop == true)
                 return;
+
             Mat mat = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
-            mat = imageDespeckle.despeckle(mat, maxArea, "standard");
+            mat = imageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
             Imgcodecs.imwrite(projDirConf.DESP_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT, mat);
+
             progress = (int) (i / totalPages * 100);
             i = i + 1;
         }
@@ -76,7 +77,7 @@ public class DespecklingHelper {
     /**
      * Returns the progress of the job
      *
-     * @return progress of preprocessAllPages function
+     * @return Progress of preprocessAllPages function
      */
     public int getProgress() {
         return progress;
@@ -87,7 +88,5 @@ public class DespecklingHelper {
      */
     public void cancelDespecklingProcess() {
         stop = true;
-        
     }
-
 }

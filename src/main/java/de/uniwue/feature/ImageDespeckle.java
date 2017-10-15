@@ -22,9 +22,9 @@ public class ImageDespeckle {
      * Despeckling of a Binary image
      *
      * @param binary Mat of the binary image
-     * @param maxContourRemovalSize maximum size of the contours to be removed
-     * @param illustrationType standard: the result image shows the resulting binary image | 
-     *                          marked:  the result image shows the resulting binary image and additionally represents the removed contours
+     * @param maxContourRemovalSize Maximum size of the contours to be removed
+     * @param illustrationType Standard: the result image shows the resulting binary image | 
+     *                         Marked:  the result image shows the resulting binary image and additionally represents the removed contours
      * @return Resulting binary image
      */
     public Mat despeckle(Mat binary, double maxContourRemovalSize, String illustrationType) {

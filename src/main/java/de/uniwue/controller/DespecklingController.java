@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -45,22 +44,22 @@ public class DespecklingController {
     /** Response to the request to return the despeckling status and output information
      * 
      * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
-     * @param illustrationType Standard: the result image shows the resulting binary image | Marked: the result image shows the resulting binary image and additionally represents the removed contours
+     * @param illustrationType Standard: the result image shows the resulting binary image
+     *                         Marked: the result image shows the resulting binary image and additionally represents the removed contours
      * @param maxContourRemovalSize Maximum size of the contours to be removed
      * @param session Session of the user
      * @param response Response to the request
-     * @param request Request
-     * @return Returns the required image as a base64 string
      */
     @RequestMapping(value = "/ajax/despeckling/execute", method = RequestMethod.POST)
     public @ResponseBody void executeDispeckling(
                 @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam("maxContourRemovalSize") double maxContourRemovalSize,
-                HttpSession session, HttpServletResponse response, HttpServletRequest request
+                HttpSession session, HttpServletResponse response
             ) {
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty())
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
         List<String> pageIdsAsList;
         if (pageIds == null) {
             pageIdsAsList = new ArrayList<String>();
@@ -78,14 +77,10 @@ public class DespecklingController {
      *
      * @param session Session of the user
      * @param response Response to the request
-     * @return
      */
     @RequestMapping(value = "/ajax/despeckling/cancel", method = RequestMethod.POST)
-    public @ResponseBody void cancelDesoeckling(
-               HttpSession session, HttpServletResponse response
-           ) {
+    public @ResponseBody void cancelDesoeckling(HttpSession session, HttpServletResponse response) {
         String projectDir = (String) session.getAttribute("projectDir");
-
         if (projectDir == null || projectDir.isEmpty())
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
@@ -97,7 +92,7 @@ public class DespecklingController {
      * Response to the request to return the progress status of the preprocess service
      *
      * @param session Session of the user
-     * @return
+     * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/despeckling/progress" , method = RequestMethod.GET)
     public @ResponseBody int jsonProgress(HttpSession session) {

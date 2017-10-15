@@ -4,19 +4,11 @@ import java.awt.Dimension;
 import java.io.IOException;
 
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import de.uniwue.config.ProjectDirConfig;
 
 public class ImageResize {
-    /**
-     * Object to access project directory configuration
-     */
-    private ProjectDirConfig projDirConf;
-
     /**
      * Width to which the image should be resized
      */
@@ -35,49 +27,24 @@ public class ImageResize {
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
 
-        this.projDirConf  = new ProjectDirConfig();
         this.resizeWidth  = resizeWidth  == null ? -1 : resizeWidth;
         this.resizeHeight = resizeHeight == null ? -1 : resizeHeight;
     }
 
     /**
-     * Resizes an image file and stores it into a byte array
-     *
-     * @param path Filesystem path to the image
-     * @return Byte array representation of the scaled image file
-     * @throws IOException 
-     */
-    public byte[] getScaledImage(String path) throws IOException {
-        Mat mat = Imgcodecs.imread(path);
-        if (mat.empty())
-            return null;
-
-        Dimension dimension = getDimension(mat);
-        if (dimension != null) {
-            Imgproc.resize(mat, mat, new Size(dimension.width, dimension.height) );
-        }
-
-        MatOfByte matOfByte = new MatOfByte();
-        Imgcodecs.imencode(projDirConf.IMG_EXT, mat, matOfByte); 
-        return matOfByte.toArray();
-    }
-
-    /**
-     * Resizes an image file and stores it into a byte array
+     * Resizes an image file
      *
      * @param img Mat of the img
-     * @return Byte array representation of the scaled image file
+     * @return Mat representation of the scaled image file
      * @throws IOException 
      */
-    public byte[] getScaledImage(Mat img) throws IOException {
+    public Mat getScaledImage(Mat img) throws IOException {
         Dimension dimension = getDimension(img);
         if (dimension != null) {
             Imgproc.resize(img, img, new Size(dimension.width, dimension.height) );
         }
 
-        MatOfByte matOfByte = new MatOfByte();
-        Imgcodecs.imencode(projDirConf.IMG_EXT, img, matOfByte); 
-        return matOfByte.toArray();
+        return img;
     }
 
     /**

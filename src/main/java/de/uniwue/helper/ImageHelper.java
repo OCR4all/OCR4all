@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import org.apache.commons.io.FilenameUtils;
 
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
 import de.uniwue.config.ProjectDirConfig;
 import de.uniwue.feature.ImageDespeckle;
@@ -93,6 +94,37 @@ public class ImageHelper {
     }
 
     /**
+     * Converts the given Mat of an image to a byte array
+     *
+     * @param img Mat of the image
+     * @return Byte array of the image
+     */
+    private byte[] convertImageMatToByte(Mat img) {
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(projDirConf.IMG_EXT, img, matOfByte); 
+        return matOfByte.toArray();
+    }
+
+    /**
+     * Encodes the image of the given Mat to a base64 string
+     *
+     * @param img Mat of the image
+     * @return Returns the image as a base64 string
+     * @throws IOException
+     */
+    private String getImageAsBase64(Mat img) throws IOException {
+        if (imageResize != null) {
+            img = imageResize.getScaledImage(img);
+        }
+
+        byte[] returnBuff = convertImageMatToByte(img);
+        if (returnBuff == null)
+            return "";
+
+        return Base64.getEncoder().encodeToString(returnBuff);
+    }
+
+    /**
      * Encodes the image file in the given path to a base64 string
      *
      * @param path Filesystem path to the image
@@ -100,24 +132,11 @@ public class ImageHelper {
      * @throws IOException
      */
     private String getImageAsBase64(String path) throws IOException {
-        byte[] return_buff = imageResize.getScaledImage(path);
-        if (return_buff != null)
-            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(path));
-        return "";
-    }
+        Mat img = Imgcodecs.imread(path);
+        if (img.empty())
+            return "";
 
-    /**
-     * Encodes the image of the given Mat to a base64 string
-     *
-     * @param mat Mat of the image
-     * @return Returns the image as a base64 string
-     * @throws IOException
-     */
-    private String getImageAsBase64(Mat mat) throws IOException {
-        byte[] return_buff = imageResize.getScaledImage(mat);
-        if (return_buff != null)
-            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(mat));
-        return "";
+        return getImageAsBase64(img);
     }
 
     /**

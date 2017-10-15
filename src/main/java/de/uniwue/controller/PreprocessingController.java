@@ -50,7 +50,6 @@ public class PreprocessingController {
      *
      * @param session Session of the user
      * @param response Response to the request
-     * @return
      */
     @RequestMapping(value = "/ajax/preprocessing/execute", method = RequestMethod.POST)
     public @ResponseBody void executePreprocessing(
@@ -85,12 +84,9 @@ public class PreprocessingController {
      *
      * @param session Session of the user
      * @param response Response to the request
-     * @return
      */
     @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.POST)
-    public @ResponseBody void cancelPreprocessing(
-               HttpSession session, HttpServletResponse response
-           ) {
+    public @ResponseBody void cancelPreprocessing(HttpSession session, HttpServletResponse response) {
         String projectDir = (String) session.getAttribute("projectDir");
 
         if (projectDir == null || projectDir.isEmpty())
@@ -104,11 +100,10 @@ public class PreprocessingController {
      * Response to the request to return the progress status of the preprocess service
      *
      * @param session Session of the user
-     * @return
+     * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/preprocessing/progress" , method = RequestMethod.GET)
     public @ResponseBody int jsonProgress(HttpSession session) {
-
         if (session.getAttribute("preproHelper") == null)
             return -1;
 
