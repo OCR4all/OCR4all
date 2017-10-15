@@ -5,20 +5,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
 
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 import de.uniwue.config.ProjectDirConfig;
+import de.uniwue.feature.ImageDespeckle;
 import de.uniwue.feature.ImageResize;
 
 
@@ -35,6 +30,11 @@ public class ImageHelper {
      * Image resizing object to access resizing functionality
      */
     private ImageResize imageResize = null;
+    
+    /**
+     * Image despeckle object to access despeckling functionality
+     */
+    private ImageDespeckle imageDespeckle = null;
 
     /**
      * Constructor
@@ -42,8 +42,10 @@ public class ImageHelper {
      * @param projectDir Path to the project directory
      */
     public ImageHelper(String projectDir) {
+        // Load OpenCV library (!important)
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
+
         projDirConf = new ProjectDirConfig(projectDir);
     }
 
@@ -91,7 +93,7 @@ public class ImageHelper {
     }
 
     /**
-     * Encodes the given image file to a base64 string
+     * Encodes the image file in the given path to a base64 string
      *
      * @param path Filesystem path to the image
      * @return Returns the image as a base64 string
@@ -101,6 +103,20 @@ public class ImageHelper {
         byte[] return_buff = imageResize.getScaledImage(path);
         if (return_buff != null)
             return Base64.getEncoder().encodeToString(imageResize.getScaledImage(path));
+        return "";
+    }
+
+    /**
+     * Encodes the image of the given Mat to a base64 string
+     *
+     * @param mat Mat of the image
+     * @return Returns the image as a base64 string
+     * @throws IOException
+     */
+    private String getImageAsBase64(Mat mat) throws IOException {
+        byte[] return_buff = imageResize.getScaledImage(mat);
+        if (return_buff != null)
+            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(mat));
         return "";
     }
 
@@ -174,45 +190,6 @@ public class ImageHelper {
     }
 
     /**
-     * Despeckling of a Binary image
-     *
-     * @param binary Mat of the binary image
-     * @param maxContourRemovalSize maximum size of the contours to be removed
-     * @param illustrationType standard: the result image shows the resulting binary image | 
-     *                          marked:  the result image shows the resulting binary image and additionally represents the removed contours
-     * @return Resulting binary image
-     */
-    public Mat despeckle(Mat binary, double maxContourRemovalSize, String illustrationType) {
-        Mat inverted = new Mat();
-        Core.bitwise_not(binary, inverted);
-
-        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(inverted, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        Mat result = binary.clone();
-        if (contours.size() > 1) {
-            ArrayList<MatOfPoint> toRemove = new ArrayList<MatOfPoint>();
-            for (MatOfPoint contour : contours) {
-                double area = Imgproc.contourArea(contour);
-                if (area < maxContourRemovalSize) {
-                    toRemove.add(contour);
-                }
-            }
-
-            if (illustrationType.equals("marked")) {
-                // Convert to BGR image to be able to draw contours in red
-                Imgproc.cvtColor(result, result, Imgproc.COLOR_GRAY2BGR);
-                Imgproc.drawContours(result, toRemove, -1, new Scalar(0, 0, 255), -1);
-            }
-            else {
-                Imgproc.drawContours(result, toRemove, -1, new Scalar(255), -1);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Binary despeckling and base64 encoding
      *
      * @param pageId Identifier of the page (e.g 0002)
@@ -223,22 +200,11 @@ public class ImageHelper {
      * @throws IOException 
      */
     public String getPreviewDespeckleAsBase64(String pageId, double maxContourRemovalSize, String illustrationType) throws IOException {
-        // Load OpenCV library first (!important)
-        nu.pattern.OpenCV.loadShared();
-        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
+        if (imageDespeckle == null)
+            imageDespeckle = new ImageDespeckle();
 
-        // Convert to gray channel only (binary images sometimes seem to have RGB channels)
         Mat binImage = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
-        Mat bwImage = new Mat();
-        Imgproc.cvtColor(binImage, bwImage, Imgproc.COLOR_RGB2GRAY);
-
-        Mat despImage = despeckle(bwImage, maxContourRemovalSize, illustrationType);
-
-        if (imageResize != null)
-            return Base64.getEncoder().encodeToString(imageResize.getScaledImage(despImage));
-
-        MatOfByte matOfByte = new MatOfByte();
-        Imgcodecs.imencode(".png", despImage, matOfByte);
-        return Base64.getEncoder().encodeToString(matOfByte.toArray());
+        Mat despImage = imageDespeckle.despeckle(binImage, maxContourRemovalSize, illustrationType);
+        return getImageAsBase64(despImage);
     }
 }

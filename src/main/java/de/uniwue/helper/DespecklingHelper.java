@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 
 import de.uniwue.config.ProjectDirConfig;
+import de.uniwue.feature.ImageDespeckle;
 
 /**
  * Helper class for despeckling module
@@ -20,9 +20,9 @@ public class DespecklingHelper {
     private ProjectDirConfig projDirConf;
 
     /**
-     * Helper, who is managing functionality for images
+     * Image despeckle object to access despeckling functionality
      */
-    private ImageHelper imageHelper;
+    private ImageDespeckle imageDespeckle;
 
     /**
      * Status of the progress
@@ -40,7 +40,11 @@ public class DespecklingHelper {
      * @param projectDir Path to the project directory
      */
     public DespecklingHelper(String projectDir) {
-        imageHelper = new ImageHelper(projectDir);
+        // Load OpenCV library (!important)
+        nu.pattern.OpenCV.loadShared();
+        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
+
+        imageDespeckle = new ImageDespeckle();
         projDirConf = new ProjectDirConfig(projectDir);
     }
 
@@ -62,10 +66,7 @@ public class DespecklingHelper {
             if (stop == true)
                 return;
             Mat mat = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
-            Mat bwImage = new Mat();
-            // RGB2Gray required for despeckle functionality
-            Imgproc.cvtColor(mat, bwImage, Imgproc.COLOR_RGB2GRAY);
-            mat = imageHelper.despeckle(bwImage, maxArea, "standard");
+            mat = imageDespeckle.despeckle(mat, maxArea, "standard");
             Imgcodecs.imwrite(projDirConf.DESP_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT, mat);
             progress = (int) (i / totalPages * 100);
             i = i + 1;

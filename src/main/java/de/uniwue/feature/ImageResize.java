@@ -31,6 +31,10 @@ public class ImageResize {
      * Constructor
      */
     public ImageResize(Integer resizeWidth, Integer resizeHeight) {
+        // Load OpenCV library (!important)
+        nu.pattern.OpenCV.loadShared();
+        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
+
         this.projDirConf  = new ProjectDirConfig();
         this.resizeWidth  = resizeWidth  == null ? -1 : resizeWidth;
         this.resizeHeight = resizeHeight == null ? -1 : resizeHeight;
