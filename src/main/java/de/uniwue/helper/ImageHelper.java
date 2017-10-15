@@ -43,10 +43,6 @@ public class ImageHelper {
      * @param projectDir Path to the project directory
      */
     public ImageHelper(String projectDir) {
-        // Load OpenCV library (!important)
-        nu.pattern.OpenCV.loadShared();
-        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
-
         projDirConf = new ProjectDirConfig(projectDir);
     }
 

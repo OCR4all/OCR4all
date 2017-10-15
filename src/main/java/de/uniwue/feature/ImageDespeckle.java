@@ -13,9 +13,6 @@ public class ImageDespeckle {
      * Constructor
      */
     public ImageDespeckle() {
-        // Load OpenCV library (!important)
-        nu.pattern.OpenCV.loadShared();
-        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
 
     /**
