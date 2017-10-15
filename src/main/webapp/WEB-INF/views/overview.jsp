@@ -69,9 +69,6 @@
                 } else {
                     $('.collapsible').collapsible('open', 0);
                 }
-
-                // Initialize select form
-                $('select').material_select();
             });
         </script>
 

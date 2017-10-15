@@ -8,9 +8,6 @@
                 var progressInterval = null;
                 var consoleOutput = "";
 
-                // Initialize modals
-                $('.modal').modal();
-
                 // Error handling for parameter input fields
                 $('input[type="text"]').on('change', function() {
                     var num = $(this).val();

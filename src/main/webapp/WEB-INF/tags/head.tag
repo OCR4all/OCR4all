@@ -29,6 +29,12 @@
                 if( $(this).text() == pageTitle )
                     $(this).parent().addClass("active");
             })
+
+            // Initialize select form elements
+            $('select').material_select();
+
+            // Initialize modals
+            $('.modal').modal();
         });
     </script>
 

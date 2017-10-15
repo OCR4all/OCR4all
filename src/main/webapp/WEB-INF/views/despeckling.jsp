@@ -262,11 +262,6 @@
                         })
                     }
                 });
-
-                // Initialize select form
-                $('select').material_select();
-                // Initialize modals
-                $('.modal').modal();
             });
         </script>
     </t:head>
