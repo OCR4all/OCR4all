@@ -1,4 +1,4 @@
-package de.uniwue.helper;
+package de.uniwue.feature;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +15,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 /**
  * Helper class for managing a process
  */
-public class ProcessHelper {
+public class ProcessHandler {
     /**
      * Object to execute external commands
      */
@@ -44,7 +44,7 @@ public class ProcessHelper {
     /**
      * Constructor
      */
-    public ProcessHelper() {
+    public ProcessHandler() {
         executor = new DefaultExecutor();
         // Exitcode 143 added to avoid, when the process is canceled that an error is thrown
         executor.setExitValues(new int[] { 0, 1, 143 });

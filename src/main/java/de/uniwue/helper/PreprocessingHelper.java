@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectDirConfig;
+import de.uniwue.feature.ProcessHandler;
 
 /**
  * Helper class for preprocessing pages, which also calls the ocrubus-nlbin function 
@@ -32,7 +33,7 @@ public class PreprocessingHelper {
     /**
      * Helper, who is managing the process
      */
-    ProcessHelper processHelper;
+    ProcessHandler processHandler = null;
 
     /**
      * Constructor
@@ -41,7 +42,7 @@ public class PreprocessingHelper {
      */
     public PreprocessingHelper(String projectDir) {
         projDirConf = new ProjectDirConfig(projectDir);
-        processHelper = new ProcessHelper();
+        processHandler = new ProcessHandler();
 
     }
 
@@ -60,9 +61,9 @@ public class PreprocessingHelper {
         for(String arg : args) {
             cpArgs.add(arg);
         }
-        processHelper.setCommandLine("ocropus-nlbin", cpArgs);
-        processHelper.setConsoleOutput(true);
-        processHelper.start();
+        processHandler.setCommandLine("ocropus-nlbin", cpArgs);
+        processHandler.setConsoleOutput(true);
+        processHandler.start();
 
         File binImg = new File(projDirConf.PREPROC_DIR + "0001" + projDirConf.BIN_IMG_EXT);
         if (binImg.exists())
@@ -133,15 +134,15 @@ public class PreprocessingHelper {
      * Handles the process
      * @return Returns the process Helper
      */
-    public ProcessHelper getProcessHelper() {
-        return processHelper;
+    public ProcessHandler getProcessHelper() {
+        return processHandler;
     }
 
     /**
      * Cancels the preprocessAllPages process
      */
     public void cancelPreprocessAllPages() {
-        if (processHelper.stop() == true) {
+        if (processHandler.stop() == true) {
             stop = true;
         }
     }
