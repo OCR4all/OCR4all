@@ -15,8 +15,7 @@ public class ImageDespeckle {
     /**
      * Constructor
      */
-    public ImageDespeckle() {
-    }
+    public ImageDespeckle() { }
 
     /**
      * Despeckling of a Binary image
@@ -27,7 +26,7 @@ public class ImageDespeckle {
      *                         Marked:  the result image shows the resulting binary image and additionally represents the removed contours
      * @return Resulting binary image
      */
-    public Mat despeckle(Mat binary, double maxContourRemovalSize, String illustrationType) {
+    public static Mat despeckle(Mat binary, double maxContourRemovalSize, String illustrationType) {
         // Convert to gray channel only (binary images sometimes seem to have RGB channels)
         Mat bwImage = new Mat();
         Imgproc.cvtColor(binary, bwImage, Imgproc.COLOR_RGB2GRAY);

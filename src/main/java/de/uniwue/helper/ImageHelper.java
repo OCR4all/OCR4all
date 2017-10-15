@@ -31,11 +31,6 @@ public class ImageHelper {
      * Image resizing object to access resizing functionality
      */
     private ImageResize imageResize = null;
-    
-    /**
-     * Image despeckle object to access despeckling functionality
-     */
-    private ImageDespeckle imageDespeckle = null;
 
     /**
      * Constructor
@@ -215,11 +210,8 @@ public class ImageHelper {
      * @throws IOException 
      */
     public String getPreviewDespeckleAsBase64(String pageId, double maxContourRemovalSize, String illustrationType) throws IOException {
-        if (imageDespeckle == null)
-            imageDespeckle = new ImageDespeckle();
-
         Mat binImage = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
-        Mat despImage = imageDespeckle.despeckle(binImage, maxContourRemovalSize, illustrationType);
+        Mat despImage = ImageDespeckle.despeckle(binImage, maxContourRemovalSize, illustrationType);
         return getImageAsBase64(despImage);
     }
 }

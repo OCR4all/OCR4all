@@ -19,11 +19,6 @@ public class DespecklingHelper {
     private ProjectDirConfig projDirConf;
 
     /**
-     * Image despeckle object to access despeckling functionality
-     */
-    private ImageDespeckle imageDespeckle;
-
-    /**
      * Status of the progress
      */
     private int progress = -1;
@@ -39,11 +34,6 @@ public class DespecklingHelper {
      * @param projectDir Path to the project directory
      */
     public DespecklingHelper(String projectDir) {
-        // Load OpenCV library (!important)
-        nu.pattern.OpenCV.loadShared();
-        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
-
-        imageDespeckle = new ImageDespeckle();
         projDirConf = new ProjectDirConfig(projectDir);
     }
 
@@ -66,7 +56,7 @@ public class DespecklingHelper {
                 return;
 
             Mat mat = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
-            mat = imageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
+            mat = ImageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
             Imgcodecs.imwrite(projDirConf.DESP_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT, mat);
 
             progress = (int) (i / totalPages * 100);
