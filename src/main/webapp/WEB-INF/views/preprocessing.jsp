@@ -64,7 +64,7 @@
                         clickedTabIcon.remove();
                         $('ul.tabs').tabs('select_tab', $(this).parent('li').attr('data-refid'));
                     }
-                })
+                });
 
                 var inProgress = false;
                 var progressInterval = null;
@@ -75,8 +75,19 @@
                     .done(function( data ) {
                         if( data === '' ) return;
 
-                        consoleStream[streamType] += data;
-                        $('#' + tabId + ' pre').html(consoleStream[streamType]);
+                        if( streamType == 'out' ) {
+                            // Console Out is incremental
+                            consoleStream['out'] += data;
+                            $('#' + tabId + ' pre').html(consoleStream['out']);
+                        }
+                        else {
+                            // Console Err is complete
+                            if( data === consoleStream['err'])
+                                return;
+
+                            consoleStream['err'] += data;
+                            $('#' + tabId + ' pre').html(data);
+                        }
 
                         if( !$('#' + tabId + ' pre').is(":visible") )
                             $('#' + tabId + ' pre').show();
