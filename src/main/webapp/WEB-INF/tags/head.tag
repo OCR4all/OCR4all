@@ -35,6 +35,9 @@
 
             // Initialize modals
             $('.modal').modal();
+
+            // Initialize tabs
+            $('ul.tabs').tabs(); 
         });
     </script>
 

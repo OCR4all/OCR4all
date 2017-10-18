@@ -83,12 +83,19 @@ table.compact .suffix {
   height: 20px;
 }
 
-/* Console log pre tag */
+/* Console settings */
 .console pre {
-  display: none;
+  margin-top: 0px;
   height: 400px;
   overflow-y: scroll;
   background-color: #d3d3d3;
+}
+.console .tab a i.material-icons {
+  color: #cc0000;
+  padding-left: 10px;
+}
+#consoleErr {
+  color: #cc0000;
 }
 
 /* List of images on the right */
@@ -125,4 +132,25 @@ table.compact .suffix {
 }
 .includes-list {
   padding-right: 260px;
+}
+
+/* Tab style adjustments */
+.tabs {
+overflow-x: hidden;
+}
+.tab {
+  list-style-position: inside;
+  border: 1px solid #ddd;
+}
+.tabs .tab a {
+  color: #000;
+}
+.tabs .tab a.active {
+  color: #536dfe;
+}
+.tabs .tab a:hover {
+  color: #536dfe;
+}
+.tabs .indicator {
+  background-color: #536dfe;
 }
