@@ -68,7 +68,7 @@
 
                 // Trigger overview table fetching on pageload
                 if( $.trim($('#projectDir').val()).length !== 0 ) {
-                    $("button").trigger( "click" );
+                    $("button").first().trigger( "click" );
                 } else {
                     $('.collapsible').collapsible('open', 0);
                 }
@@ -133,6 +133,11 @@
                         </div>
                     </li>
                 </ul>
+
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                    Load Project
+                    <i class="material-icons right">send</i>
+                </button>
             </div>
         </div>
     </t:body>

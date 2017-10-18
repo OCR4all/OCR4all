@@ -213,7 +213,7 @@
 
 
                 // Process handling (execute despeckling for all pages with current settings)
-                $("#execute").click(function() {
+                $('button[data-id="execute"]').click(function() {
                     if( inProgress === true ) {
                         $('#modal_inprogress').modal('open');
                     }
@@ -244,7 +244,7 @@
                         progressInterval = setInterval(updateStatus, 1000);
                     }
                 });
-                $("#cancel").click(function() {
+                $('button[data-id="cancel"]').click(function() {
                     if( inProgress !== true ) {
                         $('#modal_noprocess').modal('open');
                     }
@@ -279,11 +279,11 @@
 
         <div class="container includes-list">
             <div class="section">
-                <button id="execute" class="btn waves-effect waves-light">
+                <button data-id="execute" class="btn waves-effect waves-light">
                     Execute for selected pages
                     <i class="material-icons right">chevron_right</i>
                 </button>
-                <button id="cancel" class="btn waves-effect waves-light">
+                <button data-id="cancel" class="btn waves-effect waves-light">
                     Cancel
                     <i class="material-icons right">cancel</i>
                 </button>
@@ -372,6 +372,15 @@
                         </div>
                     </li>
                 </ul>
+
+                <button data-id="execute" class="btn waves-effect waves-light">
+                    Execute for selected pages
+                    <i class="material-icons right">chevron_right</i>
+                </button>
+                <button data-id="cancel" class="btn waves-effect waves-light">
+                    Cancel
+                    <i class="material-icons right">cancel</i>
+                </button>
 
                 <!-- In progress information -->
                 <div id="modal_inprogress" class="modal">
