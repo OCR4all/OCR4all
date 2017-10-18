@@ -6,10 +6,19 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
+                // Set available threads as default 
+                $.get( "ajax/preprocessing/threads" )
+                .done(function( data ) {
+                    if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
+                        return;
+
+                    $('#--parallel').val(data).change();
+                })
+
                 // Error handling for parameter input fields
-                $('input[type="text"]').on('change', function() {
+                $('input[type="number"]').on('change', function() {
                     var num = $(this).val();
-                    if( !$.isNumeric(num) ){
+                    if( !$.isNumeric(num) ) {
                         if( num !== "" ) {
                             $(this).addClass('invalid').focus();
                         }
@@ -33,10 +42,11 @@
                         if( $(this).prop('checked') === true )
                             params['cmdArgs'].push($(this).attr('id'));
                     });
-                    $.each($('input[type="text"]'), function() {
+                    $.each($('input[type="number"]'), function() {
                         if( $(this).val() !== "" )
                             params['cmdArgs'].push($(this).attr('id'), $(this).val());
                     });
+                    console.log(params);
                     return params;
                 }
 
@@ -147,7 +157,7 @@
                         $('#modal_inprogress').modal('open');
                     }
                     else {
-                        if( $('input[type="text"]').hasClass('invalid') ){
+                        if( $('input[type="number"]').hasClass('invalid') ){
                             $('#modal_errorhandling').modal('open');	
                             return;
                         }
@@ -230,7 +240,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="--parallel" type="number" />
-                                                <label for="--parallel" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
+                                                <label for="--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
                                             </div>
                                         </td>
                                     </tr>
