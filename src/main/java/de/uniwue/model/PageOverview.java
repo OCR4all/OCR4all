@@ -14,6 +14,11 @@ public class PageOverview {
     private boolean preprocessed = false;
 
     /**
+     * Despeckled state
+     */
+    private boolean despeckled = false;
+
+    /**
      * Segmented state
      */
     private boolean segmented = false;
@@ -147,5 +152,23 @@ public class PageOverview {
      */
     public void setHasGT(boolean hasGT) {
         this.hasGT = hasGT;
+    }
+
+    /**
+     * Gets the despeckled status of the page
+     *
+     * @return Boolean representation of the status
+     */
+    public boolean isDespeckled() {
+        return despeckled;
+    }
+
+    /**
+     * Sets the despeckled status of the page
+     *
+     * @param despeckled Boolean representation of the status
+     */
+    public void setDespeckled(boolean despeckled) {
+        this.despeckled = despeckled;
     }
 }

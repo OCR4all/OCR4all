@@ -71,6 +71,7 @@ public class OverviewHelper {
                 }
             }
             checkPreprocessed();
+            checkDespeckled();
             checkSegmented();
             checkSegmentsExtracted();
             checkLinesExtracted();
@@ -93,6 +94,7 @@ public class OverviewHelper {
             PageOverview pOverview = new PageOverview(FilenameUtils.removeExtension(new File(path).getName()));
             overview.put(new File(path).getName(), pOverview);
             checkPreprocessed();
+            checkDespeckled();
             checkSegmented();
             checkSegmentsExtracted();
             checkLinesExtracted();
@@ -111,6 +113,17 @@ public class OverviewHelper {
             overview.get(key).setPreprocessed(true);
             if (!new File(projDirConf.PREPROC_DIR + imageType + File.separator + key).exists()) 
                 overview.get(key).setPreprocessed(false);
+        }
+    }
+
+    /**
+     * Validates despeckling state and updates project overview
+     */
+    public void checkDespeckled() {
+        for (String key : overview.keySet()) {
+            overview.get(key).setDespeckled(true);
+            if (!new File(projDirConf.DESP_IMG_DIR  + key).exists()) 
+                overview.get(key).setDespeckled(false);
         }
     }
 
