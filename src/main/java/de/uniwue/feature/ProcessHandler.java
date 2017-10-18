@@ -34,12 +34,17 @@ public class ProcessHandler {
     /**
      * Status of the Console output
      */
-    boolean ConsoleOutput = false;
+    boolean consoleOutput = false;
 
     /**
      * Output  of the console if ConsoleOutput == true 
      */
-    private List<InputStream> streams = new ArrayList<InputStream>();
+    private List<InputStream> outStreams = new ArrayList<InputStream>();
+
+    /**
+     * Output  of the console if ConsoleOutput == true 
+     */
+    private List<InputStream> errStreams = new ArrayList<InputStream>();
 
     /**
      * Constructor
@@ -66,11 +71,13 @@ public class ProcessHandler {
      * Starts the process
      */
     public void start() throws ExecuteException, IOException {
-        if (ConsoleOutput == true) {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            executor.setStreamHandler(new PumpStreamHandler(os));
+        if (consoleOutput == true) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayOutputStream error = new ByteArrayOutputStream();
+            executor.setStreamHandler(new PumpStreamHandler(out,error));
             executor.execute(cmdLine);
-            streams.add(os.toInputStream());
+            outStreams.add(out.toInputStream());
+            errStreams.add(error.toInputStream());
         }
         else 
             executor.execute(cmdLine);
@@ -80,7 +87,7 @@ public class ProcessHandler {
      * Sets the ConsoleOutput
      */
     public void setConsoleOutput(boolean value) {
-        ConsoleOutput = value;
+        consoleOutput = value;
     }
 
     /**
@@ -95,11 +102,21 @@ public class ProcessHandler {
     }
 
     /**
-     * Returns the InputStreams of the commandLine output
+     * Returns the Error of the commandLine as an InputStream
      *
      * @return Returns the InputStreams of the commandLine output
      */
-    public List<InputStream> getStreams() {
-        return streams;
+    public List<InputStream> getErrStreams() {
+        return errStreams;
     }
+
+    /**
+     * Returns the Output of the commandLine as an InputStream
+     *
+     * @return Returns the InputStreams of the commandLine output
+     */
+    public List<InputStream> getOutStreams() {
+        return outStreams;
+    }
+
 }

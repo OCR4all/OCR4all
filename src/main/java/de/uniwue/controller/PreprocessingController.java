@@ -113,17 +113,23 @@ public class PreprocessingController {
 
     /**
      * Response to the request to return the commandline output of the preprocess service
-     *
+     * 
+     * @param streamType Type of the console output (out | err)
      * @param session Session of the user
      * @return
      */
     @RequestMapping(value = "/ajax/preprocessing/console" , method = RequestMethod.GET)
-    public @ResponseBody String jsonConsole(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody String jsonConsole(@RequestParam("streamType") String streamType,
+            HttpSession session, HttpServletResponse response) {
         String cmdOutput = "";
         if (session.getAttribute("preproHelper") != null) {
             PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
             try {
-                InputStream input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHelper().getStreams()));
+                InputStream input = null;
+                if (streamType.equals("err"))
+                    input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHelper().getErrStreams()));
+                else if ( streamType.equals("out"))
+                    input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHelper().getOutStreams()));
                 cmdOutput = IOUtils.toString(input, "UTF-8");
             }
             catch (IOException e) {
