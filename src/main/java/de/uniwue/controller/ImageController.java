@@ -171,7 +171,7 @@ public class ImageController {
             Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
             Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
             imageHelper.setImageResize(new ImageResize(width, height));
-            imageList = imageHelper.getImageList("Binary", skip, limit);
+            imageList = imageHelper.getImageList(imageType, skip, limit);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
