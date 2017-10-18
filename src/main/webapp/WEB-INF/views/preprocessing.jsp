@@ -4,8 +4,13 @@
     <t:head>
         <title>OCR4All - Preprocessing</title>
 
+        <script type="text/javascript" src="resources/js/ocr4allweb-imagelist.js"></script>
+
         <script type="text/javascript">
             $(document).ready(function() {
+                // Load image list
+                initializeImageList("Original");
+
                 // Set available threads as default 
                 $.get( "ajax/preprocessing/threads" )
                 .done(function( data ) {
@@ -219,8 +224,8 @@
             });
         </script>
     </t:head>
-    <t:body heading="Preprocessing">
-        <div class="container">
+    <t:body heading="Preprocessing" imageList="true">
+        <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
                     Execute
