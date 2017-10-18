@@ -146,4 +146,12 @@ public class PreprocessingHelper {
             stop = true;
         }
     }
+
+    /**
+     *  Get the the number of logical thread of the system
+     * @return number of logical threads
+     */
+    public static int getLogicalThreadCount() {
+        return Runtime.getRuntime().availableProcessors();
+    }
 }

@@ -37,6 +37,7 @@
                             columns: [
                                 { title: "Page Identifier", data: "pageId" },
                                 { title: "Preprocessed", data: "preprocessed" },
+                                { title: "Despeckled", data: "despeckled"},
                                 { title: "Segmented", data: "segmented" },
                                 { title: "Segments Extracted", data: "segmentsExtracted" },
                                 { title: "Lines Extracted", data: "linesExtracted" },
