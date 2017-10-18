@@ -1,7 +1,8 @@
-/* Side navigation settings*/
+/* Side navigation settings */
 ul.side-nav {
   padding-top: 40px;
   width: 260px;
+  transform: translateX(100%);
 }
 .site-description {
   display: block;
@@ -25,18 +26,14 @@ a.button-collapse.top-nav i {
   font-size: 30px;
 }
 header, main, footer {
-  padding-left: 260px;
-}
-@media only screen and (max-width : 992px) {
-  header, main, footer {
-    padding-left: 0px;
-  }
+  padding-left: 0px;
 }
 
 /* Reduced site margin */
 @media only screen and (min-width : 993px) {
   .container {
     width: 85%;
+    max-width: none;
   }
 }
 
@@ -98,13 +95,14 @@ table.compact .suffix {
 .image-list {
   position: absolute;
   left : auto;
-  right: -273px;
+  right: 260px;
   top: 122px;
   bottom: 0;
   overflow-y: auto;
   height: auto;
   padding-top: 10px !important;
   text-align: center;
+  z-index: 0;
 }
 .image-list .heading {
   font-size: 25px;

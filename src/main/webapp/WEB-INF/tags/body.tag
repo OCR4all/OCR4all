@@ -12,10 +12,10 @@
         </nav>
 
         <div class="container">
-            <a href="#" data-activates="slide-out" class="button-collapse top-nav hide-on-large-only"><i class="material-icons">menu</i></a>
+            <a href="#" data-activates="slide-out" class="button-collapse top-nav"><i class="material-icons">menu</i></a>
         </div>
 
-        <ul id="slide-out" class="side-nav fixed">
+        <ul id="slide-out" class="side-nav">
             <li class="site-description">OCR 4 All Web</li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
             <li><a href="Preprocessing">Preprocessing</a></li>
