@@ -7,6 +7,7 @@
             <div class="container">
                 <div class="nav-wrapper">
                     <a class="page-title">${heading}</a>
+                    <a class="page-title right">| OCR 4 All</a>
                 </div>
             </div>
         </nav>
@@ -16,7 +17,7 @@
         </div>
 
         <ul id="slide-out" class="side-nav">
-            <li class="site-description">OCR 4 All Web</li>
+            <li class="site-description">OCR 4 All</li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
             <li><a href="Preprocessing">Preprocessing</a></li>
             <li><a href="Despeckling">Despeckling</a></li>

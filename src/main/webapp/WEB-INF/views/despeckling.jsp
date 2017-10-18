@@ -2,6 +2,8 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
     <t:head>
+        <title>OCR4All - Despeckling</title>
+
         <script type="text/javascript">
             $(document).ready(function() {
                 // Workaround to adjust height of image list

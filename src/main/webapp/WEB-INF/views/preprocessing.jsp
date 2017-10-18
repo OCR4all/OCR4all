@@ -2,6 +2,8 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
     <t:head>
+        <title>OCR4All - Preprocessing</title>
+
         <script type="text/javascript">
             $(document).ready(function() {
                 var inProgress = false;

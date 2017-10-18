@@ -3,6 +3,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <t:html>
     <t:head>
+        <title>OCR4All - Page Overview</title>
+
         <script type="text/javascript">
             $(document).ready(function() {
                 // Initialize image boxes
@@ -62,8 +64,6 @@
                 </c:choose>
             });
         </script>
-
-        <title>OCR4all_Web - Page Overview</title>
     </t:head>
     <t:body heading="Page Overview">
         <input id="pageId" name="pageId" type="hidden" value="${param.pageId}" />

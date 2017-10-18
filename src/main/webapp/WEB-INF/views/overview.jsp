@@ -3,6 +3,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <t:html>
     <t:head>
+        <title>OCR4All - Project Overview</title>
+
         <!-- jQuery DataTables -->
         <link rel="stylesheet" type="text/css" href="resources/css/datatables.min.css">
         <script type="text/javascript" charset="utf8" src="resources/js/datatables.min.js"></script>
@@ -71,8 +73,6 @@
                 }
             });
         </script>
-
-        <title>OCR4all_Web - Overview</title>
     </t:head>
     <t:body heading="Project Overview">
         <div class="container">
