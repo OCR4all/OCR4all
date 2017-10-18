@@ -4,91 +4,16 @@
     <t:head>
         <title>OCR4All - Despeckling</title>
 
+        <script type="text/javascript" src="resources/js/ocr4allweb-imagelist.js"></script>
+
         <script type="text/javascript">
             $(document).ready(function() {
-                // Workaround to adjust height of image list
-                // Cannot be done with CSS properly (due to dynamic content changes with AJAX)
-                function resizeImageList() {
-                    var mainHeight = $('main').height();
-                    $('#imageList').height('auto');
-                    if( mainHeight > $('#imageList').height() ) {
-                        $('#imageList').height(mainHeight);
-                    }
-                }
+                // Load image list
+                initializeImageList("Binary");
+                // Additional resizing event to adjust image list height
                 $('#originalImg').on('load', function () {
                     setTimeout(resizeImageList, 500);
                 });
-                $('.collapsible-header').on('click', function() {
-                    setTimeout(resizeImageList, 500);
-                });
-
-                // Checkbox handling (select all functioanlity)
-                $('#selectAll').on('change', function() {
-                    var checked = false;
-                    if( $(this).is(':checked') )
-                        checked = true;
-
-                    $('input[type="checkbox"]').prop('checked', checked);
-                });
-                $('#imageList').on('change', $('input[type="checkbox"]').not('#selectAll'), function() {
-                    var checked = true;
-                    $.each($('input[type="checkbox"]').not('#selectAll'), function(index, el) {
-                        if( !$(el).is(':checked') )
-                            checked = false;
-                    });
-
-                    $('#selectAll').prop('checked', checked);
-                });
-
-                function getSelectedPages() {
-                    var selectedPages = [];
-                    $.each($('input[type="checkbox"]').not('#selectAll'), function() {
-                        if( $(this).is(':checked') )
-                            selectedPages.push($(this).attr('data-pageid'));
-                    });
-                    return selectedPages;
-                }
-
-                var skip = 0;
-                var limit = 10;
-                var imageListAjaxInProgress = false;
-                // Continuously fetch all page images and add them to the list
-                function fetchListImages() {
-                    if( imageListAjaxInProgress )
-                        return;
-                    imageListAjaxInProgress = true;
-
-                    $.get( "ajax/image/list", { "imageType" : "Binary", "skip" : skip, "limit" : limit, "width" : 150 } )
-                    .done(function( data ) {
-                        $.each(data, function(pageId, pageImage) {
-                            var li = '<li>';
-                            li    += 'Page ' + pageId;
-                            li    += '<a href="#!" data-pageid="' + pageId + '"><img width="100" src="data:image/jpeg;base64, ' + pageImage + '" /></a>';
-                            li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" data-pageid="' + pageId + '" />';
-                            li    += '<label for="page' + pageId + '"></label>';
-                            li    += '</li>';
-                            $('#imageList').append(li);
-                        });
-                        // Update counter and enable next load
-                        skip += limit;
-                        imageListAjaxInProgress = false;
-                        // Stop loading of remaining images (all images fetched)
-                        if( data === '' || jQuery.isEmptyObject(data) ) {
-                            clearInterval(imageListInterval);
-                            imageListAjaxInProgress = false;
-                        }
-                    })
-                    .fail(function( data ) {
-                        var li = '<li class="red-text">';
-                        li    += 'Error: Could not load page images';
-                        li    += '</li>';
-                        $('#imageList').append(li);
-                        // Stop loading of remaining images 
-                        clearInterval(imageListInterval);
-                        imageListAjaxInProgress = false;
-                    })
-                }
-                var imageListInterval = setInterval(fetchListImages, 100);
 
                 var despeckledAjaxReq = null;
                 // Function to load page image on demand via AJAX
@@ -267,16 +192,7 @@
             });
         </script>
     </t:head>
-    <t:body heading="Despeckling">
-        <ul id="imageList" class="side-nav image-list">
-            <li class="heading">Pages</li>
-            <li>
-                Select all:
-                <input type="checkbox" class="filled-in" id="selectAll" />
-                <label for="selectAll"></label>
-            </li>
-        </ul>
-
+    <t:body heading="Despeckling" imageList="true">
         <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">

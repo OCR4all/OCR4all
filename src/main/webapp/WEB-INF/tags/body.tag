@@ -1,6 +1,7 @@
 <%@ tag description="Page Body Tag" pageEncoding="UTF-8" %>
-<%@ attribute name="heading" required="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ attribute name="heading" required="true" %>
+<%@ attribute name="imageList" required="false" %>
 <body>
     <header>
         <nav class="top-nav">
@@ -42,7 +43,23 @@
                 </div>
             </c:when>
             <%-- If no error exists, display site content --%>
-            <c:otherwise><jsp:doBody /></c:otherwise>
+            <c:otherwise>
+                <c:choose>
+                    <%--  --%>
+                    <c:when test="${not empty imageList}">
+                        <ul id="imageList" class="side-nav image-list">
+                            <li class="heading">Pages</li>
+                            <li>
+                                Select all:
+                                <input type="checkbox" class="filled-in" id="selectAll" />
+                                <label for="selectAll"></label>
+                            </li>
+                        </ul>
+                    </c:when>
+                </c:choose>
+
+                <jsp:doBody />
+            </c:otherwise>
         </c:choose>
     </main>
 </body>
