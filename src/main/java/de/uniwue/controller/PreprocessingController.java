@@ -137,11 +137,13 @@ public class PreprocessingController {
             PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
             try {
                 InputStream input = null;
-                if (streamType.equals("err"))
-                    input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHelper().getErrStreams()));
-                else if ( streamType.equals("out"))
+                if (streamType.equals("err")) {
+                    cmdOutput = preproHelper.getProcessHelper().getErrString();
+                }
+                else if ( streamType.equals("out")) {
                     input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHelper().getOutStreams()));
-                cmdOutput = IOUtils.toString(input, "UTF-8");
+                    cmdOutput = IOUtils.toString(input, "UTF-8");
+                }
             }
             catch (IOException e) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

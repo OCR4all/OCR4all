@@ -2,7 +2,9 @@ package de.uniwue.feature;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.exec.CommandLine;
@@ -10,6 +12,7 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 /**
@@ -47,6 +50,11 @@ public class ProcessHandler {
     private List<InputStream> errStreams = new ArrayList<InputStream>();
 
     /**
+     * Err output of the console
+     */
+    private String errOutput = "";
+
+    /**
      * Constructor
      */
     public ProcessHandler() {
@@ -71,6 +79,7 @@ public class ProcessHandler {
      * Starts the process
      */
     public void start() throws ExecuteException, IOException {
+        errOutput = "";
         if (consoleOutput == true) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream error = new ByteArrayOutputStream();
@@ -119,4 +128,15 @@ public class ProcessHandler {
         return outStreams;
     }
 
+    /**
+     * Returns the Output of the commandLine as an InputStream
+     *
+     * @return Returns the InputStreams of the commandLine output
+     * @throws IOException 
+     */
+    public String getErrString() throws IOException {
+        InputStream input = new SequenceInputStream(Collections.enumeration(errStreams));
+        errOutput = errOutput + IOUtils.toString(input, "UTF-8");
+        return errOutput;
+    }
 }

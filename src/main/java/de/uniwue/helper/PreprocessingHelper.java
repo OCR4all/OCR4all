@@ -2,11 +2,14 @@ package de.uniwue.helper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 import de.uniwue.config.ProjectDirConfig;
 import de.uniwue.feature.ProcessHandler;
