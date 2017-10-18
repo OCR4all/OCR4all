@@ -112,6 +112,17 @@ public class PreprocessingController {
     }
 
     /**
+     * Response to the request to return the number of logical threads of the system
+     *
+     * @param session Session of the user
+     * @return number of logical threads
+     */
+    @RequestMapping(value = "/ajax/preprocessing/threads" , method = RequestMethod.GET)
+    public @ResponseBody int hostProcessors(HttpSession session) {
+        return PreprocessingHelper.getLogicalThreadCount();
+    }
+
+    /**
      * Response to the request to return the commandline output of the preprocess service
      * 
      * @param streamType Type of the console output (out | err)
