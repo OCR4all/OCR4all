@@ -77,6 +77,11 @@
     <t:body heading="Project Overview">
         <div class="container">
             <div class="section">
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                    Load Project
+                    <i class="material-icons right">send</i>
+                </button>
+
                 <ul class="collapsible" data-collapsible="accordion">
                     <li>
                         <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
@@ -127,11 +132,6 @@
                         </div>
                     </li>
                 </ul>
-
-                <button class="btn waves-effect waves-light" type="submit" name="action">
-                    Load
-                    <i class="material-icons right">send</i>
-                </button>
             </div>
         </div>
     </t:body>

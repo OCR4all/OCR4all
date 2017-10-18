@@ -279,6 +279,15 @@
 
         <div class="container includes-list">
             <div class="section">
+                <button id="execute" class="btn waves-effect waves-light">
+                    Execute for selected pages
+                    <i class="material-icons right">chevron_right</i>
+                </button>
+                <button id="cancel" class="btn waves-effect waves-light">
+                    Cancel
+                    <i class="material-icons right">cancel</i>
+                </button>
+
                 <ul class="collapsible" data-collapsible="expandable">
                     <li>
                         <div class="collapsible-header active"><i class="material-icons">settings</i>Settings</div>
@@ -363,15 +372,6 @@
                         </div>
                     </li>
                 </ul>
-
-                <button id="execute" class="btn waves-effect waves-light">
-                    Execute for selected pages
-                    <i class="material-icons right">chevron_right</i>
-                </button>
-                <button id="cancel" class="btn waves-effect waves-light">
-                    Cancel
-                    <i class="material-icons right">cancel</i>
-                </button>
 
                 <!-- In progress information -->
                 <div id="modal_inprogress" class="modal">
