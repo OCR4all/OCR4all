@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
 import org.opencv.core.Mat;
@@ -72,24 +71,25 @@ public class DespecklingHelper {
     }
 
     /**
-     * Gets all page names of the project and the images of the given type
+     * Gets all page IDs of the project
      *
      * @param imageType Type of the images
-     * @return Map of page IDs with their images as base64 string
+     * @return Array of page IDs
      * @throws IOException
      */
-    public ArrayList<String> getImageList(String imageType) throws IOException {
-        ArrayList<String> imageList = new ArrayList<String>();
+    public ArrayList<String> getPageList(String imageType) throws IOException {
+        ArrayList<String> pageList = new ArrayList<String>();
+
         Files.walk(Paths.get(projDirConf.getImagePathByType(imageType)))
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.isFile())
         .filter(fileEntry -> fileEntry.getName().endsWith(projDirConf.IMG_EXT))
         .sorted()
         .forEach(
-            fileEntry -> {imageList.add(FilenameUtils.removeExtension(fileEntry.getName()));
-        });
+            fileEntry -> { pageList.add(FilenameUtils.removeExtension(fileEntry.getName())); }
+        );
 
-        return imageList;
+        return pageList;
     }
 
     /**
