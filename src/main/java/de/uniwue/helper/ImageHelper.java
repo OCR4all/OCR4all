@@ -51,40 +51,6 @@ public class ImageHelper {
     }
 
     /**
-     * Returns the filesystem path of the given image type
-     *
-     * @param imageType Type of the image
-     * @return Absolute filesystem path to the image
-     */
-    private String getImagePathByType(String imageType) {
-        String imagePath = null;
-        switch(imageType) {
-            case "Original":   imagePath = projDirConf.ORIG_IMG_DIR; break;
-            case "Binary":     imagePath = projDirConf.BINR_IMG_DIR; break;
-            case "Gray":       imagePath = projDirConf.GRAY_IMG_DIR; break;
-            case "Despeckled": imagePath = projDirConf.DESP_IMG_DIR; break;
-            default: break;
-        }
-        return imagePath;
-    }
-
-    /**
-     * Returns the file extension of the given image type
-     *
-     * @param imageType Type of the image
-     * @return Image file extension
-     */
-    private String getImageExtensionByType(String imageType) {
-        String imageExtension = null;
-        switch(imageType) {
-            case "Binary": imageExtension = projDirConf.GRAY_IMG_EXT; break;
-            case "Gray":   imageExtension = projDirConf.BIN_IMG_EXT;  break;
-            default: break;
-        }
-        return imageExtension;
-    }
-
-    /**
      * Converts the given Mat of an image to a byte array
      *
      * @param img Mat of the image
@@ -139,7 +105,7 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getPageImage(String pageID, String imageType) throws IOException {
-        return getImageAsBase64(getImagePathByType(imageType) + pageID + projDirConf.IMG_EXT);
+        return getImageAsBase64(projDirConf.getImagePathByType(imageType) + pageID + projDirConf.IMG_EXT);
     }
 
     /**
@@ -152,7 +118,7 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getSegmentImage(String pageID, String segmentID, String imageType) throws IOException {
-        return getImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + getImageExtensionByType(imageType));
+        return getImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.getImageExtensionByType(imageType));
     }
 
     /**
@@ -167,7 +133,7 @@ public class ImageHelper {
      */
     public String getLineImage(String pageID, String segmentID, String lineID, String imageType) throws IOException {
         return getImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
-                + File.separator + lineID + getImageExtensionByType(imageType));
+                + File.separator + lineID + projDirConf.getImageExtensionByType(imageType));
     }
 
     /**
@@ -182,9 +148,10 @@ public class ImageHelper {
     public TreeMap<String, String> getImageList(String imageType, long skip, long limit) throws IOException {
         TreeMap<String, String> imageList = new TreeMap<String, String>();
 
-        Files.walk(Paths.get(getImagePathByType(imageType)))
+        Files.walk(Paths.get(projDirConf.getImagePathByType(imageType)))
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.isFile())
+        .filter(fileEntry -> fileEntry.getName().endsWith(projDirConf.IMG_EXT))
         .sorted()
         .skip(skip)
         .limit(limit)

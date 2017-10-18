@@ -52,6 +52,22 @@ public final class ProjectDirConfig {
      */
     public final String CONF_EXT = ".xml";
 
+    /**
+     * Returns the file extension of the given image type
+     *
+     * @param imageType Type of the image
+     * @return Image file extension
+     */
+    public String getImageExtensionByType(String imageType) {
+        String imageExtension = null;
+        switch(imageType) {
+            case "Binary": imageExtension = this.GRAY_IMG_EXT; break;
+            case "Gray":   imageExtension = this.BIN_IMG_EXT;  break;
+            default: imageExtension = this.IMG_EXT; break;
+        }
+        return imageExtension;
+    }
+
     /**** Original directories ****/
 
     /**
@@ -81,6 +97,24 @@ public final class ProjectDirConfig {
      * Absolute path to preprocessed despeckled images (is made absolute in Constructor)
      */
     public String DESP_IMG_DIR = PREPROC_DIR + "Despeckled" + File.separator;
+
+    /**
+     * Returns the filesystem path of the given image type
+     *
+     * @param imageType Type of the image
+     * @return Absolute filesystem path to the image
+     */
+    public String getImagePathByType(String imageType) {
+        String imagePath = null;
+        switch(imageType) {
+            case "Original":   imagePath = this.ORIG_IMG_DIR; break;
+            case "Binary":     imagePath = this.BINR_IMG_DIR; break;
+            case "Gray":       imagePath = this.GRAY_IMG_DIR; break;
+            case "Despeckled": imagePath = this.DESP_IMG_DIR; break;
+            default: break;
+        }
+        return imagePath;
+    }
 
     /**** OCR directories ****/
 
