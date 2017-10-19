@@ -116,8 +116,6 @@ table.compact .suffix {
   padding: 0 32px;
 }
 .image-list label {
-  margin-left: 10px;
-  padding-left: 30px;
   height: 15px;
 }
 .image-list li {
@@ -125,10 +123,28 @@ table.compact .suffix {
 }
 .image-list li>a {
   height: auto;
-  padding-bottom: 5px;
+}
+.image-list li>a.page-text {
+  padding: 0;
+  display: inline-block;
 }
 .image-list li>a.active {
   background-color: #8c9eff;
+}
+.image-list li.select-all {
+  font-weight: bold;
+  padding 0;
+}
+i.material-icons.image-list-trigger {
+  position: absolute;
+  left: 35px;
+  height: 48px;
+  line-height: 48px;
+  color: #888;
+  cursor: pointer;
+}
+i.material-icons.image-list-trigger.active {
+  color: #536dfe !important;
 }
 .includes-list {
   padding-right: 260px;

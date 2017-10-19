@@ -2,13 +2,7 @@ package de.uniwue.helper;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Base64;
-import java.util.TreeMap;
-
-import org.apache.commons.io.FilenameUtils;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -134,36 +128,6 @@ public class ImageHelper {
     public String getLineImage(String pageID, String segmentID, String lineID, String imageType) throws IOException {
         return getImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
                 + File.separator + lineID + projDirConf.getImageExtensionByType(imageType));
-    }
-
-    /**
-     * Gets specified pages of the project and the images of the given type as base64 strings
-     *
-     * @param imageType Type of the images
-     * @param skip Amount of images to skip
-     * @param limit Amount of images to fetch
-     * @return Map of page IDs with their images as base64 string
-     * @throws IOException
-     */
-    public TreeMap<String, String> getImageList(String imageType, long skip, long limit) throws IOException {
-        TreeMap<String, String> imageList = new TreeMap<String, String>();
-
-        Files.walk(Paths.get(projDirConf.getImagePathByType(imageType)))
-        .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.isFile())
-        .filter(fileEntry -> fileEntry.getName().endsWith(projDirConf.IMG_EXT))
-        .sorted()
-        .skip(skip)
-        .limit(limit)
-        .forEach(
-            fileEntry -> {try {
-                imageList.put(FilenameUtils.removeExtension(fileEntry.getName()), getImageAsBase64(fileEntry.getAbsolutePath()));
-            } catch (IOException e) { 
-                // Ignore occurring errors (files will not show in list)
-            }
-        });
-
-        return imageList;
     }
 
     /**

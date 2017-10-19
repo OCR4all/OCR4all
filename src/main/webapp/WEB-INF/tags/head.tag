@@ -1,4 +1,6 @@
 <%@ tag description="Page Head Tag" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ attribute name="imageList" required="false" %>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -16,6 +18,15 @@
 
     <!--Project OCR4All_Web related-->
     <link type="text/css" rel="stylesheet" href="resources/css/ocr4allweb.css">
+
+    <c:choose>
+        <%--  --%>
+        <c:when test="${not empty imageList}">
+            <script src="resources/js/withinviewport.js"></script>
+            <script src="resources/js/jquery.withinviewport.js"></script>
+            <script type="text/javascript" src="resources/js/ocr4allweb-imagelist.js"></script>
+        </c:when>
+    </c:choose>
 
     <!--Collapsible elements (e.g. side navigation)-->
     <script type="text/javascript">

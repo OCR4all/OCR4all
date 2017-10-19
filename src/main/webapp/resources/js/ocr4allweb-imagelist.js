@@ -2,11 +2,14 @@
  * Includes jQuery functionality for project specific image lists on the right side of the web page
  *
  * Things that need to be done to use this:
- * 1. Include this file in the head of the target page
+ * 1. Include this file and viewport.js in the head of the target page (see head.tag)
+ *    In this project it can be included by passing imageList="true" to the head.tag include
  * 2. Add "initializeImageList(imageType)" function call to the target page (when document ready)
- * 3. Include ul-Tag with id="imageList" and appropriate style (see body.tag)
+ * 3. Include ul-Tag with id="imageList" (see body.tag)
  *    In this project it can be included by passing imageList="true" to the body.tag include
  */
+
+var globalImageType = "";
 
 function getSelectedPages() {
     var selectedPages = [];
@@ -17,50 +20,66 @@ function getSelectedPages() {
     return selectedPages;
 }
 
-var skip = 0;
-var limit = 10;
-var imageListAjaxInProgress = false;
-var imageListInterval = null;
-// Continuously fetch all page images and add them to the list
-function fetchListImages(imageType) {
-    if( imageListAjaxInProgress )
-        return;
-    imageListAjaxInProgress = true;
+function activateLinkHightlighting() {
+    $('#imageList').on('click', 'a', function() {
+        $('.image-list li>a.active').removeClass('active');
+        var markEl = this;
+        // If preview images are shown, only mark them
+        if( $(this).parent('li').find('a>img').is(":visible") )
+            markEl = $(this).parent('li').find('a>img').parent('a');
+        $(markEl).addClass('active');
+    });
+}
 
-    $.get( "ajax/image/list", { "imageType" : imageType, "skip" : skip, "limit" : limit, "width" : 150 } )
+// Fetch all available pages and add them to the list (without the actual images)
+function fetchPageList() {
+    $.get( "ajax/generic/pagelist", { "imageType" : globalImageType } )
     .done(function( data ) {
-        $.each(data, function(pageId, pageImage) {
+        $.each(data, function(id, pageId) {
             var li = '<li>';
-            li    += 'Page ' + pageId;
-            li    += '<a href="#!" data-pageid="' + pageId + '"><img width="100" src="data:image/jpeg;base64, ' + pageImage + '" /></a>';
             li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" data-pageid="' + pageId + '" />';
             li    += '<label for="page' + pageId + '"></label>';
+            li    += '<a href="#!" data-pageid="' + pageId + '" class="page-text">Page ' + pageId + '</a><br />';
+            li    += '<a href="#!" data-pageid="' + pageId + '" ><img width="100" src="" style="display: none;" /></a>';
             li    += '</li>';
             $('#imageList').append(li);
         });
-        // Update counter and enable next load
-        skip += limit;
-        imageListAjaxInProgress = false;
-        // Stop loading of remaining images (all images fetched)
-        if( data === '' || jQuery.isEmptyObject(data) ) {
-            clearInterval(imageListInterval);
-            imageListAjaxInProgress = false;
-        }
     })
     .fail(function( data ) {
         var li = '<li class="red-text">';
-        li    += 'Error: Could not load page images';
+        li    += 'Error: Could not load page list';
         li    += '</li>';
         $('#imageList').append(li);
-        // Stop loading of remaining images 
-        clearInterval(imageListInterval);
-        imageListAjaxInProgress = false;
     })
 }
 
+// Load visible page images to the list
+function loadVisiblePages() {
+    // Fetch page images that are currently shown on the site
+    var firstVisibleImageLinks = $('#imageList li>a').not('.page-text').withinviewport();
+    $.each(firstVisibleImageLinks, function(index, aEl) {
+        var imgEl = $(aEl).find('img');
+        // Check if the image is already loaded
+        if( $(imgEl).attr('src') !== '' )
+            return;
+
+        // Load page images via Ajax
+        $.get( "ajax/image/page", { "imageId" : globalImageType, "pageId" : $(aEl).attr('data-pageid'), "width" : 150 } )
+        .done(function( data ) {
+            $(imgEl).attr('src', "data:image/jpeg;base64, " + data);
+        });
+    });
+}
+
 // Call this function after document is ready
-function initializeImageList(imageType) {
-    imageListInterval = setInterval(function() { fetchListImages(imageType) }, 100);
+function initializeImageList(imageType, enableLinkHighlighting) {
+    globalImageType = imageType;
+
+    enableLinkHighlighting = enableLinkHighlighting || false;
+    if( enableLinkHighlighting === true )
+        activateLinkHightlighting();
+
+    fetchPageList();
 }
 
 // Workaround to adjust height of image list
@@ -97,5 +116,35 @@ $(document).ready(function() {
         });
 
         $('#selectAll').prop('checked', checked);
+    });
+
+    // Show/hide preview images 
+    $('.image-list-trigger').on('click', function() {
+        if( $(this).hasClass('active') ) {
+            $(this).removeClass('active');
+            $('#imageList img').hide();
+        }
+        else {
+            $(this).addClass('active');
+            $('#imageList img').show();
+            loadVisiblePages();
+        }
+    });
+
+    $('#imageList').on('scrollStop', function() {
+    	console.log("here");
+        if( $('.image-list-trigger').hasClass('active') )
+            loadVisiblePages();
+    });
+
+    var scrollTimeout = null;
+    // If the user stops scrolling for 2 seconds, load currently visible pages 
+    $('#imageList').scroll(function() {
+        clearTimeout(scrollTimeout);
+        if( $('.image-list-trigger').hasClass('active') ) {
+            scrollTimeout = setTimeout(function() {
+                loadVisiblePages();
+            }, 2000);
+        }
     });
 });

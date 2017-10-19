@@ -48,11 +48,11 @@
                     <%--  --%>
                     <c:when test="${not empty imageList}">
                         <ul id="imageList" class="side-nav image-list">
-                            <li class="heading">Pages</li>
-                            <li>
-                                Select all:
+                            <li class="heading"><i class="material-icons image-list-trigger">remove_red_eye</i>Pages</li>
+                            <li class="select-all">
                                 <input type="checkbox" class="filled-in" id="selectAll" />
                                 <label for="selectAll"></label>
+                                Select all
                             </li>
                         </ul>
                     </c:when>

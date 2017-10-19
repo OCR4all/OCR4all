@@ -1,7 +1,6 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -141,42 +140,6 @@ public class ImageController {
         if (base64Image == null)
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return base64Image;
-    }
-
-    /**
-     * Response to the request to return a list of binary images as base64 strings
-     *
-     * @param imageType Type of the images in the list
-     * @param skip Amount of images to skip
-     * @param limit Amount of images to fetch
-     * @param session Session of the user
-     * @param response Response to the request
-     * @param request Request
-     * @return Returns a list of page IDs with their images as base64 string
-     */
-    @RequestMapping(value = "/ajax/image/list", method = RequestMethod.GET)
-    public @ResponseBody TreeMap<String, String> getBinaryImageList(
-                @RequestParam("imageType") String imageType,
-                @RequestParam("skip") long skip,
-                @RequestParam("limit") long limit,
-                HttpSession session, HttpServletResponse response, HttpServletRequest request
-            ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty() || imageType == null || imageType.isEmpty())
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
-        TreeMap<String, String> imageList = new TreeMap<String, String>();
-        try {
-            ImageHelper imageHelper = new ImageHelper(projectDir);
-            Integer width  = request.getParameter("width")  == null ? null : Integer.parseInt(request.getParameter("width"));
-            Integer height = request.getParameter("height") == null ? null : Integer.parseInt(request.getParameter("height"));
-            imageHelper.setImageResize(new ImageResize(width, height));
-            imageList = imageHelper.getImageList(imageType, skip, limit);
-        } catch (IOException e) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
-
-        return imageList;
     }
 
     /**

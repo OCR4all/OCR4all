@@ -1,15 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
-    <t:head>
+    <t:head imageList="true">
         <title>OCR4All - Despeckling</title>
-
-        <script type="text/javascript" src="resources/js/ocr4allweb-imagelist.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 // Load image list
-                initializeImageList("Binary");
+                initializeImageList("Binary", true);
                 // Additional resizing event to adjust image list height
                 $('#originalImg').on('load', function () {
                     setTimeout(resizeImageList, 500);
@@ -69,9 +67,6 @@
                         $('.collapsible-header:eq(1)').addClass('active');
                         $('.collapsible').collapsible({accordion: false});
                     }
-
-                    $('.image-list li>a.active').removeClass('active');
-                    $(this).addClass('active');
 
                     // Load full size images
                     loadPageImage($('#originalImg').parent('div'),   $(this).attr('data-pageid'), "Binary");

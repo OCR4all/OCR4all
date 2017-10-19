@@ -1,10 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
-    <t:head>
+    <t:head imageList="true">
         <title>OCR4All - Preprocessing</title>
-
-        <script type="text/javascript" src="resources/js/ocr4allweb-imagelist.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {
