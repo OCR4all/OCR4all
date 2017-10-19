@@ -133,7 +133,7 @@ table.compact .suffix {
 }
 .image-list li.select-all {
   font-weight: bold;
-  padding 0;
+  padding: 0;
 }
 i.material-icons.image-list-trigger {
   position: absolute;
