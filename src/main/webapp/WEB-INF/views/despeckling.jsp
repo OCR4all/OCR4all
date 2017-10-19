@@ -187,7 +187,7 @@
             });
         </script>
     </t:head>
-    <t:body heading="Despeckling" imageList="true">
+    <t:body heading="Despeckling" imageList="true" processModals="true">
         <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
@@ -292,63 +292,6 @@
                     Cancel
                     <i class="material-icons right">cancel</i>
                 </button>
-
-                <!-- In progress information -->
-                <div id="modal_inprogress" class="modal">
-                    <div class="modal-content">
-                        <h4>Information</h4>
-                        <p>
-                            There already is a running Despeckling process.<br/>
-                            Please wait until it is finished or cancel it.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
-                <!-- Error handling -->
-                <div id="modal_errorhandling" class="modal">
-                    <div class="modal-content red-text">
-                        <h4>Information</h4>
-                        <p>
-                            No pages were selected.<br/>
-                            Please select pages to despeckle and try again.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
-                <!-- No current process information -->
-                <div id="modal_noprocess" class="modal">
-                    <div class="modal-content">
-                        <h4>Information</h4>
-                        <p>There exists no ongoing Despeckling process.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
-                <!-- Successful cancel information -->
-                <div id="modal_successfulcancel" class="modal">
-                    <div class="modal-content">
-                        <h4>Information</h4>
-                        <p>The Despeckling process was cancelled successfully.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
-                <!-- Failed cancel information -->
-                <div id="modal_failcancel" class="modal">
-                    <div class="modal-content red-text">
-                        <h4>Error</h4>
-                        <p>The Despeckling process could not be cancelled.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
             </div>
         </div>
     </t:body>

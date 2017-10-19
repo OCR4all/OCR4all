@@ -54,26 +54,22 @@ public class PreprocessingController {
     @RequestMapping(value = "/ajax/preprocessing/execute", method = RequestMethod.POST)
     public @ResponseBody void executePreprocessing(
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
+               @RequestParam("pageIds[]") String[] pageIds,
                HttpSession session, HttpServletResponse response
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
-
         if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
-        List<String> args;
-        if (cmdArgs == null) {
-           args = new ArrayList<String>();
-        }
-        else {
-            args = Arrays.asList(cmdArgs);
-        }
+        List<String> cmdArgList = new ArrayList<String>();
+        if (cmdArgs != null)
+            cmdArgList = Arrays.asList(cmdArgs);
 
         PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
         session.setAttribute("preproHelper", preproHelper);
         try {
-            preproHelper.preprocessAllPages(args);
+            preproHelper.preprocessPages(cmdArgList, Arrays.asList(pageIds));
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -88,7 +84,6 @@ public class PreprocessingController {
     @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancelPreprocessing(HttpSession session, HttpServletResponse response) {
         String projectDir = (String) session.getAttribute("projectDir");
-
         if (projectDir == null || projectDir.isEmpty())
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
@@ -138,10 +133,10 @@ public class PreprocessingController {
             try {
                 InputStream input = null;
                 if (streamType.equals("err")) {
-                    cmdOutput = preproHelper.getProcessHelper().getErrString();
+                    cmdOutput = preproHelper.getProcessHandler().getErrString();
                 }
                 else if ( streamType.equals("out")) {
-                    input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHelper().getOutStreams()));
+                    input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHandler().getOutStreams()));
                     cmdOutput = IOUtils.toString(input, "UTF-8");
                 }
             }

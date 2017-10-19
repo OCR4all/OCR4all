@@ -1,8 +1,6 @@
 package de.uniwue.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -60,16 +58,9 @@ public class DespecklingController {
         if (projectDir == null || projectDir.isEmpty())
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        List<String> pageIdsAsList;
-        if (pageIds == null) {
-            pageIdsAsList = new ArrayList<String>();
-        }
-        else {
-            pageIdsAsList = Arrays.asList(pageIds);
-        }
         DespecklingHelper despeckHelper = new DespecklingHelper(projectDir);
         session.setAttribute("despeckHelper", despeckHelper);
-        despeckHelper.despeckleGivenPages(pageIdsAsList, maxContourRemovalSize);
+        despeckHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
     }
 
     /**

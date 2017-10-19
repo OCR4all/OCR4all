@@ -39,9 +39,10 @@
                 });
 
                 // Fetch all modified parameters and return them appropriately
-                function getParams() {
+                function getInputParams() {
                     var params = { 'cmdArgs': [] };
-                    $.each($('input[type="checkbox"]'), function() {
+                    // Exclude checkboxes in pagelist (will be passed separately)
+                    $.each($('input[type="checkbox"]').not('[data-pageid]'), function() {
                         if( $(this).prop('checked') === true )
                             params['cmdArgs'].push($(this).attr('id'));
                     });
@@ -49,7 +50,6 @@
                         if( $(this).val() !== "" )
                             params['cmdArgs'].push($(this).attr('id'), $(this).val());
                     });
-                    console.log(params);
                     return params;
                 }
 
@@ -171,8 +171,14 @@
                         $('#modal_inprogress').modal('open');
                     }
                     else {
-                        if( $('input[type="number"]').hasClass('invalid') ){
-                            $('#modal_errorhandling').modal('open');	
+                        if( $('input[type="number"]').hasClass('invalid') ) {
+                            $('#modal_inputerror').modal('open');
+                            return;
+                        }
+
+                        var selectedPages = getSelectedPages();
+                        if( selectedPages.length === 0 ) {
+                            $('#modal_errorhandling').modal('open');
                             return;
                         }
 
@@ -186,7 +192,8 @@
                             selectActiveTab();
                         }
 
-                        $.post( "ajax/preprocessing/execute?" + jQuery.param(getParams()) )
+                        var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                        $.post( "ajax/preprocessing/execute", ajaxParams )
                         .fail(function( data ) {
                             inProgress = false;
                             clearInterval(progressInterval);
@@ -222,7 +229,7 @@
             });
         </script>
     </t:head>
-    <t:body heading="Preprocessing" imageList="true">
+    <t:body heading="Preprocessing" imageList="true" processModals="true">
         <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
@@ -398,57 +405,14 @@
                     <i class="material-icons right">cancel</i>
                 </button>
 
-                <!-- In progress information -->
-                <div id="modal_inprogress" class="modal">
-                    <div class="modal-content">
-                        <h4>Information</h4>
-                        <p>
-                            There already is a running Preprocessing process.<br/>
-                            Please wait until it is finished or cancel it.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
-                <!-- Error handling-->
-                <div id="modal_errorhandling" class="modal">
+                <!-- Input error handling-->
+                <div id="modal_inputerror" class="modal">
                     <div class="modal-content red-text">
                         <h4>Information</h4>
                         <p>
                             There exists an error in the input.<br/>
                             Please fix it and try again.
                         </p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
-                <!-- No current process information -->
-                <div id="modal_noprocess" class="modal">
-                    <div class="modal-content">
-                        <h4>Information</h4>
-                        <p>There exists no ongoing Preprocessing process.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
-                <!-- Successful cancel information -->
-                <div id="modal_successfulcancel" class="modal">
-                    <div class="modal-content">
-                        <h4>Information</h4>
-                        <p>The Preprocessing process was cancelled successfully.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
-                <!-- Failed cancel information -->
-                <div id="modal_failcancel" class="modal">
-                    <div class="modal-content red-text">
-                        <h4>Error</h4>
-                        <p>The Preprocessing process could not be cancelled.</p>
                     </div>
                     <div class="modal-footer">
                         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
