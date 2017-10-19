@@ -1,6 +1,5 @@
 package de.uniwue.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,31 +71,6 @@ public class DespecklingController {
         session.setAttribute("despeckHelper", despeckHelper);
         despeckHelper.despeckleGivenPages(pageIdsAsList, maxContourRemovalSize);
     }
-
-    /** Response to the request to return all pageIds of the specified imageType
-     * 
-     * @param imageType Type of the image e.g.(gray, binary, original)
-     * @param session Session of the user
-     * @param response Response to the request
-     */
-    @RequestMapping(value = "/ajax/despeckling/pagelist", method = RequestMethod.POST)
-    public @ResponseBody String[] getPageList(
-           @RequestParam("imageType") String imageType,
-            HttpSession session, HttpServletResponse response
-        ) {
-    String projectDir = (String) session.getAttribute("projectDir");
-    if (projectDir == null || projectDir.isEmpty())
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    List<String> pageIdsAsList = null;
-    DespecklingHelper despeckHelper = new DespecklingHelper(projectDir);
-    try {
-        pageIdsAsList = despeckHelper.getPageList(imageType);
-    }
-    catch (IOException e) {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
-    return pageIdsAsList.toArray(new String[pageIdsAsList.size()]);
-}
 
     /**
      * Response to the request to cancel the despeckling process
