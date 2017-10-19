@@ -31,6 +31,29 @@ function activateLinkHightlighting() {
     });
 }
 
+var lastChecked = null;
+// Feature to select multiple checkboxes while holding down the shift key
+// See: https://stackoverflow.com/questions/659508/how-can-i-shift-select-multiple-checkboxes-like-gmail/659571#659571
+function initializeMultiCheckboxSelection() {
+    $('#imageList input[type="checkbox"]').on('click', function(event) {
+        if( !lastChecked ) {
+            lastChecked = this;
+            return;
+        }
+
+        if( event.shiftKey ) {
+            var checkBoxes = $('input[type="checkbox"]').not('#selectAll');
+            var start = $(checkBoxes).index($(this));
+            var end =   $(checkBoxes).index($(lastChecked));
+
+            $(checkBoxes).slice(Math.min(start, end), Math.max(start, end) + 1).prop('checked', $(lastChecked).is(':checked'));
+        }
+
+        $(this).change();
+        lastChecked = this;
+    })
+}
+
 // Fetch all available pages and add them to the list (without the actual images)
 function fetchPageList() {
     $.get( "ajax/generic/pagelist", { "imageType" : globalImageType } )
@@ -43,6 +66,9 @@ function fetchPageList() {
             li    += '<a href="#!" data-pageid="' + pageId + '" ><img width="100" src="" style="display: none;" /></a>';
             li    += '</li>';
             $('#imageList').append(li);
+
+            // Direct checkbox events need to be initialized after their creation
+            initializeMultiCheckboxSelection();
         });
     })
     .fail(function( data ) {
@@ -110,7 +136,7 @@ $(document).ready(function() {
     });
     $('#imageList').on('change', $('input[type="checkbox"]').not('#selectAll'), function() {
         var checked = true;
-        $.each($('input[type="checkbox"]').not('#selectAll'), function(index, el) {
+        $.each($('#imageList input[type="checkbox"]').not('#selectAll'), function(index, el) {
             if( !$(el).is(':checked') )
                 checked = false;
         });
