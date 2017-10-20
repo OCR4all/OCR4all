@@ -42,7 +42,7 @@
                 function getInputParams() {
                     var params = { 'cmdArgs': [] };
                     // Exclude checkboxes in pagelist (will be passed separately)
-                    $.each($('input[type="checkbox"]').not('[data-pageid]'), function() {
+                    $.each($('input[type="checkbox"]').not('[data-pageid]').not('#selectAll'), function() {
                         if( $(this).prop('checked') === true )
                             params['cmdArgs'].push($(this).attr('id'));
                     });
@@ -80,15 +80,19 @@
 
                         if( streamType == 'out' ) {
                             // Console Out is incremental
-                            consoleStream['out'] += data;
-                            $('#' + tabId + ' pre').html(consoleStream['out']);
+                            // Console Err is complete
+                            if( data === consoleStream['out'])
+                                return;
+
+                            consoleStream['out'] = data;
+                            $('#' + tabId + ' pre').html(data);
                         }
                         else {
                             // Console Err is complete
                             if( data === consoleStream['err'])
                                 return;
 
-                            consoleStream['err'] += data;
+                            consoleStream['err'] = data;
                             $('#' + tabId + ' pre').html(data);
                         }
 
@@ -386,7 +390,7 @@
                             </div>
                             <div class="console">
                                  <ul class="tabs">
-                                     <li class="tab" data-refid="consoleOut"><a href="#consoleOut">Console Output</a></li>
+                                     <li class="tab" data-refid="consoleOut" class="active"><a href="#consoleOut">Console Output</a></li>
                                      <li class="tab" data-refid="consoleErr"><a href="#consoleErr">Console Error</a></li>
                                  </ul>
                                 <div id="consoleOut"><pre></pre></div>

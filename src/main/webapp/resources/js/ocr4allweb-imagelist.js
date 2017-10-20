@@ -42,7 +42,7 @@ function initializeMultiCheckboxSelection() {
         }
 
         if( event.shiftKey ) {
-            var checkBoxes = $('input[type="checkbox"]').not('#selectAll');
+            var checkBoxes = $('#imageList input[type="checkbox"]').not('#selectAll');
             var start = $(checkBoxes).index($(this));
             var end =   $(checkBoxes).index($(lastChecked));
 
@@ -132,7 +132,7 @@ $(document).ready(function() {
         if( $(this).is(':checked') )
             checked = true;
 
-        $('input[type="checkbox"]').prop('checked', checked);
+        $('#imageList input[type="checkbox"]').prop('checked', checked);
     });
     $('#imageList').on('change', $('input[type="checkbox"]').not('#selectAll'), function() {
         var checked = true;
