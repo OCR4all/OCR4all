@@ -92,7 +92,7 @@ public class PreprocessingHelper {
         if (!grayDir.exists())
             grayDir.mkdir();
 
-        // TODO: Implement process handling (currently just dummy handling to ensure correct behavior)
+        // TODO: Implement progress handling (currently just dummy handling to ensure correct behavior)
         progress = 1;
 
         // Add pages with their absolute path to the command list
@@ -104,7 +104,9 @@ public class PreprocessingHelper {
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        processHandler.startProcess("ocropus-nlbin", command);
+        // TODO: Set last parameter to true (run in background) and start progress handling afterwards
+        //       Process completion status can be fetched with processHandler.isCompleted()
+        processHandler.startProcess("ocropus-nlbin", command, false);
 
         // TODO: Move preprocessed pages to projDirConf.PREPROC_DIR
 

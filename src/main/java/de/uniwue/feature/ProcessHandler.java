@@ -37,8 +37,41 @@ public class ProcessHandler {
             this.consumeInputLine = consumeInputLine;
         }
 
+        @Override
         public void run() {
             new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumeInputLine);
+        }
+    }
+
+    /**
+     * Class used to catch when process is completed
+     * Used when executing a process in background 
+     */
+    public class ProcessCompletedNotifier implements Runnable {
+        /**
+         * Process to watch
+         */
+        private Process process;
+
+        /**
+         * Process handler object which needs to be notified
+         */
+        private ProcessHandler processHandler;
+
+        /**
+         * Constructor
+         *
+         * @param process Process to watch
+         * @param processHandler Process handler object which needs to be notified
+         */
+        public ProcessCompletedNotifier(Process process, ProcessHandler processHandler) {
+            this.process = process;
+            this.processHandler = processHandler;
+        }
+
+        @Override
+        public void run() {
+            processHandler.waitForProcessCompletion(process);
         }
     }
 
@@ -61,6 +94,11 @@ public class ProcessHandler {
      * Holds the console std.err of the process
      */
     private String consoleErr = "";
+
+    /**
+     * Determines if the process is completed or not
+     */
+    private boolean completed = false;
 
     /**
      * Constructor
@@ -115,14 +153,42 @@ public class ProcessHandler {
     }
 
     /**
+     * Gets if the process is completed or not
+     *
+     * @return Completed state of the process
+     */
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    /**
+     * Waits for a completion of a given process
+     *
+     * @param process Process to wait for
+     */
+    public void waitForProcessCompletion(Process process) {
+        try {
+            // Wait till the process is completed
+            process.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Distribute complete information
+        this.completed = true;
+    }
+
+    /**
      * Starts the process
      *
      * @param programPath Path to the program to execute
-     * @param cmdArguments
+     * @param cmdArguments Command line arguments for the program
+     * @param runInBackground Determines if the process should be ran in background
      * @throws InterruptedException 
      * @throws IOException 
      */
-    public void startProcess(String programPath, List<String> cmdArguments) throws InterruptedException, IOException {
+    public void startProcess(String programPath, List<String> cmdArguments, boolean runInBackground)
+            throws IOException {
         List<String> command = new ArrayList<String>();
         command.add(programPath);
         command.addAll(cmdArguments);
@@ -141,7 +207,12 @@ public class ProcessHandler {
             new Thread(errStreamHandler).start();
         }
 
-        process.waitFor();
+        if (runInBackground) {
+            new Thread(new ProcessCompletedNotifier(process, this)).start();
+        }
+        else {
+            waitForProcessCompletion(process);
+        }
     }
 
     /**
