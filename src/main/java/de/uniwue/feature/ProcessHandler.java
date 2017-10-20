@@ -1,142 +1,154 @@
 package de.uniwue.feature;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.SequenceInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
+import java.util.function.Consumer;
 
 /**
- * Class for managing a process
+ * Class for process management
  */
 public class ProcessHandler {
     /**
-     * Object to execute external commands
+     * Class used to read streams of the process
      */
-    private DefaultExecutor executor; 
+    public class StreamHandler implements Runnable {
+        /**
+         * Stream to read from (provided by the process)
+         */
+        private InputStream inputStream;
+
+        /**
+         * Consumer that holds content of the process stream
+         */
+        private Consumer<String> consumeInputLine;
+
+        /**
+         * Constructor
+         *
+         * @param inputStream Stream to read from
+         * @param consumeInputLine Consumer to write to
+         */
+        public StreamHandler(InputStream inputStream, Consumer<String> consumeInputLine) {
+            this.inputStream = inputStream;
+            this.consumeInputLine = consumeInputLine;
+        }
+
+        public void run() {
+            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumeInputLine);
+        }
+    }
 
     /**
-     * Object, which observes the process
+     * Process object of the executed program
      */
-    private ExecuteWatchdog watchdog;
+    private Process process; 
 
     /**
-     * Command Line of the process
+     * Determines if the console of the process should be read
      */
-    CommandLine cmdLine;
+    private boolean fetchProcessConsole = false;
 
     /**
-     * Status of the Console output
+     * Holds the console std.out of the process
      */
-    boolean consoleOutput = false;
+    private String consoleOut = "";
 
     /**
-     * Output  of the console if ConsoleOutput == true 
+     * Holds the console std.err of the process
      */
-    private List<InputStream> outStreams = new ArrayList<InputStream>();
-
-    /**
-     * Output  of the console if ConsoleOutput == true 
-     */
-    private List<InputStream> errStreams = new ArrayList<InputStream>();
-
-    /**
-     * Err output of the console
-     */
-    private String errOutput = "";
+    private String consoleErr = "";
 
     /**
      * Constructor
      */
-    public ProcessHandler() {
-        executor = new DefaultExecutor();
-        // Exitcode 143 added to avoid, when the process is canceled that an error is thrown
-        executor.setExitValues(new int[] { 0, 1, 143 });
-        watchdog = new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);
-        executor.setWatchdog(watchdog);
+    public ProcessHandler() { }
+
+    /**
+     * Sets the state to determine the reading setting of the process std.out/std.err
+     *
+     * @param fetchProcessConsole Console fetch setting
+     */
+    public void setFetchProcessConsole(boolean fetchProcessConsole) {
+        this.fetchProcessConsole = fetchProcessConsole;
     }
 
     /**
-     * Sets the Command Line
+     * Returns the console std.out of the process
+     *
+     * @return Console output
      */
-    public void setCommandLine(String binary, List<String> args) {
-        cmdLine = new CommandLine(binary);
-        for(String arg : args) {
-            cmdLine.addArgument(arg);
-        }
+    public String getConsoleOut() {
+        return consoleOut;
+    }
+
+    /**
+     * Returns the console std.err of the process
+     *
+     * @return Console error
+     */
+    public String getConsoleErr() {
+        return consoleErr;
+    }
+
+    /**
+     * Extends existing console std.out with new content
+     * Will be used as consumer by the StreamHandler 
+     *
+     * @param consoleOut New std.out content of the process
+     */
+    private void appendConsoleOutput(String consoleOut) {
+        this.consoleOut += consoleOut + System.lineSeparator();
+    }
+
+    /**
+     * Extends existing console std.err with new content
+     * Will be used as consumer by the StreamHandler 
+     *
+     * @param consoleOut New std.err content of the process
+     */
+    private void appendConsoleError(String consoleErr) {
+        this.consoleErr += consoleErr + System.lineSeparator();
     }
 
     /**
      * Starts the process
-     */
-    public void start() throws ExecuteException, IOException {
-        errOutput = "";
-        if (consoleOutput == true) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ByteArrayOutputStream error = new ByteArrayOutputStream();
-            executor.setStreamHandler(new PumpStreamHandler(out,error));
-            executor.execute(cmdLine);
-            outStreams.add(out.toInputStream());
-            errStreams.add(error.toInputStream());
-        }
-        else 
-            executor.execute(cmdLine);
-    }
-
-    /**
-     * Sets the ConsoleOutput
-     */
-    public void setConsoleOutput(boolean value) {
-        consoleOutput = value;
-    }
-
-    /**
-     * Cancels the process
-     */
-    public boolean stop() {
-        if (watchdog.isWatching()) {
-            watchdog.destroyProcess();
-           return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the Error of the commandLine as an InputStream
      *
-     * @return Returns the InputStreams of the commandLine output
-     */
-    public List<InputStream> getErrStreams() {
-        return errStreams;
-    }
-
-    /**
-     * Returns the Output of the commandLine as an InputStream
-     *
-     * @return Returns the InputStreams of the commandLine output
-     */
-    public List<InputStream> getOutStreams() {
-        return outStreams;
-    }
-
-    /**
-     * Returns the Output of the commandLine as an InputStream
-     *
-     * @return Returns the InputStreams of the commandLine output
+     * @param programPath Path to the program to execute
+     * @param cmdArguments
+     * @throws InterruptedException 
      * @throws IOException 
      */
-    public String getErrString() throws IOException {
-        InputStream input = new SequenceInputStream(Collections.enumeration(errStreams));
-        errOutput = errOutput + IOUtils.toString(input, "UTF-8");
-        return errOutput;
+    public void startProcess(String programPath, List<String> cmdArguments) throws InterruptedException, IOException {
+        List<String> command = new ArrayList<String>();
+        command.add(programPath);
+        command.addAll(cmdArguments);
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        process = processBuilder.start();
+
+        if (fetchProcessConsole == true) {
+            // Read process streams and pass them to the created consumer functions
+            Consumer<String> customOut = (out) -> appendConsoleOutput(out);
+            Consumer<String> customErr = (err) -> appendConsoleError(err);
+            StreamHandler outStreamHandler = new StreamHandler(process.getInputStream(), customOut);
+            StreamHandler errStreamHandler = new StreamHandler(process.getErrorStream(), customErr);
+            // Execute stream handlers in new threads to be able to fetch stream contents continuously
+            new Thread(outStreamHandler).start();
+            new Thread(errStreamHandler).start();
+        }
+
+        process.waitFor();
+    }
+
+    /**
+     * Stops the process
+     */
+    public void stopProcess() {
+        // TODO: Interrupt threads and close Streams first
+        process.destroy();
     }
 }

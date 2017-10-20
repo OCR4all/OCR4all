@@ -1,17 +1,13 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,6 +44,8 @@ public class PreprocessingController {
     /**
      * Response to the request to return the preprocessing status and output information
      *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs[] Command line arguments for preprocessing process
      * @param session Session of the user
      * @param response Response to the request
      */
@@ -60,6 +58,7 @@ public class PreprocessingController {
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
         }
 
         List<String> cmdArgList = new ArrayList<String>();
@@ -68,9 +67,10 @@ public class PreprocessingController {
 
         PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
         session.setAttribute("preproHelper", preproHelper);
+
         try {
-            preproHelper.preprocessPages(cmdArgList, Arrays.asList(pageIds));
-        } catch (IOException e) {
+            preproHelper.preprocessPages(Arrays.asList(pageIds), cmdArgList);
+        } catch (IOException | InterruptedException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -84,25 +84,34 @@ public class PreprocessingController {
     @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancelPreprocessing(HttpSession session, HttpServletResponse response) {
         String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty())
+        if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
 
         PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-        preproHelper.cancelPreprocessAllPages();
+        if (preproHelper == null) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        preproHelper.getProcessHandler().stopProcess();
     }
 
     /**
      * Response to the request to return the progress status of the preprocess service
      *
      * @param session Session of the user
+     * @param response Response to the request
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/preprocessing/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonProgress(HttpSession session) {
-        if (session.getAttribute("preproHelper") == null)
-            return -1;
-
+    public @ResponseBody int jsonProgress(HttpSession session, HttpServletResponse response) {
         PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
+        if (preproHelper == null) {
+            return -1;
+        }
+
         return preproHelper.getProgress();
     }
 
@@ -110,7 +119,7 @@ public class PreprocessingController {
      * Response to the request to return the number of logical threads of the system
      *
      * @param session Session of the user
-     * @return number of logical threads
+     * @return Number of logical threads
      */
     @RequestMapping(value = "/ajax/preprocessing/threads" , method = RequestMethod.GET)
     public @ResponseBody int hostProcessors(HttpSession session) {
@@ -118,32 +127,25 @@ public class PreprocessingController {
     }
 
     /**
-     * Response to the request to return the commandline output of the preprocess service
+     * Response to the request to return the output of the preprocessing process
      * 
      * @param streamType Type of the console output (out | err)
      * @param session Session of the user
-     * @return
+     * @param response Response to the request
+     * @return Console output
      */
     @RequestMapping(value = "/ajax/preprocessing/console" , method = RequestMethod.GET)
-    public @ResponseBody String jsonConsole(@RequestParam("streamType") String streamType,
-            HttpSession session, HttpServletResponse response) {
-        String cmdOutput = "";
-        if (session.getAttribute("preproHelper") != null) {
-            PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-            try {
-                InputStream input = null;
-                if (streamType.equals("err")) {
-                    cmdOutput = preproHelper.getProcessHandler().getErrString();
-                }
-                else if ( streamType.equals("out")) {
-                    input = new SequenceInputStream(Collections.enumeration(preproHelper.getProcessHandler().getOutStreams()));
-                    cmdOutput = IOUtils.toString(input, "UTF-8");
-                }
-            }
-            catch (IOException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
+    public @ResponseBody String jsonConsole(
+                @RequestParam("streamType") String streamType,
+                HttpSession session, HttpServletResponse response
+            ) {
+        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
+        if (preproHelper == null) {
+            return "";
         }
-        return cmdOutput;
+
+        if (streamType.equals("err"))
+            return preproHelper.getProcessHandler().getConsoleErr();
+        return preproHelper.getProcessHandler().getConsoleOut();
     }
 }
