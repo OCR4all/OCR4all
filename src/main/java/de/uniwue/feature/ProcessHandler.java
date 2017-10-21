@@ -98,7 +98,7 @@ public class ProcessHandler {
     /**
      * Determines if the process is completed or not
      */
-    private boolean completed = false;
+    private boolean processCompleted = false;
 
     /**
      * Constructor
@@ -157,8 +157,8 @@ public class ProcessHandler {
      *
      * @return Completed state of the process
      */
-    public boolean isCompleted() {
-        return completed;
+    public boolean isProcessCompleted() {
+        return processCompleted;
     }
 
     /**
@@ -175,7 +175,7 @@ public class ProcessHandler {
         }
 
         // Distribute complete information
-        this.completed = true;
+        this.processCompleted = true;
     }
 
     /**
