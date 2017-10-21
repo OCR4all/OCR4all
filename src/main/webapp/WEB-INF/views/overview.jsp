@@ -26,7 +26,9 @@
                         var overviewTable = $('#overviewTable').DataTable( {
                             ajax : {
                                 "type"   : "GET",
-                                "url"    : "ajax/overview/list?" + "projectDir=" + $('#projectDir').val() + "&imageType=" + $('#imageType').val(),
+                                "url"    : "ajax/overview/list?"
+                                               + "projectDir=" + encodeURIComponent($('#projectDir').val())
+                                               + "&imageType=" + encodeURIComponent($('#imageType').val()),
                                 "dataSrc": function (data) { return data; },
                                 "error"  : function() {
                                     if( !$('.collapsible').find('li').eq(0).hasClass('active') )
