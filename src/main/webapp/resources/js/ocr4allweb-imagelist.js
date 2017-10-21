@@ -183,4 +183,7 @@ $(document).ready(function() {
             }, 2000);
         }
     });
+
+    // Initial resizing if page changes shorty after loading
+    setTimeout(function() { resizeImageList(); }, 500);
 });
