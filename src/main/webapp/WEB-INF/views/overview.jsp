@@ -59,6 +59,10 @@
                             initComplete: function() {
                                 if( !$('.collapsible').find('li').eq(1).hasClass('active') )
                                     $('.collapsible').collapsible('open', 1);
+
+                                // Initialize select input
+                                $('select').material_select();
+
                                 // Update overview continuously
                                 setInterval( function() {
                                     overviewTable.ajax.reload(null, false);
