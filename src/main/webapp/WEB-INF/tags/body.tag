@@ -51,7 +51,7 @@
                         <ul id="imageList" class="side-nav image-list">
                             <li class="heading"><i class="material-icons image-list-trigger">remove_red_eye</i>Pages</li>
                             <li class="select-all">
-                                <input type="checkbox" class="filled-in" id="selectAll" />
+                                <input type="checkbox" class="" id="selectAll" />
                                 <label for="selectAll"></label>
                                 Select all
                             </li>

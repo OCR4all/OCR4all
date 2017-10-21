@@ -135,13 +135,23 @@ $(document).ready(function() {
         $('#imageList input[type="checkbox"]').prop('checked', checked);
     });
     $('#imageList').on('change', $('input[type="checkbox"]').not('#selectAll'), function() {
-        var checked = true;
+        var checkedCount  = 0;
+        var checkBoxCount = 0;
         $.each($('#imageList input[type="checkbox"]').not('#selectAll'), function(index, el) {
-            if( !$(el).is(':checked') )
-                checked = false;
+            if( $(el).is(':checked') )
+                checkedCount++;
+            checkBoxCount++;
         });
 
-        $('#selectAll').prop('checked', checked);
+        $('#selectAll').prop('indeterminate', false);
+        $('#selectAll').prop('checked', false);
+        if( checkedCount === checkBoxCount ) {
+            $('#selectAll').prop('checked', true);
+        }
+        else if( checkedCount > 0 ) {
+        	console.log("here");
+        	$('#selectAll').prop('indeterminate', true);
+        }
     });
 
     // Show/hide preview images 
