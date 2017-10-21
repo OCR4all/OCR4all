@@ -3,7 +3,10 @@ package de.uniwue.helper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectDirConfig;
 import de.uniwue.feature.ProcessHandler;
@@ -27,6 +30,11 @@ public class PreprocessingHelper {
      */
     ProcessHandler processHandler = null;
 
+    /** 
+     * Number of pages to process
+     */
+    int NumberOfSpecifiedImages = 0;
+
     /**
      * Constructor
      *
@@ -44,6 +52,10 @@ public class PreprocessingHelper {
      * @return Progress percentage
      */
     public int getProgress() {
+        File preprocDir = new File(projDirConf.PREPROC_DIR);
+        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projDirConf.BIN_IMG_EXT));
+        if (binFiles.length != 0)
+            progress =  (int) ((double) binFiles.length / NumberOfSpecifiedImages * 100);
         return progress;
     }
 
@@ -92,23 +104,40 @@ public class PreprocessingHelper {
         if (!grayDir.exists())
             grayDir.mkdir();
 
-        // TODO: Implement progress handling (currently just dummy handling to ensure correct behavior)
-        progress = 1;
+        NumberOfSpecifiedImages = pageIds.size();
+        progress = 0;
 
         // Add pages with their absolute path to the command list
         List<String> command = new ArrayList<String>();
         for (String pageId : pageIds) {
             command.add(projDirConf.ORIG_IMG_DIR + pageId + projDirConf.IMG_EXT);
         }
+        command.add("-o");
+        command.add(preprocDir.toString());
         command.addAll(cmdArgs);
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        // TODO: Set last parameter to true (run in background) and start progress handling afterwards
         //       Process completion status can be fetched with processHandler.isCompleted()
         processHandler.startProcess("ocropus-nlbin", command, false);
 
-        // TODO: Move preprocessed pages to projDirConf.PREPROC_DIR
+        if (progress < 90)
+            progress = 90;
+
+        // Move preprocessed pages to projDirConf.PREPROC_DIR
+        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projDirConf.BIN_IMG_EXT));
+        Arrays.sort(binFiles);
+        for (File image : binFiles) {
+            image.renameTo(new File(projDirConf.BINR_IMG_DIR + pageIds.get(Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils
+                          .removeExtension(image.getName()))) -1) + projDirConf.IMG_EXT));
+              }
+        
+        File[] nrmFiles = preprocDir.listFiles((d, name) -> name.endsWith(projDirConf.GRAY_IMG_EXT));
+        Arrays.sort(nrmFiles);
+        for (File image : nrmFiles) {
+            image.renameTo(new File(projDirConf.GRAY_IMG_DIR + pageIds.get(Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils
+                                       .removeExtension(image.getName()))) -1) + projDirConf.IMG_EXT));
+        }
 
         progress = 100;
     }
