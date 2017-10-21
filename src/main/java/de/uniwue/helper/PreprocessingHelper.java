@@ -33,7 +33,7 @@ public class PreprocessingHelper {
     /** 
      * Number of pages to process
      */
-    int NumberOfSpecifiedImages = 0;
+    private int specifiedImageCount = 0;
 
     /**
      * Constructor
@@ -54,8 +54,10 @@ public class PreprocessingHelper {
     public int getProgress() {
         File preprocDir = new File(projDirConf.PREPROC_DIR);
         File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projDirConf.BIN_IMG_EXT));
+        // Calcuclating the progress of the preprocess process 
+        // Maximum progress = 90%, since the preprocessed files still need to be moved
         if (binFiles.length != 0)
-            progress =  (int) ((double) binFiles.length / NumberOfSpecifiedImages * 100);
+            progress =  (int) ((double) binFiles.length / specifiedImageCount * 0.9 * 100);
         return progress;
     }
 
@@ -104,7 +106,7 @@ public class PreprocessingHelper {
         if (!grayDir.exists())
             grayDir.mkdir();
 
-        NumberOfSpecifiedImages = pageIds.size();
+        specifiedImageCount = pageIds.size();
         progress = 0;
 
         // Add pages with their absolute path to the command list
@@ -118,7 +120,7 @@ public class PreprocessingHelper {
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        //       Process completion status can be fetched with processHandler.isCompleted()
+        // Process completion status can be fetched with processHandler.isCompleted()
         processHandler.startProcess("ocropus-nlbin", command, false);
 
         if (progress < 90)
