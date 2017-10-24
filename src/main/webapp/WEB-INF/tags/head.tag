@@ -1,6 +1,7 @@
 <%@ tag description="Page Head Tag" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ attribute name="imageList" required="false" %>
+<%@ attribute name="processHandler" required="false" %>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -18,6 +19,7 @@
 
     <!--Project OCR4All_Web related-->
     <link type="text/css" rel="stylesheet" href="resources/css/ocr4allweb.css">
+    <script type="text/javascript" src="resources/js/ocr4allweb-helper.js"></script>
 
     <c:choose>
         <%--  --%>
@@ -25,6 +27,13 @@
             <script src="resources/js/withinviewport.js"></script>
             <script src="resources/js/jquery.withinviewport.js"></script>
             <script type="text/javascript" src="resources/js/ocr4allweb-imagelist.js"></script>
+        </c:when>
+    </c:choose>
+
+    <c:choose>
+        <%--  --%>
+        <c:when test="${not empty processHandler}">
+            <script type="text/javascript" src="resources/js/ocr4allweb-processhandler.js"></script>
         </c:when>
     </c:choose>
 

@@ -1,13 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
-    <t:head imageList="true">
+    <t:head imageList="true" processHandler="true">
         <title>OCR4All - Preprocessing</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 // Load image list
                 initializeImageList("Original");
+
+                // Initialize process update and set options
+                initializeProcessUpdate("preprocessing", [ 0 ], [ 2 ], true);
 
                 // Set available threads as default 
                 $.get( "ajax/preprocessing/threads" )
@@ -53,182 +56,25 @@
                     return params;
                 }
 
-                // Handle tab behaviour
-                function selectActiveTab() {
-                    // Set console output to active tab
-                    // Workaround with setTimeout, due to a bug in materialize JS
-                    // Without using this the indicator width is not calculated correctly
-                    setTimeout(function( ) { $('ul.tabs').tabs('select_tab', $('.console div.active').attr('id')); }, 200);
-                }
-                // Remove error notification icon if user clicks on consoleErr tab
-                $('li.tab a').on('click', function() {
-                    var clickedTabIcon = $(this).find('i.material-icons');
-                    if( clickedTabIcon.length > 0 ) {
-                        clickedTabIcon.remove();
-                        $('ul.tabs').tabs('select_tab', $(this).parent('li').attr('data-refid'));
-                    }
-                });
-
-                var inProgress = false;
-                var progressInterval = null;
-                var consoleStream = { "out" : "", "err" : "" };
-                // Function to handle preprocessing console
-                function updateConsole(streamType, tabId) {
-                    $.get( "ajax/preprocessing/console", { "streamType" : streamType } )
-                    .done(function( data ) {
-                        if( data === '' ) return;
-
-                        if( streamType == 'out' ) {
-                            // Console Out is incremental
-                            // Console Err is complete
-                            if( data === consoleStream['out'])
-                                return;
-
-                            consoleStream['out'] = data;
-                            $('#' + tabId + ' pre').html(data);
-                        }
-                        else {
-                            // Console Err is complete
-                            if( data === consoleStream['err'])
-                                return;
-
-                            consoleStream['err'] = data;
-                            $('#' + tabId + ' pre').html(data);
-                        }
-
-                        if( !$('#' + tabId + ' pre').is(":visible") )
-                            $('#' + tabId + ' pre').show();
-
-                        // Scroll to bottom if user does not mouseover
-                        if( !$('#' + tabId + ' pre').is(":hover") )
-                            $('#' + tabId + ' pre').scrollTop($('#' + tabId + ' pre').prop("scrollHeight"));
-
-                        // Show error notification if error console is updated and the tab not active
-                        if( streamType === "err" && !$('#' + tabId).hasClass('active') ) {
-                            if( $('ul.tabs li[data-refid="' + tabId + '"] a').find('i').length === 0 )
-                                $('ul.tabs li[data-refid="' + tabId + '"] a').append('<i class="material-icons" data-info="report">report</i>');
-                        }
-                    })
-                    .fail(function( data ) {
-                        $('#' + tabId + ' pre').html("ERROR: Failed to load console").attr("class", "red-text");
-                    })
-                }
-                // Function to handle preprocessing progress
-                function updateStatus(initial) {
-                    initial = initial || false;
-
-                    // Update preprocessing progress in status collapsible
-                    $.get( "ajax/preprocessing/progress" )
-                    .done(function( data ) {
-                        progress = data;
-                        if( Math.floor(data) != data || !$.isNumeric(data) ) {
-                            if( initial !== false ) $('.collapsible').collapsible('open', 0);
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("ERROR: Invalid AJAX response").attr("class", "red-text");
-                            return;
-                        }
-
-                        if( data < 0 ) {
-                            if( initial !== false ) $('.collapsible').collapsible('open', 0);
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            // No ongoing preprocessing
-                            $('.determinate').attr("style", "width: 0%");
-                            return;
-                        }
-
-                        if( inProgress === false ) {
-                            inProgress = true;
-                            $('.status span').html("Ongoing").attr("class", "orange-text");
-                        }
-
-                        if( initial !== false ) {
-                            $('.collapsible').collapsible('open', 2);
-                            selectActiveTab();
-                        }
-                        // Update process bar
-                        $('.determinate').attr("style", "width: " + data + "%");
-                        // Update console output
-                        updateConsole("out", "consoleOut");
-                        updateConsole("err", "consoleErr");
-
-                        // Terminate interval loop
-                        if( data >= 100 ) {
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("Completed").attr("class", "green-text");
-                        }
-                    })
-                    .fail(function( data ) {
-                        inProgress = false;
-                        clearInterval(progressInterval);
-                        $('.status span').html("ERROR: Failed to load status").attr("class", "red-text");
-                    })
-                }
-                // Initial call to set progress variable
-                updateStatus(true);
-                progressInterval = setInterval(updateStatus, 1000);
-
                 $('button[data-id="execute"]').click(function() {
-                    if( inProgress === true ) {
-                        $('#modal_inprogress').modal('open');
+                    if( $('input[type="number"]').hasClass('invalid') ) {
+                        $('#modal_inputerror').modal('open');
+                        return;
                     }
-                    else {
-                        if( $('input[type="number"]').hasClass('invalid') ) {
-                            $('#modal_inputerror').modal('open');
-                            return;
-                        }
 
-                        var selectedPages = getSelectedPages();
-                        if( selectedPages.length === 0 ) {
-                            $('#modal_errorhandling').modal('open');
-                            return;
-                        }
-
-                        // Show status view and hide others
-                        if( $('.collapsible').find('li').eq(0).hasClass('active') )
-                            $('.collapsible').collapsible('open', 0);
-                        if( $('.collapsible').find('li').eq(1).hasClass('active') )
-                            $('.collapsible').collapsible('open', 1);
-                        if( !$('.collapsible').find('li').eq(2).hasClass('active') ) {
-                            $('.collapsible').collapsible('open', 2);
-                            selectActiveTab();
-                        }
-
-                        var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
-                        $.post( "ajax/preprocessing/execute", ajaxParams )
-                        .fail(function( data ) {
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("ERROR: Error during process execution").attr("class", "red-text");
-                        })
-
-                        // Update preprocessing status. Interval will be terminated in
-                        // updateStatus(), if process is finished.
-                        progressInterval = setInterval(updateStatus, 1000);
+                    var selectedPages = getSelectedPages();
+                    if( selectedPages.length === 0 ) {
+                        $('#modal_errorhandling').modal('open');
+                        return;
                     }
+
+                    var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                    // Execute Preprocessing process
+                    executeProcess(ajaxParams);
                 });
 
                 $('button[data-id="cancel"]').click(function() {
-                    if( inProgress !== true ) {
-                        $('#modal_noprocess').modal('open');
-                    }
-                    else {
-                        $.post( "ajax/preprocessing/cancel" )
-                        .done(function( data ) {
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("No Preprocessing process running").attr("class", "");
-                            $('#modal_successfulcancel').modal('open');
-                        })
-                        .fail(function( data ) {
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("ERROR: Error during process cancelling").attr("class", "red-text");
-                            $('#modal_failcancel').modal('open');
-                        })
-                    }
+                    cancelProcess();
                 });
             });
         </script>

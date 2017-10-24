@@ -1,13 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
-    <t:head imageList="true">
+    <t:head imageList="true" processHandler="true">
         <title>OCR4All - Despeckling</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 // Load image list
                 initializeImageList("Binary", true);
+
+                // Initialize process update and set options
+                initializeProcessUpdate("despeckling", [ 0 ], [ 0, 2 ], false);
+
                 // Additional resizing event to adjust image list height
                 $('#originalImg').on('load', function () {
                     setTimeout(resizeImageList, 500);
@@ -63,10 +67,7 @@
                 // Handle onclick event for pages in page image list
                 $('#imageList').on('click', 'a', function() {
                     // Show image preview
-                    if( !$('.collapsible-header:eq(1)').hasClass('active') ) {
-                        $('.collapsible-header:eq(1)').addClass('active');
-                        $('.collapsible').collapsible({accordion: false});
-                    }
+                    handleCollapsibleEntry(1, 'open');
 
                     // Load full size images
                     loadPageImage($('#originalImg').parent('div'),   $(this).attr('data-pageid'), "Binary");
@@ -79,110 +80,20 @@
                         loadPageImage($('#despeckledImg').parent('div'), $('.image-list li>a.active').attr('data-pageid'), "Despeckled");
                 });
 
-                var inProgress = false;
-                var progressInterval = null;
-                // Function to handle despeckling progress
-                function updateStatus(initial) {
-                    initial = initial || false;
-
-                    // Update despeckling progress in status collapsible
-                    $.get( "ajax/despeckling/progress" )
-                    .done(function( data ) {
-                        progress = data;
-                        if( Math.floor(data) != data || !$.isNumeric(data) ) {
-                            if( initial !== false ) $('.collapsible').collapsible('open', 0);
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("ERROR: Invalid AJAX response").attr("class", "red-text");
-                            return;
-                        }
-
-                        if( data < 0 ) {
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            // No ongoing preprocessing
-                            $('.determinate').attr("style", "width: 0%");
-                            return;
-                        }
-
-                        if( inProgress === false ) {
-                            inProgress = true;
-                            $('.status span').html("Ongoing").attr("class", "orange-text");
-                        }
-
-                        if( initial !== false ) $('.collapsible').collapsible('open', 2);
-                        // Update process bar
-                        $('.determinate').attr("style", "width: " + data + "%");
-
-                        // Terminate interval loop
-                        if( data >= 100 ) {
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("Completed").attr("class", "green-text");
-                        }
-                    })
-                    .fail(function( data ) {
-                        inProgress = false;
-                        clearInterval(progressInterval);
-                        $('.status span').html("ERROR: Failed to load status").attr("class", "red-text");
-                    })
-                }
-                // Initial call to set progress variable
-                updateStatus(true);
-                progressInterval = setInterval(updateStatus, 1000);
-
-
                 // Process handling (execute despeckling for all pages with current settings)
                 $('button[data-id="execute"]').click(function() {
-                    if( inProgress === true ) {
-                        $('#modal_inprogress').modal('open');
+                    var selectedPages = getSelectedPages();
+                    if( selectedPages.length === 0 ) {
+                        $('#modal_errorhandling').modal('open');
+                        return;
                     }
-                    else {
-                        var selectedPages = getSelectedPages();
-                        if( selectedPages.length === 0 ) {
-                            $('#modal_errorhandling').modal('open');
-                            return;
-                        }
 
-                        // Show status (and hide image preview)
-                        if( $('.collapsible').find('.collapsible-header').eq(1).hasClass('active') )
-                            $('.collapsible').find('.collapsible-header').eq(1).click();
-                        if( !$('.collapsible').find('.collapsible-header').eq(2).hasClass('active') )
-                            $('.collapsible').find('.collapsible-header').eq(2).click();
-                        $(window).scrollTop(0);
-
-                        var ajaxParams = { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val(), "pageIds[]" : selectedPages };
-                        $.post( "ajax/despeckling/execute", ajaxParams )
-                        .fail(function( data ) {
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("ERROR: Error during process execution").attr("class", "red-text");
-                        })
-
-                        // Update despeckling status. Interval will be terminated in
-                        // updateStatus(), if process is finished.
-                        progressInterval = setInterval(updateStatus, 1000);
-                    }
+                    var ajaxParams = { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val(), "pageIds[]" : selectedPages };
+                    // Execute Preprocessing process
+                    executeProcess(ajaxParams);
                 });
                 $('button[data-id="cancel"]').click(function() {
-                    if( inProgress !== true ) {
-                        $('#modal_noprocess').modal('open');
-                    }
-                    else {
-                        $.post( "ajax/despeckling/cancel" )
-                        .done(function( data ) {
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("No Preprocessing process running").attr("class", "");
-                            $('#modal_successfulcancel').modal('open');
-                        })
-                        .fail(function( data ) {
-                            inProgress = false;
-                            clearInterval(progressInterval);
-                            $('.status span').html("ERROR: Error during process cancelling").attr("class", "red-text");
-                            $('#modal_failcancel').modal('open');
-                        })
-                    }
+                    cancelProcess();
                 });
             });
         </script>
@@ -201,7 +112,7 @@
 
                 <ul class="collapsible" data-collapsible="expandable">
                     <li>
-                        <div class="collapsible-header active"><i class="material-icons">settings</i>Settings</div>
+                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
                         <div class="collapsible-body">
                             <table class="compact">
                                 <tbody>
