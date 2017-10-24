@@ -22,7 +22,7 @@ public class ProcessHandler {
         private InputStream inputStream;
 
         /**
-         * Consumer that holds content of the process stream
+         * Consumer for further input handling
          */
         private Consumer<String> consumeInputLine;
 
@@ -30,7 +30,7 @@ public class ProcessHandler {
          * Constructor
          *
          * @param inputStream Stream to read from
-         * @param consumeInputLine Consumer to write to
+         * @param consumeInputLine Consumer to pass the stream content to
          */
         public StreamHandler(InputStream inputStream, Consumer<String> consumeInputLine) {
             this.inputStream = inputStream;
@@ -39,7 +39,17 @@ public class ProcessHandler {
 
         @Override
         public void run() {
-            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumeInputLine);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String nextLine = null;
+            try {
+                while ((nextLine = reader.readLine()) != null) {
+                    consumeInputLine.accept(nextLine);
+                }
+            } catch (IOException e) {
+                // InputStream is closed by terminating the underlying process
+                // Terminate this Thread as well to avoid further usage
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -47,31 +57,31 @@ public class ProcessHandler {
      * Class used to catch when process is completed
      * Used when executing a process in background 
      */
-    public class ProcessCompletedNotifier implements Runnable {
+    public class ProcessCompletionNotifier implements Runnable {
         /**
          * Process to watch
          */
         private Process process;
 
         /**
-         * Process handler object which needs to be notified
+         * Consumer for further input handling
          */
-        private ProcessHandler processHandler;
+        private Consumer<Process> consumeProcess;
 
         /**
          * Constructor
          *
          * @param process Process to watch
-         * @param processHandler Process handler object which needs to be notified
+         * @param consumeInputLine Consumer to pass the process to
          */
-        public ProcessCompletedNotifier(Process process, ProcessHandler processHandler) {
+        public ProcessCompletionNotifier(Process process, Consumer<Process> consumeProcess) {
             this.process = process;
-            this.processHandler = processHandler;
+            this.consumeProcess = consumeProcess;
         }
 
         @Override
         public void run() {
-            processHandler.waitForProcessCompletion(process);
+            consumeProcess.accept(process);
         }
     }
 
@@ -189,6 +199,9 @@ public class ProcessHandler {
      */
     public void startProcess(String programPath, List<String> cmdArguments, boolean runInBackground)
             throws IOException {
+        // Reset process completion state in case of multiple usages of this instance
+        processCompleted = false;
+
         List<String> command = new ArrayList<String>();
         command.add(programPath);
         command.addAll(cmdArguments);
@@ -197,18 +210,16 @@ public class ProcessHandler {
         process = processBuilder.start();
 
         if (fetchProcessConsole == true) {
-            // Read process streams and pass them to the created consumer functions
-            Consumer<String> customOut = (out) -> appendConsoleOutput(out);
-            Consumer<String> customErr = (err) -> appendConsoleError(err);
-            StreamHandler outStreamHandler = new StreamHandler(process.getInputStream(), customOut);
-            StreamHandler errStreamHandler = new StreamHandler(process.getErrorStream(), customErr);
             // Execute stream handlers in new threads to be able to fetch stream contents continuously
-            new Thread(outStreamHandler).start();
-            new Thread(errStreamHandler).start();
+            // Use Consumers to redirect stream contents to appropriate appending method
+            new Thread(new StreamHandler(process.getInputStream(), (out) -> appendConsoleOutput(out))).start();
+            new Thread(new StreamHandler(process.getErrorStream(), (err) -> appendConsoleError(err))).start();
         }
 
         if (runInBackground) {
-            new Thread(new ProcessCompletedNotifier(process, this)).start();
+            // Execute process in a new Thread with the help of a process notifier
+            // To be able to get the process completion state the waitForProcessCompletion method is passed as consumer
+            new Thread(new ProcessCompletionNotifier(process, (proc) -> waitForProcessCompletion(proc))).start();
         }
         else {
             waitForProcessCompletion(process);
@@ -219,7 +230,6 @@ public class ProcessHandler {
      * Stops the process
      */
     public void stopProcess() {
-        // TODO: Interrupt threads and close Streams first
         process.destroy();
     }
 }
