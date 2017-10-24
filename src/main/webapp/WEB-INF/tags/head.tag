@@ -22,7 +22,7 @@
     <script type="text/javascript" src="resources/js/ocr4allweb-helper.js"></script>
 
     <c:choose>
-        <%--  --%>
+        <%-- Include JS files to provide image list functionality --%>
         <c:when test="${not empty imageList}">
             <script src="resources/js/withinviewport.js"></script>
             <script src="resources/js/jquery.withinviewport.js"></script>
@@ -31,7 +31,7 @@
     </c:choose>
 
     <c:choose>
-        <%--  --%>
+        <%-- Include JS files to provide process handling functionality --%>
         <c:when test="${not empty processHandler}">
             <script type="text/javascript" src="resources/js/ocr4allweb-processhandler.js"></script>
         </c:when>
