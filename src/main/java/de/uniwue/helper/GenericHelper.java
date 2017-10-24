@@ -8,16 +8,16 @@ import java.util.ArrayList;
 
 import org.apache.commons.io.FilenameUtils;
 
-import de.uniwue.config.ProjectDirConfig;
+import de.uniwue.config.ProjectConfiguration;
 
 /**
  * Helper class for generic controller
  */
 public class GenericHelper {
     /**
-     * Object to access project directory configuration
+     * Object to access project configuration
      */
-    private ProjectDirConfig projDirConf;
+    private ProjectConfiguration projConf;
 
     /**
      * Constructor
@@ -25,7 +25,7 @@ public class GenericHelper {
      * @param projectDir Path to the project directory
      */
     public GenericHelper(String projectDir) {
-        projDirConf = new ProjectDirConfig(projectDir);
+        projConf = new ProjectConfiguration(projectDir);
     }
 
     /**
@@ -38,10 +38,10 @@ public class GenericHelper {
     public ArrayList<String> getPageList(String imageType) throws IOException {
         ArrayList<String> pageList = new ArrayList<String>();
 
-        Files.walk(Paths.get(projDirConf.getImagePathByType(imageType)))
+        Files.walk(Paths.get(projConf.getImageDirectoryByType(imageType)))
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.isFile())
-        .filter(fileEntry -> fileEntry.getName().endsWith(projDirConf.IMG_EXT))
+        .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
         .sorted()
         .forEach(
             fileEntry -> { pageList.add(FilenameUtils.removeExtension(fileEntry.getName())); }

@@ -7,7 +7,7 @@ import java.util.Base64;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
-import de.uniwue.config.ProjectDirConfig;
+import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ImageDespeckle;
 import de.uniwue.feature.ImageResize;
 
@@ -17,9 +17,9 @@ import de.uniwue.feature.ImageResize;
  */
 public class ImageHelper {
     /**
-     * Object to access project directory configuration
+     * Object to access project configuration
      */
-    private ProjectDirConfig projDirConf;
+    private ProjectConfiguration projConf;
 
     /**
      * Image resizing object to access resizing functionality
@@ -32,7 +32,7 @@ public class ImageHelper {
      * @param projectDir Path to the project directory
      */
     public ImageHelper(String projectDir) {
-        projDirConf = new ProjectDirConfig(projectDir);
+        projConf = new ProjectConfiguration(projectDir);
     }
 
     /**
@@ -52,7 +52,7 @@ public class ImageHelper {
      */
     private byte[] convertImageMatToByte(Mat img) {
         MatOfByte matOfByte = new MatOfByte();
-        Imgcodecs.imencode(projDirConf.IMG_EXT, img, matOfByte); 
+        Imgcodecs.imencode(projConf.IMG_EXT, img, matOfByte); 
         return matOfByte.toArray();
     }
 
@@ -99,7 +99,7 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getPageImage(String pageID, String imageType) throws IOException {
-        return getImageAsBase64(projDirConf.getImagePathByType(imageType) + pageID + projDirConf.IMG_EXT);
+        return getImageAsBase64(projConf.getImageDirectoryByType(imageType) + pageID + projConf.IMG_EXT);
     }
 
     /**
@@ -112,7 +112,7 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getSegmentImage(String pageID, String segmentID, String imageType) throws IOException {
-        return getImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID + projDirConf.getImageExtensionByType(imageType));
+        return getImageAsBase64(projConf.PAGE_DIR + pageID + File.separator + segmentID + projConf.getImageExtensionByType(imageType));
     }
 
     /**
@@ -126,8 +126,8 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getLineImage(String pageID, String segmentID, String lineID, String imageType) throws IOException {
-        return getImageAsBase64(projDirConf.PAGE_DIR + pageID + File.separator + segmentID
-                + File.separator + lineID + projDirConf.getImageExtensionByType(imageType));
+        return getImageAsBase64(projConf.PAGE_DIR + pageID + File.separator + segmentID
+                + File.separator + lineID + projConf.getImageExtensionByType(imageType));
     }
 
     /**
@@ -141,7 +141,7 @@ public class ImageHelper {
      * @throws IOException 
      */
     public String getPreviewDespeckleAsBase64(String pageId, double maxContourRemovalSize, String illustrationType) throws IOException {
-        Mat binImage = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
+        Mat binImage = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.IMG_EXT);
         Mat despImage = ImageDespeckle.despeckle(binImage, maxContourRemovalSize, illustrationType);
         return getImageAsBase64(despImage);
     }

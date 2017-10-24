@@ -6,7 +6,7 @@ import java.util.List;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
-import de.uniwue.config.ProjectDirConfig;
+import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ImageDespeckle;
 
 /**
@@ -14,9 +14,9 @@ import de.uniwue.feature.ImageDespeckle;
  */
 public class DespecklingHelper {
     /**
-     * Object to access project directory configuration
+     * Object to access project configuration
      */
-    private ProjectDirConfig projDirConf;
+    private ProjectConfiguration projConf;
 
     /**
      * Status of the progress
@@ -34,7 +34,7 @@ public class DespecklingHelper {
      * @param projectDir Path to the project directory
      */
     public DespecklingHelper(String projectDir) {
-        projDirConf = new ProjectDirConfig(projectDir);
+        projConf = new ProjectConfiguration(projectDir);
     }
 
     /**
@@ -44,7 +44,7 @@ public class DespecklingHelper {
      * @param maxContourRemovalSize Maximum size of the contours to be removed
      */
     public void despeckleGivenPages(List<String> pageIds, double maxContourRemovalSize) {
-        File DespDir = new File(projDirConf.DESP_IMG_DIR);
+        File DespDir = new File(projConf.DESP_IMG_DIR);
         if (!DespDir.exists())
             DespDir.mkdir();
 
@@ -55,9 +55,9 @@ public class DespecklingHelper {
             if (stop == true)
                 return;
 
-            Mat mat = Imgcodecs.imread(projDirConf.BINR_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT);
+            Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.IMG_EXT);
             mat = ImageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
-            Imgcodecs.imwrite(projDirConf.DESP_IMG_DIR + File.separator + pageId + projDirConf.IMG_EXT, mat);
+            Imgcodecs.imwrite(projConf.DESP_IMG_DIR + File.separator + pageId + projConf.IMG_EXT, mat);
 
             progress = (int) (i / totalPages * 100);
             i = i + 1;

@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
 
-import de.uniwue.config.ProjectDirConfig;
+import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.model.PageOverview;
 
 public class OverviewHelper {
@@ -40,9 +40,9 @@ public class OverviewHelper {
     private String imageType;
 
     /**
-     * Object to access project directory configuration
+     * Object to access project configuration
      */
-    private ProjectDirConfig projDirConf;
+    private ProjectConfiguration projConf;
 
     /**
      * Constructor
@@ -52,7 +52,7 @@ public class OverviewHelper {
      */
     public OverviewHelper(String pathToProject, String imageType) {
         this.imageType = imageType;
-        this.projDirConf = new ProjectDirConfig(pathToProject);
+        this.projConf = new ProjectConfiguration(pathToProject);
     }
 
     /**
@@ -61,7 +61,7 @@ public class OverviewHelper {
      * @throws IOException
      */
     public void initialize() throws IOException {
-        String path = projDirConf.ORIG_IMG_DIR;
+        String path = projConf.ORIG_IMG_DIR;
         if (new File(path).exists()) {
             final File folder = new File(path);
             for (final File fileEntry : folder.listFiles()) {
@@ -89,7 +89,7 @@ public class OverviewHelper {
      * @throws IOException
      */
     public void initialize(String pageID) throws IOException {
-        String path = projDirConf.ORIG_IMG_DIR + pageID + projDirConf.IMG_EXT;
+        String path = projConf.ORIG_IMG_DIR + pageID + projConf.IMG_EXT;
         if (new File(path).exists()) {
             PageOverview pOverview = new PageOverview(FilenameUtils.removeExtension(new File(path).getName()));
             overview.put(new File(path).getName(), pOverview);
@@ -111,7 +111,7 @@ public class OverviewHelper {
     public void checkPreprocessed() {
         for (String key : overview.keySet()) {
             overview.get(key).setPreprocessed(true);
-            if (!new File(projDirConf.PREPROC_DIR + imageType + File.separator + key).exists()) 
+            if (!new File(projConf.PREPROC_DIR + imageType + File.separator + key).exists()) 
                 overview.get(key).setPreprocessed(false);
         }
     }
@@ -122,7 +122,7 @@ public class OverviewHelper {
     public void checkDespeckled() {
         for (String key : overview.keySet()) {
             overview.get(key).setDespeckled(true);
-            if (!new File(projDirConf.DESP_IMG_DIR  + key).exists()) 
+            if (!new File(projConf.DESP_IMG_DIR  + key).exists()) 
                 overview.get(key).setDespeckled(false);
         }
     }
@@ -133,7 +133,7 @@ public class OverviewHelper {
     public void checkSegmented() {
         for (String key : overview.keySet()) {
             overview.get(key).setSegmented(true);
-            if (!new File(projDirConf.OCR_DIR + overview.get(key).getPageId() + projDirConf.CONF_EXT).exists()) 
+            if (!new File(projConf.OCR_DIR + overview.get(key).getPageId() + projConf.CONF_EXT).exists()) 
                 overview.get(key).setSegmented(false);
         }
     }
@@ -144,7 +144,7 @@ public class OverviewHelper {
     public void checkSegmentsExtracted() {
         for (String key: overview.keySet()) {
             overview.get(key).setSegmentsExtracted(true);
-            if (!new File(projDirConf.PAGE_DIR + overview.get(key).getPageId()).isDirectory())
+            if (!new File(projConf.PAGE_DIR + overview.get(key).getPageId()).isDirectory())
                 overview.get(key).setSegmentsExtracted(false);
         }
     }
@@ -157,17 +157,17 @@ public class OverviewHelper {
             overview.get(key).setLinesExtracted(true);
 
             if (overview.get(key).isSegmentsExtracted()) {
-                File[] directories = new File(projDirConf.PAGE_DIR
+                File[] directories = new File(projConf.PAGE_DIR
                         + overview.get(key).getPageId()).listFiles(File::isDirectory);
 
                 if (directories.length != 0) {
                     File dir = new File(directories[0].toString());
                     File[] files;
                     if (imageType.equals("Gray")) {
-                        files = dir.listFiles((d, name) -> name.endsWith(projDirConf.GRAY_IMG_EXT));
+                        files = dir.listFiles((d, name) -> name.endsWith(projConf.GRAY_IMG_EXT));
                     }
                     else {
-                        files = dir.listFiles((d, name) -> name.endsWith(projDirConf.BIN_IMG_EXT));
+                        files = dir.listFiles((d, name) -> name.endsWith(projConf.BIN_IMG_EXT));
                     }
 
                     if (files.length == 0)
@@ -199,8 +199,8 @@ public class OverviewHelper {
      */
     public Map<String, String[]> pageContent(String pageId) {
         Map<String,String[]> pageContent = new TreeMap<String, String[]>();
-        if (new File(projDirConf.PAGE_DIR + overview.get(pageId).getPageId()).exists()) {
-            File[] directories = new File(projDirConf.PAGE_DIR
+        if (new File(projConf.PAGE_DIR + overview.get(pageId).getPageId()).exists()) {
+            File[] directories = new File(projConf.PAGE_DIR
                     + overview.get(pageId).getPageId()).listFiles(File::isDirectory);
 
             for (int folder = 0; folder < directories.length; folder++) {
@@ -208,12 +208,12 @@ public class OverviewHelper {
                 File[] files;
                 int extensionLength = 0;
                 if (imageType.equals("Gray")) {
-                    files = dir.listFiles((d, name) -> name.endsWith(projDirConf.GRAY_IMG_EXT));
-                    extensionLength = projDirConf.GRAY_IMG_EXT.length();
+                    files = dir.listFiles((d, name) -> name.endsWith(projConf.GRAY_IMG_EXT));
+                    extensionLength = projConf.GRAY_IMG_EXT.length();
                 }
                 else {
-                    files = dir.listFiles((d, name) -> name.endsWith(projDirConf.BIN_IMG_EXT));
-                    extensionLength = projDirConf.BIN_IMG_EXT.length();
+                    files = dir.listFiles((d, name) -> name.endsWith(projConf.BIN_IMG_EXT));
+                    extensionLength = projConf.BIN_IMG_EXT.length();
                 }
 
                 List<String> fileNames = new ArrayList<String>();

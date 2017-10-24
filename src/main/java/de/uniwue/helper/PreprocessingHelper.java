@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
-import de.uniwue.config.ProjectDirConfig;
+import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessHandler;
 
 /**
@@ -16,9 +16,9 @@ import de.uniwue.feature.ProcessHandler;
  */
 public class PreprocessingHelper {
     /**
-     * Object to access project directory configuration
+     * Object to access project configuration
      */
-    private ProjectDirConfig projDirConf;
+    private ProjectConfiguration projConf;
 
     /**
      * Progress of the process
@@ -41,7 +41,7 @@ public class PreprocessingHelper {
      * @param projectDir Path to the project directory
      */
     public PreprocessingHelper(String projectDir) {
-        projDirConf = new ProjectDirConfig(projectDir);
+        projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
 
     }
@@ -52,8 +52,8 @@ public class PreprocessingHelper {
      * @return Progress percentage
      */
     public int getProgress() {
-        File preprocDir = new File(projDirConf.PREPROC_DIR);
-        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projDirConf.BIN_IMG_EXT));
+        File preprocDir = new File(projConf.PREPROC_DIR);
+        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.BIN_IMG_EXT));
         // Calcuclating the progress of the preprocess process 
         // Maximum progress = 90%, since the preprocessed files still need to be moved
         if (binFiles.length != 0)
@@ -90,19 +90,19 @@ public class PreprocessingHelper {
      * @throws InterruptedException 
      */
     public void preprocessPages(List<String> pageIds, List<String> cmdArgs) throws IOException, InterruptedException {
-        File origDir = new File(projDirConf.ORIG_IMG_DIR);
+        File origDir = new File(projConf.ORIG_IMG_DIR);
         if (!origDir.exists())
             return;
 
-        File preprocDir = new File(projDirConf.PREPROC_DIR);
+        File preprocDir = new File(projConf.PREPROC_DIR);
         if (!preprocDir.exists())
             preprocDir.mkdir();
 
-        File binDir = new File(projDirConf.BINR_IMG_DIR);
+        File binDir = new File(projConf.BINR_IMG_DIR);
         if (!binDir.exists())
             binDir.mkdir();
 
-        File grayDir = new File(projDirConf.GRAY_IMG_DIR);
+        File grayDir = new File(projConf.GRAY_IMG_DIR);
         if (!grayDir.exists())
             grayDir.mkdir();
 
@@ -112,7 +112,7 @@ public class PreprocessingHelper {
         // Add pages with their absolute path to the command list
         List<String> command = new ArrayList<String>();
         for (String pageId : pageIds) {
-            command.add(projDirConf.ORIG_IMG_DIR + pageId + projDirConf.IMG_EXT);
+            command.add(projConf.ORIG_IMG_DIR + pageId + projConf.IMG_EXT);
         }
         command.add("-o");
         command.add(preprocDir.toString());
@@ -127,18 +127,18 @@ public class PreprocessingHelper {
             progress = 90;
 
         // Move preprocessed pages to projDirConf.PREPROC_DIR
-        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projDirConf.BIN_IMG_EXT));
+        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.BIN_IMG_EXT));
         Arrays.sort(binFiles);
         for (File image : binFiles) {
-            image.renameTo(new File(projDirConf.BINR_IMG_DIR + pageIds.get(Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils
-                          .removeExtension(image.getName()))) -1) + projDirConf.IMG_EXT));
+            image.renameTo(new File(projConf.BINR_IMG_DIR + pageIds.get(Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils
+                          .removeExtension(image.getName()))) -1) + projConf.IMG_EXT));
               }
         
-        File[] nrmFiles = preprocDir.listFiles((d, name) -> name.endsWith(projDirConf.GRAY_IMG_EXT));
+        File[] nrmFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.GRAY_IMG_EXT));
         Arrays.sort(nrmFiles);
         for (File image : nrmFiles) {
-            image.renameTo(new File(projDirConf.GRAY_IMG_DIR + pageIds.get(Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils
-                                       .removeExtension(image.getName()))) -1) + projDirConf.IMG_EXT));
+            image.renameTo(new File(projConf.GRAY_IMG_DIR + pageIds.get(Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils
+                                       .removeExtension(image.getName()))) -1) + projConf.IMG_EXT));
         }
 
         progress = 100;

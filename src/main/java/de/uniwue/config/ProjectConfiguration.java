@@ -7,13 +7,13 @@ import java.lang.reflect.Modifier;
 /**
  * Configuration class for project directory specific parameters
  */
-public final class ProjectDirConfig {
+public final class ProjectConfiguration {
     /**
      * Constructor
      *
      * @param projectDir  Absolute path to the project directory
      */
-    public ProjectDirConfig(String projectDir) {
+    public ProjectConfiguration(String projectDir) {
         // Put project directory in front of all directory paths
         // This changes all paths from relative to absolute
         Field[] classVars = this.getClass().getDeclaredFields();
@@ -31,7 +31,7 @@ public final class ProjectDirConfig {
     /**
      * Constructor (only final variables contain the correct values)
      */
-    public ProjectDirConfig() { }
+    public ProjectConfiguration() { }
 
     /**** Extensions ****/
 
@@ -51,7 +51,6 @@ public final class ProjectDirConfig {
      * Default configuration extension of the project
      */
     public final String CONF_EXT = ".xml";
-
     /**
      * Returns the file extension of the given image type
      *
@@ -61,26 +60,26 @@ public final class ProjectDirConfig {
     public String getImageExtensionByType(String imageType) {
         String imageExtension = null;
         switch(imageType) {
-            case "Binary": imageExtension = this.GRAY_IMG_EXT; break;
-            case "Gray":   imageExtension = this.BIN_IMG_EXT;  break;
-            default: imageExtension = this.IMG_EXT; break;
+            case "Binary": imageExtension = this.BIN_IMG_EXT;  break;
+            case "Gray":   imageExtension = this.GRAY_IMG_EXT; break;
+            default:       imageExtension = this.IMG_EXT;      break;
         }
         return imageExtension;
     }
 
-    /**** Original directories ****/
+    /**** Project directory ****/
+
+    /**
+     * Absolute path to the project dir (is made absolute in Constructor)
+     */
+    public String PROJECT_DIR = "";
+
+    /**** Image related directories ****/
 
     /**
      * Absolute path to original page images (is made absolute in Constructor)
      */
     public String ORIG_IMG_DIR = "Original" + File.separator;
-    /**
-     * Absolute path to the project dir (is made absolute in Constructor)
-     */
-    public String PROJECT_DIR ="";
-
-    /**** Preprocessing directories ****/
-
     /**
      * Absolute path to preprocessing directory (is made absolute in Constructor)
      */
@@ -97,14 +96,13 @@ public final class ProjectDirConfig {
      * Absolute path to preprocessed despeckled images (is made absolute in Constructor)
      */
     public String DESP_IMG_DIR = PREPROC_DIR + "Despeckled" + File.separator;
-
     /**
      * Returns the filesystem path of the given image type
      *
      * @param imageType Type of the image
      * @return Absolute filesystem path to the image
      */
-    public String getImagePathByType(String imageType) {
+    public String getImageDirectoryByType(String imageType) {
         String imagePath = null;
         switch(imageType) {
             case "Original":   imagePath = this.ORIG_IMG_DIR; break;
@@ -116,7 +114,7 @@ public final class ProjectDirConfig {
         return imagePath;
     }
 
-    /**** OCR directories ****/
+    /**** OCR related directories ****/
 
     /**
      * Absolute path to OCR directory (is made absolute in Constructor)
