@@ -167,7 +167,7 @@ public class OverviewHelper {
                         files = dir.listFiles((d, name) -> name.endsWith(projConf.GRAY_IMG_EXT));
                     }
                     else {
-                        files = dir.listFiles((d, name) -> name.endsWith(projConf.BIN_IMG_EXT));
+                        files = dir.listFiles((d, name) -> name.endsWith(projConf.BINR_IMG_EXT));
                     }
 
                     if (files.length == 0)
@@ -212,8 +212,8 @@ public class OverviewHelper {
                     extensionLength = projConf.GRAY_IMG_EXT.length();
                 }
                 else {
-                    files = dir.listFiles((d, name) -> name.endsWith(projConf.BIN_IMG_EXT));
-                    extensionLength = projConf.BIN_IMG_EXT.length();
+                    files = dir.listFiles((d, name) -> name.endsWith(projConf.BINR_IMG_EXT));
+                    extensionLength = projConf.BINR_IMG_EXT.length();
                 }
 
                 List<String> fileNames = new ArrayList<String>();

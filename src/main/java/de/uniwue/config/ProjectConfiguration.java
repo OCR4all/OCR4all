@@ -42,7 +42,7 @@ public final class ProjectConfiguration {
     /**
      * Binary image extension of the project
      */
-    public final String BIN_IMG_EXT  = ".bin" + IMG_EXT;
+    public final String BINR_IMG_EXT  = ".bin" + IMG_EXT;
     /**
      * Normalized gray image extension of the project
      */
@@ -60,7 +60,7 @@ public final class ProjectConfiguration {
     public String getImageExtensionByType(String imageType) {
         String imageExtension = null;
         switch(imageType) {
-            case "Binary": imageExtension = this.BIN_IMG_EXT;  break;
+            case "Binary": imageExtension = this.BINR_IMG_EXT; break;
             case "Gray":   imageExtension = this.GRAY_IMG_EXT; break;
             default:       imageExtension = this.IMG_EXT;      break;
         }

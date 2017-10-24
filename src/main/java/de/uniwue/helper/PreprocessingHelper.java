@@ -52,7 +52,7 @@ public class PreprocessingHelper {
      */
     public int getProgress() {
         File preprocDir = new File(projConf.PREPROC_DIR);
-        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.BIN_IMG_EXT));
+        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.BINR_IMG_EXT));
         // Calculate the progress of the Preprocessing process 
         // Maximum progress = 90%, since the preprocessed files still need to be moved
         if (binFiles.length != 0)
