@@ -149,8 +149,7 @@ $(document).ready(function() {
             $('#selectAll').prop('checked', true);
         }
         else if( checkedCount > 0 ) {
-        	console.log("here");
-        	$('#selectAll').prop('indeterminate', true);
+            $('#selectAll').prop('indeterminate', true);
         }
     });
 
