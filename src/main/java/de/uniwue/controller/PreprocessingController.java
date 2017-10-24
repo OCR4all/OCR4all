@@ -70,7 +70,7 @@ public class PreprocessingController {
 
         try {
             preproHelper.preprocessPages(Arrays.asList(pageIds), cmdArgList);
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

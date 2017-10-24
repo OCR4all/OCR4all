@@ -21,19 +21,19 @@ public class PreprocessingHelper {
     private ProjectConfiguration projConf;
 
     /**
-     * Progress of the process
+     * Helper object for process handling
+     */
+    private ProcessHandler processHandler;
+
+    /**
+     * Progress of the Preprocessing process
      */
     private int progress = -1;
 
-    /**
-     * Helper object for process handling
-     */
-    ProcessHandler processHandler = null;
-
     /** 
-     * Number of pages to process
+     * Pages to preprocess
      */
-    private int specifiedImageCount = 0;
+    private List<String> preprocPages = new ArrayList<String>();
 
     /**
      * Constructor
@@ -43,7 +43,6 @@ public class PreprocessingHelper {
     public PreprocessingHelper(String projectDir) {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
-
     }
 
     /**
@@ -54,10 +53,10 @@ public class PreprocessingHelper {
     public int getProgress() {
         File preprocDir = new File(projConf.PREPROC_DIR);
         File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.BIN_IMG_EXT));
-        // Calcuclating the progress of the preprocess process 
+        // Calculate the progress of the Preprocessing process 
         // Maximum progress = 90%, since the preprocessed files still need to be moved
         if (binFiles.length != 0)
-            progress =  (int) ((double) binFiles.length / specifiedImageCount * 0.9 * 100);
+            progress =  (int) ((double) binFiles.length / preprocPages.size() * 0.9 * 100);
         return progress;
     }
 
@@ -79,21 +78,10 @@ public class PreprocessingHelper {
         return Runtime.getRuntime().availableProcessors();
     }
 
-    /**
-     * Executes image preprocessing of all pages.
-     * Achieved with the help of the external python program "ocropus-nlbin".
-     * This function also creates the preprocessed directory structure.
-     *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs Command line arguments for "ocropus-nlbin"
-     * @throws IOException
-     * @throws InterruptedException 
+    /*
+     * Create necessary Preprocessing directories if they do not exist
      */
-    public void preprocessPages(List<String> pageIds, List<String> cmdArgs) throws IOException, InterruptedException {
-        File origDir = new File(projConf.ORIG_IMG_DIR);
-        if (!origDir.exists())
-            return;
-
+    private void initializePreprocessingDirectories() {
         File preprocDir = new File(projConf.PREPROC_DIR);
         if (!preprocDir.exists())
             preprocDir.mkdir();
@@ -105,41 +93,62 @@ public class PreprocessingHelper {
         File grayDir = new File(projConf.GRAY_IMG_DIR);
         if (!grayDir.exists())
             grayDir.mkdir();
+    }
 
-        specifiedImageCount = pageIds.size();
+    /**
+     * Move the images of the given type to the appropriate Preprocessing folder
+     *
+     * @param imageType Type of the image
+     */
+    private void moveImageFiles(String imageType) {
+        File preprocDir = new File(projConf.PREPROC_DIR);
+        File[] filesToMove = preprocDir.listFiles((d, name) -> name.endsWith(projConf.getImageExtensionByType(imageType)));
+        Arrays.sort(filesToMove);
+        for (File image : filesToMove) {
+            int pageArrayIndex = Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils.removeExtension(image.getName()))) -1;
+            image.renameTo(new File(projConf.getImageDirectoryByType(imageType) + preprocPages.get(pageArrayIndex) + projConf.IMG_EXT));
+        }
+    }
+
+    /**
+     * Executes image Preprocessing of all pages
+     * Achieved with the help of the external python program "ocropus-nlbin"
+     * This function also creates the preprocessed directory structure
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs Command line arguments for "ocropus-nlbin"
+     * @throws IOException
+     */
+    public void preprocessPages(List<String> pageIds, List<String> cmdArgs) throws IOException {
+        File origDir = new File(projConf.ORIG_IMG_DIR);
+        if (!origDir.exists())
+            return;
+
+        initializePreprocessingDirectories();
+
         progress = 0;
+        preprocPages = pageIds;
 
-        // Add pages with their absolute path to the command list
         List<String> command = new ArrayList<String>();
         for (String pageId : pageIds) {
+            // Add affected pages with their absolute path to the command list
             command.add(projConf.ORIG_IMG_DIR + pageId + projConf.IMG_EXT);
         }
         command.add("-o");
-        command.add(preprocDir.toString());
+        command.add(projConf.PREPROC_DIR);
         command.addAll(cmdArgs);
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        // Process completion status can be fetched with processHandler.isCompleted()
         processHandler.startProcess("ocropus-nlbin", command, false);
 
+        // Workaround in case that some images could not be preprocessed successfully
         if (progress < 90)
             progress = 90;
 
         // Move preprocessed pages to projDirConf.PREPROC_DIR
-        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.BIN_IMG_EXT));
-        Arrays.sort(binFiles);
-        for (File image : binFiles) {
-            image.renameTo(new File(projConf.BINR_IMG_DIR + pageIds.get(Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils
-                          .removeExtension(image.getName()))) -1) + projConf.IMG_EXT));
-              }
-        
-        File[] nrmFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.GRAY_IMG_EXT));
-        Arrays.sort(nrmFiles);
-        for (File image : nrmFiles) {
-            image.renameTo(new File(projConf.GRAY_IMG_DIR + pageIds.get(Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils
-                                       .removeExtension(image.getName()))) -1) + projConf.IMG_EXT));
-        }
+        moveImageFiles("Binary");
+        moveImageFiles("Gray");
 
         progress = 100;
     }
