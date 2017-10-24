@@ -122,7 +122,7 @@ $(document).ready(function() {
     // Resize image list when collapsible is opened/closed
     // Most pages are built with collapsible in this project, so this is the most used case
     // Other change/click/... events need to be set in the target JSP
-    $('.collapsible-header').on('click', function() {
+    $('.collapsible-header').on('click change', function() {
         setTimeout(resizeImageList, 500);
     });
 

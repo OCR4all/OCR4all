@@ -92,25 +92,27 @@ function updateProcessStatus(initial) {
     .done(function( data ) {
         progress = data;
         if( Math.floor(data) != data || !$.isNumeric(data) ) {
-            openCollapsibleEntriesExclusively(globalCollapsibleOpenStandard);
+            if( initial === true )  openCollapsibleEntriesExclusively(globalCollapsibleOpenStandard);
             if( initial === false ) stopProcessUpdate("ERROR: Invalid AJAX response", "red-text");
             return;
         }
 
         if( data < 0 ) {
-            openCollapsibleEntriesExclusively(globalCollapsibleOpenStandard);
+        	if( initial === true )  openCollapsibleEntriesExclusively(globalCollapsibleOpenStandard);
             if( initial === false ) stopProcessUpdate();
             // No ongoing process
             $('.determinate').attr("style", "width: 0%");
             return;
         }
 
+        var ongoingProgress = globalInProgress;
         if( globalInProgress === false ) {
             globalInProgress = true;
             $('.status span').html("Ongoing").attr("class", "orange-text");
         }
 
-        openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction);
+        if( ongoingProgress === false )
+            openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction);
 
         // Update process bar
         $('.determinate').attr("style", "width: " + data + "%");

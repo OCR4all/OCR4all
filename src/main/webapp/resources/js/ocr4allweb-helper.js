@@ -12,8 +12,12 @@ function handleCollapsibleEntry(entryId, action) {
     if( action === 'close' )
         activeCheck = true;
 
-    if( $('.collapsible').find('li').find('.collapsible-header').eq(entryId).hasClass('active') === activeCheck )
+    var collapsibleEl = $('.collapsible').find('li').find('.collapsible-header').eq(entryId);
+    if( $(collapsibleEl).hasClass('active') === activeCheck )
         $('.collapsible').collapsible('open', entryId);
+
+    // Trigger change event in case the current page uses an imageList (resizing functionality)
+    $(collapsibleEl).change();
 }
 
 // Open the given collapsible entries and close the remaining ones
