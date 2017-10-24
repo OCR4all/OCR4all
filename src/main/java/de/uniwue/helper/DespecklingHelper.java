@@ -48,12 +48,13 @@ public class DespecklingHelper {
         if (!DespDir.exists())
             DespDir.mkdir();
 
-        double i = 1;
         progress = 0;
+
+        double i = 1;
         int totalPages = pageIds.size();
         for (String pageId : pageIds) {
             if (stop == true)
-                return;
+                break;
 
             Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.IMG_EXT);
             mat = ImageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
@@ -62,6 +63,8 @@ public class DespecklingHelper {
             progress = (int) (i / totalPages * 100);
             i = i + 1;
         }
+
+        progress = 100;
     }
 
     /**
