@@ -144,7 +144,7 @@ i.material-icons.image-list-trigger {
   cursor: pointer;
 }
 i.material-icons.image-list-trigger.active {
-  color: #536dfe !important;
+  color: #5c6bc0 !important;
 }
 .includes-list {
   padding-right: 260px;
@@ -162,11 +162,11 @@ overflow-x: hidden;
   color: #000;
 }
 .tabs .tab a.active {
-  color: #536dfe;
+  color: #5c6bc0;
 }
 .tabs .tab a:hover {
-  color: #536dfe;
+  color: #5c6bc0;
 }
 .tabs .indicator {
-  background-color: #536dfe;
+  background-color: #5c6bc0;
 }
