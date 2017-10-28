@@ -148,13 +148,17 @@ function executeProcess(ajaxParams) {
         $('#modal_inprogress').modal('open');
     }
     else {
+        startProcessUpdate();
         $.post( "ajax/" + globalController + "/execute", ajaxParams )
-        .fail(function( data ) {
-            stopProcessUpdate("ERROR: Error during process execution", "red-text");
+        .fail(function( jqXHR, data ) {
+            if (jqXHR.status == 405){
+                $('#modal_inprogress').modal('open');
+                stopProcessUpdate("ERROR: There is still an image despeckled. Wait some seconds and try again", "red-text");
+            }
+            else 
+            	stopProcessUpdate("ERROR: Error during process execution", "red-text");
         });
 
-        // Update process status
-        startProcessUpdate();
     }
 }
 

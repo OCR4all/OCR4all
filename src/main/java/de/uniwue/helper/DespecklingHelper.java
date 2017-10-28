@@ -29,6 +29,11 @@ public class DespecklingHelper {
     private boolean stop = false;
 
     /**
+    * Indicates if a depeckling process is running
+    */
+    private boolean despeckling = false;
+
+    /**
      * Constructor
      *
      * @param projectDir Path to the project directory
@@ -44,6 +49,9 @@ public class DespecklingHelper {
      * @param maxContourRemovalSize Maximum size of the contours to be removed
      */
     public void despeckleGivenPages(List<String> pageIds, double maxContourRemovalSize) {
+        despeckling = true;
+        stop = false;
+
         File DespDir = new File(projConf.DESP_IMG_DIR);
         if (!DespDir.exists())
             DespDir.mkdir();
@@ -53,7 +61,7 @@ public class DespecklingHelper {
         double i = 1;
         int totalPages = pageIds.size();
         for (String pageId : pageIds) {
-            if (stop == true)
+            if (stop == true) 
                 break;
 
             Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.IMG_EXT);
@@ -65,6 +73,7 @@ public class DespecklingHelper {
         }
 
         progress = 100;
+        despeckling = false;
     }
 
     /**
@@ -73,6 +82,8 @@ public class DespecklingHelper {
      * @return Progress of preprocessAllPages function
      */
     public int getProgress() {
+        if (stop == true)
+            return -1;
         return progress;
     }
 
@@ -81,5 +92,13 @@ public class DespecklingHelper {
      */
     public void cancelDespecklingProcess() {
         stop = true;
+    }
+
+    /**
+    * Gets the despecling status
+    * @return status if the process is running
+    */
+    public boolean isDespecling() {
+        return despeckling;
     }
 }

@@ -35,6 +35,8 @@ public class DespecklingController {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
+        DespecklingHelper despeckHelper = new DespecklingHelper(projectDir);
+        session.setAttribute("despeckHelper", despeckHelper);
 
         return mv;
     }
@@ -58,9 +60,12 @@ public class DespecklingController {
         if (projectDir == null || projectDir.isEmpty())
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        DespecklingHelper despeckHelper = new DespecklingHelper(projectDir);
-        session.setAttribute("despeckHelper", despeckHelper);
-        despeckHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
+        DespecklingHelper despeckHelper = (DespecklingHelper) session.getAttribute("despeckHelper");
+        if (despeckHelper.isDespecling() == true) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        }
+        else
+            despeckHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
     }
 
     /**
