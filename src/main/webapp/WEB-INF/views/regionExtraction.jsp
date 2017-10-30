@@ -66,7 +66,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="spacing" type="number" value="10" />
-                                                <label for="spacing" data-type="int" data-error="Has to be integer" >Default: 1 </label>
+                                                <label for="spacing" data-type="int" data-error="Has to be integer" >Default: 10 </label>
                                             </div>
                                         </td>
                                     </tr>

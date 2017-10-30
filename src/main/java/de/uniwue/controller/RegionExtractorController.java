@@ -1,5 +1,7 @@
 package de.uniwue.controller;
 
+import java.util.Arrays;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -10,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.uniwue.helper.DespecklingHelper;
+import de.uniwue.helper.PreprocessingHelper;
+import de.uniwue.helper.RegionExtractorHelper;
+
 @Controller
 public class RegionExtractorController {
     @RequestMapping("/regionExtraction")
@@ -17,6 +23,8 @@ public class RegionExtractorController {
         ModelAndView mv = new ModelAndView("regionExtraction");
 
         String projectDir = (String)session.getAttribute("projectDir");
+        RegionExtractorHelper regionExtractor = new RegionExtractorHelper(projectDir);
+        session.setAttribute("regionExtractor", regionExtractor);
         if (projectDir == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
@@ -39,8 +47,24 @@ public class RegionExtractorController {
                 @RequestParam("avgbackground") boolean avgbackground,
                 HttpSession session, HttpServletResponse response
             ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty())
+        RegionExtractorHelper regionExtractor = (RegionExtractorHelper) session.getAttribute("regionExtractor");
+        if (regionExtractor == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        regionExtractor.executeRegionExtraction(Arrays.asList(pageIds), spacing, usespacing, avgbackground);
+    }
+
+    /**
+     * Response to the request to return the progress status of the region extraction service
+     *
+     * @param session Session of the user
+     * @return Current progress (range: 0 - 100)
+     */
+    @RequestMapping(value = "/ajax/regionExtraction/progress" , method = RequestMethod.GET)
+    public @ResponseBody int jsonProgress(HttpSession session) {
+        if (session.getAttribute("regionExtractor") == null)
+            return -1;
+
+        RegionExtractorHelper regionExtractor = (RegionExtractorHelper) session.getAttribute("regionExtractor");
+        return regionExtractor.getProgress();
     }
 }
