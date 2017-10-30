@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.DespecklingHelper;
-import de.uniwue.helper.PreprocessingHelper;
 import de.uniwue.helper.RegionExtractorHelper;
 
 @Controller
@@ -66,5 +65,21 @@ public class RegionExtractorController {
 
         RegionExtractorHelper regionExtractor = (RegionExtractorHelper) session.getAttribute("regionExtractor");
         return regionExtractor.getProgress();
+    }
+
+    /**
+     * Response to the request to cancel the regionExtraction process
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value = "/ajax/regionExtraction/cancel", method = RequestMethod.POST)
+    public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
+        String projectDir = (String) session.getAttribute("projectDir");
+        if (projectDir == null || projectDir.isEmpty())
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        RegionExtractorHelper regionExtractor = (RegionExtractorHelper) session.getAttribute("regionExtractor");
+        regionExtractor.cancelProcess();
     }
 }
