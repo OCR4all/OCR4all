@@ -130,8 +130,8 @@
                                         <td>
                                             <div class="input-field">
                                                 <select id="illustrationType" name="illustrationType">
-                                                    <option value="standard">Show binary image</option>
                                                     <option value="marked">Show binary image including removed speckles</option>
+                                                    <option value="standard">Show binary image</option>
                                                 </select>
                                             </div>
                                         </td>
