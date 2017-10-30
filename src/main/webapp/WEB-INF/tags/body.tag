@@ -24,7 +24,7 @@
             <li><a href="Preprocessing">Preprocessing</a></li>
             <li><a href="Despeckling">Despeckling</a></li>
             <li><a href="#!">Segmentation</a></li>
-            <li><a href="#!">Region Extraction</a></li>
+            <li><a href="regionExtraction">Region Extraction</a></li>
             <li><a href="#!">Line Segmentation</a></li>
             <li><a href="#!">Ground Truth Creation</a></li>
             <li><a href="#!">Line Selection For Training</a></li>
