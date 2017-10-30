@@ -1,16 +1,18 @@
 package de.uniwue.helper;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
-
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.model.PageOverview;
 
@@ -70,6 +72,7 @@ public class OverviewHelper {
                     overview.put(fileEntry.getName(), pOverview);
                 }
             }
+            checkFiles();
             checkPreprocessed();
             checkDespeckled();
             checkSegmented();
@@ -235,5 +238,63 @@ public class OverviewHelper {
      */
     public Map<String, PageOverview> getOverview() {
         return overview;
+    }
+
+    /**
+     * List all filenames matching a pattern
+     * @param root  Directory
+     * @param regex Regex String for matching filenames
+     * @return all files witch match the regex pattern
+     */
+    public static File[] listFilesMatching(File root, String regex) {
+        if(!root.isDirectory()) {
+            throw new IllegalArgumentException(root + " is no directory");
+        }
+        final Pattern p = Pattern.compile(regex);
+        return root.listFiles(new FileFilter(){
+            @Override
+            public boolean accept(File file) {
+                return p.matcher(file.getName()).matches();
+            }
+        });
+    }
+
+    /**
+     * Checks if all filesnames are using the project file naming e.g (0001, 0002 ... XXXX)
+     * @return true = all files are using project naming, false = files are not using project naming
+     */
+    public boolean checkFiles() {
+        boolean status = false;
+        //Todo png is checked only
+        File[] filesFilterd = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}.png");
+        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles();
+        if (filesFilterd.length == files.length) 
+            status = true;
+        return status;
+    }
+
+    /**
+     * Renames all files according to the project standard
+     */
+    public void renameFiles() {
+        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles();
+        int len = new Integer(files.length).toString().length();
+
+        //Filenames are atleast 4 digits long
+        if(len < 4)
+            len = 4;
+        String Format = "";
+        for (int i = 1; i <= len; i++)
+            Format = Format + 0;
+        DecimalFormat df = new DecimalFormat(Format);
+        int name = 1;
+        for (File file : files) {
+            File newname = new File(projConf.ORIG_IMG_DIR + df.format(name) + projConf.IMG_EXT);
+            if (newname.exists())
+                System.out.println(df.format(name)+" already exists. Can't rename "+ file.getName());
+            else
+                file.renameTo(newname);
+            name++;
+        }
     }
 }

@@ -106,4 +106,48 @@ public class OverviewController {
         // @RequestMapping automatically transforms object to json format
         return new ArrayList<PageOverview>(view.getOverview().values());
     }
+
+    /**
+     * Response to the request to check the filenames
+     *
+     * @param projectDir Absolute path to the project
+     * @param imageType Project type (Binary or Gray)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the status of the filename check
+     */
+    @RequestMapping(value ="ajax/overview/check" , method = RequestMethod.GET)
+    public @ResponseBody boolean checkFiles(
+            @RequestParam("projectDir") String projectDir,
+            @RequestParam("imageType") String imageType,
+            HttpSession session, HttpServletResponse response
+        ) {
+    // Store project directory in session (serves as entry point)
+    session.setAttribute("projectDir", projectDir);
+    session.setAttribute("imageType", imageType);
+
+    OverviewHelper view = new OverviewHelper(projectDir,imageType);
+    boolean fileRenameRequired = view.checkFiles();
+
+    // @RequestMapping automatically transforms object to json format
+    return fileRenameRequired;
+    }
+
+    /**
+     * Response to rename the filenames according to the project standard
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="ajax/overview/rename" , method = RequestMethod.GET)
+    public @ResponseBody void renameFiles(
+            HttpSession session, HttpServletResponse response
+        ) {
+    String projectDir = (String) session.getAttribute("projectDir");
+    String imageType = (String) session.getAttribute("imageType");
+
+    OverviewHelper view = new OverviewHelper(projectDir,imageType);
+    view.renameFiles();
+
+    }
 }

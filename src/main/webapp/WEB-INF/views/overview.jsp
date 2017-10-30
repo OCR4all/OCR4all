@@ -11,6 +11,59 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
+                function datatable(){
+                    // Allow reinitializing DataTable with new data
+                    if( $.fn.DataTable.isDataTable("#overviewTable") ) {
+                        $('#overviewTable').DataTable().clear().destroy();
+                    }
+
+                    var overviewTable = $('#overviewTable').DataTable( {
+                        ajax : {
+                            "type"   : "GET",
+                            "url"    : "ajax/overview/list?"
+                                           + "projectDir=" + encodeURIComponent($('#projectDir').val())
+                                           + "&imageType=" + encodeURIComponent($('#imageType').val()),
+                            "dataSrc": function (data) { return data; },
+                            "error"  : function() {
+                                if( !$('.collapsible').find('li').eq(0).hasClass('active') )
+                                    $('.collapsible').collapsible('open', 0);
+                                $('#projectDir').addClass('invalid');
+                            }
+                        },
+                        columns: [
+                            { title: "Page Identifier", data: "pageId" },
+                            { title: "Preprocessed", data: "preprocessed" },
+                            { title: "Despeckled", data: "despeckled"},
+                            { title: "Segmented", data: "segmented" },
+                            { title: "Segments Extracted", data: "segmentsExtracted" },
+                            { title: "Lines Extracted", data: "linesExtracted" },
+                            { title: "Has GT", data: "hasGT" },
+                        ],
+                        createdRow: function( row, data, index ){
+                            $('td:first-child', row).html('<a href="pageOverview?pageId=' + data.pageId + '">' + data.pageId + '</a>');
+                            $.each( $('td:not(:first-child)', row), function( idx, td ) {
+                                if( $(td).html() === 'true' ) {
+                                    $(td).html('<i class="material-icons green-text">check</i>');
+                                }
+                                else {
+                                    $(td).html('<i class="material-icons red-text">clear</i>');
+                                }
+                            });
+                        },
+                        initComplete: function() {
+                            if( !$('.collapsible').find('li').eq(1).hasClass('active') )
+                                $('.collapsible').collapsible('open', 1);
+
+                            // Initialize select input
+                            $('select').material_select();
+
+                            // Update overview continuously
+                            setInterval( function() {
+                                overviewTable.ajax.reload(null, false);
+                            }, 10000);
+                        },
+                    });
+                }
                 $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         if( !$('.collapsible').find('li').eq(0).hasClass('active') )
@@ -18,58 +71,22 @@
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
-                        // Allow reinitializing DataTable with new data
-                        if( $.fn.DataTable.isDataTable("#overviewTable") ) {
-                            $('#overviewTable').DataTable().clear().destroy();
-                        }
-
-                        var overviewTable = $('#overviewTable').DataTable( {
-                            ajax : {
-                                "type"   : "GET",
-                                "url"    : "ajax/overview/list?"
-                                               + "projectDir=" + encodeURIComponent($('#projectDir').val())
-                                               + "&imageType=" + encodeURIComponent($('#imageType').val()),
-                                "dataSrc": function (data) { return data; },
-                                "error"  : function() {
-                                    if( !$('.collapsible').find('li').eq(0).hasClass('active') )
-                                        $('.collapsible').collapsible('open', 0);
-                                    $('#projectDir').addClass('invalid');
-                                }
-                            },
-                            columns: [
-                                { title: "Page Identifier", data: "pageId" },
-                                { title: "Preprocessed", data: "preprocessed" },
-                                { title: "Despeckled", data: "despeckled"},
-                                { title: "Segmented", data: "segmented" },
-                                { title: "Segments Extracted", data: "segmentsExtracted" },
-                                { title: "Lines Extracted", data: "linesExtracted" },
-                                { title: "Has GT", data: "hasGT" },
-                            ],
-                            createdRow: function( row, data, index ){
-                                $('td:first-child', row).html('<a href="pageOverview?pageId=' + data.pageId + '">' + data.pageId + '</a>');
-                                $.each( $('td:not(:first-child)', row), function( idx, td ) {
-                                    if( $(td).html() === 'true' ) {
-                                        $(td).html('<i class="material-icons green-text">check</i>');
-                                    }
-                                    else {
-                                        $(td).html('<i class="material-icons red-text">clear</i>');
-                                    }
-                                });
-                            },
-                            initComplete: function() {
-                                if( !$('.collapsible').find('li').eq(1).hasClass('active') )
-                                    $('.collapsible').collapsible('open', 1);
-
-                                // Initialize select input
-                                $('select').material_select();
-
-                                // Update overview continuously
-                                setInterval( function() {
-                                    overviewTable.ajax.reload(null, false);
-                                }, 10000);
-                            },
-                        });
+                        $.get( "ajax/overview/check?", { "projectDir" : $('#projectDir').val(),
+                                                         "imageType" : $('#imageType').val() } )
+                        .done(function( data ) {
+                            if( data === true)
+                                datatable();
+                            else{
+                                $('#modal_choose').modal('open');
+                            }
+                        })
                     }
+                });
+                $('#agree').click(function() {
+                    $.get( "ajax/overview/rename" )
+                    .done(function( data ) {
+                        datatable();
+                      })
                 });
 
                 // Trigger overview table fetching on pageload
@@ -146,5 +163,17 @@
                 </button>
             </div>
         </div>
+        <div id="modal_choose" class="modal">
+            <div class="modal-content">
+                <h4>Information</h4>
+                    <p>
+                      By agreeing, files will be renamed according to the project standard
+                    </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
+                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+         </div>
     </t:body>
 </t:html>
