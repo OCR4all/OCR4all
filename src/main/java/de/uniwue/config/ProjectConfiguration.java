@@ -109,6 +109,7 @@ public final class ProjectConfiguration {
             case "Binary":     imagePath = this.BINR_IMG_DIR; break;
             case "Gray":       imagePath = this.GRAY_IMG_DIR; break;
             case "Despeckled": imagePath = this.DESP_IMG_DIR; break;
+            case "OCR":        imagePath = this.OCR_DIR; break;
             default: break;
         }
         return imagePath;

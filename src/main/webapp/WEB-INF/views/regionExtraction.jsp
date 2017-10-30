@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
-    <t:head>
+    <t:head imageList="true">
         <title>Region Extractor</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
+                initializeImageList("OCR");
                 // Todo Content of Region Extractor page
             });
         </script>

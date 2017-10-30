@@ -37,8 +37,8 @@ public class GenericHelper {
      */
     public ArrayList<String> getPageList(String imageType) throws IOException {
         ArrayList<String> pageList = new ArrayList<String>();
-
-        Files.walk(Paths.get(projConf.getImageDirectoryByType(imageType)))
+        // File depth of 1 -> no recursive (file)listing 
+        Files.walk(Paths.get(projConf.getImageDirectoryByType(imageType)), 1)
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.isFile())
         .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
