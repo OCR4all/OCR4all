@@ -5,6 +5,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -279,7 +280,7 @@ public class OverviewHelper {
     public void renameFiles() {
         File[] files = new File(projConf.ORIG_IMG_DIR).listFiles();
         int len = new Integer(files.length).toString().length();
-
+        Arrays.sort(files);
         //Filenames are atleast 4 digits long
         if(len < 4)
             len = 4;
@@ -290,8 +291,8 @@ public class OverviewHelper {
         int name = 1;
         for (File file : files) {
             File newname = new File(projConf.ORIG_IMG_DIR + df.format(name) + projConf.IMG_EXT);
-            if (newname.exists())
-                System.out.println(df.format(name)+" already exists. Can't rename "+ file.getName());
+            if (newname.getName().equals(file.getName()) || newname.exists())
+                System.out.println("Filename " + df.format(name)+" already exists. Renaming for "+ file.getName() + " not needed");
             else
                 file.renameTo(newname);
             name++;
