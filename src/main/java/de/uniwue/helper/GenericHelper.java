@@ -46,7 +46,6 @@ public class GenericHelper {
         .forEach(
             fileEntry -> { pageList.add(FilenameUtils.removeExtension(fileEntry.getName())); }
         );
-
         return pageList;
     }
 }

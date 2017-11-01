@@ -278,7 +278,7 @@ public class OverviewHelper {
      * Renames all files according to the project standard
      */
     public void renameFiles() {
-        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles();
+        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
         int len = new Integer(files.length).toString().length();
         Arrays.sort(files);
         //Filenames are atleast 4 digits long
@@ -291,9 +291,7 @@ public class OverviewHelper {
         int name = 1;
         for (File file : files) {
             File newname = new File(projConf.ORIG_IMG_DIR + df.format(name) + projConf.IMG_EXT);
-            if (newname.getName().equals(file.getName()) || newname.exists())
-                System.out.println("Filename " + df.format(name)+" already exists. Renaming for "+ file.getName() + " not needed");
-            else
+            if (!newname.getName().equals(file.getName()) || !newname.exists())
                 file.renameTo(newname);
             name++;
         }
