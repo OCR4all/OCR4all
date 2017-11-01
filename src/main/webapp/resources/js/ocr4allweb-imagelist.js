@@ -13,7 +13,7 @@ var globalImageType = "";
 
 function getSelectedPages() {
     var selectedPages = [];
-    $.each($('input[type="checkbox"]').not('#selectAll'), function() {
+    $.each($('#imageList input[type="checkbox"]').not('#selectAll'), function() {
         if( $(this).is(':checked') )
             selectedPages.push($(this).attr('data-pageid'));
     });
