@@ -61,7 +61,6 @@ public class Page {
             System.out.println("Reading Order == null! Using naive top-to-bottom RO!");
             readingOrder = calcNaiveTop2BottomReadingOrder(textRegions, true);
         }
-        
         this.readingOrder = readingOrder;
     }
 
@@ -83,7 +82,7 @@ public class Page {
 
         for (int i = 0; i < textRegions.size(); i++) {
             TextRegion textRegion = textRegions.get(i);
-            RegionRefIndexed regRefIdx = new RegionRefIndexed(i + "",
+            RegionRefIndexed regRefIdx = new RegionRefIndexed(Integer.toString(i),
                     textRegion.getId().toString());
             regionRefIndices.add(regRefIdx);
         }
@@ -96,7 +95,7 @@ public class Page {
     /**
      * Puts the regions with type marginalia to the end of the list
      * @param textRegions  List of textregions
-     * @return List of regions wiht marginalia last
+     * @return List of regions with marginalia last
      */
     private ArrayList<TextRegion> putMarginaliaLast(
             ArrayList<TextRegion> textRegions) {
@@ -106,15 +105,12 @@ public class Page {
         for (int i = 0; i < textRegions.size(); i++) {
             TextRegion region = textRegions.get(i);
 
-            System.out.println(region.getType());
-            
             if (region.getType().equals("marginalia")) {
                 marginalia.add(region);
             } else {
                 notMarginalia.add(region);
             }
         }
-        
         textRegions = new ArrayList<TextRegion>();
         textRegions.addAll(notMarginalia);
         textRegions.addAll(marginalia);

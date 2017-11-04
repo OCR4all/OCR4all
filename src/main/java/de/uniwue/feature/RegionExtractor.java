@@ -171,7 +171,7 @@ public class RegionExtractor {
     /**
      * Calculates the average color of the channels in an image
      * @param original Mat object of the image
-     * @return avereage background color
+     * @return average background color
      */
     public static double[] calcAverageBackground(Mat original) {
         if (original.channels() == 1) {
@@ -209,7 +209,7 @@ public class RegionExtractor {
     /**
      * Calculates the average background color of a gray image
      * @param gray Mat object of the grayscale image
-     * @return avereage background color
+     * @return average background color
      */
     public static double[] calcAverageBackgroundGray(Mat gray) {
         Mat binary = new Mat();

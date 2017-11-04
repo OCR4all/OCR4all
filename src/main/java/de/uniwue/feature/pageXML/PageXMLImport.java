@@ -205,5 +205,4 @@ public class PageXMLImport {
 
         return page;
     }
-
 }

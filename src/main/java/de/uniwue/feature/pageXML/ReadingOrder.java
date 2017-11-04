@@ -13,8 +13,8 @@ public class ReadingOrder {
     private String orderedGroupID;
 
     /**
-     * Arraylist of the regionRefindices
-     * The regionRefindices displays the reading order of the different textregions of a page
+     * List of the regionRefIndices
+     * The regionRefindices displays the reading order of the different text regions of a page
      */
     private ArrayList<RegionRefIndexed> regionRefIndices;
 
@@ -35,22 +35,18 @@ public class ReadingOrder {
      */
     public String findIndex(String regionRef) {
         String index = "";
-        
         for(RegionRefIndexed regRef : regionRefIndices) {
             if(regRef.getRegionRef().toString().equals(regionRef)) {
                 index = regRef.getIndex();
                 break;
             }
         }
-        
         if(index.length() > 0) {
             while(index.length() < 3) {
                 index = "0" + index;
             }
-            
             return index;
         }
-        
         return null;
     }
 
@@ -69,5 +65,4 @@ public class ReadingOrder {
     public ArrayList<RegionRefIndexed> getRegionRefIndices() {
         return regionRefIndices;
     }
-
 }

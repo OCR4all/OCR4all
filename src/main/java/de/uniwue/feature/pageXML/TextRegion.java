@@ -45,7 +45,7 @@ public class TextRegion implements Comparable<TextRegion> {
     }
 
     /**
-     * caluclates the rectangle, which cover a text region
+     * Calculates the rectangle, which cover a text region
      */
     public void calcRect() {
         Point[] pointArray = new Point[points.size()];
