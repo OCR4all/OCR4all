@@ -24,8 +24,8 @@ public class ReadingOrder {
      * @param regionRefIndices List of regionRefIndices
      */
     public ReadingOrder(String orderedGroupID, ArrayList<RegionRefIndexed> regionRefIndices) {
-        setOrderedGroupID(orderedGroupID);
-        setRegionRefIndices(regionRefIndices);
+        this.orderedGroupID = orderedGroupID;
+        this.regionRefIndices = regionRefIndices;
     }
 
     /**
@@ -62,10 +62,6 @@ public class ReadingOrder {
         return orderedGroupID;
     }
 
-    public void setOrderedGroupID(String orderedGroupID) {
-        this.orderedGroupID = orderedGroupID;
-    }
-
     /**
      * Gets the RegionRefIndices 
      * @return List of RegionRefindices
@@ -74,7 +70,4 @@ public class ReadingOrder {
         return regionRefIndices;
     }
 
-    public void setRegionRefIndices(ArrayList<RegionRefIndexed> regionRefIndices) {
-        this.regionRefIndices = regionRefIndices;
-    }
 }

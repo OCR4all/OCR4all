@@ -24,8 +24,8 @@ public class ImageRegion {
      * @param points Points of the image region
      */
     public ImageRegion(String id, ArrayList<Point> points) {
-        setId(id);
-        setPoints(points);
+        this.id = id;
+        this.points = points;
     }
 
     /**
@@ -36,19 +36,11 @@ public class ImageRegion {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     /**
      * Gets a list of points for the image region
      * @return
      */
     public ArrayList<Point> getPoints() {
         return points;
-    }
-
-    public void setPoints(ArrayList<Point> points) {
-        this.points = points;
     }
 }

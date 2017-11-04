@@ -39,9 +39,9 @@ public class TextRegion implements Comparable<TextRegion> {
      * @param points List of points, which form the text region
      */
     public TextRegion(String id, String type, ArrayList<Point> points) {
-        setId(id);
-        setType(type);
-        setPoints(points);
+        this.id = id;
+        this.type = type;
+        this.points = points;
     }
 
     /**
@@ -53,8 +53,8 @@ public class TextRegion implements Comparable<TextRegion> {
         
         MatOfPoint pointMat = new MatOfPoint(pointArray);
         Rect rect = Imgproc.boundingRect(pointMat);
-        
-        setRect(rect);
+
+        this.rect = rect;
     }
 
     /**
@@ -65,20 +65,12 @@ public class TextRegion implements Comparable<TextRegion> {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     /**
      * Type of the textRegion
      * @return
      */
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     /**
@@ -89,20 +81,12 @@ public class TextRegion implements Comparable<TextRegion> {
         return points;
     }
 
-    public void setPoints(ArrayList<Point> points) {
-        this.points = points;
-    }
-
     /**
      * Gets the rectangle representation of the text region
      * @return rectangle representation
      */
     public Rect getRect() {
         return rect;
-    }
-
-    public void setRect(Rect rect) {
-        this.rect = rect;
     }
 
     /**

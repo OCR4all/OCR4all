@@ -50,19 +50,19 @@ public class Page {
     public Page(String imageFilename, String imageWidth, String imageHeight,
             ReadingOrder readingOrder, ArrayList<ImageRegion> imageRegions,
             ArrayList<TextRegion> textRegions) {
-        setImageFilename(imageFilename);
-        setImageWidth(imageWidth);
-        setImageHeight(imageHeight);
 
-        setImageRegions(imageRegions);
-        setTextRegions(textRegions);
+        this.imageFilename = imageFilename;
+        this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
+        this.imageRegions = imageRegions;
+        this.textRegions = textRegions;
 
         if (readingOrder == null) {
             System.out.println("Reading Order == null! Using naive top-to-bottom RO!");
             readingOrder = calcNaiveTop2BottomReadingOrder(textRegions, true);
         }
-
-        setReadingOrder(readingOrder);
+        
+        this.readingOrder = readingOrder;
     }
 
     /**
@@ -131,27 +131,11 @@ public class Page {
     }
 
     /**
-     * Sets the filename of the image
-     * @param imageFilename New filename of the image
-     */
-    public void setImageFilename(String imageFilename) {
-        this.imageFilename = imageFilename;
-    }
-
-    /**
      * Gets the with of the image
      * @return image width
      */
     public String getImageWidth() {
         return imageWidth;
-    }
-
-    /**
-     * Sets the width of the image
-     * @param imageWidth new width of the image
-     */
-    public void setImageWidth(String imageWidth) {
-        this.imageWidth = imageWidth;
     }
 
     /**
@@ -163,27 +147,11 @@ public class Page {
     }
 
     /**
-     * Sets the height of the image
-     * @param imageHeight new height if the image
-     */
-    public void setImageHeight(String imageHeight) {
-        this.imageHeight = imageHeight;
-    }
-
-    /**
      * Gets the reading Order object of the page
      * @return readingOrder object
      */
     public ReadingOrder getReadingOrder() {
         return readingOrder;
-    }
-
-    /**
-     * Sets the readingOrder of the page
-     * @param readingOrder new readingOrder object
-     */
-    public void setReadingOrder(ReadingOrder readingOrder) {
-        this.readingOrder = readingOrder;
     }
 
     /**
@@ -195,26 +163,10 @@ public class Page {
     }
 
     /**
-     * Sets the image regions of an image
-     * @param imageRegions List of ne image regions
-     */
-    public void setImageRegions(ArrayList<ImageRegion> imageRegions) {
-        this.imageRegions = imageRegions;
-    }
-
-    /**
      * Gets the text regions of the page
      * @return List of text regions of the page
      */
     public ArrayList<TextRegion> getTextRegions() {
         return textRegions;
-    }
-
-    /**
-     * Sets the text regions of the page
-     * @param textRegions new text regions
-     */
-    public void setTextRegions(ArrayList<TextRegion> textRegions) {
-        this.textRegions = textRegions;
     }
 }

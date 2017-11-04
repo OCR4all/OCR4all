@@ -19,8 +19,8 @@ public class RegionRefIndexed {
      * Represents the content of an image region in a page
      */
     public RegionRefIndexed(String index, String regionRef) {
-        setIndex(index);
-        setRegionRef(regionRef);
+        this.index = index;
+        this.regionRef = regionRef;
     }
 
     /**
@@ -31,19 +31,11 @@ public class RegionRefIndexed {
         return index;
     }
 
-    public void setIndex(String index) {
-        this.index = index;
-    }
-
     /**
      * Gets the regionref of the object
      * @return
      */
     public String getRegionRef() {
         return regionRef;
-    }
-
-    public void setRegionRef(String regionRef) {
-        this.regionRef = regionRef;
     }
 }
