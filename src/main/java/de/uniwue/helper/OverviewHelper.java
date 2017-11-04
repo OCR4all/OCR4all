@@ -267,8 +267,8 @@ public class OverviewHelper {
     public boolean checkFiles() {
         boolean status = false;
         //Todo png is checked only
-        File[] filesFilterd = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}.png");
-        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles();
+        File[] filesFilterd = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}" + projConf.IMG_EXT);
+        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
         if (filesFilterd.length == files.length) 
             status = true;
         return status;
