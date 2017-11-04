@@ -12,7 +12,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Class to handle xml import functionalites
+ */
 public class PageXMLImport {
+
+    /**
+     * Creates an Arraylist of points from an xml element 
+     * @param coords XML elements which contains the coordinates of a region 
+     * @return Arraylist<Points> representation of an region
+     */
     private static ArrayList<Point> extractPointsOld(Element coords) {
         ArrayList<Point> points = new ArrayList<Point>();
         NodeList pointNodes = coords.getElementsByTagName("Point");
@@ -29,6 +38,11 @@ public class PageXMLImport {
         return points;
     }
 
+    /**
+     * Creates an Arraylist of points from an xml element 
+     * @param coords XML elements which contains the points of a region 
+     * @return Arraylist<Points> representation of an region
+     */
     private static ArrayList<Point> extractPoints(Element coords) {
         if (!coords.hasAttribute("points")) {
             return extractPointsOld(coords);
@@ -65,6 +79,11 @@ public class PageXMLImport {
         return points;
     }
 
+    /**
+     * Creates a TextRegion object from the extracted xml node
+     * @param regionNode extracted XML node
+     * @return TextRegion object, which represents one TextRegion of the page
+     */
     private static TextRegion extractTextRegion(Node regionNode) {
         Element regionElement = (Element) regionNode;
         String id = regionElement.getAttribute("id");
@@ -78,6 +97,11 @@ public class PageXMLImport {
         return textRegion;
     }
 
+    /**
+     * Creates a ImageRegion object from the extracted xml node
+     * @param regionNode extracted XML node
+     * @return TextRegion object, which represents one TextRegion of the page
+     */
     private static ImageRegion extractImageRegion(Node regionNode) {
         Element regionElement = (Element) regionNode;
         String id = regionElement.getAttribute("id");
@@ -90,6 +114,12 @@ public class PageXMLImport {
         return imageRegion;
     }
 
+    /**
+     * Creates an Arraylist of RegionRefIndexed objects from an xml element
+     * The RegionRefindex represents the reading order of the different textregions
+     * @param orderedGroup extracted XML node
+     * @return Arraylist of RegionRefIndexed
+     */
     private static ArrayList<RegionRefIndexed> extractRegionRefIndices(Element orderedGroup) {
         ArrayList<RegionRefIndexed> regionRefIndices = new ArrayList<RegionRefIndexed>();
         NodeList rriNodes = orderedGroup.getElementsByTagName("RegionRefIndexed");
@@ -106,6 +136,11 @@ public class PageXMLImport {
         return regionRefIndices;
     }
 
+    /**
+     * Creates a readingOrder object from the extracted xml element
+     * @param readingOrderElement extracted XML element
+     * @return ReadingOrder object, which represents the readingOrder of the page
+     */
     private static ReadingOrder extractReadingOrder(Element readingOrderElement) {
         if (readingOrderElement == null) {
             return null;
@@ -120,6 +155,13 @@ public class PageXMLImport {
         return readingOrder;
     }
 
+    /**
+     * Creates an page object from a xml file
+     * XML attributes: imageFilename, imageHeight, imageWidth, readingOrder
+     * XML elements: imageregion, textregion
+     * @param inputPath Path to the XML file
+     * @return Page objects, which represents the xml file
+     */
     public static Page readPageXML(String inputPath) {
 
         Page page = null;

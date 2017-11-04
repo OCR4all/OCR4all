@@ -1,4 +1,5 @@
 package de.uniwue.model;
+
 /** Represents the status of the different process steps of a page.
  *
  */

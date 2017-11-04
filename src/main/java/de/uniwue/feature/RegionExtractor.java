@@ -19,11 +19,24 @@ import de.uniwue.feature.pageXML.Page;
 import de.uniwue.feature.pageXML.PageXMLImport;
 import de.uniwue.feature.pageXML.TextRegion;
 
+/** 
+ * Class for region extraction functionalities
+ */
 public class RegionExtractor {
+
     public static final String OUTPUT_FORMAT = ".png";
     public static final String SEPARATOR = "__";
     public static final int RO_ID_LENGTH = 3;
 
+    /**
+     * 
+     * @param xmlPath Path to the xml file
+     * @param imagePath Path to the image file
+     * @param useAvgBgd parameter to use AVGBgD
+     * @param useSpacing parameter to use imagePath
+     * @param spacing Todo
+     * @param outputFolder path to the output folder
+     */
     public static void extractSegments(String xmlPath, String imagePath,
             boolean useAvgBgd, boolean useSpacing, int spacing,
             String outputFolder) {
@@ -32,7 +45,6 @@ public class RegionExtractor {
         Mat image = Imgcodecs.imread(imagePath);
 
         //maybe some checks needed. image.width == 0 etc.
-        
         String pageIdentifier = page.getImageFilename().substring(0,
                 page.getImageFilename().lastIndexOf("."));
 
@@ -66,6 +78,15 @@ public class RegionExtractor {
         // System.gc();
     }
 
+    /**
+     * 
+     * @param pointList
+     * @param image
+     * @param useAvgBgd
+     * @param useSpacing
+     * @param spacing
+     * @param outputPath
+     */
     public static void saveImage(ArrayList<Point> pointList, Mat image,
             boolean useAvgBgd, boolean useSpacing, int spacing,
             String outputPath) {
@@ -134,6 +155,10 @@ public class RegionExtractor {
         releaseAll(mask, bgd, result);
     }
 
+    /**
+     * Frees memory of the mat object which was allocated by the imread method
+     * @param mats objects which should get released
+     */
     public static void releaseAll(Mat... mats) {
         for(Mat mat : mats) {
             if (mat != null) {
@@ -143,6 +168,11 @@ public class RegionExtractor {
         }
     }
 
+    /**
+     * Calculates the average color of the channels in an image
+     * @param original Mat object of the image
+     * @return avereage background color
+     */
     public static double[] calcAverageBackground(Mat original) {
         if (original.channels() == 1) {
             return calcAverageBackgroundGray(original);
@@ -176,6 +206,11 @@ public class RegionExtractor {
         return avgBackground;
     }
 
+    /**
+     * Calculates the average background color of a gray image
+     * @param gray Mat object of the grayscale image
+     * @return avereage background color
+     */
     public static double[] calcAverageBackgroundGray(Mat gray) {
         Mat binary = new Mat();
         Imgproc.threshold(gray, binary, -1, 255, Imgproc.THRESH_OTSU);

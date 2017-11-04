@@ -2,16 +2,37 @@ package de.uniwue.feature.pageXML;
 
 import java.util.ArrayList;
 
+/**
+ * Class to handle the readingOrder
+ */
 public class ReadingOrder {
 
+    /**
+     * Id of the ordered Group
+     */
     private String orderedGroupID;
+
+    /**
+     * Arraylist of the regionRefindices
+     * The regionRefindices displays the reading order of the different textregions of a page
+     */
     private ArrayList<RegionRefIndexed> regionRefIndices;
-    
+
+    /**
+     * Constructor
+     * @param orderedGroupID orderedGroup ID
+     * @param regionRefIndices List of regionRefIndices
+     */
     public ReadingOrder(String orderedGroupID, ArrayList<RegionRefIndexed> regionRefIndices) {
         setOrderedGroupID(orderedGroupID);
         setRegionRefIndices(regionRefIndices);
     }
 
+    /**
+     * Returns the matching index of the regionref string 
+     * @param regionRef regionref order
+     * @return matching index
+     */
     public String findIndex(String regionRef) {
         String index = "";
         
@@ -32,7 +53,11 @@ public class ReadingOrder {
         
         return null;
     }
-    
+
+    /**
+     * Gets the OrderedGroupID
+     * @return String representation of the GroupID
+     */
     public String getOrderedGroupID() {
         return orderedGroupID;
     }
@@ -41,6 +66,10 @@ public class ReadingOrder {
         this.orderedGroupID = orderedGroupID;
     }
 
+    /**
+     * Gets the RegionRefIndices 
+     * @return List of RegionRefindices
+     */
     public ArrayList<RegionRefIndexed> getRegionRefIndices() {
         return regionRefIndices;
     }
