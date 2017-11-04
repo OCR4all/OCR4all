@@ -101,7 +101,7 @@ public class RegionExtractor {
         File offsetFile = new File(offsetPath);
         try {
             FileUtils.writeStringToFile(offsetFile, (rect.x - spacing) + ","
-                    + (rect.y - spacing));
+                    + (rect.y - spacing), "UTF-8");
         } catch (IOException e) {
             System.out.println("Writing offset file failed! " + offsetPath);
             e.printStackTrace();
