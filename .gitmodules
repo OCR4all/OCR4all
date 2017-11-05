@@ -4,3 +4,6 @@
 [submodule "src/main/resources/LAREX"]
 	path = src/main/resources/LAREX
 	url = https://github.com/chreul/LAREX.git
+[submodule "src/main/resources/GTC_Web"]
+	path = src/main/resources/GTC_Web
+	url = git@gitlab2.informatik.uni-wuerzburg.de:chr58bk/GTC_Web_NeuUndGscheid.git
