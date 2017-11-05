@@ -1,4 +1,4 @@
-package de.uniwue.feature.pageXML;
+package de.uniwue.model;
 
 /**
  * Class to represent the readingOrder of the text regions

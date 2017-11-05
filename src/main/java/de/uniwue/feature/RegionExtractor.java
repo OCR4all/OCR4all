@@ -17,7 +17,7 @@ import org.opencv.imgproc.Imgproc;
 
 import de.uniwue.feature.pageXML.Page;
 import de.uniwue.feature.pageXML.PageXMLImport;
-import de.uniwue.feature.pageXML.TextRegion;
+import de.uniwue.model.TextRegion;
 
 /** 
  * Class for region extraction functionalities

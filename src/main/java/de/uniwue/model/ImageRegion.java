@@ -1,4 +1,4 @@
-package de.uniwue.feature.pageXML;
+package de.uniwue.model;
 
 import java.util.ArrayList;
 

@@ -2,6 +2,8 @@ package de.uniwue.feature.pageXML;
 
 import java.util.ArrayList;
 
+import de.uniwue.model.RegionRefIndexed;
+
 /**
  * Class to handle the readingOrder
  */

@@ -3,6 +3,10 @@ package de.uniwue.feature.pageXML;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import de.uniwue.model.ImageRegion;
+import de.uniwue.model.RegionRefIndexed;
+import de.uniwue.model.TextRegion;
+
 /** 
  * Represents the content of an page extracted from a xml file
  */

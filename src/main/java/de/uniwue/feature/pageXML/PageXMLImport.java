@@ -12,6 +12,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import de.uniwue.model.ImageRegion;
+import de.uniwue.model.RegionRefIndexed;
+import de.uniwue.model.TextRegion;
+
 /**
  * Class to handle xml import functionalites
  */
