@@ -4,15 +4,18 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.model.PageOverview;
@@ -276,8 +279,9 @@ public class OverviewHelper {
 
     /**
      * Renames all files according to the project standard
+     * @throws IOException 
      */
-    public void renameFiles() {
+    public void renameFiles() throws IOException {
         File[] files = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
         int len = new Integer(files.length).toString().length();
         Arrays.sort(files);
@@ -288,12 +292,29 @@ public class OverviewHelper {
         for (int i = 1; i <= len; i++)
             Format = Format + 0;
         DecimalFormat df = new DecimalFormat(Format);
+
         int name = 1;
+
+        //File which contains the information about the renaming
+        File backupFilename = new File(projConf.PROJECT_DIR + new SimpleDateFormat("mmHHddMMyyyy'.txt'").format(new Date()));
+
+        //saving information, which files neet to be renamed
+        TreeMap<File, File> hm = new TreeMap<File, File>();
+        String writeFilenamesToFile = "";
         for (File file : files) {
             File newname = new File(projConf.ORIG_IMG_DIR + df.format(name) + projConf.IMG_EXT);
-            if (!newname.getName().equals(file.getName()) || !newname.exists())
-                file.renameTo(newname);
+            if (!newname.getName().equals(file.getName())) {
+                hm.put(file, newname);
+                writeFilenamesToFile = writeFilenamesToFile + file.getName() + " renamed to " + newname.getName() + "\n";
+            }
             name++;
+        }
+        // writing backup filenames to file
+        FileUtils.writeStringToFile(backupFilename,writeFilenamesToFile,"UTF-8", true);
+
+        // renaming files
+        for (File file : hm.keySet()) {
+            file.renameTo(hm.get(file));
         }
     }
 }

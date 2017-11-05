@@ -147,7 +147,11 @@ public class OverviewController {
     String imageType = (String) session.getAttribute("imageType");
 
     OverviewHelper view = new OverviewHelper(projectDir,imageType);
-    view.renameFiles();
+    try {
+        view.renameFiles();
+    } catch (IOException e) {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
 
     }
 }
