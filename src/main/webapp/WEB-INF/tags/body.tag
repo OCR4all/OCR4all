@@ -26,7 +26,7 @@
             <li><a href="#!">Segmentation</a></li>
             <li><a href="regionExtraction">Region Extraction</a></li>
             <li><a href="#!">Line Segmentation</a></li>
-            <li><a href="#!">Ground Truth Creation</a></li>
+            <li><a href="/GTC_Web" target="_blank">Ground Truth Correction</a></li>
             <li><a href="#!">Line Selection For Training</a></li>
             <li><a href="#!">Train/Test Split</a></li>
             <li><a href="#!">Training</a></li>
