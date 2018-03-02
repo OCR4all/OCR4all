@@ -114,17 +114,6 @@
                                             		</div>
                                         		</td>
                                    			</tr>
-                                   			<tr>
-                                        		<td><p>Be less verbose</p></td>
-                                        		<td>
-                                            		<div class="input-field">
-                                            			<p>
-                                                			<input type="checkbox" class="filled-in" id="--quit"/>
-                                                			<label for="usespacing"></label>
-                                            			</p>
-                                            		</div>
-                                        		</td>
-                                   			</tr>
                                 		</tbody>
       								</table>	
       								</div>
@@ -292,7 +281,7 @@
                                         		</td>
                                     		</tr>
                                     		<tr>
-                                        		<td><p>Also check for black column separators</p></td>
+                                        		<td><p>Minimum column height (units=scale)</p></td>
                                         		<td>
                                             		<div class="input-field">
                                                 	<input id="--csminheight" type="number" step="1" value="100000"/>
@@ -304,8 +293,8 @@
       								</table>	
       								</div>
     							</li>
-  							    <li>
-      								<div class="collapsible-header">Wait for input after everything is done</div>
+    							<li>
+      								<div class="collapsible-header">Output parameters</div>
       								<div class="collapsible-body">
       								<table class="compact">
                                 		<tbody>
@@ -318,7 +307,7 @@
                                             		</div>
                                         		</td>
                                    			 </tr>
-                                    		<tr>
+                                     		<tr>
                                         		<td><p>Expand mask for grayscale extraction</p></td>
                                         		<td>
                                             		<div class="input-field">
@@ -327,6 +316,26 @@
                                             		</div>
                                         		</td>
                                     		</tr>
+                                		</tbody>
+      								</table>	
+      								</div>
+    							</li>
+  							    <li>
+      								<div class="collapsible-header">Other parameters</div>
+      								<div class="collapsible-body">
+      								<table class="compact">
+                                		<tbody>
+                                   			<tr>
+                                        		<td><p>Be less verbose</p></td>
+                                        		<td>
+                                            		<div class="input-field">
+                                            			<p>
+                                                			<input type="checkbox" class="filled-in" id="--quit"/>
+                                                			<label for="usespacing"></label>
+                                            			</p>
+                                            		</div>
+                                        		</td>
+                                   			</tr>
                                     		<tr>
                                         		<td><p>Number of CPUs to use</p></td>
                                         		<td>
@@ -346,8 +355,7 @@
                                             			</p>
                                             		</div>
                                         		</td>
-                                    		</tr>
-                                    		
+                                    		</tr>                                   		
                                 		</tbody>
       								</table>	
       								</div>
