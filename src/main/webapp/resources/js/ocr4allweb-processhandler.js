@@ -155,8 +155,10 @@ function executeProcess(ajaxParams) {
                 $('#modal_inprogress').modal('open');
                 stopProcessUpdate("ERROR: There is still an image despeckled. Wait some seconds and try again", "red-text");
             }
-            else 
-            	stopProcessUpdate("ERROR: Error during process execution", "red-text");
+            else {
+                openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction);
+                stopProcessUpdate("ERROR: Error during process execution", "red-text");
+            }
         });
 
     }
