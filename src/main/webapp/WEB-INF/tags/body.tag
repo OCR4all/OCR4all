@@ -23,7 +23,7 @@
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
             <li><a href="Preprocessing">Preprocessing</a></li>
             <li><a href="Despeckling">Despeckling</a></li>
-            <li><a href="#!">Segmentation</a></li>
+            <li><a href="Segmentation">Segmentation</a></li>
             <li><a href="regionExtraction">Region Extraction</a></li>
             <li><a href="lineSegmentation">Line Segmentation</a></li>
             <li><a href="/GTC_Web" target="_blank">Ground Truth Correction</a></li>

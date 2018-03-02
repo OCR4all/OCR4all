@@ -1,5 +1,6 @@
 package de.uniwue.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -92,10 +93,6 @@ public class OverviewController {
                 @RequestParam("imageType") String imageType,
                 HttpSession session, HttpServletResponse response
             ) {
-        // Store project directory in session (serves as entry point)
-        session.setAttribute("projectDir", projectDir);
-        session.setAttribute("imageType", imageType);
-
         OverviewHelper view = new OverviewHelper(projectDir,imageType);
         try {
             view.initialize();
@@ -122,15 +119,19 @@ public class OverviewController {
             @RequestParam("imageType") String imageType,
             HttpSession session, HttpServletResponse response
         ) {
-    // Store project directory in session (serves as entry point)
-    session.setAttribute("projectDir", projectDir);
-    session.setAttribute("imageType", imageType);
+        // Add file separator to end of the path (for usage in JSP files)
+        if (!projectDir.endsWith(File.separator))
+            projectDir = projectDir + File.separator;
 
-    OverviewHelper view = new OverviewHelper(projectDir,imageType);
-    boolean fileRenameRequired = view.checkFiles();
+        // Store project directory in session (serves as entry point)
+        session.setAttribute("projectDir", projectDir);
+        session.setAttribute("imageType", imageType);
 
-    // @RequestMapping automatically transforms object to json format
-    return fileRenameRequired;
+        OverviewHelper view = new OverviewHelper(projectDir,imageType);
+        boolean fileRenameRequired = view.checkFiles();
+
+        // @RequestMapping automatically transforms object to json format
+        return fileRenameRequired;
     }
 
     /**
@@ -143,15 +144,14 @@ public class OverviewController {
     public @ResponseBody void renameFiles(
             HttpSession session, HttpServletResponse response
         ) {
-    String projectDir = (String) session.getAttribute("projectDir");
-    String imageType = (String) session.getAttribute("imageType");
+        String projectDir = (String) session.getAttribute("projectDir");
+        String imageType  = (String) session.getAttribute("imageType");
 
-    OverviewHelper view = new OverviewHelper(projectDir,imageType);
-    try {
-        view.renameFiles();
-    } catch (IOException e) {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
-
+        OverviewHelper view = new OverviewHelper(projectDir,imageType);
+        try {
+            view.renameFiles();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 }
