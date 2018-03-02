@@ -79,7 +79,6 @@ public class LineSegmentationHelper {
                 	if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg"));
                 	RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator +fileEntry.getName()); }
             );
-    		//Todo: At the moment general images are considered --> Make it dependent on project type 
     	}
     	return RegionsOfPage;
     }
@@ -106,15 +105,11 @@ public class LineSegmentationHelper {
                 	RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + fileEntry.getName());
                 	}}
             );
-        	System.out.println(RegionsOfPage.size());
-        	System.out.println(directories.length);
         	if(directories.length == RegionsOfPage.size())
             	SegmentedPages.add(pageId);
         	else	
         		break;
         }
-        System.out.println("SegmentedSize: "+ SegmentedPages.size() + " pageSize: "+Pages.size());
-        System.out.println((int) ((double) SegmentedPages.size() / Pages.size() * 100));
         return (progress != 100) ? (int) ((double) SegmentedPages.size() / Pages.size() * 100) : 100;
     }
 

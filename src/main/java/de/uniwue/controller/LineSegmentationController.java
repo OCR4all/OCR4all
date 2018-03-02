@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.LineSegmentationHelper;
-import de.uniwue.helper.PreprocessingHelper;
 
 /**
  * Controller class for line segmentation module
@@ -87,7 +86,6 @@ public @ResponseBody String jsonConsole(
     }
     if (streamType.equals("err"))
         return lineSegmentationHelper.getProcessHandler().getConsoleErr();
-    	//System.out.println(lineSegmentationHelper.getProcessHandler().getConsoleOut());
     return lineSegmentationHelper.getProcessHandler().getConsoleOut();
 }
 
@@ -135,5 +133,5 @@ public @ResponseBody int jsonProgress(HttpSession session, HttpServletResponse r
 	}
 	return progress;
 
-}
+ }
 }
