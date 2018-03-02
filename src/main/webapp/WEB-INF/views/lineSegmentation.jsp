@@ -2,13 +2,31 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
-        <title>Region Extractor</title>
+        <title>Line Segmentation</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 initializeImageList("OCR");
                 initializeProcessUpdate("lineSegmentation", [ 0 ], [ 1 ], true);
-
+                // Error handling for parameter input fields
+                $('input[type="number"]').on('change', function() {
+                    var num = $(this).val();
+                    if( !$.isNumeric(num) ) {
+                        if( num !== "" ) {
+                            $(this).addClass('invalid').focus();
+                        }
+                        else {
+                            $(this).removeClass('invalid');
+                        }
+                    }
+                    else if( Math.floor(num) != num ) {
+                        if( $(this).attr('data-type') === "int" ) 
+                            $(this).addClass('invalid').focus();
+                    }
+                    else {
+                        $(this).removeClass('invalid');
+                    }
+                });
             // Fetch all modified parameters and return them appropriately
             function getInputParams() {
                 var params = { 'cmdArgs': [] };
