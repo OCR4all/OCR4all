@@ -17,8 +17,8 @@
                         return;
                     }
 
-                    var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id="usespacing"]').val(),
-                    		           "avgbackground" : $('input[id="avgbackground"]').val(), "pageIds[]" : selectedPages };
+                    var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
+                    		           "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages };
                     // Execute Preprocessing process
                     executeProcess(ajaxParams);
                     });

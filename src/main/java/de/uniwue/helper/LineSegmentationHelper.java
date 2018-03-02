@@ -128,7 +128,6 @@ public class LineSegmentationHelper {
             command.add(region);
         }
         command.addAll(cmdArgs);
-        System.out.println(command);
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("ocropus-gpageseg", command, false);

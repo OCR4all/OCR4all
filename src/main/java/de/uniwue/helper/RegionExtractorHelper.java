@@ -41,7 +41,6 @@ public class RegionExtractorHelper {
         double i = 1;
         int totalPages = pageIds.size();
         progress = 0;
-
         for(String pageId : pageIds) {
             if (stop == true) 
                 break;
