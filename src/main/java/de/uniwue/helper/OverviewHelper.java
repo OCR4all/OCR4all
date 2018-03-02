@@ -298,7 +298,7 @@ public class OverviewHelper {
         //File which contains the information about the renaming
         File backupFilename = new File(projConf.PROJECT_DIR + new SimpleDateFormat("mmHHddMMyyyy'.txt'").format(new Date()));
 
-        //saving information, which files neet to be renamed
+        //name of files, which will be renamed
         TreeMap<File, File> hm = new TreeMap<File, File>();
         String writeFilenamesToFile = "";
         for (File file : files) {
