@@ -47,13 +47,13 @@
                         $('#modal_inputerror').modal('open');
                         return;
                     }
-    
+
                     var selectedPages = getSelectedPages();
                     if( selectedPages.length === 0 ) {
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-    
+
                     var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
                     // Execute Preprocessing process
                     executeProcess(ajaxParams);

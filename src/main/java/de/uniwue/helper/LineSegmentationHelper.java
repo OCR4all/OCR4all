@@ -13,6 +13,9 @@ import org.apache.commons.io.FilenameUtils;
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessHandler;
 
+/**
+ * Helper class for line segmenting pages, which also calls the ocropus-gpageseg program
+ */
 public class LineSegmentationHelper {
     /**
      * Object to access project configuration
@@ -25,17 +28,17 @@ public class LineSegmentationHelper {
     private ProcessHandler processHandler;
 
     /**
-     * Progress of the Preprocessing process
+     * Progress of the Line Segmentation process
      */
     private int progress = -1;
-    
+
     /**
      * Segmented pages
      */
     private List<String> SegmentedPages = new ArrayList<String>();
 
     /** 
-     * Pages to preprocess
+     * Pages for which line segmentation should be done
      */
     private List<String> Pages = new ArrayList<String>();
 
@@ -44,12 +47,11 @@ public class LineSegmentationHelper {
      *
      * @param projectDir Path to the project directory
      */
-	public LineSegmentationHelper(String projectDir) {
-		
-		projConf = new ProjectConfiguration(projectDir);
-    	processHandler = new ProcessHandler();
-	}
-	
+    public LineSegmentationHelper(String projectDir) {
+        projConf = new ProjectConfiguration(projectDir);
+        processHandler = new ProcessHandler();
+    }
+
     /**
      * Gets the process handler object
      *
@@ -58,29 +60,31 @@ public class LineSegmentationHelper {
     public ProcessHandler getProcessHandler() {
         return processHandler;
     }
-    
+
     /**
      * Returns the regions of a list of pages
+     *
      * @param pageIds Id of the pages
      * @return List of regions
      * @throws IOException 
      */
     public List<String> getRegionsOfPage(List<String> pageIds) throws IOException {
-    	List<String> RegionsOfPage = new ArrayList<String>();
-    	for(String pageId :pageIds) {
+        List<String> RegionsOfPage = new ArrayList<String>();
+        for(String pageId :pageIds) {
             // File depth of 1 -> no recursive (file)listing 
-    		//Todo: At the moment general images are considered --> Make it dependent on project type 
+            //TODO: At the moment general images are considered --> Make it dependent on project type
             Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
             .map(Path::toFile)
             .filter(fileEntry -> fileEntry.isFile())
             .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
             .forEach(
                 fileEntry -> { 
-                	if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg"));
-                	RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator +fileEntry.getName()); }
+                    if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg"));
+                    RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator +fileEntry.getName());
+                }
             );
-    	}
-    	return RegionsOfPage;
+        }
+        return RegionsOfPage;
     }
 
     /**
@@ -91,36 +95,48 @@ public class LineSegmentationHelper {
      */
     public int getProgress() throws IOException {
         for(String pageId : Pages) {
-        	if(SegmentedPages.contains(pageId))	
-        		continue;
-        	File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-        	List<String> RegionsOfPage = new ArrayList<String>();
+            if(SegmentedPages.contains(pageId))
+                continue;
+
+            File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
+            List<String> RegionsOfPage = new ArrayList<String>();
             Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
             .map(Path::toFile)
             .filter(fileEntry -> fileEntry.isFile())
             .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
             .forEach(
-                fileEntry -> { 
-                	if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith("pseg")){
-                	RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + fileEntry.getName());
-                	}}
+                fileEntry -> {
+                    if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith("pseg")) {
+                    RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + fileEntry.getName());
+                    }
+                }
             );
-        	if(directories.length == RegionsOfPage.size())
-            	SegmentedPages.add(pageId);
-        	else	
-        		break;
+
+            if(directories.length == RegionsOfPage.size()) {
+                SegmentedPages.add(pageId);
+            }
+            else    
+                break;
         }
         return (progress != 100) ? (int) ((double) SegmentedPages.size() / Pages.size() * 100) : 100;
     }
 
-    public void LineSegmentPages(List<String> pageIds, List<String> cmdArgs) throws IOException {
+    /**
+     * Executes line segmentation of all pages
+     * Achieved with the help of the external python program "ocropus-gpageseg"
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs Command line arguments for "ocropus-gpageseg"
+     * @throws IOException
+     */
+    public void lineSegmentPages(List<String> pageIds, List<String> cmdArgs) throws IOException {
         File origDir = new File(projConf.ORIG_IMG_DIR);
         if (!origDir.exists())
             return;
 
         progress = 0;
         Pages = pageIds;
-        
+
         List<String> command = new ArrayList<String>();
         List<String> RegionsOfPage = getRegionsOfPage(pageIds);
         for (String region : RegionsOfPage) {
