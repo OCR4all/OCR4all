@@ -49,7 +49,7 @@ public class RegionExtractorHelper {
             String outputFolder = projConf.PAGE_DIR;
             RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, useSpacing, spacing, outputFolder);
 
-            progress = (int) (i / totalPages * 100);
+            progress = (int) ((double) i / totalPages * 100);
             i = i + 1;
             }
         progress = 100;
