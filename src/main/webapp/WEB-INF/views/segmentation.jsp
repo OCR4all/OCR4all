@@ -1,24 +1,30 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
-    <t:head>
+    <t:head imageList="false" processHandler="true">
         <title>OCR4All - Segmentation</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
+                initializeProcessUpdate("segmentation", [ 0 ], [ 1 ], false);
                 $('.collapsible').collapsible('open', 0);
 
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
                 });
                 $('#imageType').change();
+                // Process handling (execute for all pages with current settings)
+                $('button[data-id="execute"]').click(function() {
+                    var ajaxParams =  { "imageType" : $('#imageType').val()};
+                    executeProcess(ajaxParams);
+                    });
             });
         </script>
     </t:head>
-    <t:body heading="Segmentation">
+    <t:body heading="Segmentation" processModals="true">
         <div class="container">
             <div class="section">
-                <button data-id="copyPageXML" class="btn waves-effect waves-light">
+                <button data-id="execute" class="btn waves-effect waves-light">
                     Apply Segmentation results
                     <i class="material-icons right">chevron_right</i>
                 </button>
@@ -64,9 +70,18 @@
                             </table>
                         </div>
                     </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
+                        <div class="collapsible-body">
+                            <div class="status"><p>Status: <span>No segmentation process running</span></p></div>
+                            <div class="progress">
+                                <div class="determinate"></div>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
 
-                <button data-id="copyPageXML" class="btn waves-effect waves-light">
+                <button data-id="execute" class="btn waves-effect waves-light">
                     Apply Segmentation results
                     <i class="material-icons right">chevron_right</i>
                 </button>
