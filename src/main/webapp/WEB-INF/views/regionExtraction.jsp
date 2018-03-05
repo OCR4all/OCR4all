@@ -22,6 +22,11 @@
                     // Execute Preprocessing process
                     executeProcess(ajaxParams);
                     });
+
+                $.get( "ajax/regionExtraction/getImageIds")
+                .done(function( data ) {
+                    //Todo: Show ImageList
+                });
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
                 });

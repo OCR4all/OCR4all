@@ -1,6 +1,7 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,10 +35,18 @@ public class RegionExtractionController {
         ModelAndView mv = new ModelAndView("regionExtraction");
 
         String projectDir = (String)session.getAttribute("projectDir");
+
         if (projectDir == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
+        // Keep a single helper object in session
+        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+        if (regionExtractionHelper == null) {
+            regionExtractionHelper = new RegionExtractionHelper(projectDir);
+            session.setAttribute("regionExtractionHelper", regionExtractionHelper);
+        }
+
 
         return mv;
     }
@@ -65,10 +74,9 @@ public class RegionExtractionController {
 
         // Keep a single helper object in session
         RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-        if (regionExtractionHelper == null) {
-            regionExtractionHelper = new RegionExtractionHelper(projectDir);
-            session.setAttribute("regionExtractionHelper", regionExtractionHelper);
-        }
+        if (regionExtractionHelper == null) 
+            return;
+
 
         if (regionExtractionHelper.isRegionExtractionRunning() == true) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -113,5 +121,23 @@ public class RegionExtractionController {
         }
 
         regionExtractionHelper.cancelProcess();
+    }
+
+    /**
+     * Response to the request to return all pageIds for the regionExtraction page
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return List of pageIds
+     */
+    @RequestMapping(value = "/ajax/regionExtraction/getImageIds" , method = RequestMethod.GET)
+    public @ResponseBody ArrayList<String> getIdsforRegionExtractinon(HttpSession session, HttpServletResponse response) {
+    	RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+        if (regionExtractionHelper == null) {
+            return null;
+        }
+        ArrayList<String> pageIds = null;
+        pageIds = regionExtractionHelper.getIdsforRegionExtraction();
+        return pageIds;
     }
 }
