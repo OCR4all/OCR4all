@@ -157,7 +157,7 @@ function executeProcess(ajaxParams) {
         $.post( "ajax/" + globalController + "/execute", ajaxParams )
         .fail(function( jqXHR, data ) {
             if (jqXHR.status == 405){
-                $('#modal_inprogress').modal('open');
+                $('#modal_executefailed').modal('open');
                 stopProcessUpdate("ERROR: There is still an ongoing process", "red-text");
             }
             else {

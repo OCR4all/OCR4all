@@ -79,6 +79,19 @@
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
+                        <!-- Execute failed -->
+                        <div id="modal_executefailed" class="modal">
+                            <div class="modal-content">
+                                <h4>Information</h4>
+                                <p>
+                                    The execution of the ${heading} process failed.<br/>
+                                    Please check for status errors and try to execute again later.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                        </div>
                         <!-- Error handling -->
                         <div id="modal_errorhandling" class="modal">
                             <div class="modal-content red-text">
