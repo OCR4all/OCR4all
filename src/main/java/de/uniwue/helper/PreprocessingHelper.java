@@ -56,6 +56,10 @@ public class PreprocessingHelper {
      * @return Progress percentage
      */
     public int getProgress() {
+        // Prevent function from calculation progress if process is not running
+        if (preprocessingRunning == false)
+            return progress;
+
         File preprocDir = new File(projConf.PREPROC_DIR);
         File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.BINR_IMG_EXT));
         // Calculate the progress of the Preprocessing process 
@@ -157,8 +161,8 @@ public class PreprocessingHelper {
         moveImageFiles("Binary");
         moveImageFiles("Gray");
 
-        progress = 100;
         preprocessingRunning = false;
+        progress = 100;
     }
 
     /**
@@ -167,7 +171,6 @@ public class PreprocessingHelper {
     public void cancelProcess() {
         if (processHandler != null)
             processHandler.stopProcess();
-        preprocessingRunning = false;
     }
 
     /**
