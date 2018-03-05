@@ -92,6 +92,7 @@ public class DespecklingHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
+        despecklingRunning = false;
         progress = -1;
     }
 

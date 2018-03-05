@@ -167,6 +167,7 @@ public class LineSegmentationHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
+        lineSegmentationRunning = false;
         progress = -1;
     }
 

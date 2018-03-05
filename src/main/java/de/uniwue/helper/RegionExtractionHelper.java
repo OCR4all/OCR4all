@@ -89,6 +89,7 @@ public class RegionExtractionHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
+        regionExtractionRunning = false;
         progress = -1;
     }
 

@@ -169,6 +169,7 @@ public class PreprocessingHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
+        preprocessingRunning = false;
         progress = -1;
     }
 

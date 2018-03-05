@@ -97,6 +97,7 @@ public class SegmentationHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
+        segmentationRunning = false;
         progress = -1;
     }
 
