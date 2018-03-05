@@ -49,22 +49,21 @@ public class OverviewController {
             ) {
         ModelAndView mv = new ModelAndView("pageOverview");
 
-        String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null) {
-            mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
-            return mv;
-        }
-
         if (pageId.isEmpty()) {
             mv.addObject("error", "No pageId parameter was passed.\n"
                                 + "Please return to the Project Overview page.");
             return mv;
         }
 
-        String imageType = (String)session.getAttribute("imageType");
-        OverviewHelper view = new OverviewHelper(projectDir, imageType);
+        OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
+        if (overviewHelper == null) {
+            mv.addObject("error", "Project could not be loaded.\n"
+                                + "Please return to the Project Overview page.");
+            return mv;
+        }
+
         try {
-            view.initialize(pageId);
+            overviewHelper.initialize(pageId);
         } catch (IOException e) {
             mv.addObject("error", "The page with Id " + pageId + " could not be accessed on the filesystem.\n"
                                 + "Please return to the Project Overview page.");
@@ -72,8 +71,8 @@ public class OverviewController {
         }
 
         String pageImage = pageId + ".png";
-        mv.addObject("pageOverview", view.getOverview().get(pageImage));
-        mv.addObject("segments", view.pageContent(pageImage));
+        mv.addObject("pageOverview", overviewHelper.getOverview().get(pageImage));
+        mv.addObject("segments", overviewHelper.pageContent(pageImage));
 
         return mv;
     }
@@ -93,19 +92,26 @@ public class OverviewController {
                 @RequestParam("imageType") String imageType,
                 HttpSession session, HttpServletResponse response
             ) {
-        OverviewHelper view = new OverviewHelper(projectDir,imageType);
+        OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
+        if (overviewHelper == null) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return new ArrayList<PageOverview>();
+        }
+
         try {
-            view.initialize();
+            overviewHelper.initialize();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
         // @RequestMapping automatically transforms object to json format
-        return new ArrayList<PageOverview>(view.getOverview().values());
+        return new ArrayList<PageOverview>(overviewHelper.getOverview().values());
     }
 
     /**
      * Response to the request to check the filenames
+     * !!! IMPORTANT !!!
+     * This function serves as entry point and manages the overview helper
      *
      * @param projectDir Absolute path to the project
      * @param imageType Project type (Binary or Gray)
@@ -113,7 +119,7 @@ public class OverviewController {
      * @param response Response to the request
      * @return Returns the status of the filename check
      */
-    @RequestMapping(value ="ajax/overview/check" , method = RequestMethod.GET)
+    @RequestMapping(value ="/ajax/overview/check" , method = RequestMethod.GET)
     public @ResponseBody boolean checkFiles(
             @RequestParam("projectDir") String projectDir,
             @RequestParam("imageType") String imageType,
@@ -123,12 +129,21 @@ public class OverviewController {
         if (!projectDir.endsWith(File.separator))
             projectDir = projectDir + File.separator;
 
+        // Fetch old project specific session variables
+        String projectDirOld = (String) session.getAttribute("projectDir");
+        String imageTypeOld  = (String) session.getAttribute("imageType");
         // Store project directory in session (serves as entry point)
         session.setAttribute("projectDir", projectDir);
         session.setAttribute("imageType", imageType);
 
-        OverviewHelper view = new OverviewHelper(projectDir,imageType);
-        boolean fileRenameRequired = view.checkFiles();
+        // Keep a single helper object in session (change if not existing or project is changed)
+        OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
+        if (overviewHelper == null || projectDirOld != projectDir || imageTypeOld != imageType) {
+            overviewHelper = new OverviewHelper(projectDir, imageType);
+            session.setAttribute("overviewHelper", overviewHelper);
+        }
+
+        boolean fileRenameRequired = overviewHelper.checkFiles();
 
         // @RequestMapping automatically transforms object to json format
         return fileRenameRequired;
@@ -140,16 +155,18 @@ public class OverviewController {
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value ="ajax/overview/rename" , method = RequestMethod.GET)
+    @RequestMapping(value ="/ajax/overview/rename" , method = RequestMethod.GET)
     public @ResponseBody void renameFiles(
             HttpSession session, HttpServletResponse response
         ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        String imageType  = (String) session.getAttribute("imageType");
+        OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
+        if (overviewHelper == null) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
 
-        OverviewHelper view = new OverviewHelper(projectDir,imageType);
         try {
-            view.renameFiles();
+            overviewHelper.renameFiles();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
