@@ -1,16 +1,19 @@
 package de.uniwue.feature.pageXML;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.opencv.core.Point;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import de.uniwue.model.ImageRegion;
 import de.uniwue.model.RegionRefIndexed;
@@ -165,48 +168,40 @@ public class PageXMLImport {
      * XML elements: imageregion, textregion
      * @param inputPath Path to the XML file
      * @return Page objects, which represents the xml file
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
      */
-    public static Page readPageXML(String inputPath) {
+    public static Page readPageXML(String inputPath) throws ParserConfigurationException, SAXException, IOException {
+        File inputFile = new File(inputPath);
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document document = dBuilder.parse(inputFile);
+        document.getDocumentElement().normalize();
 
-        Page page = null;
+        Element pageInfo = (Element) document.getElementsByTagName("Page").item(0);
+        String imageFilename = pageInfo.getAttribute("imageFilename");
+        String imageWidth = pageInfo.getAttribute("imageWidth");
+        String imageHeight = pageInfo.getAttribute("imageHeight");
 
-        try {
-            File inputFile = new File(inputPath);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document document = dBuilder.parse(inputFile);
-            document.getDocumentElement().normalize();
+        Element readingOrderElement = (Element) document.getElementsByTagName("ReadingOrder").item(0);
+        ReadingOrder readingOrder = extractReadingOrder(readingOrderElement);
 
-            Element pageInfo = (Element) document.getElementsByTagName("Page").item(0);
-            String imageFilename = pageInfo.getAttribute("imageFilename");
-            String imageWidth = pageInfo.getAttribute("imageWidth");
-            String imageHeight = pageInfo.getAttribute("imageHeight");
+        NodeList imageNodes = document.getElementsByTagName("ImageRegion");
+        NodeList textNodes = document.getElementsByTagName("TextRegion");
 
-            Element readingOrderElement = (Element) document.getElementsByTagName("ReadingOrder").item(0);
-            ReadingOrder readingOrder = extractReadingOrder(readingOrderElement);
-
-            NodeList imageNodes = document.getElementsByTagName("ImageRegion");
-            NodeList textNodes = document.getElementsByTagName("TextRegion");
-
-            ArrayList<ImageRegion> imageRegions = new ArrayList<ImageRegion>();
-            ArrayList<TextRegion> textRegions = new ArrayList<TextRegion>();
-            for (int i = 0; i < imageNodes.getLength(); i++) {
-                ImageRegion imageRegion = extractImageRegion(imageNodes.item(i));
-                imageRegions.add(imageRegion);
-            }
-
-            for (int i = 0; i < textNodes.getLength(); i++) {
-                TextRegion textRegion = extractTextRegion(textNodes.item(i));
-                textRegions.add(textRegion);
-            }
-
-            page = new Page(imageFilename, imageWidth, imageHeight, readingOrder, imageRegions, textRegions);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Reading XML file failed!");
+        ArrayList<ImageRegion> imageRegions = new ArrayList<ImageRegion>();
+        ArrayList<TextRegion> textRegions = new ArrayList<TextRegion>();
+        for (int i = 0; i < imageNodes.getLength(); i++) {
+            ImageRegion imageRegion = extractImageRegion(imageNodes.item(i));
+            imageRegions.add(imageRegion);
         }
 
-        return page;
+        for (int i = 0; i < textNodes.getLength(); i++) {
+            TextRegion textRegion = extractTextRegion(textNodes.item(i));
+            textRegions.add(textRegion);
+        }
+
+        return new Page(imageFilename, imageWidth, imageHeight, readingOrder, imageRegions, textRegions);
     }
 }

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.opencv.core.CvType;
@@ -14,6 +16,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.xml.sax.SAXException;
 
 import de.uniwue.feature.pageXML.Page;
 import de.uniwue.feature.pageXML.PageXMLImport;
@@ -36,10 +39,13 @@ public class RegionExtractor {
      * @param useSpacing parameter to use imagePath
      * @param spacing Todo
      * @param outputFolder path to the output folder
+     * @throws IOException 
+     * @throws SAXException 
+     * @throws ParserConfigurationException 
      */
     public static void extractSegments(String xmlPath, String imagePath,
             boolean useAvgBgd, boolean useSpacing, int spacing,
-            String outputFolder) {
+            String outputFolder) throws ParserConfigurationException, SAXException, IOException {
         Page page = PageXMLImport.readPageXML(xmlPath);
         //maybe use flags if regions are extracted from binary/grayscale (which should be the case)
         Mat image = Imgcodecs.imread(imagePath);
@@ -86,10 +92,11 @@ public class RegionExtractor {
      * @param useSpacing
      * @param spacing
      * @param outputPath
+     * @throws IOException
      */
     public static void saveImage(ArrayList<Point> pointList, Mat image,
             boolean useAvgBgd, boolean useSpacing, int spacing,
-            String outputPath) {
+            String outputPath) throws IOException {
         Scalar avgBgd = new Scalar(255, 255, 255);
 
         if (useAvgBgd) {
@@ -120,13 +127,9 @@ public class RegionExtractor {
         String offsetPath = FilenameUtils.removeExtension(outputPath)
                 + ".offset";
         File offsetFile = new File(offsetPath);
-        try {
-            FileUtils.writeStringToFile(offsetFile, (rect.x - spacing) + ","
-                    + (rect.y - spacing), "UTF-8");
-        } catch (IOException e) {
-            System.out.println("Writing offset file failed! " + offsetPath);
-            e.printStackTrace();
-        }
+
+        FileUtils.writeStringToFile(offsetFile, (rect.x - spacing) + ","
+                + (rect.y - spacing), "UTF-8");
 
         Mat result = null;
 

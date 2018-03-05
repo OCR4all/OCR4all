@@ -1,7 +1,12 @@
 package de.uniwue.helper;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.RegionExtractor;
@@ -39,7 +44,8 @@ public class RegionExtractionHelper {
         projConf = new ProjectConfiguration(projectDir);
     }
 
-    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useSpacing, boolean useAvgBgd) {
+    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useSpacing, boolean useAvgBgd)
+            throws ParserConfigurationException, SAXException, IOException {
         regionExtractionRunning = true;
         stop = false;
 
