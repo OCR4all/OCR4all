@@ -98,7 +98,7 @@ function updateProcessStatus(initial) {
         }
 
         if( data < 0 ) {
-        	if( initial === true )  openCollapsibleEntriesExclusively(globalCollapsibleOpenStandard);
+            if( initial === true )  openCollapsibleEntriesExclusively(globalCollapsibleOpenStandard);
             if( initial === false ) stopProcessUpdate();
             // No ongoing process
             $('.determinate').attr("style", "width: 0%");
@@ -128,6 +128,10 @@ function updateProcessStatus(initial) {
         if( data >= 100 ) {
             stopProcessUpdate("Completed", "green-text");
         }
+
+        // Update status continuously. Interval can be terminated with stopProcessUpdate() if needed.
+        if( initial === true )
+            globalProgressInterval = setInterval(updateProcessStatus, 1000);
     })
     .fail(function( data ) {
         stopProcessUpdate("ERROR: Failed to load status", "red-text");
@@ -138,8 +142,6 @@ function updateProcessStatus(initial) {
 function startProcessUpdate() {
     // Update status without interval first to trigger collapsible behaviour first
     updateProcessStatus(true);
-    // Update status continuously. Interval can be terminated with stopProcessUpdate() if needed.
-    globalProgressInterval = setInterval(updateProcessStatus, 1000);
 }
 
 // Function to execute a process with given AJAX parameters
@@ -148,7 +150,10 @@ function executeProcess(ajaxParams) {
         $('#modal_inprogress').modal('open');
     }
     else {
+        // Needs to be outside of AJAX block
+        // 'done' functionality is only triggered after process is finished
         startProcessUpdate();
+
         $.post( "ajax/" + globalController + "/execute", ajaxParams )
         .fail(function( jqXHR, data ) {
             if (jqXHR.status == 405){
@@ -160,7 +165,6 @@ function executeProcess(ajaxParams) {
                 stopProcessUpdate("ERROR: Error during process execution", "red-text");
             }
         });
-
     }
 }
 
