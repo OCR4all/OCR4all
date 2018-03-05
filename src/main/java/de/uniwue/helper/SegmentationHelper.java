@@ -50,6 +50,11 @@ public class SegmentationHelper {
     public void MoveExtractedSegments(String projectype) throws IOException {
         segmentationRunning = true;
         stop = false;
+
+        File ocrDir = new File(projConf.OCR_DIR);
+        if (!ocrDir.exists())
+            ocrDir.mkdir();
+
         progress = 0;
 
         File preprocDir = new File(projConf.getImageDirectoryByType(projectype));

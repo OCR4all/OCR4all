@@ -1,5 +1,6 @@
 package de.uniwue.helper;
 
+import java.io.File;
 import java.util.List;
 
 import de.uniwue.config.ProjectConfiguration;
@@ -41,6 +42,11 @@ public class RegionExtractionHelper {
     public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useSpacing, boolean useAvgBgd) {
         regionExtractionRunning = true;
         stop = false;
+
+        File pageDir = new File(projConf.PAGE_DIR);
+        if (!pageDir.exists())
+            pageDir.mkdir();
+
         progress = 0;
 
         double i = 1;
