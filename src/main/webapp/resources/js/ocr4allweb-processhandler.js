@@ -98,7 +98,13 @@ function updateProcessStatus(initial) {
         }
 
         if( data < 0 ) {
-            if( initial === true )  openCollapsibleEntriesExclusively(globalCollapsibleOpenStandard);
+            if( initial === true ) {
+                openCollapsibleEntriesExclusively(globalCollapsibleOpenStandard);
+
+                // Update status continuously. Interval can be terminated with stopProcessUpdate() if needed.
+                if( initial === true )
+                    globalProgressInterval = setInterval(updateProcessStatus, 1000);
+            }
             if( initial === false ) stopProcessUpdate();
             // No ongoing process
             $('.determinate').attr("style", "width: 0%");
