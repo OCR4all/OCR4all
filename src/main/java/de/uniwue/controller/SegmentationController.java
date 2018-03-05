@@ -48,7 +48,7 @@ public class SegmentationController {
      */
     @RequestMapping(value = "/ajax/segmentation/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
-               @RequestParam("imageType") String imageType,
+               @RequestParam("imageType") String segmentationImageType,
                HttpSession session, HttpServletResponse response
                
            ) {
@@ -69,9 +69,10 @@ public class SegmentationController {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
+        String projectImageType  = (String) session.getAttribute("imageType");
 
         try {
-            segmentationHelper.MoveExtractedSegments(imageType);
+            segmentationHelper.MoveExtractedSegments(segmentationImageType, projectImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }

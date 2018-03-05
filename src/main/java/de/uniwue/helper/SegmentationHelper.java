@@ -45,9 +45,10 @@ public class SegmentationHelper {
      * Moves the extracted files of the segmentation process to the OCR project folder
      *
      * @param projectype type of the project (binary, despeckled)
+     * @param projectImageType 
      * @throws IOException
      */
-    public void MoveExtractedSegments(String projectype) throws IOException {
+    public void MoveExtractedSegments(String segmentationImageType, String projectImageType) throws IOException {
         segmentationRunning = true;
         stop = false;
 
@@ -57,7 +58,16 @@ public class SegmentationHelper {
 
         progress = 0;
 
-        File preprocDir = new File(projConf.getImageDirectoryByType(projectype));
+        //copy process specific images
+        File ProjectTypePreprocessDir = new File(projConf.getImageDirectoryByType(projectImageType));
+        if(ProjectTypePreprocessDir.exists()){
+            File[] filesToMove = ProjectTypePreprocessDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
+            for(File file : filesToMove) {
+                Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
+            }
+        }
+
+        File preprocDir = new File(projConf.getImageDirectoryByType(segmentationImageType));
         File[] filesToMove = preprocDir.listFiles((d, name) -> name.endsWith(".xml"));
         int count_xml_dir = filesToMove.length;
         int i = 1;
