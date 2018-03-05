@@ -99,6 +99,10 @@ public class LineSegmentationHelper {
      * @throws IOException 
      */
     public int getProgress() throws IOException {
+        // Prevent progress update at startup
+        if (!lineSegmentationRunning && progress != 100)
+            return -1;
+
         for(String pageId : Pages) {
             if(SegmentedPages.contains(pageId))
                 continue;
