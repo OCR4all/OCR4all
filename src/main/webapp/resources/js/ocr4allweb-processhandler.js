@@ -153,7 +153,7 @@ function executeProcess(ajaxParams) {
         .fail(function( jqXHR, data ) {
             if (jqXHR.status == 405){
                 $('#modal_inprogress').modal('open');
-                stopProcessUpdate("ERROR: There is still an image despeckled. Wait some seconds and try again", "red-text");
+                stopProcessUpdate("ERROR: There is still an ongoing process", "red-text");
             }
             else {
                 openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction);
