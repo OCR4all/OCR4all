@@ -27,10 +27,12 @@
             <li><a href="RegionExtraction">Region Extraction</a></li>
             <li><a href="LineSegmentation">Line Segmentation</a></li>
             <li><a href="/GTC_Web" target="_blank">Ground Truth Correction</a></li>
+            <!--
             <li><a href="#!">Line Selection For Training</a></li>
             <li><a href="#!">Train/Test Split</a></li>
             <li><a href="#!">Training</a></li>
             <li><a href="#!">Character Recognition</a></li>
+            -->
         </ul>
     </header>
 
