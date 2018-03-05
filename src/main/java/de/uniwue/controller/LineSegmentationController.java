@@ -88,6 +88,7 @@ public class LineSegmentationController {
             lineSegmentationHelper.lineSegmentPages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            lineSegmentationHelper.resetProgress();
         }
     }
 

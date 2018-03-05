@@ -75,6 +75,7 @@ public class SegmentationController {
             segmentationHelper.MoveExtractedSegments(segmentationImageType, projectImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            segmentationHelper.resetProgress();
         }
     }
 

@@ -81,6 +81,7 @@ public class PreprocessingController {
             preprocessingHelper.preprocessPages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            preprocessingHelper.resetProgress();
         }
     }
 

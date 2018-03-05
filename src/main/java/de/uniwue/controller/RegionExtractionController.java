@@ -79,6 +79,7 @@ public class RegionExtractionController {
             regionExtractionHelper.executeRegionExtraction(Arrays.asList(pageIds), spacing, usespacing, avgbackground);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            regionExtractionHelper.resetProgress();
         }
     }
 
