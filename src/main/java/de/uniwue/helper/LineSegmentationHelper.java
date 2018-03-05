@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -198,6 +199,7 @@ public class LineSegmentationHelper {
         File[] directories = new File(projConf.PAGE_DIR).listFiles(File::isDirectory);
         for(File file: directories) { 
             IdsForImageList.add(file.getName());}
+        Collections.sort(IdsForImageList);
         return IdsForImageList;
     }
 }
