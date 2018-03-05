@@ -176,4 +176,16 @@ public class LineSegmentationHelper {
     public boolean isLineSegmentationRunning() {
         return lineSegmentationRunning;
     }
+
+    /**
+     * Returns the ids of the pages, where the region extraction step is already done
+     * @return List with page ids
+     */
+    public ArrayList<String> getIdsforLineSegmentation(){
+        ArrayList<String> IdsForImageList = new ArrayList<String>();
+        File[] directories = new File(projConf.PAGE_DIR).listFiles(File::isDirectory);
+        for(File file: directories) { 
+            IdsForImageList.add(file.getName());}
+        return IdsForImageList;
+    }
 }

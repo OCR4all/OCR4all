@@ -28,6 +28,10 @@
                     }
                 });
 
+                $.get( "ajax/lineSegmentation/getImageIds")
+                .done(function( data ) {
+                    //Todo: Show ImageList
+                })
                 // Fetch all modified parameters and return them appropriately
                 function getInputParams() {
                     var params = { 'cmdArgs': [] };

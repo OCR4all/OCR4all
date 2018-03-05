@@ -34,6 +34,14 @@ public class LineSegmentationController {
         ModelAndView mv = new ModelAndView("lineSegmentation");
 
         String projectDir = (String)session.getAttribute("projectDir");
+
+        // Keep a single helper object in session
+        LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
+        if (lineSegmentationHelper == null) {
+            lineSegmentationHelper = new LineSegmentationHelper(projectDir);
+            session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
+        }
+
         if (projectDir == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
@@ -66,11 +74,9 @@ public class LineSegmentationController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
-        // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
         if (lineSegmentationHelper == null) {
-            lineSegmentationHelper = new LineSegmentationHelper(projectDir);
-            session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
+            return;
         }
 
         if (lineSegmentationHelper.isLineSegmentationRunning() == true) {
@@ -145,5 +151,23 @@ public class LineSegmentationController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return -1;
         }
+    }
+
+    /**
+     * Response to the request to return all pageIds for the lineSegmentation page
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return List of pageIds
+     */
+    @RequestMapping(value = "/ajax/lineSegmentation/getImageIds" , method = RequestMethod.GET)
+    public @ResponseBody ArrayList<String> getIdsforLineSegmentation(HttpSession session, HttpServletResponse response) {
+        LineSegmentationHelper lineSegmentation = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
+        if (lineSegmentation == null) {
+            return null;
+        }
+        ArrayList<String> pageIds = null;
+        pageIds = lineSegmentation.getIdsforLineSegmentation();
+        return pageIds;
     }
 }
