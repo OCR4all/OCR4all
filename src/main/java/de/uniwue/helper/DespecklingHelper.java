@@ -65,6 +65,7 @@ public class DespecklingHelper {
                 break;
 
             Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.IMG_EXT);
+            // Only the "standard" parameter is needed when despeckling
             mat = ImageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
             Imgcodecs.imwrite(projConf.DESP_IMG_DIR + File.separator + pageId + projConf.IMG_EXT, mat);
 
