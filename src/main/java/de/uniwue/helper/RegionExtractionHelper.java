@@ -8,7 +8,7 @@ import de.uniwue.feature.RegionExtractor;
 /**
  * Helper class for region extraction module
  */
-public class RegionExtractorHelper {
+public class RegionExtractionHelper {
     /**
      * Object to access project configuration
      */
@@ -34,7 +34,7 @@ public class RegionExtractorHelper {
      *
      * @param projectDir Path to the project directory
      */
-    public RegionExtractorHelper(String projectDir) {
+    public RegionExtractionHelper(String projectDir) {
         projConf = new ProjectConfiguration(projectDir);
     }
 
