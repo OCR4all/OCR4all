@@ -33,6 +33,11 @@ public class LineSegmentationHelper {
     private int progress = -1;
 
     /**
+     * Indicates if a Line Segmentation process is already running
+     */
+    private boolean lineSegmentationRunning = false;
+
+    /**
      * Segmented pages
      */
     private List<String> SegmentedPages = new ArrayList<String>();
@@ -130,6 +135,8 @@ public class LineSegmentationHelper {
      * @throws IOException
      */
     public void lineSegmentPages(List<String> pageIds, List<String> cmdArgs) throws IOException {
+        lineSegmentationRunning = true;
+
         File origDir = new File(projConf.ORIG_IMG_DIR);
         if (!origDir.exists())
             return;
@@ -149,5 +156,24 @@ public class LineSegmentationHelper {
         processHandler.startProcess("ocropus-gpageseg", command, false);
 
         progress = 100;
+        lineSegmentationRunning = false;
+    }
+
+    /**
+     * Cancels the process
+     */
+    public void cancelProcess() {
+        if (processHandler != null)
+            processHandler.stopProcess();
+        lineSegmentationRunning = false;
+    }
+
+    /**
+     * Gets the Line Segmentation status
+     *
+     * @return status if the process is running
+     */
+    public boolean isLineSegmentationRunning() {
+        return lineSegmentationRunning;
     }
 }

@@ -14,15 +14,23 @@ import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.RegionExtractorHelper;
 
+/**
+ * Controller class for pages of region extraction module
+ * Use response.setStatus to trigger AJAX fail (and therefore show errors)
+ */
 @Controller
 public class RegionExtractorController {
-    @RequestMapping("/regionExtraction")
-    public ModelAndView showPreprocessing(HttpSession session) {
+    /**
+     * Response to the request to send the content of the /RegionExtraction page
+     *
+     * @param session Session of the user
+     * @return Returns the content of the /RegionExtraction page
+     */
+    @RequestMapping("/RegionExtraction")
+    public ModelAndView show(HttpSession session) {
         ModelAndView mv = new ModelAndView("regionExtraction");
 
         String projectDir = (String)session.getAttribute("projectDir");
-        RegionExtractorHelper regionExtractor = new RegionExtractorHelper(projectDir);
-        session.setAttribute("regionExtractor", regionExtractor);
         if (projectDir == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
@@ -31,24 +39,40 @@ public class RegionExtractorController {
         return mv;
     }
 
-    /** Response to the request to execute the region extraction of the specified images
+    /**
+     * Response to the request to execute the region extraction of the specified images
      * 
      * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
      * @param session Session of the user
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/regionExtraction/execute", method = RequestMethod.POST)
-    public @ResponseBody void executeDispeckling(
+    public @ResponseBody void execute(
                 @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam("spacing") int spacing,
                 @RequestParam("usespacing") boolean usespacing,
                 @RequestParam("avgbackground") boolean avgbackground,
                 HttpSession session, HttpServletResponse response
             ) {
-        RegionExtractorHelper regionExtractor = (RegionExtractorHelper) session.getAttribute("regionExtractor");
-        if (regionExtractor == null)
+        String projectDir = (String) session.getAttribute("projectDir");
+        if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        regionExtractor.executeRegionExtraction(Arrays.asList(pageIds), spacing, usespacing, avgbackground);
+            return;
+        }
+
+        // Keep a single helper object in session
+        RegionExtractorHelper regionExtractorHelper = (RegionExtractorHelper) session.getAttribute("regionExtractorHelper");
+        if (regionExtractorHelper == null) {
+            regionExtractorHelper = new RegionExtractorHelper(projectDir);
+            session.setAttribute("regionExtractorHelper", regionExtractorHelper);
+        }
+
+        if (regionExtractorHelper.isRegionExtractionRunning() == true) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
+        regionExtractorHelper.executeRegionExtraction(Arrays.asList(pageIds), spacing, usespacing, avgbackground);
     }
 
     /**
@@ -58,12 +82,13 @@ public class RegionExtractorController {
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/regionExtraction/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonProgress(HttpSession session) {
-        if (session.getAttribute("regionExtractor") == null)
+    public @ResponseBody int progress(HttpSession session) {
+        RegionExtractorHelper regionExtractorHelper = (RegionExtractorHelper) session.getAttribute("regionExtractorHelper");
+        if (regionExtractorHelper == null)
             return -1;
 
-        RegionExtractorHelper regionExtractor = (RegionExtractorHelper) session.getAttribute("regionExtractor");
-        return regionExtractor.getProgress();
+        regionExtractorHelper = (RegionExtractorHelper) session.getAttribute("regionExtractorHelper");
+        return regionExtractorHelper.getProgress();
     }
 
     /**
@@ -74,11 +99,12 @@ public class RegionExtractorController {
      */
     @RequestMapping(value = "/ajax/regionExtraction/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty())
+        RegionExtractorHelper regionExtractorHelper = (RegionExtractorHelper) session.getAttribute("regionExtractorHelper");
+        if (regionExtractorHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
 
-        RegionExtractorHelper regionExtractor = (RegionExtractorHelper) session.getAttribute("regionExtractor");
-        regionExtractor.cancelProcess();
+        regionExtractorHelper.cancelProcess();
     }
 }

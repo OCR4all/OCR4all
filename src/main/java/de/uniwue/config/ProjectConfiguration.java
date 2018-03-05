@@ -20,7 +20,9 @@ public final class ProjectConfiguration {
         for (Field classVar : classVars) {
             if (!Modifier.isFinal(classVar.getModifiers())) {
                 try {
-                    classVar.set(this, projectDir + File.separator + classVar.get(this));
+                    // projectDir ends with File.seperator (is stored like this in session)
+                    //classVar.set(this, projectDir + File.separator + classVar.get(this));
+                    classVar.set(this, projectDir + classVar.get(this));
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     // Path will be invalid and controller will be responsible for error handling
                 }

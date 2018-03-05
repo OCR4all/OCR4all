@@ -29,7 +29,7 @@ public class PreprocessingController {
      * @return Returns the content of the /Preprocessing page
      */
     @RequestMapping("/Preprocessing")
-    public ModelAndView showPreprocessing(HttpSession session) {
+    public ModelAndView show(HttpSession session) {
         ModelAndView mv = new ModelAndView("preprocessing");
 
         String projectDir = (String)session.getAttribute("projectDir");
@@ -50,7 +50,7 @@ public class PreprocessingController {
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/preprocessing/execute", method = RequestMethod.POST)
-    public @ResponseBody void executePreprocessing(
+    public @ResponseBody void execute(
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                @RequestParam("pageIds[]") String[] pageIds,
                HttpSession session, HttpServletResponse response
@@ -65,11 +65,20 @@ public class PreprocessingController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
-        PreprocessingHelper preproHelper = new PreprocessingHelper(projectDir);
-        session.setAttribute("preproHelper", preproHelper);
+        // Keep a single helper object in session
+        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
+        if (preprocessingHelper == null) {
+            preprocessingHelper = new PreprocessingHelper(projectDir);
+            session.setAttribute("preprocessingHelper", preprocessingHelper);
+        }
+
+        if (preprocessingHelper.isPreprocessingRunning() == true) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
 
         try {
-            preproHelper.preprocessPages(Arrays.asList(pageIds), cmdArgList);
+            preprocessingHelper.preprocessPages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -82,20 +91,14 @@ public class PreprocessingController {
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.POST)
-    public @ResponseBody void cancelPreprocessing(HttpSession session, HttpServletResponse response) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty()) {
+    public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
+        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
+        if (preprocessingHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
-        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-        if (preproHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
-        }
-
-        preproHelper.getProcessHandler().stopProcess();
+        preprocessingHelper.cancelProcess();
     }
 
     /**
@@ -106,13 +109,13 @@ public class PreprocessingController {
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/preprocessing/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonProgress(HttpSession session, HttpServletResponse response) {
-        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-        if (preproHelper == null) {
+    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
+        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
+        if (preprocessingHelper == null) {
             return -1;
         }
 
-        return preproHelper.getProgress();
+        return preprocessingHelper.getProgress();
     }
 
     /**
@@ -135,17 +138,17 @@ public class PreprocessingController {
      * @return Console output
      */
     @RequestMapping(value = "/ajax/preprocessing/console" , method = RequestMethod.GET)
-    public @ResponseBody String jsonConsole(
+    public @ResponseBody String console(
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
             ) {
-        PreprocessingHelper preproHelper = (PreprocessingHelper) session.getAttribute("preproHelper");
-        if (preproHelper == null) {
+        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
+        if (preprocessingHelper == null) {
             return "";
         }
 
         if (streamType.equals("err"))
-            return preproHelper.getProcessHandler().getConsoleErr();
-        return preproHelper.getProcessHandler().getConsoleOut();
+            return preprocessingHelper.getProcessHandler().getConsoleErr();
+        return preprocessingHelper.getProcessHandler().getConsoleOut();
     }
 }

@@ -5,22 +5,24 @@ import java.util.List;
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.RegionExtractor;
 
+/**
+ * Helper class for region extraction module
+ */
 public class RegionExtractorHelper {
-
     /**
      * Object to access project configuration
      */
     private ProjectConfiguration projConf;
 
     /**
-     * Indicates if a regionExtraction process is already running
-     */
-    private boolean regionExtraction;
-
-    /**
      * Status of the progress
      */
     private int progress = -1;
+
+    /**
+     * Indicates if a region extraction process is already running
+     */
+    private boolean regionExtractionRunning = false;
 
     /**
      * Indicates if the process should be cancelled
@@ -36,14 +38,17 @@ public class RegionExtractorHelper {
         projConf = new ProjectConfiguration(projectDir);
     }
 
-    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useSpacing, boolean useAvgBgd ) {
-        regionExtraction = true;
+    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useSpacing, boolean useAvgBgd) {
+        regionExtractionRunning = true;
+        stop = false;
+        progress = 0;
+
         double i = 1;
         int totalPages = pageIds.size();
-        progress = 0;
-        for(String pageId : pageIds) {
+        for (String pageId : pageIds) {
             if (stop == true) 
                 break;
+
             String imagePath = projConf.OCR_DIR + pageId + projConf.IMG_EXT;
             String xmlPath = projConf.OCR_DIR + pageId + ".xml";
             String outputFolder = projConf.PAGE_DIR;
@@ -51,9 +56,10 @@ public class RegionExtractorHelper {
 
             progress = (int) ((double) i / totalPages * 100);
             i = i + 1;
-            }
+        }
+
         progress = 100;
-        regionExtraction = false;
+        regionExtractionRunning = false;
     }
 
     /**
@@ -72,5 +78,14 @@ public class RegionExtractorHelper {
      */
     public void cancelProcess() {
         stop = true;
+    }
+
+    /**
+     * Gets the region extraction status
+     *
+     * @return status if the process is running
+     */
+    public boolean isRegionExtractionRunning() {
+        return regionExtractionRunning;
     }
 }

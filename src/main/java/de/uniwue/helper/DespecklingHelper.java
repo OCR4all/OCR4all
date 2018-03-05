@@ -31,7 +31,7 @@ public class DespecklingHelper {
     /**
     * Indicates if a depeckling process is running
     */
-    private boolean despeckling = false;
+    private boolean despecklingRunning = false;
 
     /**
      * Constructor
@@ -49,7 +49,7 @@ public class DespecklingHelper {
      * @param maxContourRemovalSize Maximum size of the contours to be removed
      */
     public void despeckleGivenPages(List<String> pageIds, double maxContourRemovalSize) {
-        despeckling = true;
+        despecklingRunning = true;
         stop = false;
 
         File DespDir = new File(projConf.DESP_IMG_DIR);
@@ -73,7 +73,7 @@ public class DespecklingHelper {
         }
 
         progress = 100;
-        despeckling = false;
+        despecklingRunning = false;
     }
 
     /**
@@ -88,17 +88,18 @@ public class DespecklingHelper {
     }
 
     /**
-     * Cancels the DespecklingProcess
+     * Cancels the process
      */
     public void cancelDespecklingProcess() {
         stop = true;
     }
 
     /**
-    * Gets the despecling status
+    * Gets the despeckling status
+    *
     * @return status if the process is running
     */
-    public boolean isDespecling() {
-        return despeckling;
+    public boolean isDespecklingRunning() {
+        return despecklingRunning;
     }
 }

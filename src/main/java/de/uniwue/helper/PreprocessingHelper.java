@@ -30,6 +30,11 @@ public class PreprocessingHelper {
      */
     private int progress = -1;
 
+    /**
+     * Indicates if a Preprocessing process is already running
+     */
+    private boolean preprocessingRunning = false;
+
     /** 
      * Pages to preprocess
      */
@@ -120,6 +125,8 @@ public class PreprocessingHelper {
      * @throws IOException
      */
     public void preprocessPages(List<String> pageIds, List<String> cmdArgs) throws IOException {
+        preprocessingRunning = true;
+
         File origDir = new File(projConf.ORIG_IMG_DIR);
         if (!origDir.exists())
             return;
@@ -151,5 +158,24 @@ public class PreprocessingHelper {
         moveImageFiles("Gray");
 
         progress = 100;
+        preprocessingRunning = false;
+    }
+
+    /**
+     * Cancels the process
+     */
+    public void cancelProcess() {
+        if (processHandler != null)
+            processHandler.stopProcess();
+        preprocessingRunning = false;
+    }
+
+    /**
+     * Gets the Preprocessing status
+     *
+     * @return status if the process is running
+     */
+    public boolean isPreprocessingRunning() {
+        return preprocessingRunning;
     }
 }

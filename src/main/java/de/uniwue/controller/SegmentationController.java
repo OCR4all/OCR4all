@@ -20,26 +20,34 @@ import de.uniwue.helper.SegmentationHelper;
  */
 @Controller
 public class SegmentationController {
+    /**
+     * Response to the request to send the content of the /Segmentation page
+     *
+     * @param session Session of the user
+     * @return Returns the content of the /Segmentation page
+     */
     @RequestMapping("/Segmentation")
-    public ModelAndView showPreprocessing(HttpSession session) {
+    public ModelAndView show(HttpSession session) {
         ModelAndView mv = new ModelAndView("segmentation");
+
         String projectDir = (String)session.getAttribute("projectDir");
         if (projectDir == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
+
         return mv;
     }
 
     /**
-     * Response to the request to copy the xml files
+     * Response to the request to copy the XML files
      *
      * @param imageType Type of the images (binary,despeckled)
      * @param session Session of the user
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/segmentation/execute", method = RequestMethod.POST)
-    public @ResponseBody void executePreprocessing(
+    public @ResponseBody void execute(
                @RequestParam("imageType") String imageType,
                HttpSession session, HttpServletResponse response
                
@@ -49,15 +57,25 @@ public class SegmentationController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
-        SegmentationHelper segHelper = new SegmentationHelper(projectDir);
-        session.setAttribute("segHelper", segHelper);
+
+        // Keep a single helper object in session
+        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        if (segmentationHelper == null) {
+            segmentationHelper = new SegmentationHelper(projectDir);
+            session.setAttribute("segmentationHelper", segmentationHelper);
+        }
+
+        if (segmentationHelper.isSegmentationRunning() == true) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
 
         try {
-            segHelper.MoveExtractedSegments(imageType);
-            } catch (IOException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
-    }   
+            segmentationHelper.MoveExtractedSegments(imageType);
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     /**
      * Response to the request to return the progress status of the segmentation service
@@ -66,10 +84,28 @@ public class SegmentationController {
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/segmentation/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonProgress(HttpSession session) {
-        if (session.getAttribute("segHelper") == null)
+    public @ResponseBody int progress(HttpSession session) {
+        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        if (segmentationHelper == null)
             return -1;
-        SegmentationHelper segHelper = (SegmentationHelper) session.getAttribute("segHelper");
-        return segHelper.getProgress();
+
+        return segmentationHelper.getProgress();
+    }
+
+    /**
+     * Response to the request to cancel the segmentation copy process
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value = "/ajax/segmentation/cancel", method = RequestMethod.POST)
+    public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
+        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        if (segmentationHelper == null) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        segmentationHelper.cancelProcess();
     }
 }

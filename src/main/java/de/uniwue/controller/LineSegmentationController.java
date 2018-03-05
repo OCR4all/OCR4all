@@ -29,8 +29,8 @@ public class LineSegmentationController {
      * @param session Session of the user
      * @return Returns the content of the /LineSegmentation page
      */
-    @RequestMapping("/lineSegmentation")
-    public ModelAndView showPreprocessing(HttpSession session) {
+    @RequestMapping("/LineSegmentation")
+    public ModelAndView show(HttpSession session) {
         ModelAndView mv = new ModelAndView("lineSegmentation");
 
         String projectDir = (String)session.getAttribute("projectDir");
@@ -51,7 +51,7 @@ public class LineSegmentationController {
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/lineSegmentation/execute", method = RequestMethod.POST)
-    public @ResponseBody void executelineSegmentation(
+    public @ResponseBody void execute(
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                @RequestParam("pageIds[]") String[] pageIds,
                HttpSession session, HttpServletResponse response
@@ -66,8 +66,18 @@ public class LineSegmentationController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
-        LineSegmentationHelper lineSegmentationHelper = new LineSegmentationHelper(projectDir);
-        session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
+        // Keep a single helper object in session
+        LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
+        if (lineSegmentationHelper == null) {
+            lineSegmentationHelper = new LineSegmentationHelper(projectDir);
+            session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
+        }
+
+        if (lineSegmentationHelper.isLineSegmentationRunning() == true) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
         try {
             lineSegmentationHelper.lineSegmentPages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
@@ -84,7 +94,7 @@ public class LineSegmentationController {
      * @return Console output
      */
     @RequestMapping(value = "/ajax/lineSegmentation/console" , method = RequestMethod.GET)
-    public @ResponseBody String jsonConsole(
+    public @ResponseBody String console(
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
             ) {
@@ -105,20 +115,14 @@ public class LineSegmentationController {
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/lineSegmentation/cancel", method = RequestMethod.POST)
-    public @ResponseBody void cancelPreprocessing(HttpSession session, HttpServletResponse response) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty()) {
+    public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
+        LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
+        if (lineSegmentationHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
-        LineSegmentationHelper lineSegmentation = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
-        if (lineSegmentation == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
-        }
-
-        lineSegmentation.getProcessHandler().stopProcess();
+        lineSegmentationHelper.cancelProcess();
     }
 
     /**
@@ -129,18 +133,17 @@ public class LineSegmentationController {
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/lineSegmentation/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonProgress(HttpSession session, HttpServletResponse response) {
-        LineSegmentationHelper lineSegmentation = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
-        if (lineSegmentation == null) {
+    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
+        LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
+        if (lineSegmentationHelper == null) {
             return -1;
         }
 
-        int progress = -1;
         try {
-            progress = lineSegmentation.getProgress();
+            return lineSegmentationHelper.getProgress();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return -1;
         }
-        return progress;
     }
 }

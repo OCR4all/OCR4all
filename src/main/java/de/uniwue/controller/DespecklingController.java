@@ -27,7 +27,7 @@ public class DespecklingController {
      * @return Returns the content of the /Despeckling page
      */
     @RequestMapping("/Despeckling")
-    public ModelAndView showDespeckling(HttpSession session) {
+    public ModelAndView show(HttpSession session) {
         ModelAndView mv = new ModelAndView("despeckling");
 
         String projectDir = (String)session.getAttribute("projectDir");
@@ -35,8 +35,6 @@ public class DespecklingController {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-        DespecklingHelper despeckHelper = new DespecklingHelper(projectDir);
-        session.setAttribute("despeckHelper", despeckHelper);
 
         return mv;
     }
@@ -51,21 +49,30 @@ public class DespecklingController {
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/despeckling/execute", method = RequestMethod.POST)
-    public @ResponseBody void executeDispeckling(
+    public @ResponseBody void execute(
                 @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam("maxContourRemovalSize") double maxContourRemovalSize,
                 HttpSession session, HttpServletResponse response
             ) {
         String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty())
+        if (projectDir == null || projectDir.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
-        DespecklingHelper despeckHelper = (DespecklingHelper) session.getAttribute("despeckHelper");
-        if (despeckHelper.isDespecling() == true) {
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
         }
-        else
-            despeckHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
+
+        // Keep a single helper object in session
+        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
+        if (despecklingHelper == null) {
+            despecklingHelper = new DespecklingHelper(projectDir);
+            session.setAttribute("despecklingHelper", despecklingHelper);
+        }
+
+        if (despecklingHelper.isDespecklingRunning() == true) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
+        despecklingHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
     }
 
     /**
@@ -75,13 +82,14 @@ public class DespecklingController {
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/despeckling/cancel", method = RequestMethod.POST)
-    public @ResponseBody void cancelDesoeckling(HttpSession session, HttpServletResponse response) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty())
+    public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
+        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
+        if (despecklingHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
 
-        DespecklingHelper despeckHelper = (DespecklingHelper) session.getAttribute("despeckHelper");
-        despeckHelper.cancelDespecklingProcess();
+        despecklingHelper.cancelDespecklingProcess();
     }
 
     /**
@@ -91,11 +99,11 @@ public class DespecklingController {
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/despeckling/progress" , method = RequestMethod.GET)
-    public @ResponseBody int jsonProgress(HttpSession session) {
-        if (session.getAttribute("despeckHelper") == null)
+    public @ResponseBody int progress(HttpSession session) {
+        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
+        if (despecklingHelper == null)
             return -1;
 
-        DespecklingHelper despeckHelper = (DespecklingHelper) session.getAttribute("despeckHelper");
-        return despeckHelper.getProgress();
+        return despecklingHelper.getProgress();
     }
 }
