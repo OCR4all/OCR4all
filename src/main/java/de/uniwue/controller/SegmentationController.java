@@ -19,7 +19,7 @@ import de.uniwue.helper.SegmentationHelper;
  * Use response.setStatus to trigger AJAX fail (and therefore show errors)
  */
 @Controller
-public class Segmentation {
+public class SegmentationController {
     @RequestMapping("/Segmentation")
     public ModelAndView showPreprocessing(HttpSession session) {
         ModelAndView mv = new ModelAndView("segmentation");
