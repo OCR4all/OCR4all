@@ -196,7 +196,10 @@ public class LineSegmentationHelper {
      */
     public ArrayList<String> getIdsforLineSegmentation(){
         ArrayList<String> IdsForImageList = new ArrayList<String>();
-        File[] directories = new File(projConf.PAGE_DIR).listFiles(File::isDirectory);
+        File pageDir = new File(projConf.PAGE_DIR);
+        if (!pageDir.exists())
+            return IdsForImageList;
+        File[] directories = pageDir.listFiles(File::isDirectory);
         for(File file: directories) { 
             IdsForImageList.add(file.getName());}
         Collections.sort(IdsForImageList);

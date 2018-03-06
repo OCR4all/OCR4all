@@ -118,7 +118,10 @@ public class RegionExtractionHelper {
      */
     public ArrayList<String> getIdsforRegionExtraction(){
         ArrayList<String> IdsForImageList = new ArrayList<String>();
-        File[] XMLfiles = new File(projConf.OCR_DIR).listFiles((d, name) -> name.endsWith(".xml"));
+        File OCRDir = new File(projConf.OCR_DIR);
+        if (!OCRDir.exists()) {
+            return IdsForImageList;}
+        File[] XMLfiles = OCRDir.listFiles((d, name) -> name.endsWith(".xml"));
         for(File file: XMLfiles) { 
             IdsForImageList.add(FilenameUtils.removeExtension(file.getName()));}
         Collections.sort(IdsForImageList);
