@@ -112,7 +112,7 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getSegmentImage(String pageID, String segmentID, String imageType) throws IOException {
-        return getImageAsBase64(projConf.PAGE_DIR + pageID + File.separator + segmentID + projConf.getImageExtensionByType(imageType));
+        return getImageAsBase64(projConf.PAGE_DIR + pageID + File.separator + segmentID + projConf.IMG_EXT);
     }
 
     /**
