@@ -164,25 +164,11 @@ public class OverviewHelper {
             overview.get(key).setLinesExtracted(true);
 
             if (overview.get(key).isSegmentsExtracted()) {
-                File[] directories = new File(projConf.PAGE_DIR
-                        + overview.get(key).getPageId()).listFiles(File::isDirectory);
+                File[] psegFiles = new File(projConf.PAGE_DIR
+                        + overview.get(key).getPageId()).listFiles((d, name) -> name.endsWith(".pseg"+projConf.IMG_EXT));
 
-                if (directories.length != 0) {
-                    File dir = new File(directories[0].toString());
-                    File[] files;
-                    if (imageType.equals("Gray")) {
-                        files = dir.listFiles((d, name) -> name.endsWith(projConf.GRAY_IMG_EXT));
-                    }
-                    else {
-                        files = dir.listFiles((d, name) -> name.endsWith(projConf.BINR_IMG_EXT));
-                    }
-
-                    if (files.length == 0)
-                        overview.get(key).setLinesExtracted(false);
-                }
-                else {
+                if (psegFiles.length == 0) 
                     overview.get(key).setLinesExtracted(false);
-                }
             }
             else {
                 overview.get(key).setLinesExtracted(false);
