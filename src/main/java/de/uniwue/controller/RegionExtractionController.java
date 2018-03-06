@@ -132,12 +132,10 @@ public class RegionExtractionController {
      */
     @RequestMapping(value = "/ajax/regionExtraction/getImageIds" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<String> getIdsforRegionExtractinon(HttpSession session, HttpServletResponse response) {
-    	RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-        if (regionExtractionHelper == null) {
+        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+        if (regionExtractionHelper == null)
             return null;
-        }
-        ArrayList<String> pageIds = null;
-        pageIds = regionExtractionHelper.getIdsforRegionExtraction();
-        return pageIds;
+
+        return regionExtractionHelper.getIdsforRegionExtraction();
     }
 }

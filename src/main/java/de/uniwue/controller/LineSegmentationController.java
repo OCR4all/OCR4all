@@ -164,11 +164,9 @@ public class LineSegmentationController {
     @RequestMapping(value = "/ajax/lineSegmentation/getImageIds" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<String> getIdsforLineSegmentation(HttpSession session, HttpServletResponse response) {
         LineSegmentationHelper lineSegmentation = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
-        if (lineSegmentation == null) {
+        if (lineSegmentation == null)
             return null;
-        }
-        ArrayList<String> pageIds = null;
-        pageIds = lineSegmentation.getIdsforLineSegmentation();
-        return pageIds;
+
+        return lineSegmentation.getIdsforLineSegmentation();
     }
 }

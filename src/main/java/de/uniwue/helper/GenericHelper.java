@@ -40,6 +40,7 @@ public class GenericHelper {
         ArrayList<String> pageList = new ArrayList<String>();
         if(!new File(projConf.getImageDirectoryByType(imageType)).exists())
             return pageList;
+
         // File depth of 1 -> no recursive (file)listing 
         Files.walk(Paths.get(projConf.getImageDirectoryByType(imageType)), 1)
         .map(Path::toFile)

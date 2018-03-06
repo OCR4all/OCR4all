@@ -114,17 +114,22 @@ public class RegionExtractionHelper {
 
     /**
      * Returns the ids of the pages, where the segmentation step is already done
+     *
      * @return List with page ids
      */
-    public ArrayList<String> getIdsforRegionExtraction(){
+    public ArrayList<String> getIdsforRegionExtraction() {
         ArrayList<String> IdsForImageList = new ArrayList<String>();
-        File OCRDir = new File(projConf.OCR_DIR);
-        if (!OCRDir.exists()) {
+
+        File ocrDir = new File(projConf.OCR_DIR);
+        if (!ocrDir.exists()) {
             return IdsForImageList;}
-        File[] XMLfiles = OCRDir.listFiles((d, name) -> name.endsWith(".xml"));
+
+        File[] XMLfiles = ocrDir.listFiles((d, name) -> name.endsWith(".xml"));
         for(File file: XMLfiles) { 
-            IdsForImageList.add(FilenameUtils.removeExtension(file.getName()));}
+            IdsForImageList.add(FilenameUtils.removeExtension(file.getName()));
+        }
         Collections.sort(IdsForImageList);
+
         return IdsForImageList;
     }
 }

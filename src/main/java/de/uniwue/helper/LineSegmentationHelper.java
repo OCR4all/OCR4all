@@ -192,17 +192,22 @@ public class LineSegmentationHelper {
 
     /**
      * Returns the ids of the pages, where the region extraction step is already done
+     *
      * @return List with page ids
      */
-    public ArrayList<String> getIdsforLineSegmentation(){
+    public ArrayList<String> getIdsforLineSegmentation() {
         ArrayList<String> IdsForImageList = new ArrayList<String>();
+
         File pageDir = new File(projConf.PAGE_DIR);
         if (!pageDir.exists())
             return IdsForImageList;
+
         File[] directories = pageDir.listFiles(File::isDirectory);
         for(File file: directories) { 
-            IdsForImageList.add(file.getName());}
+            IdsForImageList.add(file.getName());
+        }
         Collections.sort(IdsForImageList);
+
         return IdsForImageList;
     }
 }
