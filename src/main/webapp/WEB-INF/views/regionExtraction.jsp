@@ -6,7 +6,13 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initializeImageList("OCR");
+                // Load image list with fetched static page Ids (pages valid for line segmentation)
+                $.get( "ajax/regionExtraction/getImageIds")
+                .done(function( data ) {
+                    initializeImageList("OCR", false, data);
+                });
+
+                // Initialize process update and set options
                 initializeProcessUpdate("regionExtraction", [ 0 ], [ 1 ], false);
 
                 // Process handling (execute despeckling for all pages with current settings)
