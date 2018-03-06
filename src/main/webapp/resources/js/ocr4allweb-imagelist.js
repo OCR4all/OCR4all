@@ -167,7 +167,6 @@ $(document).ready(function() {
     });
 
     $('#imageList').on('scrollStop', function() {
-    	console.log("here");
         if( $('.image-list-trigger').hasClass('active') )
             loadVisiblePages();
     });
