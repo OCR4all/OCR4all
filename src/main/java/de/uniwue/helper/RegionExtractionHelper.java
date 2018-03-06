@@ -2,13 +2,10 @@ package de.uniwue.helper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.io.FilenameUtils;
 import org.xml.sax.SAXException;
 
 import de.uniwue.config.ProjectConfiguration;
@@ -110,26 +107,5 @@ public class RegionExtractionHelper {
      */
     public boolean isRegionExtractionRunning() {
         return regionExtractionRunning;
-    }
-
-    /**
-     * Returns the ids of the pages, where the segmentation step is already done
-     *
-     * @return List with page ids
-     */
-    public ArrayList<String> getIdsforRegionExtraction() {
-        ArrayList<String> IdsForImageList = new ArrayList<String>();
-
-        File ocrDir = new File(projConf.OCR_DIR);
-        if (!ocrDir.exists()) {
-            return IdsForImageList;}
-
-        File[] XMLfiles = ocrDir.listFiles((d, name) -> name.endsWith(".xml"));
-        for(File file: XMLfiles) { 
-            IdsForImageList.add(FilenameUtils.removeExtension(file.getName()));
-        }
-        Collections.sort(IdsForImageList);
-
-        return IdsForImageList;
     }
 }

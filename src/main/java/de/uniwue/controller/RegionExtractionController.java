@@ -1,7 +1,6 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
@@ -121,21 +120,5 @@ public class RegionExtractionController {
         }
 
         regionExtractionHelper.cancelProcess();
-    }
-
-    /**
-     * Response to the request to return all pageIds for the regionExtraction page
-     *
-     * @param session Session of the user
-     * @param response Response to the request
-     * @return List of pageIds
-     */
-    @RequestMapping(value = "/ajax/regionExtraction/getImageIds" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<String> getIdsforRegionExtractinon(HttpSession session, HttpServletResponse response) {
-        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-        if (regionExtractionHelper == null)
-            return null;
-
-        return regionExtractionHelper.getIdsforRegionExtraction();
     }
 }
