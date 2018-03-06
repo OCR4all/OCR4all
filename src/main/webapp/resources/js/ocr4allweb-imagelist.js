@@ -51,32 +51,44 @@ function initializeMultiCheckboxSelection() {
 
         $(this).change();
         lastChecked = this;
-    })
+    });
+}
+
+// Builds the image list based on given page Ids
+function buildImageList(pageIds) {
+    $.each(pageIds, function(id, pageId) {
+        var li = '<li>';
+        li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" data-pageid="' + pageId + '" />';
+        li    += '<label for="page' + pageId + '"></label>';
+        li    += '<a href="#!" data-pageid="' + pageId + '" class="page-text">Page ' + pageId + '</a><br />';
+        li    += '<a href="#!" data-pageid="' + pageId + '" ><img width="100" src="" style="display: none;" /></a>';
+        li    += '</li>';
+        $('#imageList').append(li);
+    });
+
+    // Direct checkbox events need to be initialized after their creation
+    initializeMultiCheckboxSelection();
 }
 
 // Fetch all available pages and add them to the list (without the actual images)
-function fetchPageList() {
-    $.get( "ajax/generic/pagelist", { "imageType" : globalImageType } )
-    .done(function( data ) {
-        $.each(data, function(id, pageId) {
-            var li = '<li>';
-            li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" data-pageid="' + pageId + '" />';
-            li    += '<label for="page' + pageId + '"></label>';
-            li    += '<a href="#!" data-pageid="' + pageId + '" class="page-text">Page ' + pageId + '</a><br />';
-            li    += '<a href="#!" data-pageid="' + pageId + '" ><img width="100" src="" style="display: none;" /></a>';
+function fetchPageList(staticPageIds) {
+    // Load pages via AJAX
+    if( staticPageIds === false ) {
+        $.get( "ajax/generic/pagelist", { "imageType" : globalImageType } )
+        .done(function( data ) {
+            buildImageList(data);
+        })
+        .fail(function( data ) {
+            var li = '<li class="red-text">';
+            li    += 'Error: Could not load page list';
             li    += '</li>';
             $('#imageList').append(li);
-
-            // Direct checkbox events need to be initialized after their creation
-            initializeMultiCheckboxSelection();
         });
-    })
-    .fail(function( data ) {
-        var li = '<li class="red-text">';
-        li    += 'Error: Could not load page list';
-        li    += '</li>';
-        $('#imageList').append(li);
-    })
+    }
+    // Use static page ids
+    else {
+        buildImageList(staticPageIds);
+    }
 }
 
 // Load visible page images to the list
@@ -98,14 +110,15 @@ function loadVisiblePages() {
 }
 
 // Call this function after document is ready
-function initializeImageList(imageType, enableLinkHighlighting) {
+function initializeImageList(imageType, enableLinkHighlighting, staticPageIds) {
     globalImageType = imageType;
 
     enableLinkHighlighting = enableLinkHighlighting || false;
     if( enableLinkHighlighting === true )
         activateLinkHightlighting();
 
-    fetchPageList();
+    staticPageIds = staticPageIds || false;
+    fetchPageList(staticPageIds);
 }
 
 // Workaround to adjust height of image list

@@ -6,8 +6,15 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initializeImageList("OCR");
+                // Load image list with fetched static page Ids (pages valid for line segmentation)
+                $.get( "ajax/lineSegmentation/getImageIds")
+                .done(function( data ) {
+                    initializeImageList("OCR", false, data);
+                });
+
+                // Initialize process update and set options
                 initializeProcessUpdate("lineSegmentation", [ 0 ], [ 1 ], true);
+
                 // Error handling for parameter input fields
                 $('input[type="number"]').on('change', function() {
                     var num = $(this).val();
@@ -28,10 +35,6 @@
                     }
                 });
 
-                $.get( "ajax/lineSegmentation/getImageIds")
-                .done(function( data ) {
-                    //Todo: Show ImageList
-                })
                 // Fetch all modified parameters and return them appropriately
                 function getInputParams() {
                     var params = { 'cmdArgs': [] };
