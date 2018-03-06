@@ -102,8 +102,7 @@ function updateProcessStatus(initial) {
                 openCollapsibleEntriesExclusively(globalCollapsibleOpenStandard);
 
                 // Update status continuously. Interval can be terminated with stopProcessUpdate() if needed.
-                if( initial === true )
-                    globalProgressInterval = setInterval(updateProcessStatus, 1000);
+                globalProgressInterval = setInterval(updateProcessStatus, 1000);
             }
             if( initial === false ) stopProcessUpdate();
             // No ongoing process
@@ -163,12 +162,16 @@ function executeProcess(ajaxParams) {
         $.post( "ajax/" + globalController + "/execute", ajaxParams )
         .fail(function( jqXHR, data ) {
             if (jqXHR.status == 405){
-                $('#modal_executefailed').modal('open');
+                $('#modal_inprogress').modal('open');
                 stopProcessUpdate("ERROR: There is still an ongoing process", "red-text");
+                // Execute collapsible change after 1 second to prevent issues with updateProcessStatus AJAX call
+                setTimeout(function() { openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction); }, 1000);
             }
             else {
-                openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction);
+                $('#modal_executefailed').modal('open');
                 stopProcessUpdate("ERROR: Error during process execution", "red-text");
+                // Execute collapsible change after 1 second to prevent issues with updateProcessStatus AJAX call
+                setTimeout(function() { openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction); }, 1000);
             }
         });
     }
