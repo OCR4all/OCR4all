@@ -7,19 +7,23 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 initializeProcessUpdate("segmentation", [ 0 ], [ 1 ], false);
-                $('.collapsible').collapsible('open', 0);
+
+                // Prevent redirecting to Larex if image folder does not exist
                 $("#larexForm").submit(function(e){
-                    $.get( "ajax/generic/checkDir?", {"imageType" : $('#imageType').val() } )
-                    .done(function( data ) {
-                        if( data === false){
-                            $('#modal_alert').modal('open');
-                            e.preventDefault();
-                        }
-                        else{
-                            return true;
-                        }
-                  })
+                    $.ajax({
+                        url : "ajax/generic/checkDir",
+                        type: "GET",
+                        data: { "imageType" : $('#imageType').val() },
+                        async : false,
+                        success : function( dirExists ) {
+                            if( dirExists === false){
+                                $('#modal_alert').modal('open');
+                                e.preventDefault();
+                            }
+                        },
+                    });
                 });
+
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
                 });
@@ -29,7 +33,7 @@
                 $('button[data-id="execute"]').click(function() {
                     var ajaxParams =  { "imageType" : $('#imageType').val()};
                     executeProcess(ajaxParams);
-                    });
+                });
             });
         </script>
     </t:head>
@@ -66,7 +70,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <form action="/Larex/direct" method="POST" target="_blank" id="larexForm">
+                                            <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
                                                 <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}PreProc" />
                                                 <input type="hidden" id="bookname" name="bookname" value="" />
                                                 <input type="hidden" id="websave" name="websave" value="false" />
@@ -103,16 +107,18 @@
                 </button>
             </div>
         </div>
+
         <div id="modal_alert" class="modal">
-            <div class="modal-content">
+            <div class="modal-content red-text">
                 <h4>Error</h4>
-                    <p>
-                      There exists no folder for the selected imagetype. Use previous modules to create them.
-                    </p>
+                <p>
+                    The  directory for selected image type does not exist.<br />
+                    Use appropriate modules to create these images.
+                </p>
             </div>
             <div class="modal-footer">
                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
-         </div>
+        </div>
     </t:body>
 </t:html>
