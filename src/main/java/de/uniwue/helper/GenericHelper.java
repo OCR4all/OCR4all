@@ -52,4 +52,17 @@ public class GenericHelper {
         );
         return pageList;
     }
+
+    /**
+     * Checks if the imagetype directory exits
+     * @param imageType Type of the image directory (original, gray, binary, despeckled, OCR)
+     * @return true if the dir exists, otherwise false
+     */
+    public boolean checkIfImageDirectoryExists(String imageType) {
+        String imageDir = projConf.getImageDirectoryByType(imageType);
+        if(new File(imageDir).exists())
+            return true;
+        return false;
+    }
 }
+

@@ -47,4 +47,25 @@ import de.uniwue.helper.GenericHelper;
         }
         return pageIds;
     }
+
+    /** Response to the request to thecks if the imageType directory exists
+     * 
+     * @param imageType Type of the image directory (original, gray, binary, despeckled, OCR)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Status of the check
+     */
+    @RequestMapping(value = "/ajax/generic/checkDir", method = RequestMethod.GET)
+    public @ResponseBody boolean checkIfImageDirectoryExists(
+                @RequestParam("imageType") String imageType,
+                HttpSession session, HttpServletResponse response
+            ) {
+        String projectDir = (String) session.getAttribute("projectDir");
+        if (projectDir == null || projectDir.isEmpty())
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        GenericHelper genericHelper = new GenericHelper(projectDir);
+        return genericHelper.checkIfImageDirectoryExists(imageType);
+    }
 }
+

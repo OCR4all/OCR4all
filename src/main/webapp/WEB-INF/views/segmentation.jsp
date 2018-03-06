@@ -8,11 +8,23 @@
             $(document).ready(function() {
                 initializeProcessUpdate("segmentation", [ 0 ], [ 1 ], false);
                 $('.collapsible').collapsible('open', 0);
-
+                $("#larexForm").submit(function(e){
+                    $.get( "ajax/generic/checkDir?", {"imageType" : $('#imageType').val() } )
+                    .done(function( data ) {
+                        if( data === false){
+                            $('#modal_alert').modal('open');
+                            e.preventDefault();
+                        }
+                        else{
+                            return true;
+                        }
+                  })
+                });
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
                 });
                 $('#imageType').change();
+
                 // Process handling (execute for all pages with current settings)
                 $('button[data-id="execute"]').click(function() {
                     var ajaxParams =  { "imageType" : $('#imageType').val()};
@@ -54,12 +66,12 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <form action="/Larex/direct" method="POST" target="_blank">
+                                            <form action="/Larex/direct" method="POST" target="_blank" id="larexForm">
                                                 <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}PreProc" />
                                                 <input type="hidden" id="bookname" name="bookname" value="" />
                                                 <input type="hidden" id="websave" name="websave" value="false" />
                                                 <input type="hidden" id="localsave" name="localsave" value="bookpath" />
-                                                <button data-id="move" class="btn waves-effect waves-light" type="submit" name="action">
+                                                <button data-id="openLarex" class="btn waves-effect waves-light" type="submit" name="action">
                                                     Open LAREX
                                                     <i class="material-icons right">chevron_right</i>
                                                 </button>
@@ -91,5 +103,16 @@
                 </button>
             </div>
         </div>
+        <div id="modal_alert" class="modal">
+            <div class="modal-content">
+                <h4>Error</h4>
+                    <p>
+                      There exists no folder for the selected imagetype. Use previous modules to create them.
+                    </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+         </div>
     </t:body>
 </t:html>
