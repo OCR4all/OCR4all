@@ -1,5 +1,6 @@
 <%@ tag description="Page Body Tag" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ attribute name="heading" required="true" %>
 <%@ attribute name="imageList" required="false" %>
 <%@ attribute name="processModals" required="false" %>
@@ -26,7 +27,7 @@
             <li><a href="Segmentation">Segmentation</a></li>
             <li><a href="RegionExtraction">Region Extraction</a></li>
             <li><a href="LineSegmentation">Line Segmentation</a></li>
-            <li><a href="/GTC_Web" target="_blank">Ground Truth Correction</a></li>
+            <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Correction</a></li>
             <!--
             <li><a href="#!">Line Selection For Training</a></li>
             <li><a href="#!">Train/Test Split</a></li>
