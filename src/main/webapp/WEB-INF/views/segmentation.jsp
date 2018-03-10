@@ -31,7 +31,7 @@
 
                 // Process handling (execute for all pages with current settings)
                 $('button[data-id="execute"]').click(function() {
-                    var ajaxParams =  { "imageType" : $('#imageType').val()};
+                    var ajaxParams =  { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked')};
                     executeProcess(ajaxParams);
                 });
             });
@@ -68,6 +68,16 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td><p> Replace existing images </p></td>
+                                        <td>
+                                             <p>
+                                                <input type="checkbox" class="filled-in" id="replace" />
+                                                <label for="replace"></label>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                     <tr>
                                         <td>
                                             <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">

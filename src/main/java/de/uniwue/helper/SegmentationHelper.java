@@ -44,11 +44,12 @@ public class SegmentationHelper {
     /**
      * Moves the extracted files of the segmentation process to the OCR project folder
      *
-     * @param projectype type of the project (binary, despeckled)
-     * @param projectImageType 
+     * @param segmentationImageType type of the project (binary, despeckled)
+     * @param projectImageType (gray, binary)
+     * @param replace If true, replaces the existing image files
      * @throws IOException
      */
-    public void MoveExtractedSegments(String segmentationImageType, String projectImageType) throws IOException {
+    public void MoveExtractedSegments(String segmentationImageType, String projectImageType, boolean replace) throws IOException {
         segmentationRunning = true;
         stop = false;
 
@@ -63,7 +64,12 @@ public class SegmentationHelper {
         if(ProjectTypePreprocessDir.exists()){
             File[] filesToMove = ProjectTypePreprocessDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
             for(File file : filesToMove) {
-                Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                if(replace)
+                    Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                else {
+                    if(!new File(projConf.getImageDirectoryByType("OCR") + file.getName()).exists())
+                        Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()));
+                }
             }
         }
 
@@ -76,7 +82,12 @@ public class SegmentationHelper {
                 break;
 
             progress = (int) ((double) i / count_xml_dir * 100);
-            Files.copy(Paths.get(xml.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + xml.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
+            if(replace)
+                Files.copy(Paths.get(xml.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + xml.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
+            else {
+                if(!new File(projConf.getImageDirectoryByType("OCR") + xml.getName()).exists())
+                    Files.copy(Paths.get(xml.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + xml.getName()));
+            }
             i++;
         }
 

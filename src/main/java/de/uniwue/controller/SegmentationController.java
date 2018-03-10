@@ -49,6 +49,7 @@ public class SegmentationController {
     @RequestMapping(value = "/ajax/segmentation/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
                @RequestParam("imageType") String segmentationImageType,
+               @RequestParam("replace") boolean replace,
                HttpSession session, HttpServletResponse response
                
            ) {
@@ -72,7 +73,7 @@ public class SegmentationController {
         String projectImageType  = (String) session.getAttribute("imageType");
 
         try {
-            segmentationHelper.MoveExtractedSegments(segmentationImageType, projectImageType);
+            segmentationHelper.MoveExtractedSegments(segmentationImageType, projectImageType, replace);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationHelper.resetProgress();
