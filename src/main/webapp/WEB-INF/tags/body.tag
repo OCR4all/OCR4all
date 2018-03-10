@@ -28,6 +28,7 @@
             <li><a href="RegionExtraction">Region Extraction</a></li>
             <li><a href="LineSegmentation">Line Segmentation</a></li>
             <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Correction</a></li>
+            <li><a href="Recognition">Recognition</a></li>
             <!--
             <li><a href="#!">Line Selection For Training</a></li>
             <li><a href="#!">Train/Test Split</a></li>

@@ -140,12 +140,10 @@
                                                 <tr>
                                                     <td><p>No line estimation</p></td>
                                                     <td>
-                                                        <div class="input-field">
-                                                            <p>
-                                                                <input type="checkbox" class="filled-in" id="--nolineest"/>
-                                                                <label for="usespacing"></label>
-                                                            </p>
-                                                        </div>
+                                                        <p>
+                                                            <input type="checkbox" class="filled-in" id="--nolineest"/>
+                                                            <label for="--nolineest"></label>
+                                                        </p>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -178,56 +176,46 @@
                                                 <tr>
                                                     <td><p>Don't normalize the textual output from the recognizer</p></td>
                                                     <td>
-                                                        <div class="input-field">
-                                                            <p>
-                                                                <input type="checkbox" class="filled-in" id="--nonormalize"/>
-                                                                <label for="usespacing"></label>
-                                                            </p>
-                                                        </div>
+                                                        <p>
+                                                            <input type="checkbox" class="filled-in" id="--nonormalize"/>
+                                                            <label for="--nonormalize"></label>
+                                                        </p>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td><p>Output LSTM locations for characters</p></td>
                                                     <td>
-                                                        <div class="input-field">
-                                                            <p>
-                                                                <input type="checkbox" class="filled-in" id="--llocs"/>
-                                                                <label for="usespacing"></label>
-                                                            </p>
-                                                        </div>
+                                                        <p>
+                                                            <input type="checkbox" class="filled-in" id="--llocs"/>
+                                                            <label for="--llocs"></label>
+                                                        </p>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td><p>Output extended llocs</p></td>
                                                     <td>
-                                                        <div class="input-field">
-                                                            <p>
-                                                                <input type="checkbox" class="filled-in" id="--llocsext"/>
-                                                                <label for="usespacing"></label>
-                                                            </p>
-                                                        </div>
+                                                        <p>
+                                                            <input type="checkbox" class="filled-in" id="--llocsext"/>
+                                                            <label for="--llocsext"></label>
+                                                        </p>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td><p>Output aligned LSTM locations for characters</p></td>
                                                     <td>
-                                                        <div class="input-field">
-                                                            <p>
-                                                                <input type="checkbox" class="filled-in" id="--alocs"/>
-                                                                <label for="usespacing"></label>
-                                                            </p>
-                                                        </div>
+                                                         <p>
+                                                            <input type="checkbox" class="filled-in" id="--alocs"/>
+                                                            <label for="--alocs"></label>
+                                                         </p>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td><p>Output probabilities for each letter</p></td>
                                                     <td>
-                                                        <div class="input-field">
-                                                            <p>
-                                                                <input type="checkbox" class="filled-in" id="--probabilities"/>
-                                                                <label for="usespacing"></label>
-                                                            </p>
-                                                        </div>
+                                                        <p>
+                                                            <input type="checkbox" class="filled-in" id="--probabilities"/>
+                                                            <label for="--probabilities"></label>
+                                                        </p>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -242,12 +230,10 @@
                                                 <tr>
                                                     <td><p>Estimate error rate only</p></td>
                                                     <td>
-                                                        <div class="input-field">
-                                                            <p>
-                                                                <input type="checkbox" class="filled-in" id="--estrate"/>
-                                                                <label for="usespacing"></label>
-                                                            </p>
-                                                        </div>
+                                                        <p>
+                                                            <input type="checkbox" class="filled-in" id="--estrate"/>
+                                                            <label for="--estrate"></label>
+                                                        </p>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -263,8 +249,8 @@
                                                     <td><p>String comparison used for error rate estimate</p></td>
                                                     <td>
                                                         <div class="input-field">
-                                                        <input id="--compare" type="text" />
-                                                        <label for="--compare" data-type="text" >Default: nospace</label>
+                                                            <input id="--compare" type="text" />
+                                                            <label for="--compare" data-type="text" >Default: nospace</label>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -272,8 +258,8 @@
                                                     <td><p>Context for error reporting</p></td>
                                                     <td>
                                                         <div class="input-field">
-                                                        <input id="--context" type="number" step="0.1" />
-                                                        <label for="--context" data-type="float" data-error="Has to be integer">Default: 0</label>
+                                                            <input id="--context" type="number" step="0.1" />
+                                                            <label for="--context" data-type="float" data-error="Has to be integer">Default: 0</label>
                                                         </div>
                                                     </td>
                                                 </tr>
