@@ -74,6 +74,7 @@
                         <tr>
                             <th>Page Identifier</th>
                             <th>Preprocessed</th>
+                            <th>Noise Removal</th>
                             <th>Segmented</th>
                             <th>Segments extracted</th>
                             <th>Lines extracted</th>
@@ -84,6 +85,7 @@
                         <tr>
                             <td>${pageOverview.pageId}</td>
                             <td><c:choose><c:when test="${pageOverview.preprocessed == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
+                            <td><c:choose><c:when test="${pageOverview.despeckled == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
                             <td><c:choose><c:when test="${pageOverview.segmented == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
                             <td><c:choose><c:when test="${pageOverview.segmentsExtracted == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
                             <td><c:choose><c:when test="${pageOverview.linesExtracted == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
@@ -128,13 +130,13 @@
                         <ul id="segments" class="collapsible" data-collapsible="accordion" data-type="segment">
                             <c:forEach items="${segments}" var="seg">
                             <li>
-                                <div class="collapsible-header"><i class="material-icons">art_track</i><span>${seg.key}</span></div>
+                                <div class="collapsible-header"><i class="material-icons">art_track</i><span data-img="${seg.key}">${seg.key}</span></div>
                                 <div class="collapsible-body">
                                     <img class="materialboxed centered" width="75%" />
                                     <ul id="lines_${seg.key}" class="collapsible" data-collapsible="accordion" data-type="line">
                                         <c:forEach var="line" items="${seg.value}">
                                             <li>
-                                                <div class="collapsible-header"><i class="material-icons">short_text</i><span>${line}</span></div>
+                                                <div class="collapsible-header"><i class="material-icons">short_text</i><span data-img="${line}">${line}</span></div>
                                                 <div class="collapsible-body">
                                                     <img class="materialboxed centered" width="75%" />
                                                 </div>
