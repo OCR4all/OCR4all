@@ -13,7 +13,7 @@
                 initializeProcessUpdate("preprocessing", [ 0 ], [ 2 ], true);
 
                 // Set available threads as default 
-                $.get( "ajax/preprocessing/threads" )
+                $.get( "ajax/generic/threads" )
                 .done(function( data ) {
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;

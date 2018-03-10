@@ -64,5 +64,14 @@ public class GenericHelper {
             return true;
         return false;
     }
+
+    /**
+     * Gets the the number of logical thread of the system
+     *
+     * @return Number of logical threads
+     */
+    public static int getLogicalThreadCount() {
+        return Runtime.getRuntime().availableProcessors();
+    }
 }
 

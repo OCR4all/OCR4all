@@ -78,15 +78,6 @@ public class PreprocessingHelper {
         return processHandler;
     }
 
-    /**
-     * Gets the the number of logical thread of the system
-     *
-     * @return Number of logical threads
-     */
-    public static int getLogicalThreadCount() {
-        return Runtime.getRuntime().availableProcessors();
-    }
-
     /*
      * Create necessary Preprocessing directories if they do not exist
      */
