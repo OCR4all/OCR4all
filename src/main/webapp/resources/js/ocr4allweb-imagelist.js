@@ -68,6 +68,9 @@ function buildImageList(pageIds) {
 
     // Direct checkbox events need to be initialized after their creation
     initializeMultiCheckboxSelection();
+
+    // Select all pages as default on page load
+    $('#selectAll').click();
 }
 
 // Fetch all available pages and add them to the list (without the actual images)
