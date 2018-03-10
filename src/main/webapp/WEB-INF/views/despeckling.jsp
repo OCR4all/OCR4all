@@ -2,7 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
-        <title>OCR4All - Despeckling</title>
+        <title>OCR4All - Noise Removal</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
@@ -98,7 +98,7 @@
             });
         </script>
     </t:head>
-    <t:body heading="Despeckling" imageList="true" processModals="true">
+    <t:body heading="Noise Removal" imageList="true" processModals="true">
         <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
@@ -164,7 +164,7 @@
                                 </div>
                                 <div class="col s2"></div>
                                 <div class="col s4">
-                                    <h5>Despeckled</h5>
+                                    <h5>Noise Removal</h5>
                                     <img id="despeckledImg" class="materialboxed" width="100%" src="" />
                                     <div id="despeckledPreloader" class="preloader-wrapper active small hide">
                                         <div class="spinner-layer spinner-blue-only">
@@ -187,7 +187,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
                         <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No Despeckling process running</span></p></div>
+                            <div class="status"><p>Status: <span>No Noise Removal process running</span></p></div>
                             <div class="progress">
                                 <div class="determinate"></div>
                             </div>

@@ -19,7 +19,7 @@
                     }
 
                     var pageId  = $('input[name="pageId"]').val();
-                    var imageId = $(el).find(".collapsible-header span").first().text();
+                    var imageId = $(el).find(".collapsible-header span").first().attr('data-img');
                     var ajaxURL = "ajax/image/" + dataType;
                     var ajaxParams = { "pageId" : pageId, "imageId" : imageId, "width" : 518};
                     if(  dataType == "line" ) {
@@ -98,25 +98,25 @@
                         <h4 class="center">Images</h4>
                         <ul id="images" class="collapsible" data-collapsible="accordion" data-type="page">
                             <li>
-                                <div class="collapsible-header"><i class="material-icons">image</i><span>Original</span></div>
+                                <div class="collapsible-header"><i class="material-icons">image</i><span data-img="Original">Original</span></div>
                                 <div class="collapsible-body">
                                     <img class="materialboxed centered" width="75%" />
                                 </div>
                             </li>
                             <li>
-                                <div class="collapsible-header"><i class="material-icons">image</i><span>Binary</span></div>
+                                <div class="collapsible-header"><i class="material-icons">image</i><span data-img="Binary">Binary</span></div>
                                 <div class="collapsible-body">
                                     <img class="materialboxed centered" width="75%" />
                                 </div>
                             </li>
                             <li>
-                                <div class="collapsible-header"><i class="material-icons">image</i><span>Gray</span></div>
+                                <div class="collapsible-header"><i class="material-icons">image</i><span data-img="Gray">Gray</span></div>
                                 <div class="collapsible-body">
                                     <img class="materialboxed centered" width="75%" />
                                 </div>
                             </li>
                             <li>
-                                <div class="collapsible-header"><i class="material-icons">image</i><span>Despeckled</span></div>
+                                <div class="collapsible-header"><i class="material-icons">image</i><span data-img="Despeckled">Noise Removal</span></div>
                                 <div class="collapsible-body">
                                     <img class="materialboxed centered" width="75%" />
                                 </div>

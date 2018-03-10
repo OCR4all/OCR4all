@@ -22,7 +22,7 @@
             <li class="site-description">OCR 4 All</li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
             <li><a href="Preprocessing">Preprocessing</a></li>
-            <li><a href="Despeckling">Despeckling</a></li>
+            <li><a href="Despeckling">Noise Removal</a></li>
             <li><a href="Segmentation">Segmentation</a></li>
             <li><a href="RegionExtraction">Region Extraction</a></li>
             <li><a href="LineSegmentation">Line Segmentation</a></li>
