@@ -3,6 +3,9 @@ package de.uniwue.helper;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -189,12 +192,27 @@ public class OverviewHelper {
      * 
      * @param pageId  Page identifier for which the content should be generated
      * @return Sorted map of page content
+     * @throws IOException 
      */
-    public Map<String, String[]> pageContent(String pageId) {
+    public Map<String, String[]> pageContent(String pageId) throws IOException {
         Map<String,String[]> pageContent = new TreeMap<String, String[]>();
         if (new File(projConf.PAGE_DIR + overview.get(pageId).getPageId()).exists()) {
             File[] directories = new File(projConf.PAGE_DIR
                     + overview.get(pageId).getPageId()).listFiles(File::isDirectory);
+
+            if (directories.length == 0) {
+                // File depth of 1 -> no recursive (file)listing 
+                Files.walk(Paths.get(projConf.PAGE_DIR
+                        + overview.get(pageId).getPageId()), 1)
+                .map(Path::toFile)
+                .filter(fileEntry -> fileEntry.isFile())
+                .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
+                .sorted()
+                .forEach(
+                    fileEntry -> { if(!fileEntry.getName().contains("pseg")){
+                                      pageContent.put(FilenameUtils.removeExtension(fileEntry.getName()), new String[0]); }}
+                );
+            }
 
             for (int folder = 0; folder < directories.length; folder++) {
                 File dir = new File(directories[folder].toString());

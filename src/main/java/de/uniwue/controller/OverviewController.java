@@ -72,7 +72,11 @@ public class OverviewController {
 
         String pageImage = pageId + ".png";
         mv.addObject("pageOverview", overviewHelper.getOverview().get(pageImage));
-        mv.addObject("segments", overviewHelper.pageContent(pageImage));
+        try {
+            mv.addObject("segments", overviewHelper.pageContent(pageImage));
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
 
         return mv;
     }
