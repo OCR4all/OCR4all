@@ -12,6 +12,10 @@ ul.side-nav {
 .side-nav li.active, nav ul a:hover {
   background-color: #8c9eff;
 }
+.nav-separator {
+  margin: 10px 0;
+  border-bottom: 1px solid black;
+}
 a.button-collapse.top-nav {
   position: absolute;
   text-align: center;

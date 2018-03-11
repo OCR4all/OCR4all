@@ -22,19 +22,14 @@
         <ul id="slide-out" class="side-nav">
             <li class="site-description">OCR 4 All</li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
+            <li class="nav-separator"></li>
             <li><a href="Preprocessing">Preprocessing</a></li>
             <li><a href="Despeckling">Noise Removal</a></li>
             <li><a href="Segmentation">Segmentation</a></li>
             <li><a href="RegionExtraction">Region Extraction</a></li>
             <li><a href="LineSegmentation">Line Segmentation</a></li>
-            <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Correction</a></li>
             <li><a href="Recognition">Recognition</a></li>
-            <!--
-            <li><a href="#!">Line Selection For Training</a></li>
-            <li><a href="#!">Train/Test Split</a></li>
-            <li><a href="#!">Training</a></li>
-            <li><a href="#!">Character Recognition</a></li>
-            -->
+            <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Correction</a></li>
         </ul>
     </header>
 

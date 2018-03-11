@@ -44,11 +44,11 @@
             $(".button-collapse").sideNav();
 
             // Sidebar active handler
-            var pageTitle = $('.page-title').text();
+            var pageTitle = $('.page-title').first().text();
             $(".side-nav li a").each(function() {
                 if( $(this).text() == pageTitle )
                     $(this).parent().addClass("active");
-            })
+            });
 
             // Initialize select form elements
             $('select').material_select();
