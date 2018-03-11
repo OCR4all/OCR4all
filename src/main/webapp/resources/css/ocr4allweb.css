@@ -86,6 +86,10 @@ table.compact .suffix {
 table.clinched p > label {
   margin-bottom: 0px;
 }
+i.material-icons.tooltipped {
+  position: absolute;
+  padding-left: 10px;
+}
 
 /* Progress bar adjustments */
 .progress {
