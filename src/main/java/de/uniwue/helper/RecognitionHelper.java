@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -173,7 +174,27 @@ public class RecognitionHelper {
     }
 
     /**
-     * Gets the Line Segmentation status
+     * Returns the ids of the pages, where the region extraction step is already done
+     *
+     * @return List with page ids
+     */
+    public ArrayList<String> getIdsforRecognition() {
+        ArrayList<String> IdsForImageList = new ArrayList<String>();
+        File pageDir = new File(projConf.PAGE_DIR);
+        if (!pageDir.exists())
+            return IdsForImageList;
+
+        File[] directories = pageDir.listFiles(File::isDirectory);
+        for(File file: directories) { 
+            IdsForImageList.add(file.getName());
+        }
+        Collections.sort(IdsForImageList);
+
+        return IdsForImageList;
+    }
+
+    /**
+     * Gets the Recognition status
      *
      * @return status if the process is running
      */

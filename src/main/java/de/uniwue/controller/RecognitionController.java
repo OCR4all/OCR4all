@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.uniwue.helper.LineSegmentationHelper;
 import de.uniwue.helper.RecognitionHelper;
 @Controller
 public class RecognitionController {
@@ -33,7 +34,12 @@ public class RecognitionController {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-
+        // Keep a single helper object in session
+        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+        if (recognitionHelper == null) {
+            recognitionHelper = new RecognitionHelper(projectDir);
+            session.setAttribute("recognitionHelper", recognitionHelper);
+        }
         return mv;
     }
     /**
@@ -63,8 +69,7 @@ public class RecognitionController {
         // Keep a single helper object in session
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
-        	recognitionHelper = new RecognitionHelper(projectDir);
-            session.setAttribute("recognitionHelper", recognitionHelper);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
         if (recognitionHelper.isRecongitionRunning() == true) {
@@ -140,5 +145,21 @@ public class RecognitionController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return -1;
         }
+    }
+
+    /**
+     * Response to the request to return all pageIds for the recognition page
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return List of pageIds
+     */
+    @RequestMapping(value = "/ajax/recognition/getImageIds" , method = RequestMethod.GET)
+    public @ResponseBody ArrayList<String> getIdsforRecognition(HttpSession session, HttpServletResponse response) {
+    	RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+        if (recognitionHelper == null)
+            return null;
+
+        return recognitionHelper.getIdsforRecognition();
     }
 }

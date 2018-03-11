@@ -7,7 +7,10 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 // Load image list
-                initializeImageList("OCR");
+                $.get( "ajax/recognition/getImageIds")
+                .done(function( data ) {
+                    initializeImageList("OCR", false, data);
+                });
 
                 // Initialize process update and set options
                 initializeProcessUpdate("recognition", [ 0 ], [ 2 ], true);
