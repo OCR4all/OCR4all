@@ -82,12 +82,7 @@ public class SegmentationHelper {
                 break;
 
             progress = (int) ((double) i / count_xml_dir * 100);
-            if(replace)
-                Files.copy(Paths.get(xml.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + xml.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
-            else {
-                if(!new File(projConf.getImageDirectoryByType("OCR") + xml.getName()).exists())
-                    Files.copy(Paths.get(xml.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + xml.getName()));
-            }
+            Files.copy(Paths.get(xml.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + xml.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
             i++;
         }
 

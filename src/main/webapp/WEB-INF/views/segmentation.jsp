@@ -73,7 +73,7 @@
                                         <td>
                                              <p>
                                                 <input type="checkbox" class="filled-in" id="replace" />
-                                                <label for="replace"></label>
+                                                <label class ="tooltipped" data-position="right" data-html="true" data-delay="50" data-tooltip= "This checkbox is most likely only required if the project type (gray/binary) </br> has changed in the course of the session" for="replace"></label>
                                             </p>
                                         </td>
                                     </tr>

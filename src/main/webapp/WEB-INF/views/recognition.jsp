@@ -56,6 +56,10 @@
                         if( $(this).val() !== "" )
                             params['cmdArgs'].push($(this).attr('id'), $(this).val());
                     });
+                    $.each($('input[type="text"]'), function() {
+                        if( $(this).val() !== "")
+                            params['cmdArgs'].push($(this).attr('id'), $(this).val());
+                    });
                     return params;
                 }
 
@@ -104,7 +108,7 @@
                                         <td><p>Disable error checking on inputs</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="--nocheck" />
+                                                <input type="checkbox" class="filled-in" id="--nocheck" checked="checked"/>
                                                 <label for="--nocheck"></label>
                                             </p>
                                         </td>
