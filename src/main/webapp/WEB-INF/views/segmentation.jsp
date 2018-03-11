@@ -99,7 +99,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
                         <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No segmentation process running</span></p></div>
+                            <div class="status"><p>Status: <span>No Segmentation process running</span></p></div>
                             <div class="progress">
                                 <div class="determinate"></div>
                             </div>
