@@ -2,7 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
-        <title>OCR4All - Preprocessing</title>
+        <title>OCR4All - Recognition</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
@@ -19,7 +19,7 @@
                         return;
 
                     $('#--parallel').val(data).change();
-                })
+                });
 
                 // Error handling for parameter input fields
                 $('input[type="number"]').on('change', function() {
@@ -110,7 +110,7 @@
                                         <td><p>Line recognition model</p></td>
                                         <td>
                                             <div class="input-field">
-                                                <input id=--model" type="text" step="0.1" />
+                                                <input id="--model" type="text" step="0.1" />
                                                 <label for="--model" data-type="text">Path to the model</label>
                                             </div>
                                         </td>
@@ -297,20 +297,6 @@
                     Cancel
                     <i class="material-icons right">cancel</i>
                 </button>
-
-                <!-- Input error handling-->
-                <div id="modal_inputerror" class="modal">
-                    <div class="modal-content red-text">
-                        <h4>Information</h4>
-                        <p>
-                            There exists an error in the input.<br/>
-                            Please fix it and try again.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
             </div>
         </div>
     </t:body>

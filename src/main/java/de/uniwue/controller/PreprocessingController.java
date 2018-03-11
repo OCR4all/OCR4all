@@ -121,7 +121,7 @@ public class PreprocessingController {
 
     /**
      * Response to the request to return the output of the preprocessing process
-     * 
+     *
      * @param streamType Type of the console output (out | err)
      * @param session Session of the user
      * @param response Response to the request

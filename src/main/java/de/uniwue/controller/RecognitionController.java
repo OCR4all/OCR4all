@@ -1,6 +1,7 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.RecognitionHelper;
+
+/**
+ * Controller class for pages of recognition module
+ * Use response.setStatus to trigger AJAX fail (and therefore show errors)
+ */
 @Controller
 public class RecognitionController {
     /**
@@ -36,6 +42,7 @@ public class RecognitionController {
 
         return mv;
     }
+
     /**
      * Response to the request to execute the recognition script
      *
@@ -63,7 +70,7 @@ public class RecognitionController {
         // Keep a single helper object in session
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
-        	recognitionHelper = new RecognitionHelper(projectDir);
+            recognitionHelper = new RecognitionHelper(projectDir);
             session.setAttribute("recognitionHelper", recognitionHelper);
         }
 
@@ -73,7 +80,7 @@ public class RecognitionController {
         }
 
         try {
-        	recognitionHelper.RecognizeImages(Arrays.asList(pageIds), cmdArgList);
+            recognitionHelper.RecognizeImages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             recognitionHelper.resetProgress();
@@ -82,7 +89,7 @@ public class RecognitionController {
 
     /**
      * Response to the request to return the output of the recognition process
-     * 
+     *
      * @param streamType Type of the console output (out | err)
      * @param session Session of the user
      * @param response Response to the request
@@ -93,7 +100,7 @@ public class RecognitionController {
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
             ) {
-    	RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
             return "";
         }
@@ -111,7 +118,7 @@ public class RecognitionController {
      */
     @RequestMapping(value = "/ajax/recognition/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-    	RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
@@ -129,7 +136,7 @@ public class RecognitionController {
      */
     @RequestMapping(value = "/ajax/recognition/progress" , method = RequestMethod.GET)
     public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
-    	RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
             return -1;
         }
