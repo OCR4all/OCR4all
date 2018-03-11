@@ -56,6 +56,10 @@
                         if( $(this).val() !== "" )
                             params['cmdArgs'].push($(this).attr('id'), $(this).val());
                     });
+                    $.each($('input[type="text"]'), function() {
+                        if( $(this).val() !== "")
+                            params['cmdArgs'].push($(this).attr('id'), $(this).val());
+                    });
                     return params;
                 }
 
