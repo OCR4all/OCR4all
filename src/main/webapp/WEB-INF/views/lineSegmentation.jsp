@@ -122,7 +122,7 @@
                         </div>
                     </li>
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings (General)</div>
+                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings (Advanced)</div>
                         <div class="collapsible-body">
                             <ul class="collapsible" data-collapsible="accordion">
                                 <li>
