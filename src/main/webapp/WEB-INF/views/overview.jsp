@@ -32,12 +32,12 @@
                         },
                         columns: [
                             { title: "Page Identifier", data: "pageId" },
-                            { title: "Preprocessed", data: "preprocessed" },
+                            { title: "Preprocessing", data: "preprocessed" },
                             { title: "Noise Removal", data: "despeckled"},
-                            { title: "Segmented", data: "segmented" },
-                            { title: "Segments Extracted", data: "segmentsExtracted" },
-                            { title: "Lines Extracted", data: "linesExtracted" },
-                            { title: "Has GT", data: "hasGT" },
+                            { title: "Segmentation", data: "segmented" },
+                            { title: "Region Extraction", data: "segmentsExtracted" },
+                            { title: "Line Segmentation", data: "linesExtracted" },
+                            { title: "Recognition", data: "hasGT" },
                         ],
                         createdRow: function( row, data, index ){
                             $('td:first-child', row).html('<a href="pageOverview?pageId=' + data.pageId + '">' + data.pageId + '</a>');

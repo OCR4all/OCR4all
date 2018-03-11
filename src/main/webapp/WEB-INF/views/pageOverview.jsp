@@ -73,12 +73,12 @@
                     <thead>
                         <tr>
                             <th>Page Identifier</th>
-                            <th>Preprocessed</th>
+                            <th>Preprocessing</th>
                             <th>Noise Removal</th>
-                            <th>Segmented</th>
-                            <th>Segments extracted</th>
-                            <th>Lines extracted</th>
-                            <th>Has GT</th>
+                            <th>Segmentation</th>
+                            <th>Region Extraction</th>
+                            <th>Line Segmentation</th>
+                            <th>Recognition</th>
                         </tr>
                     </thead>
                     <tbody>
