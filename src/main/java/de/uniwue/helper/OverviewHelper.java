@@ -79,6 +79,7 @@ public class OverviewHelper {
                     overview.put(fileEntry.getName(), pOverview);
                 }
             }
+
             checkFiles();
             checkPreprocessed();
             checkDespeckled();
@@ -96,23 +97,37 @@ public class OverviewHelper {
      * Generates status overview for one page
      *
      * @param pageID  Page identifier for which the overview should be generated
+     * @param doChecks  Determines if the state of all processes should be checked 
      * @throws IOException
      */
-    public void initialize(String pageID) throws IOException {
+    public void initialize(String pageID, boolean doChecks) throws IOException {
         String path = projConf.ORIG_IMG_DIR + pageID + projConf.IMG_EXT;
         if (new File(path).exists()) {
             PageOverview pOverview = new PageOverview(FilenameUtils.removeExtension(new File(path).getName()));
             overview.put(new File(path).getName(), pOverview);
-            checkPreprocessed();
-            checkDespeckled();
-            checkSegmented();
-            checkSegmentsExtracted();
-            checkLinesExtracted();
-            checkHasGT();
+
+            if (doChecks) {
+                checkPreprocessed();
+                checkDespeckled();
+                checkSegmented();
+                checkSegmentsExtracted();
+                checkLinesExtracted();
+                checkHasGT();
+            }
         }
         else {
             throw new IOException("Folder does not exist!");
         }
+    }
+
+    /**
+     * Generates status overview for one page
+     *
+     * @param pageID  Page identifier for which the overview should be generated
+     * @throws IOException
+     */
+    public void initialize(String pageID) throws IOException {
+        initialize(pageID, true);
     }
 
     /**
