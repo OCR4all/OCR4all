@@ -13,7 +13,7 @@ ul.side-nav {
   background-color: #8c9eff;
 }
 .nav-separator {
-  margin: 10px 0;
+  margin: 10px 20px;
   border-bottom: 1px solid black;
 }
 a.button-collapse.top-nav {
