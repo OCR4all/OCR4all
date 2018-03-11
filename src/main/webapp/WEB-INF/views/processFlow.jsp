@@ -10,6 +10,31 @@
                 initializeImageList("Original");
 
                 $('.collapsible').collapsible('open', 0);
+
+                function getProcessesToExecute() {
+                    var processesToExecute = [];
+                    $.each($('#processSelection input[type="checkbox"]'), function() {
+                        if( $(this).is(':checked') )
+                            processesToExecute.push($(this).attr('data-id'));
+                    });
+                    return processesToExecute;
+                }
+
+                // Start processflow execution
+                //TODO: Track status of different processes somehow
+                //TODO: Error handling
+                $('button[data-id="execute"]').click(function() {
+                    var selectedPages = getSelectedPages();
+                    if( selectedPages.length === 0 ) {
+                        $('#modal_errorhandling').modal('open');
+                        return;
+                    }
+
+                    var processesToExecute = getProcessesToExecute();
+
+                    var ajaxParams = { "pageIds[]" : selectedPages, "processesToExecute[]" : processesToExecute };
+                    $.post( "ajax/processflow/execute", ajaxParams );
+                });
             });
         </script>
     </t:head>
@@ -29,13 +54,13 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">format_indent_increase</i>Process selection</div>
                         <div class="collapsible-body">
-                            <table class="compact clinched">
+                            <table id="processSelection" class="compact clinched">
                                 <tbody>
                                     <tr>
                                         <td><p>Preprocessing</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runPreprocessingProcess" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runPreprocessingProcess" data-id="preprocessing" checked="checked" />
                                                 <label for="runPreprocessingProcess"></label>
                                             </p>
                                         </td>
@@ -44,7 +69,7 @@
                                         <td><p>Noise Removal</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runDespecklingProcess" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runDespecklingProcess" data-id="despeckling" checked="checked" />
                                                 <label for="runDespecklingProcess"></label>
                                             </p>
                                         </td>
@@ -53,7 +78,7 @@
                                         <td><p>Segmentation</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runSegmentationProcess" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runSegmentationProcess" data-id="segmentation" checked="checked" />
                                                 <label for="runSegmentationProcess"></label>
                                             </p>
                                         </td>
@@ -62,7 +87,7 @@
                                         <td><p>Region Extraction</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runRegionExtractionProcess" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runRegionExtractionProcess" data-id="regionextraction" checked="checked" />
                                                 <label for="runRegionExtractionProcess"></label>
                                             </p>
                                         </td>
@@ -71,7 +96,7 @@
                                         <td><p>Line Segmentation</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runLineSegmentationProcess" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runLineSegmentationProcess" data-id="linesegmentation" checked="checked" />
                                                 <label for="runLineSegmentationProcess"></label>
                                             </p>
                                         </td>
@@ -80,7 +105,7 @@
                                         <td><p>Recognition</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runRecognitionProcess" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runRecognitionProcess" data-id="recognition" checked="checked" />
                                                 <label for="runRecognitionProcess"></label>
                                             </p>
                                         </td>
