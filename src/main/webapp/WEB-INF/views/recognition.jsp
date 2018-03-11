@@ -108,7 +108,7 @@
                                         <td><p>Disable error checking on inputs</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="--nocheck" />
+                                                <input type="checkbox" class="filled-in" id="--nocheck" checked="checked"/>
                                                 <label for="--nocheck"></label>
                                             </p>
                                         </td>
