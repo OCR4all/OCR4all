@@ -35,9 +35,9 @@ public class PageOverview {
     private boolean linesExtracted = false;
 
     /**
-     * Ground Truth state
+     * Recognition state
      */
-    private boolean hasGT = false;
+    private boolean recognition = false;
 
     /**
      * Constructor
@@ -138,21 +138,21 @@ public class PageOverview {
     }
 
     /**
-     * Gets the hasGT status of the page
+     * Gets the recognition status of the page
      *
      * @return Boolean representation of the status
      */
-    public boolean isHasGT() {
-        return hasGT;
+    public boolean getRecognition() {
+        return recognition;
     }
 
     /**
-     * Sets the hasGT status of the page
+     * Sets the recogntion status of the page
      *
-     * @param hasGT Boolean representation of the status
+     * @param Recognition Boolean representation of the status
      */
-    public void setHasGT(boolean hasGT) {
-        this.hasGT = hasGT;
+    public void setRecognition(boolean Recognition) {
+        this.recognition = Recognition;
     }
 
     /**

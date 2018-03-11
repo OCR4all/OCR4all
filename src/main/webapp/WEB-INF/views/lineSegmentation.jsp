@@ -13,7 +13,7 @@
                 });
 
                 // Initialize process update and set options
-                initializeProcessUpdate("lineSegmentation", [ 0 ], [ 1 ], true);
+                initializeProcessUpdate("lineSegmentation", [ 0 ], [ 2 ], true);
 
                 // Error handling for parameter input fields
                 $('input[type="number"]').on('change', function() {
@@ -84,23 +84,53 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">settings</i>Settings (General)</div>
                         <div class="collapsible-body">
+                            <table class="compact">
+                                <tbody>
+                                    <tr>
+                                        <td><p>Disable error checking on inputs</p></td>
+                                        <td>
+                                            <div class="input-field">
+                                                <p>
+                                                   <input type="checkbox" class="filled-in" id="--nocheck" checked="checked"/>
+                                                   <label for="usespacing"></label>
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>Use gaussian instead of uniform</p></td>
+                                        <td>
+                                            <div class="input-field">
+                                                 <p>
+                                                    <input type="checkbox" class="filled-in" id="--usegauss" checked="checked"/>
+                                                    <label for="usespacing"></label>
+                                                 </p>
+                                             </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>Minimum column height (units=scale)</p></td>
+                                        <td>
+                                            <div class="input-field">
+                                                <input id="--csminheight" type="number" step="1" value="100000"/>
+                                                <label for=--csminheight data-type="float" data-error="Has to be integer">Default: 100000</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings (Advanced)</div>
+                        <div class="collapsible-body">
                             <ul class="collapsible" data-collapsible="accordion">
                                 <li>
                                     <div class="collapsible-header">Error checking</div>
                                     <div class="collapsible-body">
                                         <table class="compact">
                                             <tbody>
-                                                <tr>
-                                                    <td><p>Disable error checking on inputs</p></td>
-                                                    <td>
-                                                        <div class="input-field">
-                                                            <p>
-                                                                <input type="checkbox" class="filled-in" id="--nocheck" checked="checked"/>
-                                                                <label for="usespacing"></label>
-                                                            </p>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+
                                                 <tr>
                                                     <td><p>Zoom for page background estimation, smaller=faster</p></td>
                                                     <td>
@@ -211,17 +241,6 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td><p>Use gaussian instead of uniform</p></td>
-                                                    <td>
-                                                        <div class="input-field">
-                                                            <p>
-                                                                <input type="checkbox" class="filled-in" id="--usegauss" checked="checked"/>
-                                                                <label for="usespacing"></label>
-                                                            </p>
-                                                        </div>
-                                                    </td>
-                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -284,15 +303,6 @@
                                                         <div class="input-field">
                                                             <input id="--csminaspect" type="number" step="0.1" />
                                                             <label for=--csminaspect data-type="float" data-error="Has to be integer">Default: 1.1</label>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td><p>Minimum column height (units=scale)</p></td>
-                                                    <td>
-                                                        <div class="input-field">
-                                                            <input id="--csminheight" type="number" step="1" value="100000"/>
-                                                            <label for=--csminheight data-type="float" data-error="Has to be integer">Default: 100000</label>
                                                         </div>
                                                     </td>
                                                 </tr>

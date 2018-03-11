@@ -37,7 +37,7 @@
                             { title: "Segmentation", data: "segmented" },
                             { title: "Region Extraction", data: "segmentsExtracted" },
                             { title: "Line Segmentation", data: "linesExtracted" },
-                            { title: "Recognition", data: "hasGT" },
+                            { title: "Recognition", data: "recognition" },
                         ],
                         createdRow: function( row, data, index ){
                             $('td:first-child', row).html('<a href="pageOverview?pageId=' + data.pageId + '">' + data.pageId + '</a>');

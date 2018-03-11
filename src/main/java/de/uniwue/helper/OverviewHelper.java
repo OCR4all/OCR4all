@@ -35,7 +35,7 @@ public class OverviewHelper {
      *         "segmented" : false,
      *         "segmentsExtracted" : false,
      *         "linesExtracted" : false,
-     *         "hasGT" : false,
+     *         "recognition" : false,
      *     },
      *     ...
      * }
@@ -86,7 +86,7 @@ public class OverviewHelper {
             checkSegmented();
             checkSegmentsExtracted();
             checkLinesExtracted();
-            checkHasGT();
+            checkRecognition();
         }
         else {
             throw new IOException("Folder does not exist!");
@@ -112,7 +112,7 @@ public class OverviewHelper {
                 checkSegmented();
                 checkSegmentsExtracted();
                 checkLinesExtracted();
-                checkHasGT();
+                checkRecognition();
             }
         }
         else {
@@ -195,10 +195,13 @@ public class OverviewHelper {
     }
 
     /**
-     * Validates ground truth state and updates project overview
+     * Validates recognition state and updates project overview
      * TODO: Implementation. Currently no requirements specified
      */
-    public void checkHasGT() {
+    public void checkRecognition() {
+        for (String key: overview.keySet()) {
+            overview.get(key).setRecognition(true);
+        }
     }
 
     /**
