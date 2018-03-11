@@ -77,14 +77,14 @@ table.compact p > label {
 table.compact .select-wrapper {
   margin: 0;
 }
-table.compact .includes-checkbox {
-  margin-bottom: 30px;
-}
 table.compact .prefix {
   padding-top: 0.5rem;
 }
 table.compact .suffix {
   margin-left: 3rem;
+}
+table.clinched p > label {
+  margin-bottom: 0px;
 }
 
 /* Progress bar adjustments */

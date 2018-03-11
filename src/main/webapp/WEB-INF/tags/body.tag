@@ -24,6 +24,8 @@
             <li class="nav-separator"></li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
             <li class="nav-separator"></li>
+            <li><a href="ProcessFlow">Centralized Process Flow</a></li>
+            <li class="nav-separator"></li>
             <li><a href="Preprocessing">Preprocessing</a></li>
             <li><a href="Despeckling">Noise Removal</a></li>
             <li><a href="Segmentation">Segmentation</a></li>
