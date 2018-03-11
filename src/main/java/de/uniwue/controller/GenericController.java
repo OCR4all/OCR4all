@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import de.uniwue.helper.GenericHelper;
-import de.uniwue.helper.PreprocessingHelper;
 
 /**
  * Controller class for all pages that provides general functionalities

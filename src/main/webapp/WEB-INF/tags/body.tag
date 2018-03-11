@@ -94,13 +94,26 @@
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
-                        <!-- Error handling -->
+                        <!-- Selection error handling -->
                         <div id="modal_errorhandling" class="modal">
                             <div class="modal-content red-text">
                                 <h4>Information</h4>
                                 <p>
                                     No pages were selected.<br/>
                                     Please select some pages to start the ${heading} process.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                        </div>
+                        <!-- Input error handling-->
+                        <div id="modal_inputerror" class="modal">
+                            <div class="modal-content red-text">
+                                <h4>Information</h4>
+                                <p>
+                                    There exists an error in the input.<br/>
+                                    Please fix it and try again.
                                 </p>
                             </div>
                             <div class="modal-footer">

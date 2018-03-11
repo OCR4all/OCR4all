@@ -15,6 +15,9 @@ import org.apache.commons.io.FilenameUtils;
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessHandler;
 
+/**
+ * Helper class for recognition module
+ */
 public class RecognitionHelper {
     /**
      * Object to access project configuration
@@ -27,17 +30,21 @@ public class RecognitionHelper {
     private ProcessHandler processHandler;
 
     /**
-     * Progress of the Line Segmentation process
+     * Progress of the Recognition process
      */
     private int progress = -1;
 
     /**
-     * Indicates if a Line Segmentation process is already running
+     * Indicates if a Recognition process is already running
      */
     private boolean RecognitionRunning = false;
 
-    // Example : 0002 --> segment --> linesegment --> false (processed) 
+    /**
+     * Structure with which the progress of the process can be monitored
+     * Example pf the structure : 0002 --> segment --> linesegment --> false (processed)
+     */
     private TreeMap<String,TreeMap<String, TreeMap<String, Boolean>>> status= new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
+
     /**
      * Constructor
      *
@@ -56,6 +63,13 @@ public class RecognitionHelper {
     public ProcessHandler getProcessHandler() {
         return processHandler;
     }
+
+    /**
+     * Initializes the structure with which the progress of the process can be monitored
+     *
+     * @param pageIds Ids of the pages
+     * @throws IOException
+     */
     public void initialize(List<String> pageIds) throws IOException {
         for(String pageId :pageIds) {
             TreeMap<String, TreeMap<String, Boolean>> tm = new TreeMap<String, TreeMap<String, Boolean>>();
@@ -82,9 +96,9 @@ public class RecognitionHelper {
     }
 
     /**
-     * Returns the lineSegments of a list of pages
+     * Returns the line segments of a list of pages
      *
-     * @param pageIds Id of the pages
+     * @param pageIds Ids of the pages
      * @return List of regions
      * @throws IOException 
      */
@@ -107,6 +121,10 @@ public class RecognitionHelper {
      * @throws IOException 
      */
     public int getProgress() throws IOException {
+        // Prevent function from calculation progress if process is not running
+        if (RecognitionRunning == false)
+            return progress;
+
         int NumberOfLineSegments = 0;
         int NumberOfProcessedLineSegments = 0;
         for(String pageId : status.keySet()) {
@@ -141,6 +159,7 @@ public class RecognitionHelper {
         RecognitionRunning = true;
         initialize(pageIds);
         progress = 0;
+
         List<String> command = new ArrayList<String>();
         List<String> LineSegmentsOfPage = getLineSegmentsOfPages(pageIds);
         for (String region : LineSegmentsOfPage) {
@@ -148,6 +167,7 @@ public class RecognitionHelper {
             command.add(region);
         }
         command.addAll(cmdArgs);
+
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("ocropus-rpred", command, false);
@@ -160,7 +180,7 @@ public class RecognitionHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
-    	RecognitionRunning = false;
+        RecognitionRunning = false;
         progress = -1;
     }
 
@@ -194,7 +214,7 @@ public class RecognitionHelper {
     }
 
     /**
-     * Gets the Recognition status
+     * Returns the Recognition status
      *
      * @return status if the process is running
      */
