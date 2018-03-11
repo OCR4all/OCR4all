@@ -91,11 +91,7 @@ public class OverviewController {
      * @return Returns the status of every page of the project
      */
     @RequestMapping(value = "/ajax/overview/list" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<PageOverview> jsonOverview(
-                @RequestParam("projectDir") String projectDir,
-                @RequestParam("imageType") String imageType,
-                HttpSession session, HttpServletResponse response
-            ) {
+    public @ResponseBody ArrayList<PageOverview> jsonOverview(HttpSession session, HttpServletResponse response) {
         OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
         if (overviewHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
