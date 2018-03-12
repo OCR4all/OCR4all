@@ -54,10 +54,17 @@ function initializeMultiCheckboxSelection() {
     });
 }
 
+// Removes all available Pages from the imageList. The select all checkbox and the title of the imageList remains
+function emptyImageList() {
+    $('.content').each(function() {
+        this.remove();
+    });
+}
+
 // Builds the image list based on given page Ids
 function buildImageList(pageIds) {
     $.each(pageIds, function(id, pageId) {
-        var li = '<li>';
+        var li = '<li class="content">';
         li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" data-pageid="' + pageId + '" />';
         li    += '<label for="page' + pageId + '"></label>';
         li    += '<a href="#!" data-pageid="' + pageId + '" class="page-text">Page ' + pageId + '</a><br />';
