@@ -85,8 +85,8 @@ public class LineSegmentationHelper {
             .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
             .forEach(
                 fileEntry -> { 
-                    if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg"));
-                    RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator +fileEntry.getName());
+                    if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg")) {
+                        RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator +fileEntry.getName());}
                 }
             );
         }
