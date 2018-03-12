@@ -65,6 +65,10 @@
                     // Execute Preprocessing process
                     executeProcess(ajaxParams);
                 });
+
+                $('button[data-id="cancel"]').click(function() {
+                    cancelProcess();
+                });
             });
         </script>
     </t:head>
