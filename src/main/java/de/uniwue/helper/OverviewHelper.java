@@ -186,6 +186,30 @@ public class OverviewHelper {
     public void checkRecognition() {
         for (String key: overview.keySet()) {
             overview.get(key).setRecognition(true);
+            if (overview.get(key).isLinesExtracted()) {
+                File[] segFiles = new File(projConf.PAGE_DIR
+                        + overview.get(key).getPageId()).listFiles((d, name) -> name.endsWith(".pseg"+projConf.IMG_EXT));
+                for(File segment : segFiles) {
+                    File[] lineSegments = new File(projConf.PAGE_DIR
+                            + overview.get(key).getPageId() + File.separator + 
+                            FilenameUtils.removeExtension(FilenameUtils.removeExtension(segment.getName())))
+                            .listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
+                    if(lineSegments == null) {
+                        overview.get(key).setRecognition(false);
+                        continue;
+                    }
+                    for(File lineSegment : lineSegments) {
+                        if(!new File(projConf.PAGE_DIR + overview.get(key).getPageId() + File.separator + 
+                            FilenameUtils.removeExtension(FilenameUtils.removeExtension(segment.getName())) + File.separator + FilenameUtils.removeExtension(
+                                    FilenameUtils.removeExtension(lineSegment.getName()))+".txt").exists()) {
+                            overview.get(key).setRecognition(false);
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+                overview.get(key).setRecognition(false);
         }
     }
 
