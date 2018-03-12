@@ -71,7 +71,10 @@ public class RecognitionHelper {
      * @throws IOException
      */
     public void initialize(List<String> pageIds) throws IOException {
-        for(String pageId :pageIds) {
+        // Initialize the status structure
+        status= new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
+
+        for(String pageId : pageIds) {
             TreeMap<String, TreeMap<String, Boolean>> tm = new TreeMap<String, TreeMap<String, Boolean>>();
             // File depth of 1 -> no recursive (file)listing 
             //TODO: At the moment general images are considered --> Make it dependent on project type
