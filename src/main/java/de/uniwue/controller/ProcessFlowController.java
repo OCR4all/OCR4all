@@ -183,28 +183,30 @@ public class ProcessFlowController {
         }
 
         if (processes.contains("segmentation")) {
-            doSegmentation("", true, session, response);
+            doSegmentation("Despeckled", true, session, response);
             if (response.getStatus() != 200)
                 return;
         }
 
         if (processes.contains("regionextraction")) {
             pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
-            doRegionExtraction(pageIds, 0, true, true, session, response);
+            doRegionExtraction(pageIds, 10, true, false, session, response);
             if (response.getStatus() != 200)
                 return;
         }
 
         if (processes.contains("linesegmentation")) {
             pageIds = processFlowHelper.getValidPageIds(pageIds, "regionextraction");
-            doLineSegmentation(pageIds, new String[0], session, response);
+            String[] lsCmdArgs = new String[]{ "--nocheck", "--usegauss", "--csminheight", "100000" };
+            doLineSegmentation(pageIds, lsCmdArgs, session, response);
             if (response.getStatus() != 200)
                 return;
         }
 
         if (processes.contains("recognition")) {
             pageIds = processFlowHelper.getValidPageIds(pageIds, "linesegmentation");
-            doRecognition(pageIds, new String[0], session, response);
+            String[] rCmdArgs = new String[]{ "--nocheck" };
+            doRecognition(pageIds, rCmdArgs, session, response);
             if (response.getStatus() != 200)
                 return;
         }
