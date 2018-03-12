@@ -147,7 +147,7 @@ public class ProcessFlowController {
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value = "/ajax/processflow/execute", method = RequestMethod.POST)
+    @RequestMapping(value = "/ajax/processFlow/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
                @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam("processesToExecute[]") String[] processesToExecute,
@@ -192,17 +192,17 @@ public class ProcessFlowController {
                 return;
         }
 
-        if (processes.contains("regionextraction")) {
-            session.setAttribute("currentProcess", "regionextraction");
+        if (processes.contains("regionExtraction")) {
+            session.setAttribute("currentProcess", "regionExtraction");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
             doRegionExtraction(pageIds, 10, true, false, session, response);
             if (response.getStatus() != 200)
                 return;
         }
 
-        if (processes.contains("linesegmentation")) {
-            session.setAttribute("currentProcess", "linesegmentation");
-            pageIds = processFlowHelper.getValidPageIds(pageIds, "regionextraction");
+        if (processes.contains("lineSegmentation")) {
+            session.setAttribute("currentProcess", "lineSegmentation");
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "regionExtraction");
             String[] lsCmdArgs = new String[]{ "--nocheck", "--usegauss", "--csminheight", "100000" };
             doLineSegmentation(pageIds, lsCmdArgs, session, response);
             if (response.getStatus() != 200)
@@ -211,7 +211,7 @@ public class ProcessFlowController {
 
         if (processes.contains("recognition")) {
             session.setAttribute("currentProcess", "recognition");
-            pageIds = processFlowHelper.getValidPageIds(pageIds, "linesegmentation");
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "lineSegmentation");
             String[] rCmdArgs = new String[]{ "--nocheck" };
             doRecognition(pageIds, rCmdArgs, session, response);
             if (response.getStatus() != 200)
@@ -227,7 +227,7 @@ public class ProcessFlowController {
      * @param session Session of the user
      * @return Currently executed process name
      */
-    @RequestMapping(value = "/ajax/processflow/current", method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/processFlow/current", method = RequestMethod.GET)
     public @ResponseBody String currentProcess(HttpSession session) {
         String currentProcess = (String) session.getAttribute("currentProcess");
         if (currentProcess == null) {

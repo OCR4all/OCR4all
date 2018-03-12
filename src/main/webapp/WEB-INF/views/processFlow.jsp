@@ -25,7 +25,7 @@
                 var lastExecutedProcess = "";
                 // Handles progress updates of all processes
                 function initiateProgressHandling() {
-                    $.get( "ajax/processflow/current" )
+                    $.get( "ajax/processFlow/current" )
                     .done(function( process ) {
                         // Update all processes on initial page load or execution
                         if( lastExecutedProcess === "" ) {
@@ -71,7 +71,7 @@
                     var processesToExecute = getProcessesToExecute();
 
                     var ajaxParams = { "pageIds[]" : selectedPages, "processesToExecute[]" : processesToExecute };
-                    $.post( "ajax/processflow/execute", ajaxParams );
+                    $.post( "ajax/processFlow/execute", ajaxParams );
 
                     // Trigger progress handling of processflow processes
                     setTimeout(initiateProgressHandling, 1000);
@@ -131,7 +131,7 @@
                                         <td><p>Region Extraction</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runRegionExtractionProcess" data-id="regionextraction" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runRegionExtractionProcess" data-id="regionExtraction" checked="checked" />
                                                 <label for="runRegionExtractionProcess"></label>
                                             </p>
                                         </td>
@@ -140,7 +140,7 @@
                                         <td><p>Line Segmentation</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runLineSegmentationProcess" data-id="linesegmentation" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runLineSegmentationProcess" data-id="lineSegmentation" checked="checked" />
                                                 <label for="runLineSegmentationProcess"></label>
                                             </p>
                                         </td>
@@ -193,7 +193,7 @@
                             </div>
                         </div>
                     </li>
-                    <li data-id="regionextraction">
+                    <li data-id="regionExtraction">
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Region Extraction)</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Region Extraction process running</span></p></div>
@@ -202,7 +202,7 @@
                             </div>
                         </div>
                     </li>
-                    <li data-id="linesegmentation">
+                    <li data-id="lineSegmentation">
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Line Segmentation)</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Line Segmentation process running</span></p></div>
