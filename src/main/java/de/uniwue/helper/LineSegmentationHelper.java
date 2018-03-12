@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +61,7 @@ public class LineSegmentationHelper {
 
     /**
      * Structure with which the progress of the process can be monitored
-     * Example pf the structure : 0002 --> segment --> linesegment --> false (processed)
+     * Example of the structure : 0002 --> segment --> false (processed)
      */
     private TreeMap<String,TreeMap<String, Boolean>> status= new TreeMap<String, TreeMap<String, Boolean>>();
 
@@ -140,6 +141,29 @@ public class LineSegmentationHelper {
     }
 
     /**
+     * Moves the files that were skipped by the ocrubus gpaseg
+     * @throws IOException
+     */
+    public void copySmallSegments() throws IOException{
+        for(String pageId : status.keySet()) {
+            for(String segment :status.get(pageId).keySet()) {
+                    if(status.get(pageId).get(segment)) {
+                        continue;
+                    }
+                    else {
+                        File file = new File(projConf.PAGE_DIR + pageId + File.separator + segment);
+                        File segmentDir = new File(projConf.PAGE_DIR + pageId + File.separator + FilenameUtils.removeExtension(segment));
+                        if(!segmentDir.exists())
+                            segmentDir.mkdirs();
+                        Files.copy(Paths.get(file.getPath()), Paths.get(projConf.PAGE_DIR + pageId + File.separator + FilenameUtils.removeExtension(segment) + ".pseg" + projConf.IMG_EXT) ,StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                        Files.copy(Paths.get(file.getPath()), Paths.get(segmentDir.getAbsolutePath() + File.separator + segment) ,StandardCopyOption.valueOf("REPLACE_EXISTING"));
+
+                    }
+                }
+            }
+    }
+
+    /**
      * Executes line segmentation of all pages
      * Achieved with the help of the external python program "ocropus-gpageseg"
      *
@@ -163,6 +187,8 @@ public class LineSegmentationHelper {
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("ocropus-gpageseg", command, false);
+
+        copySmallSegments();
 
         progress = 100;
         lineSegmentationRunning = false;
