@@ -54,8 +54,8 @@ public class ProcessFlowHelper {
                 case "preprocessing":    overviewHelper.checkPreprocessed(); break;
                 case "despeckling":      overviewHelper.checkDespeckled(); break;
                 case "segmentation":     overviewHelper.checkSegmented(); break;
-                case "regionextraction": overviewHelper.checkSegmentsExtracted(); break;
-                case "linesegmentation": overviewHelper.checkLinesExtracted(); break;
+                case "regionExtraction": overviewHelper.checkSegmentsExtracted(); break;
+                case "lineSegmentation": overviewHelper.checkLinesExtracted(); break;
                 case "recognition":      overviewHelper.checkRecognition(); break;
                 default: return new String[0];
             }
