@@ -1,11 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <t:html>
-    <t:head imageList="false" processHandler="true">
+    <t:head imageList="true" processHandler="true">
         <title>OCR4All - Segmentation</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
+                initializeImageList("Despeckled", true);
+
                 initializeProcessUpdate("segmentation", [ 0 ], [ 1 ], false);
 
                 // Prevent redirecting to Larex if image folder does not exist
@@ -26,19 +28,28 @@
 
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
+                    // Change ImageList depending on the imageType selected
+                    emptyImageList()
+                    console.log("change");
+                    initializeImageList($('#imageType').val(), true);
                 });
                 $('#imageType').change();
 
                 // Process handling (execute for all pages with current settings)
                 $('button[data-id="execute"]').click(function() {
-                    var ajaxParams =  { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked')};
+                    var selectedPages = getSelectedPages();
+                    if( selectedPages.length === 0 ) {
+                        $('#modal_errorhandling').modal('open');
+                        return;
+                    }
+                    var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked')};
                     executeProcess(ajaxParams);
                 });
             });
         </script>
     </t:head>
-    <t:body heading="Segmentation" processModals="true">
-        <div class="container">
+    <t:body heading="Segmentation" imageList="true" processModals="true">
+        <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
                     Apply Segmentation results

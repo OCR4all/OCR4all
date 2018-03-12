@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+
+import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
 
@@ -44,12 +47,13 @@ public class SegmentationHelper {
     /**
      * Moves the extracted files of the segmentation process to the OCR project folder
      *
+     * @param pageIds Ids of specified pages
      * @param segmentationImageType type of the project (binary, despeckled)
      * @param projectImageType (gray, binary)
      * @param replace If true, replaces the existing image files
      * @throws IOException
      */
-    public void MoveExtractedSegments(String segmentationImageType, String projectImageType, boolean replace) throws IOException {
+    public void MoveExtractedSegments(String[] pageIds, String segmentationImageType, String projectImageType, boolean replace) throws IOException {
         segmentationRunning = true;
         stop = false;
 
@@ -64,11 +68,13 @@ public class SegmentationHelper {
         if(ProjectTypePreprocessDir.exists()){
             File[] filesToMove = ProjectTypePreprocessDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
             for(File file : filesToMove) {
-                if(replace)
-                    Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
-                else {
-                    if(!new File(projConf.getImageDirectoryByType("OCR") + file.getName()).exists())
-                        Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()));
+                if(Arrays.asList(pageIds).contains(FilenameUtils.removeExtension(file.getName()))) {
+                    if(replace)
+                        Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                    else {
+                        if(!new File(projConf.getImageDirectoryByType("OCR") + file.getName()).exists())
+                            Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()));
+                    }
                 }
             }
         }

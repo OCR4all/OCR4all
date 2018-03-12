@@ -42,6 +42,7 @@ public class SegmentationController {
     /**
      * Response to the request to copy the XML files
      *
+     * @param pageIds Ids of specified pages
      * @param imageType Type of the images (binary,despeckled)
      * @param replace If true, replaces the existing image files
      * @param session Session of the user
@@ -49,6 +50,7 @@ public class SegmentationController {
      */
     @RequestMapping(value = "/ajax/segmentation/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
+               @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam("imageType") String segmentationImageType,
                @RequestParam("replace") boolean replace,
                HttpSession session, HttpServletResponse response
@@ -73,7 +75,7 @@ public class SegmentationController {
         String projectImageType  = (String) session.getAttribute("imageType");
 
         try {
-            segmentationHelper.MoveExtractedSegments(segmentationImageType, projectImageType, replace);
+            segmentationHelper.MoveExtractedSegments(pageIds, segmentationImageType, projectImageType, replace);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationHelper.resetProgress();

@@ -81,9 +81,9 @@ public class ProcessFlowController {
      * @param session Session of the user
      * @param response Response to the request
      */
-    public void doSegmentation(String segmentationImageType, boolean replace, HttpSession session, HttpServletResponse response) {
+    public void doSegmentation(String[] pageIds, String segmentationImageType, boolean replace, HttpSession session, HttpServletResponse response) {
         SegmentationController sc = new SegmentationController();
-        sc.execute(segmentationImageType, replace, session, response);
+        sc.execute(pageIds, segmentationImageType, replace, session, response);
     }
 
     /**
@@ -183,7 +183,8 @@ public class ProcessFlowController {
         }
 
         if (processes.contains("segmentation")) {
-            doSegmentation("Despeckled", true, session, response);
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "despeckling");
+            doSegmentation(pageIds, "Despeckled", true, session, response);
             if (response.getStatus() != 200)
                 return;
         }
