@@ -53,8 +53,11 @@ public class RegionExtractionController {
 
     /**
      * Response to the request to execute the region extraction of the specified images
-     * 
+     *
      * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
+     * @param spacing
+     * @param usespacing
+     * @param avgbackground
      * @param session Session of the user
      * @param response Response to the request
      */
