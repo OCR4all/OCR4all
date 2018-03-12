@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -39,16 +40,6 @@ public class LineSegmentationHelper {
     private boolean lineSegmentationRunning = false;
 
     /**
-     * Segmented pages
-     */
-    private List<String> SegmentedPages = new ArrayList<String>();
-
-    /** 
-     * Pages for which line segmentation should be done
-     */
-    private List<String> Pages = new ArrayList<String>();
-
-    /**
      * Constructor
      *
      * @param projectDir Path to the project directory
@@ -68,17 +59,23 @@ public class LineSegmentationHelper {
     }
 
     /**
-     * Returns the regions of a list of pages
-     *
-     * @param pageIds Id of the pages
-     * @return List of regions
-     * @throws IOException 
+     * Structure with which the progress of the process can be monitored
+     * Example pf the structure : 0002 --> segment --> linesegment --> false (processed)
      */
-    public List<String> getRegionsOfPage(List<String> pageIds) throws IOException {
-        List<String> RegionsOfPage = new ArrayList<String>();
-        for(String pageId :pageIds) {
-            // File depth of 1 -> no recursive (file)listing 
-            //TODO: At the moment general images are considered --> Make it dependent on project type
+    private TreeMap<String,TreeMap<String, Boolean>> status= new TreeMap<String, TreeMap<String, Boolean>>();
+
+    /**
+     * Initializes the structure with which the progress of the process can be monitored
+     *
+     * @param pageIds Ids of the pages
+     * @throws IOException
+     */
+    public void initialize(List<String> pageIds) throws IOException {
+        // Initialize the status structure
+        status= new TreeMap<String, TreeMap<String, Boolean>>();
+
+        for(String pageId : pageIds) {
+            TreeMap<String, Boolean> segments = new TreeMap<String, Boolean>();
             Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
             .map(Path::toFile)
             .filter(fileEntry -> fileEntry.isFile())
@@ -86,11 +83,28 @@ public class LineSegmentationHelper {
             .forEach(
                 fileEntry -> { 
                     if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg")) {
-                        RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator +fileEntry.getName());}
+                        segments.put(fileEntry.getName(), false);}
                 }
             );
+        status.put(pageId, segments);
         }
-        return RegionsOfPage;
+    }
+
+    /**
+     * Returns the segments of a list of pages
+     *
+     * @param pageIds Id of the pages
+     * @return List of regions
+     * @throws IOException 
+     */
+    public List<String> getSegmentsOfPage() throws IOException {
+        List<String> SegmentsOfPage = new ArrayList<String>();
+        for(String pageId : status.keySet()) {
+            for(String segment :status.get(pageId).keySet()) {
+                    SegmentsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + segment);
+            }
+        }
+        return SegmentsOfPage;
     }
 
     /**
@@ -104,31 +118,25 @@ public class LineSegmentationHelper {
         if (lineSegmentationRunning == false)
             return progress;
 
-        for(String pageId : Pages) {
-            if(SegmentedPages.contains(pageId))
-                continue;
-
-            File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-            List<String> RegionsOfPage = new ArrayList<String>();
-            Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
-            .map(Path::toFile)
-            .filter(fileEntry -> fileEntry.isFile())
-            .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
-            .forEach(
-                fileEntry -> {
-                    if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith("pseg")) {
-                    RegionsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + fileEntry.getName());
+        int NumberOfLineSegments = 0;
+        int NumberOfProcessedLineSegments = 0;
+        for(String pageId : status.keySet()) {
+            for(String segment :status.get(pageId).keySet()) {
+                    if(status.get(pageId).get(segment)) {
+                        NumberOfProcessedLineSegments += 1;
+                        NumberOfLineSegments += 1;
+                        continue;
+                    }
+                    else {
+                        NumberOfLineSegments += 1;
+                        if(new File(projConf.PAGE_DIR + pageId + File.separator + FilenameUtils.removeExtension(segment) + ".pseg" + projConf.IMG_EXT).exists()) {
+                           status.get(pageId).put(segment, true);
+                        }
                     }
                 }
-            );
-
-            if(directories.length == RegionsOfPage.size()) {
-                SegmentedPages.add(pageId);
             }
-            else    
-                break;
-        }
-        return (progress != 100) ? (int) ((double) SegmentedPages.size() / Pages.size() * 100) : 100;
+
+        return (progress != 100) ? (int) ((double) NumberOfProcessedLineSegments / NumberOfLineSegments * 100) : 100;
     }
 
     /**
@@ -142,18 +150,14 @@ public class LineSegmentationHelper {
     public void lineSegmentPages(List<String> pageIds, List<String> cmdArgs) throws IOException {
         lineSegmentationRunning = true;
 
-        File origDir = new File(projConf.ORIG_IMG_DIR);
-        if (!origDir.exists())
-            return;
-
         progress = 0;
-        Pages = pageIds;
 
+        initialize(pageIds);
         List<String> command = new ArrayList<String>();
-        List<String> RegionsOfPage = getRegionsOfPage(pageIds);
-        for (String region : RegionsOfPage) {
+        List<String> SegmentsOfPage = getSegmentsOfPage();
+        for (String segment : SegmentsOfPage) {
             // Add affected pages with their absolute path to the command list
-            command.add(region);
+            command.add(segment);
         }
         command.addAll(cmdArgs);
         processHandler = new ProcessHandler();
