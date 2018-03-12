@@ -83,6 +83,41 @@ function updateProcessConsole(streamType, tabId) {
     });
 }
 
+// Function to handle status on processflow page exclusively
+// This is a minimal version of updateProcessStatus() function
+function updateProcessFlowStatus(process) {
+    // Update progress in status collapsible
+    $.get( "ajax/" + process + "/progress" )
+    .done(function( data ) {
+        progress = data;
+        if( Math.floor(data) != data || !$.isNumeric(data) ) {
+            $('li[data-id="' + process + '"] .status span').html("ERROR: Invalid AJAX response").attr("class", "red-text");
+            return;
+        }
+
+        if( progress < 0 ) {
+            $('li[data-id="' + process + '"] .determinate').attr("style", "width: 0%");
+            return;
+        }
+
+        // Update process bar
+        $('li[data-id="' + process + '"] .determinate').attr("style", "width: " + progress + "%");
+        if( progress < 100 ) {
+            $('li[data-id="' + process + '"] .status span').html("Ongoing").attr("class", "orange-text");
+            // Open collapsible of process that is currently executed
+            openCollapsibleEntriesExclusively([ $('.collapsible').find('li[data-id="' + process + '"]').index() ]);
+        }
+        else {
+            $('li[data-id="' + process + '"] .status span').html("Completed").attr("class", "green-text");
+        }
+
+        //TODO: Update console if process has this feature
+    })
+    .fail(function( data ) {
+        $('li[data-id="' + process + '"] .status span').html("ERROR: Failed to load status").attr("class", "red-text");
+    });
+}
+
 // Function to handle process progress
 function updateProcessStatus(initial) {
     initial = initial || false;

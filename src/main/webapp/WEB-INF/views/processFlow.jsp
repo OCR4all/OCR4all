@@ -9,6 +9,7 @@
                 // Load image list
                 initializeImageList("Original");
 
+                // Open process selection on default
                 $('.collapsible').collapsible('open', 0);
 
                 function getProcessesToExecute() {
@@ -20,8 +21,45 @@
                     return processesToExecute;
                 }
 
+                var currentProcessInterval = null;
+                var lastExecutedProcess = "";
+                // Handles progress updates of all processes
+                function initiateProgressHandling() {
+                    $.get( "ajax/processflow/current" )
+                    .done(function( process ) {
+                        // Update all processes on initial page load or execution
+                        if( lastExecutedProcess === "" ) {
+                            $.each($('#processSelection input[type="checkbox"]'), function() {
+                                updateProcessFlowStatus($(this).attr('data-id'));
+                            });
+                        }
+
+                        if( process === "" ) {
+                            // No Process is currently executed
+                            // Stop continuous AJAX requests to update the progress
+                            clearInterval(currentProcessInterval);
+
+                            // Final update for last executed process (should set status to complete)
+                            if( lastExecutedProcess !== "" ) {
+                                updateProcessFlowStatus(lastExecutedProcess);
+                            }
+                        }
+                        else if( process !== lastExecutedProcess ) {
+                            if( lastExecutedProcess === "" ) {
+                                // Continuous progress update needs to be initiated
+                                currentProcessInterval = setInterval(initiateProgressHandling, 1000);
+                            }
+                            else {
+                                // Start progress update for newly executed processes
+                                updateProcessFlowStatus(process);
+                            }
+                        }
+
+                        lastExecutedProcess = process;
+                    });
+                }
+
                 // Start processflow execution
-                //TODO: Track status of different processes somehow
                 //TODO: Error handling
                 $('button[data-id="execute"]').click(function() {
                     var selectedPages = getSelectedPages();
@@ -34,7 +72,13 @@
 
                     var ajaxParams = { "pageIds[]" : selectedPages, "processesToExecute[]" : processesToExecute };
                     $.post( "ajax/processflow/execute", ajaxParams );
+
+                    // Trigger progress handling of processflow processes
+                    setTimeout(initiateProgressHandling, 1000);
                 });
+
+                // Check if processflow execution is running
+                initiateProgressHandling();
             });
         </script>
     </t:head>
@@ -114,7 +158,7 @@
                             </table>
                         </div>
                     </li>
-                    <li>
+                    <li data-id="preprocessing">
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Preprocessing)</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Preprocessing process running</span></p></div>
@@ -131,7 +175,7 @@
                             </div>
                         </div>
                     </li>
-                    <li>
+                    <li data-id="despeckling">
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Noise Removal)</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Noise Removal process running</span></p></div>
@@ -140,7 +184,7 @@
                             </div>
                         </div>
                     </li>
-                    <li>
+                    <li data-id="segmentation">
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Segmentation)</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Segmentation process running</span></p></div>
@@ -149,7 +193,7 @@
                             </div>
                         </div>
                     </li>
-                    <li>
+                    <li data-id="regionextraction">
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Region Extraction)</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Region Extraction process running</span></p></div>
@@ -158,7 +202,7 @@
                             </div>
                         </div>
                     </li>
-                    <li>
+                    <li data-id="linesegmentation">
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Line Segmentation)</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Line Segmentation process running</span></p></div>
@@ -175,7 +219,7 @@
                             </div>
                         </div>
                     </li>
-                    <li>
+                    <li data-id="recognition">
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Recognition)</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Recognition process running</span></p></div>

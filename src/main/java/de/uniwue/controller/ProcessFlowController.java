@@ -164,18 +164,21 @@ public class ProcessFlowController {
         /*
          * Execute all processes consecutively
          * Check via response status if a process fails and exit
+         * Store current executing process in session as point of reference for JSP
          * Determine the results after each process and use them in the next one
          */
         List<String> processes = Arrays.asList(processesToExecute);
         ProcessFlowHelper processFlowHelper = new ProcessFlowHelper(projectDir, imageType);
 
         if (processes.contains("preprocessing")) {
+            session.setAttribute("currentProcess", "preprocessing");
             doPreprocessing(pageIds, new String[0], session, response);
             if (response.getStatus() != 200)
                 return;
         }
 
         if (processes.contains("despeckling")) {
+            session.setAttribute("currentProcess", "despeckling");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
             doDespeckling(pageIds, 100.0, session, response);
             if (response.getStatus() != 200)
@@ -183,12 +186,14 @@ public class ProcessFlowController {
         }
 
         if (processes.contains("segmentation")) {
+            session.setAttribute("currentProcess", "segmentation");
             doSegmentation("Despeckled", true, session, response);
             if (response.getStatus() != 200)
                 return;
         }
 
         if (processes.contains("regionextraction")) {
+            session.setAttribute("currentProcess", "regionextraction");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
             doRegionExtraction(pageIds, 10, true, false, session, response);
             if (response.getStatus() != 200)
@@ -196,6 +201,7 @@ public class ProcessFlowController {
         }
 
         if (processes.contains("linesegmentation")) {
+            session.setAttribute("currentProcess", "linesegmentation");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "regionextraction");
             String[] lsCmdArgs = new String[]{ "--nocheck", "--usegauss", "--csminheight", "100000" };
             doLineSegmentation(pageIds, lsCmdArgs, session, response);
@@ -204,11 +210,30 @@ public class ProcessFlowController {
         }
 
         if (processes.contains("recognition")) {
+            session.setAttribute("currentProcess", "recognition");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "linesegmentation");
             String[] rCmdArgs = new String[]{ "--nocheck" };
             doRecognition(pageIds, rCmdArgs, session, response);
             if (response.getStatus() != 200)
                 return;
         }
+
+        session.setAttribute("currentProcess", "");
+    }
+
+    /**
+     * Get the process that is currently executed in the process flow
+     *
+     * @param session Session of the user
+     * @return Currently executed process name
+     */
+    @RequestMapping(value = "/ajax/processflow/current", method = RequestMethod.GET)
+    public @ResponseBody String currentProcess(HttpSession session) {
+        String currentProcess = (String) session.getAttribute("currentProcess");
+        if (currentProcess == null) {
+            return "";
+        }
+
+        return currentProcess;
     }
 }
