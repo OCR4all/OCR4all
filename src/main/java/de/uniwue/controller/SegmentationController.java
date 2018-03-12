@@ -43,6 +43,7 @@ public class SegmentationController {
      * Response to the request to copy the XML files
      *
      * @param imageType Type of the images (binary,despeckled)
+     * @param replace If true, replaces the existing image files
      * @param session Session of the user
      * @param response Response to the request
      */
@@ -51,7 +52,6 @@ public class SegmentationController {
                @RequestParam("imageType") String segmentationImageType,
                @RequestParam("replace") boolean replace,
                HttpSession session, HttpServletResponse response
-               
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
         if (projectDir == null || projectDir.isEmpty()) {

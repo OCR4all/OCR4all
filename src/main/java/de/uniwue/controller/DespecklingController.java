@@ -39,11 +39,10 @@ public class DespecklingController {
         return mv;
     }
 
-    /** Response to the request to return the despeckling status and output information
-     * 
+    /**
+     * Response to the request to return the despeckling status and output information
+     *
      * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
-     * @param illustrationType Standard: the result image shows the resulting binary image
-     *                         Marked: the result image shows the resulting binary image and additionally represents the removed contours
      * @param maxContourRemovalSize Maximum size of the contours to be removed
      * @param session Session of the user
      * @param response Response to the request

@@ -20,9 +20,7 @@
                     var overviewTable = $('#overviewTable').DataTable( {
                         ajax : {
                             "type"   : "GET",
-                            "url"    : "ajax/overview/list?"
-                                           + "projectDir=" + encodeURIComponent($('#projectDir').val())
-                                           + "&imageType=" + encodeURIComponent($('#imageType').val()),
+                            "url"    : "ajax/overview/list",
                             "dataSrc": function (data) { return data; },
                             "error"  : function() {
                                 if( !$('.collapsible').find('li').eq(0).hasClass('active') )
@@ -79,14 +77,14 @@
                             else{
                                 $('#modal_choose').modal('open');
                             }
-                        })
+                        });
                     }
                 });
                 $('#agree').click(function() {
                     $.get( "ajax/overview/rename" )
                     .done(function( data ) {
                         datatable();
-                      })
+                    });
                 });
 
                 // Trigger overview table fetching on pageload

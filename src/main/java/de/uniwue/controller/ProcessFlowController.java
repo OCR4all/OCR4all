@@ -1,10 +1,20 @@
 package de.uniwue.controller;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import de.uniwue.controller.PreprocessingController;
+import de.uniwue.helper.ProcessFlowHelper;
 
 /**
  * Controller class for pages of process flow module
@@ -29,5 +39,174 @@ public class ProcessFlowController {
         }
 
         return mv;
+    }
+
+    /**
+     * Helper function to execute the Preprocessing process via its Controller
+     *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs[] Command line arguments for the process
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    public void doPreprocessing(String[] pageIds, String[] cmdArgs, HttpSession session, HttpServletResponse response) {
+        if (pageIds.length == 0)
+            return;
+
+        PreprocessingController pc = new PreprocessingController();
+        pc.execute(pageIds, cmdArgs, session, response);
+    }
+
+    /**
+     * Helper function to execute the Despeckling process via its Controller
+     *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param maxContourRemovalSize Maximum size of the contours to be removed
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    public void doDespeckling(String[] pageIds, double maxContourRemovalSize, HttpSession session, HttpServletResponse response) {
+        if (pageIds.length == 0)
+            return;
+
+        DespecklingController dc = new DespecklingController();
+        dc.execute(pageIds, maxContourRemovalSize, session, response);
+    }
+
+    /**
+     * Helper function to execute the Segmentation process via its Controller
+     *
+     * @param segmentationImageType Type of the images (binary,despeckled)
+     * @param replace If true, replaces the existing image files
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    public void doSegmentation(String segmentationImageType, boolean replace, HttpSession session, HttpServletResponse response) {
+        SegmentationController sc = new SegmentationController();
+        sc.execute(segmentationImageType, replace, session, response);
+    }
+
+    /**
+     * Helper function to execute the RegionExtraction process via its Controller
+     *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param spacing
+     * @param useSpacing
+     * @param avgBackground
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    public void doRegionExtraction(
+                String[] pageIds, int spacing, boolean useSpacing, boolean avgBackground,
+                HttpSession session, HttpServletResponse response
+            ) {
+        if (pageIds.length == 0)
+            return;
+
+        RegionExtractionController rec = new RegionExtractionController();
+        rec.execute(pageIds, spacing, useSpacing, avgBackground, session, response);
+    }
+
+    /**
+     * Helper function to execute the LineSegmentation process via its Controller
+     *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs[] Command line arguments for the process
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    public void doLineSegmentation(String[] pageIds, String[] cmdArgs, HttpSession session, HttpServletResponse response) {
+        if (pageIds.length == 0)
+            return;
+
+        LineSegmentationController lsc = new LineSegmentationController();
+        lsc.execute(pageIds, cmdArgs, session, response);
+    }
+
+    /**
+     * Helper function to execute the Recognition process via its Controller
+     *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs[] Command line arguments for the process
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    public void doRecognition(String[] pageIds, String[] cmdArgs, HttpSession session, HttpServletResponse response) {
+        if (pageIds.length == 0)
+            return;
+
+        RecognitionController rc = new RecognitionController();
+        rc.execute(pageIds, cmdArgs, session, response);
+    }
+
+    /**
+     * Response to the request to execute the processflow
+     *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param processesToExecute[] Holds the names of the processes that should be executed
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value = "/ajax/processflow/execute", method = RequestMethod.POST)
+    public @ResponseBody void execute(
+               @RequestParam("pageIds[]") String[] pageIds,
+               @RequestParam("processesToExecute[]") String[] processesToExecute,
+               HttpSession session, HttpServletResponse response
+           ) {
+        // Check that necessary session variables are set
+        String projectDir = (String) session.getAttribute("projectDir");
+        String imageType  = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || imageType == null || imageType.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        /*
+         * Execute all processes consecutively
+         * Check via response status if a process fails and exit
+         * Determine the results after each process and use them in the next one
+         */
+        List<String> processes = Arrays.asList(processesToExecute);
+        ProcessFlowHelper processFlowHelper = new ProcessFlowHelper(projectDir, imageType);
+
+        if (processes.contains("preprocessing")) {
+            doPreprocessing(pageIds, new String[0], session, response);
+            if (response.getStatus() != 200)
+                return;
+        }
+
+        if (processes.contains("despeckling")) {
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
+            doDespeckling(pageIds, 100.0, session, response);
+            if (response.getStatus() != 200)
+                return;
+        }
+
+        if (processes.contains("segmentation")) {
+            doSegmentation("", true, session, response);
+            if (response.getStatus() != 200)
+                return;
+        }
+
+        if (processes.contains("regionextraction")) {
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
+            doRegionExtraction(pageIds, 0, true, true, session, response);
+            if (response.getStatus() != 200)
+                return;
+        }
+
+        if (processes.contains("linesegmentation")) {
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "regionextraction");
+            doLineSegmentation(pageIds, new String[0], session, response);
+            if (response.getStatus() != 200)
+                return;
+        }
+
+        if (processes.contains("recognition")) {
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "linesegmentation");
+            doRecognition(pageIds, new String[0], session, response);
+            if (response.getStatus() != 200)
+                return;
+        }
     }
 }

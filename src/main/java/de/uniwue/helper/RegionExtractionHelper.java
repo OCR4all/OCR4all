@@ -47,6 +47,17 @@ public class RegionExtractionHelper {
         projConf = new ProjectConfiguration(projectDir);
     }
 
+    /**
+     * TODO: commenting
+     *
+     * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
+     * @param spacing
+     * @param useSpacing
+     * @param useAvgBgd
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     */
     public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useSpacing, boolean useAvgBgd)
             throws ParserConfigurationException, SAXException, IOException {
         regionExtractionRunning = true;
