@@ -50,8 +50,10 @@ public class ProcessFlowController {
      * @param response Response to the request
      */
     public void doPreprocessing(String[] pageIds, String[] cmdArgs, HttpSession session, HttpServletResponse response) {
-        if (pageIds.length == 0)
+        if (pageIds.length == 0) {
+            response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
+        }
 
         new PreprocessingController().execute(pageIds, cmdArgs, session, response);
     }
@@ -65,8 +67,10 @@ public class ProcessFlowController {
      * @param response Response to the request
      */
     public void doDespeckling(String[] pageIds, double maxContourRemovalSize, HttpSession session, HttpServletResponse response) {
-        if (pageIds.length == 0)
+        if (pageIds.length == 0) {
+            response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
+        }
 
         new DespecklingController().execute(pageIds, maxContourRemovalSize, session, response);
     }
@@ -84,8 +88,10 @@ public class ProcessFlowController {
                 String[] pageIds, String segmentationImageType, boolean replace,
                 HttpSession session, HttpServletResponse response
             ) {
-        if (pageIds.length == 0)
+        if (pageIds.length == 0) {
+            response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
+        }
 
         new SegmentationController().execute(pageIds, segmentationImageType, replace, session, response);
     }
@@ -104,8 +110,10 @@ public class ProcessFlowController {
                 String[] pageIds, int spacing, boolean useSpacing, boolean avgBackground,
                 HttpSession session, HttpServletResponse response
             ) {
-        if (pageIds.length == 0)
+        if (pageIds.length == 0) {
+            response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
+        }
 
         new RegionExtractionController().execute(pageIds, spacing, useSpacing, avgBackground, session, response);
     }
@@ -119,8 +127,10 @@ public class ProcessFlowController {
      * @param response Response to the request
      */
     public void doLineSegmentation(String[] pageIds, String[] cmdArgs, HttpSession session, HttpServletResponse response) {
-        if (pageIds.length == 0)
+        if (pageIds.length == 0) {
+            response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
+        }
 
         new LineSegmentationController().execute(pageIds, cmdArgs, session, response);
     }
@@ -134,8 +144,10 @@ public class ProcessFlowController {
      * @param response Response to the request
      */
     public void doRecognition(String[] pageIds, String[] cmdArgs, HttpSession session, HttpServletResponse response) {
-        if (pageIds.length == 0)
+        if (pageIds.length == 0) {
+            response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
+        }
 
         new RecognitionController().execute(pageIds, cmdArgs, session, response);
     }
@@ -189,7 +201,7 @@ public class ProcessFlowController {
         // There already is a process flow execution in progress
         String currentProcess = (String) session.getAttribute("currentProcess");
         if (currentProcess != null && !currentProcess.isEmpty()) {
-            response.setStatus(530); //530 = Custom: Process still running
+            response.setStatus(532); //532 = Custom: Process Flow execution still running
             return;
         }
 
@@ -282,7 +294,8 @@ public class ProcessFlowController {
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
         // First check if there is a process flow execution running at all
         String currentProcess = (String) session.getAttribute("currentProcess");
-        if (currentProcess == null) {
+        if (currentProcess == null || currentProcess.isEmpty()) {
+            response.setStatus(534); //534 = Custom: No Process Flow execution to cancel
             return;
         }
 

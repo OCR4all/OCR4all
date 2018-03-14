@@ -62,7 +62,6 @@
                 }
 
                 // Start processflow execution
-                //TODO: Error handling
                 $('button[data-id="execute"]').click(function() {
                     var selectedPages = getSelectedPages();
                     if( selectedPages.length === 0 ) {
@@ -71,9 +70,25 @@
                     }
 
                     var processesToExecute = getProcessesToExecute();
+                    if( processesToExecute.length === 0 ) {
+                        $('#modal_noprocsel').modal('open');
+                        return;
+                    }
 
                     var ajaxParams = { "pageIds[]" : selectedPages, "processesToExecute[]" : processesToExecute };
-                    $.post( "ajax/processFlow/execute", ajaxParams );
+                    $.post( "ajax/processFlow/execute", ajaxParams )
+                    .done(function( data ) {
+                        // Show notification in case the user stays on the page til the end of execution
+                        $('#modal_pfsuccessfull').modal('open');
+                    })
+                    .fail(function( jqXHR, data ) {
+                        switch(jqXHR.status) {
+                            case 530: $('#modal_dupexecsubproc').modal('open'); break;
+                            case 531: $('#modal_misssubprocdata').modal('open'); break;
+                            case 532: $('#modal_inprogress').modal('open'); break;
+                            default:  $('#modal_executefailed').modal('open'); break;
+                        }
+                    });
 
                     // Trigger progress handling of processflow processes
                     setTimeout(initiateProgressHandling, 1000);
@@ -85,8 +100,13 @@
                     .done(function( data ) {
                         $('#modal_successfulcancel').modal('open');
                     })
-                    .fail(function( data ) {
-                        $('#modal_failcancel').modal('open');
+                    .fail(function( jqXHR, data ) {
+                        if( jqXHR.status == 534 ) {
+                            $('#modal_noprocess').modal('open');
+                        }
+                        else {
+                            $('#modal_failcancel').modal('open');
+                        }
                     });
                 });
 
@@ -259,6 +279,60 @@
                     Cancel
                     <i class="material-icons right">cancel</i>
                 </button>
+            </div>
+        </div>
+
+        <!-- Process Flow successfully finished -->
+        <div id="modal_pfsuccessfull" class="modal">
+            <div class="modal-content">
+                <h4>Information</h4>
+                <p>
+                    Process Flow execution successfully finished.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+        <!-- No processes selected -->
+        <div id="modal_noprocsel" class="modal">
+            <div class="modal-content red-text">
+                <h4>Error</h4>
+                <p>
+                    No processes were selected.<br/>
+                    Please select some processes to start the Process Flow.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+        <!-- Duplicate subprocesses execution -->
+        <div id="modal_dupexecsubproc" class="modal">
+            <div class="modal-content red-text">
+                <h4>Error</h4>
+                <p>
+                    A subprocess that should be executed was already running.<br />
+                    The process flow was therefore terminated.<br />
+                    Please ensure that all subprocesses are finished before the process flow is executed.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+       <!-- Subprocess lacking of data -->
+        <div id="modal_misssubprocdata" class="modal">
+            <div class="modal-content red-text">
+                <h4>Error</h4>
+                <p>
+                    The upcoming subprocess was lacking of input data.<br />
+                    This can occur if the previous subprocess has not provided the necessary data.<br />
+                    Please check for errors in this provided data.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
     </t:body>
