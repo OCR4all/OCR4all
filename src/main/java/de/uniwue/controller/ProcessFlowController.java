@@ -53,8 +53,7 @@ public class ProcessFlowController {
         if (pageIds.length == 0)
             return;
 
-        PreprocessingController pc = new PreprocessingController();
-        pc.execute(pageIds, cmdArgs, session, response);
+        new PreprocessingController().execute(pageIds, cmdArgs, session, response);
     }
 
     /**
@@ -69,21 +68,26 @@ public class ProcessFlowController {
         if (pageIds.length == 0)
             return;
 
-        DespecklingController dc = new DespecklingController();
-        dc.execute(pageIds, maxContourRemovalSize, session, response);
+        new DespecklingController().execute(pageIds, maxContourRemovalSize, session, response);
     }
 
     /**
      * Helper function to execute the Segmentation process via its Controller
      *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
      * @param segmentationImageType Type of the images (binary,despeckled)
      * @param replace If true, replaces the existing image files
      * @param session Session of the user
      * @param response Response to the request
      */
-    public void doSegmentation(String[] pageIds, String segmentationImageType, boolean replace, HttpSession session, HttpServletResponse response) {
-        SegmentationController sc = new SegmentationController();
-        sc.execute(pageIds, segmentationImageType, replace, session, response);
+    public void doSegmentation(
+                String[] pageIds, String segmentationImageType, boolean replace,
+                HttpSession session, HttpServletResponse response
+            ) {
+        if (pageIds.length == 0)
+            return;
+
+        new SegmentationController().execute(pageIds, segmentationImageType, replace, session, response);
     }
 
     /**
@@ -103,8 +107,7 @@ public class ProcessFlowController {
         if (pageIds.length == 0)
             return;
 
-        RegionExtractionController rec = new RegionExtractionController();
-        rec.execute(pageIds, spacing, useSpacing, avgBackground, session, response);
+        new RegionExtractionController().execute(pageIds, spacing, useSpacing, avgBackground, session, response);
     }
 
     /**
@@ -119,8 +122,7 @@ public class ProcessFlowController {
         if (pageIds.length == 0)
             return;
 
-        LineSegmentationController lsc = new LineSegmentationController();
-        lsc.execute(pageIds, cmdArgs, session, response);
+        new LineSegmentationController().execute(pageIds, cmdArgs, session, response);
     }
 
     /**
@@ -135,8 +137,31 @@ public class ProcessFlowController {
         if (pageIds.length == 0)
             return;
 
-        RecognitionController rc = new RecognitionController();
-        rc.execute(pageIds, cmdArgs, session, response);
+        new RecognitionController().execute(pageIds, cmdArgs, session, response);
+    }
+
+    /**
+     * Determines if the process flow execution needs to be exited
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Exit decision
+     */
+    public boolean needsExit(HttpSession session, HttpServletResponse response) {
+        // Error in process execution
+        if (response.getStatus() != 200) {
+            session.setAttribute("currentProcess", "");
+            return true;
+        }
+
+        // Cancel of process flow execution was triggered
+        Boolean cancelProcessFlow = (Boolean) session.getAttribute("cancelProcessFlow");
+        if (cancelProcessFlow == true) {
+            session.setAttribute("currentProcess", "");
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -161,19 +186,27 @@ public class ProcessFlowController {
             return;
         }
 
+        // There already is a process flow execution in progress
+        String currentProcess = (String) session.getAttribute("currentProcess");
+        if (currentProcess != null && !currentProcess.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
         /*
          * Execute all processes consecutively
-         * Check via response status if a process fails and exit
-         * Store current executing process in session as point of reference for JSP
+         * Store current executing process in session as point of reference
          * Determine the results after each process and use them in the next one
+         * Check after execution if the process flow needs to stop and return
          */
         List<String> processes = Arrays.asList(processesToExecute);
         ProcessFlowHelper processFlowHelper = new ProcessFlowHelper(projectDir, imageType);
+        session.setAttribute("cancelProcessFlow", false);
 
         if (processes.contains("preprocessing")) {
             session.setAttribute("currentProcess", "preprocessing");
             doPreprocessing(pageIds, new String[0], session, response);
-            if (response.getStatus() != 200)
+            if (needsExit(session, response))
                 return;
         }
 
@@ -181,7 +214,7 @@ public class ProcessFlowController {
             session.setAttribute("currentProcess", "despeckling");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
             doDespeckling(pageIds, 100.0, session, response);
-            if (response.getStatus() != 200)
+            if (needsExit(session, response))
                 return;
         }
 
@@ -189,7 +222,7 @@ public class ProcessFlowController {
             session.setAttribute("currentProcess", "segmentation");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "despeckling");
             doSegmentation(pageIds, "Despeckled", true, session, response);
-            if (response.getStatus() != 200)
+            if (needsExit(session, response))
                 return;
         }
 
@@ -197,7 +230,7 @@ public class ProcessFlowController {
             session.setAttribute("currentProcess", "regionExtraction");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
             doRegionExtraction(pageIds, 10, true, false, session, response);
-            if (response.getStatus() != 200)
+            if (needsExit(session, response))
                 return;
         }
 
@@ -206,7 +239,7 @@ public class ProcessFlowController {
             pageIds = processFlowHelper.getValidPageIds(pageIds, "regionExtraction");
             String[] lsCmdArgs = new String[]{ "--nocheck", "--usegauss", "--csminheight", "100000" };
             doLineSegmentation(pageIds, lsCmdArgs, session, response);
-            if (response.getStatus() != 200)
+            if (needsExit(session, response))
                 return;
         }
 
@@ -215,7 +248,7 @@ public class ProcessFlowController {
             pageIds = processFlowHelper.getValidPageIds(pageIds, "lineSegmentation");
             String[] rCmdArgs = new String[]{ "--nocheck" };
             doRecognition(pageIds, rCmdArgs, session, response);
-            if (response.getStatus() != 200)
+            if (needsExit(session, response))
                 return;
         }
 
@@ -236,5 +269,33 @@ public class ProcessFlowController {
         }
 
         return currentProcess;
+    }
+
+    /**
+     * Indicates that the process flow execution should be cancelled
+     * Cancels currently executed process as well to initiate cancellation
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value = "/ajax/processFlow/cancel", method = RequestMethod.POST)
+    public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
+        // First check if there is a process flow execution running at all
+        String currentProcess = (String) session.getAttribute("currentProcess");
+        if (currentProcess == null) {
+            return;
+        }
+
+        // Set cancel information and cancel current process
+        session.setAttribute("cancelProcessFlow", true);
+        switch(currentProcess) {
+            case "preprocessing":    new PreprocessingController().cancel(session, response); break;
+            case "despeckling":      new DespecklingController().cancel(session, response); break;
+            case "segmentation":     new SegmentationController().cancel(session, response); break;
+            case "regionExtraction": new RegionExtractionController().cancel(session, response); break;
+            case "lineSegmentation": new LineSegmentationController().cancel(session, response); break;
+            case "recognition":      new RecognitionController().cancel(session, response); break;
+            default: return;
+        }
     }
 }

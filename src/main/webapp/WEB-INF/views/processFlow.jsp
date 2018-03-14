@@ -49,10 +49,12 @@
                                 // Continuous progress update needs to be initiated
                                 currentProcessInterval = setInterval(initiateProgressHandling, 1000);
                             }
-                            else {
-                                // Start progress update for newly executed processes
-                                updateProcessFlowStatus(process);
-                            }
+                            // Initial progress update for newly executed processes
+                            updateProcessFlowStatus(process);
+                        }
+                        else {
+                            // Update progress continously
+                            updateProcessFlowStatus(process);
                         }
 
                         lastExecutedProcess = process;
@@ -75,6 +77,17 @@
 
                     // Trigger progress handling of processflow processes
                     setTimeout(initiateProgressHandling, 1000);
+                });
+
+                // Cancel/stop processflow execution
+                $('button[data-id="cancel"]').click(function() {
+                    $.post( "ajax/processFlow/cancel" )
+                    .done(function( data ) {
+                        $('#modal_successfulcancel').modal('open');
+                    })
+                    .fail(function( data ) {
+                        $('#modal_failcancel').modal('open');
+                    });
                 });
 
                 // Check if processflow execution is running
