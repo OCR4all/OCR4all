@@ -310,8 +310,19 @@ public class OverviewHelper {
     }
 
     /**
+     * Checks if the projectDir exits
+     * @return status of the projectDir
+     */
+    public boolean checkProjectDir() {
+        if(!new File(projConf.PROJECT_DIR).exists())
+            return false;
+        return true;
+
+    }
+    /**
      * Checks if all filesnames are using the project file naming e.g (0001, 0002 ... XXXX)
      * @return true = all files are using project naming, false = files are not using project naming
+     * @throws IOException 
      */
     public boolean checkFiles() {
         boolean status = false;

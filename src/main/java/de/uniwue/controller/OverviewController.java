@@ -109,7 +109,7 @@ public class OverviewController {
     }
 
     /**
-     * Response to the request to check the filenames
+     * Response to the request to check the projectDir
      * !!! IMPORTANT !!!
      * This function serves as entry point and manages the overview helper
      *
@@ -117,14 +117,15 @@ public class OverviewController {
      * @param imageType Project type (Binary or Gray)
      * @param session Session of the user
      * @param response Response to the request
-     * @return Returns the status of the filename check
+     * @return Returns the status of the projectDir check
      */
-    @RequestMapping(value ="/ajax/overview/check" , method = RequestMethod.GET)
-    public @ResponseBody boolean checkFiles(
+    @RequestMapping(value ="/ajax/overview/checkDir" , method = RequestMethod.GET)
+    public @ResponseBody boolean checkDir(
             @RequestParam("projectDir") String projectDir,
             @RequestParam("imageType") String imageType,
             HttpSession session, HttpServletResponse response
         ) {
+
         // Add file separator to end of the path (for usage in JSP files)
         if (!projectDir.endsWith(File.separator))
             projectDir = projectDir + File.separator;
@@ -132,6 +133,7 @@ public class OverviewController {
         // Fetch old project specific session variables
         String projectDirOld = (String) session.getAttribute("projectDir");
         String imageTypeOld  = (String) session.getAttribute("imageType");
+
         // Store project directory in session (serves as entry point)
         session.setAttribute("projectDir", projectDir);
         session.setAttribute("imageType", imageType);
@@ -142,8 +144,27 @@ public class OverviewController {
             overviewHelper = new OverviewHelper(projectDir, imageType);
             session.setAttribute("overviewHelper", overviewHelper);
         }
+        return overviewHelper.checkProjectDir();
 
-        boolean fileRenameRequired = overviewHelper.checkFiles();
+    }
+    /**
+     * Response to the request to check the filenames
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the status of the filename check
+     */
+    @RequestMapping(value ="/ajax/overview/check" , method = RequestMethod.GET)
+    public @ResponseBody boolean checkFiles(
+            HttpSession session, HttpServletResponse response
+        ) {
+
+        // Keep a single helper object in session (change if not existing or project is changed)
+        OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
+        if (overviewHelper == null ) 
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        boolean fileRenameRequired = false;
+        fileRenameRequired = overviewHelper.checkFiles();
 
         // @RequestMapping automatically transforms object to json format
         return fileRenameRequired;

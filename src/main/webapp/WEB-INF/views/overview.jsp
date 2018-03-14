@@ -69,15 +69,26 @@
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
-                        $.get( "ajax/overview/check?", { "projectDir" : $('#projectDir').val(),
-                                                         "imageType" : $('#imageType').val() } )
-                        .done(function( data ) {
-                            if( data === true)
-                                datatable();
-                            else{
-                                $('#modal_choose').modal('open');
+                        $.get( "ajax/overview/checkDir?", { "projectDir" : $('#projectDir').val(),
+                            "imageType" : $('#imageType').val() } )
+                        .done(function( data ){
+                            if( data === true){
+                                $.get( "ajax/overview/check?", { "projectDir" : $('#projectDir').val(),
+                                    "imageType" : $('#imageType').val() } )
+                                .done(function( data ) {
+                                    if( data === true)
+                                        datatable();
+                                    else{
+                                        $('#modal_choose').modal('open');
+                                    }
+                                });
                             }
+                            else{
+                                $('#projectDir').addClass('invalid').focus();
+                            }
+
                         });
+
                     }
                 });
                 $('#agree').click(function() {
