@@ -82,8 +82,8 @@
                         </div>
                         <!-- Execute failed -->
                         <div id="modal_executefailed" class="modal">
-                            <div class="modal-content">
-                                <h4>Information</h4>
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
                                 <p>
                                     The execution of the ${heading} process failed.<br/>
                                     Please check for status errors and try to execute again later.
@@ -96,7 +96,7 @@
                         <!-- Selection error handling -->
                         <div id="modal_errorhandling" class="modal">
                             <div class="modal-content red-text">
-                                <h4>Information</h4>
+                                <h4>Error</h4>
                                 <p>
                                     No pages were selected.<br/>
                                     Please select some pages to start the ${heading} process.
@@ -109,7 +109,7 @@
                         <!-- Input error handling-->
                         <div id="modal_inputerror" class="modal">
                             <div class="modal-content red-text">
-                                <h4>Information</h4>
+                                <h4>Error</h4>
                                 <p>
                                     There exists an error in the input.<br/>
                                     Please fix it and try again.
