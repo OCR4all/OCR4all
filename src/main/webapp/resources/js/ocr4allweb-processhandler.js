@@ -196,7 +196,7 @@ function executeProcess(ajaxParams) {
 
         $.post( "ajax/" + globalController + "/execute", ajaxParams )
         .fail(function( jqXHR, data ) {
-            if (jqXHR.status == 405){
+            if (jqXHR.status == 530) {
                 $('#modal_inprogress').modal('open');
                 stopProcessUpdate("ERROR: There is still an ongoing process", "red-text");
                 // Execute collapsible change after 1 second to prevent issues with updateProcessStatus AJAX call

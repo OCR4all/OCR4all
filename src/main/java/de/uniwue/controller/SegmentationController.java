@@ -69,7 +69,7 @@ public class SegmentationController {
         }
 
         if (segmentationHelper.isSegmentationRunning() == true) {
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            response.setStatus(530); //530 = Custom: Process still running
             return;
         }
         String projectImageType  = (String) session.getAttribute("imageType");

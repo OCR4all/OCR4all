@@ -189,7 +189,7 @@ public class ProcessFlowController {
         // There already is a process flow execution in progress
         String currentProcess = (String) session.getAttribute("currentProcess");
         if (currentProcess != null && !currentProcess.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            response.setStatus(530); //530 = Custom: Process still running
             return;
         }
 

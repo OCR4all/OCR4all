@@ -80,7 +80,7 @@ public class LineSegmentationController {
         }
 
         if (lineSegmentationHelper.isLineSegmentationRunning() == true) {
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            response.setStatus(530); //530 = Custom: Process still running
             return;
         }
 
