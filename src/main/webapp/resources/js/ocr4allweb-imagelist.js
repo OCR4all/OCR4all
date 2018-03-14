@@ -54,9 +54,10 @@ function initializeMultiCheckboxSelection() {
     });
 }
 
-// Removes all available Pages from the imageList. The select all checkbox and the title of the imageList remains
+// Removes all available pages from the image list
+// The select all checkbox and the title of the image list remains
 function emptyImageList() {
-    $('.imageListPages').each(function() {
+    $('li[data-id="pagelistImage"]').each(function() {
         this.remove();
     });
 }
@@ -64,7 +65,7 @@ function emptyImageList() {
 // Builds the image list based on given page Ids
 function buildImageList(pageIds) {
     $.each(pageIds, function(id, pageId) {
-        var li = '<li data-imageListPages="imageListPages">';
+        var li = '<li data-id="pagelistImage">';
         li    += '<input type="checkbox" class="filled-in" id="page' + pageId + '" data-pageid="' + pageId + '" />';
         li    += '<label for="page' + pageId + '"></label>';
         li    += '<a href="#!" data-pageid="' + pageId + '" class="page-text">Page ' + pageId + '</a><br />';
@@ -76,8 +77,19 @@ function buildImageList(pageIds) {
     // Direct checkbox events need to be initialized after their creation
     initializeMultiCheckboxSelection();
 
-    // Select all pages as default on page load
+    // In case of reload, reset selectAll checkbox first
+    if( $('#selectAll').prop('indeterminate') === true || $('#selectAll').prop('checked') === true )
+        $('#selectAll').click();
+
+    // Select all pages (e.g. as default on page load)
     $('#selectAll').click();
+
+    // In case of reload and shown images, restore this setting after image list switch is finished
+    var imageListTrigger = $('.image-list-trigger');
+    if( $(imageListTrigger).hasClass('active') ) {
+        $(imageListTrigger).removeClass('active');
+        $(imageListTrigger).click();
+    }
 }
 
 // Fetch all available pages and add them to the list (without the actual images)
@@ -119,6 +131,23 @@ function loadVisiblePages() {
     });
 }
 
+//Workaround to adjust height of image list
+//Cannot be done with CSS properly (due to dynamic content changes with AJAX)
+function resizeImageList() {
+    var mainHeight = $('main').height();
+    $('#imageList').height('auto');
+    if( mainHeight > $('#imageList').height() ) {
+        $('#imageList').height(mainHeight);
+    }
+}
+
+// Call this function to reload an existing image list
+function reloadImageList(imageType, enableLinkHighlighting, staticPageIds) {
+    emptyImageList();
+    initializeImageList(imageType, enableLinkHighlighting, staticPageIds);
+    resizeImageList();
+}
+
 // Call this function after document is ready
 function initializeImageList(imageType, enableLinkHighlighting, staticPageIds) {
     globalImageType = imageType;
@@ -129,16 +158,6 @@ function initializeImageList(imageType, enableLinkHighlighting, staticPageIds) {
 
     staticPageIds = staticPageIds || false;
     fetchPageList(staticPageIds);
-}
-
-// Workaround to adjust height of image list
-// Cannot be done with CSS properly (due to dynamic content changes with AJAX)
-function resizeImageList() {
-    var mainHeight = $('main').height();
-    $('#imageList').height('auto');
-    if( mainHeight > $('#imageList').height() ) {
-        $('#imageList').height(mainHeight);
-    }
 }
 
 $(document).ready(function() {

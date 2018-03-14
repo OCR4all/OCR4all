@@ -29,9 +29,7 @@
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
                     // Change ImageList depending on the imageType selected
-                    emptyImageList()
-                    console.log("change");
-                    initializeImageList($('#imageType').val(), true);
+                    reloadImageList($('#imageType').val(), true);
                 });
                 $('#imageType').change();
 
