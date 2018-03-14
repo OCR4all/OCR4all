@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -123,26 +124,26 @@ public class OverviewController {
     public @ResponseBody boolean checkDir(
             @RequestParam("projectDir") String projectDir,
             @RequestParam("imageType") String imageType,
-            HttpSession session, HttpServletResponse response
+            HttpSession session, HttpServletResponse response, HttpServletRequest request
         ) {
 
         // Add file separator to end of the path (for usage in JSP files)
         if (!projectDir.endsWith(File.separator))
             projectDir = projectDir + File.separator;
 
-        // Fetch old project specific session variables
-        String projectDirOld = (String) session.getAttribute("projectDir");
-        String imageTypeOld  = (String) session.getAttribute("imageType");
+        // Resets the session, so that all previous moduleHelper attributes are discarded
+        session.invalidate();
+        HttpSession NewSession = request.getSession();
 
         // Store project directory in session (serves as entry point)
-        session.setAttribute("projectDir", projectDir);
-        session.setAttribute("imageType", imageType);
+        NewSession.setAttribute("projectDir", projectDir);
+        NewSession.setAttribute("imageType", imageType);
 
         // Keep a single helper object in session (change if not existing or project is changed)
-        OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
-        if (overviewHelper == null || projectDirOld != projectDir || imageTypeOld != imageType) {
+        OverviewHelper overviewHelper = (OverviewHelper) NewSession.getAttribute("overviewHelper");
+        if (overviewHelper == null) {
             overviewHelper = new OverviewHelper(projectDir, imageType);
-            session.setAttribute("overviewHelper", overviewHelper);
+            NewSession.setAttribute("overviewHelper", overviewHelper);
         }
         return overviewHelper.checkProjectDir();
 
