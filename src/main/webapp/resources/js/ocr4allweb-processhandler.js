@@ -110,8 +110,6 @@ function updateProcessFlowStatus(process) {
         else {
             $('li[data-id="' + process + '"] .status span').html("Completed").attr("class", "green-text");
         }
-
-        //TODO: Update console if process has this feature
     })
     .fail(function( data ) {
         $('li[data-id="' + process + '"] .status span').html("ERROR: Failed to load status").attr("class", "red-text");

@@ -198,14 +198,6 @@
                             <div class="progress">
                                 <div class="determinate"></div>
                             </div>
-                            <div class="console">
-                                 <ul class="tabs">
-                                     <li class="tab" data-refid="consoleOutPreprocessing" class="active"><a href="#consoleOutPreprocessing">Console Output</a></li>
-                                     <li class="tab" data-refid="consoleErrPreprocessing"><a href="#consoleErrPreprocessing">Console Error</a></li>
-                                 </ul>
-                                <div id="consoleOutPreprocessing"><pre></pre></div>
-                                <div id="consoleErrPreprocessing"><pre></pre></div>
-                            </div>
                         </div>
                     </li>
                     <li data-id="despeckling">
@@ -242,14 +234,6 @@
                             <div class="progress">
                                 <div class="determinate"></div>
                             </div>
-                            <div class="console">
-                                 <ul class="tabs">
-                                     <li class="tab" data-refid="consoleOutLineSegmentation" class="active"><a href="#consoleOutLineSegmentation">Console Output</a></li>
-                                     <li class="tab" data-refid="consoleErrLineSegmentation"><a href="#consoleErrLineSegmentation">Console Error</a></li>
-                                 </ul>
-                                <div id="consoleOutLineSegmentation"><pre></pre></div>
-                                <div id="consoleErrLineSegmentation"><pre></pre></div>
-                            </div>
                         </div>
                     </li>
                     <li data-id="recognition">
@@ -258,14 +242,6 @@
                             <div class="status"><p>Status: <span>No Recognition process running</span></p></div>
                             <div class="progress">
                                 <div class="determinate"></div>
-                            </div>
-                            <div class="console">
-                                 <ul class="tabs">
-                                     <li class="tab" data-refid="consoleOutRecognition" class="active"><a href="#consoleOutRecognition">Console Output</a></li>
-                                     <li class="tab" data-refid="consoleErrRecognition"><a href="#consoleErrRecognition">Console Error</a></li>
-                                 </ul>
-                                <div id="consoleOutRecognition"><pre></pre></div>
-                                <div id="consoleErrRecognition"><pre></pre></div>
                             </div>
                         </div>
                     </li>
