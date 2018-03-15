@@ -146,7 +146,7 @@
                                         <td><p>Noise Removal</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runDespecklingProcess" data-id="despeckling" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runDespecklingProcess" data-id="despeckling" />
                                                 <label for="runDespecklingProcess"></label>
                                             </p>
                                         </td>
