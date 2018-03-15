@@ -287,11 +287,15 @@ public class ProcessFlowController {
      * Indicates that the process flow execution should be cancelled
      * Cancels currently executed process as well to initiate cancellation
      *
+     * @param terminate Determines if the current process should be terminated or not
      * @param session Session of the user
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/processFlow/cancel", method = RequestMethod.POST)
-    public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody void cancel(
+                @RequestParam(value = "terminate", required = false) Boolean terminate,
+                HttpSession session, HttpServletResponse response
+            ) {
         // First check if there is a process flow execution running at all
         String currentProcess = (String) session.getAttribute("currentProcess");
         if (currentProcess == null || currentProcess.isEmpty()) {
@@ -299,16 +303,20 @@ public class ProcessFlowController {
             return;
         }
 
-        // Set cancel information and cancel current process
+        // Set cancel information
         session.setAttribute("cancelProcessFlow", true);
-        switch(currentProcess) {
-            case "preprocessing":    new PreprocessingController().cancel(session, response); break;
-            case "despeckling":      new DespecklingController().cancel(session, response); break;
-            case "segmentation":     new SegmentationController().cancel(session, response); break;
-            case "regionExtraction": new RegionExtractionController().cancel(session, response); break;
-            case "lineSegmentation": new LineSegmentationController().cancel(session, response); break;
-            case "recognition":      new RecognitionController().cancel(session, response); break;
-            default: return;
+
+        if (terminate != null && terminate == true) {
+            // Cancel current process
+            switch(currentProcess) {
+                case "preprocessing":    new PreprocessingController().cancel(session, response); break;
+                case "despeckling":      new DespecklingController().cancel(session, response); break;
+                case "segmentation":     new SegmentationController().cancel(session, response); break;
+                case "regionExtraction": new RegionExtractionController().cancel(session, response); break;
+                case "lineSegmentation": new LineSegmentationController().cancel(session, response); break;
+                case "recognition":      new RecognitionController().cancel(session, response); break;
+                default: return;
+            }
         }
     }
 }

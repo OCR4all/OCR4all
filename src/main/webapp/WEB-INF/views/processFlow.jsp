@@ -94,11 +94,15 @@
                     setTimeout(initiateProgressHandling, 1000);
                 });
 
-                // Cancel/stop processflow execution
-                $('button[data-id="cancel"]').click(function() {
-                    $.post( "ajax/processFlow/cancel" )
+                // Cancel/finalize processflow execution
+                $('button[data-id="cancel"], button[data-id="finalize"]').click(function() {
+                    var finalize = ($(this).attr('data-id') == 'finalize') ? true : false;
+                    var ajaxParams = finalize ? {} : { 'terminate': true };
+                    var modalId = finalize ? 'modal_pfsuccessfulfinalize' : 'modal_successfulcancel';
+                    $.post( "ajax/processFlow/cancel", ajaxParams)
                     .done(function( data ) {
-                        $('#modal_successfulcancel').modal('open');
+                        initiateProgressHandling();
+                        $('#' + modalId).modal('open');
                     })
                     .fail(function( jqXHR, data ) {
                         if( jqXHR.status == 534 ) {
@@ -121,6 +125,10 @@
                 <button data-id="execute" class="btn waves-effect waves-light">
                     Execute
                     <i class="material-icons right">chevron_right</i>
+                </button>
+                <button data-id="finalize" class="btn waves-effect waves-light">
+                    Finalize current process and exit
+                    <i class="material-icons right">cancel</i>
                 </button>
                 <button data-id="cancel" class="btn waves-effect waves-light">
                     Cancel
@@ -258,6 +266,10 @@
                     Execute
                     <i class="material-icons right">chevron_right</i>
                 </button>
+                <button data-id="finalize" class="btn waves-effect waves-light">
+                    Finalize current process and exit
+                    <i class="material-icons right">cancel</i>
+                </button>
                 <button data-id="cancel" class="btn waves-effect waves-light">
                     Cancel
                     <i class="material-icons right">cancel</i>
@@ -271,6 +283,19 @@
                 <h4>Information</h4>
                 <p>
                     Process Flow execution successfully finished.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+        <!-- Process Flow successfully finalize -->
+        <div id="modal_pfsuccessfulfinalize" class="modal">
+            <div class="modal-content">
+                <h4>Information</h4>
+                <p>
+                    Process Flow execution finalized successfully.<br />
+                    The current process will be finished.
                 </p>
             </div>
             <div class="modal-footer">
