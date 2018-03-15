@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
         <title>OCR4All - Segmentation</title>
@@ -62,52 +63,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">line_style</i>Segmentation</div>
                         <div class="collapsible-body">
-                            <table class="compact">
-                                <tbody>
-                                    <tr>
-                                        <td><p>Segmentation image type</p></td>
-                                        <td>
-                                            <div class="input-field">
-                                                <i class="material-icons prefix">image</i>
-                                                <select id="imageType" name="imageType" class="suffix">
-                                                    <option value="Binary">Binary</option>
-                                                    <option value="Despeckled">Despeckled</option>
-                                                </select>
-                                                <label></label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p>
-                                                Replace existing images
-                                                <i class="material-icons tooltipped" data-position="right" data-html="true" data-delay="50" data-tooltip= "This option is only required if the project type (gray/binary) was changed<br />or new images were added after previous process execution" >help</i>
-                                            </p>
-                                        </td>
-                                        <td>
-                                             <p>
-                                                <input type="checkbox" class="filled-in" id="replace" />
-                                                <label for="replace"></label>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                    <tr>
-                                        <td>
-                                            <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
-                                                <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}PreProc" />
-                                                <input type="hidden" id="bookname" name="bookname" value="" />
-                                                <input type="hidden" id="websave" name="websave" value="false" />
-                                                <input type="hidden" id="localsave" name="localsave" value="bookpath" />
-                                                <button data-id="openLarex" class="btn waves-effect waves-light" type="submit" name="action">
-                                                    Open LAREX
-                                                    <i class="material-icons right">chevron_right</i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <s:segmentation></s:segmentation>
                         </div>
                     </li>
                     <li>

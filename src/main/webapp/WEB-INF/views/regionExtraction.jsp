@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
         <title>Region Extractor</title>
@@ -55,37 +56,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
                         <div class="collapsible-body">
-                            <table class="compact">
-                                <tbody>
-                                    <tr>
-                                        <td><p> Use average background</p></td>
-                                        <td>
-                                             <p>
-                                                <input type="checkbox" class="filled-in" id="avgbackground" />
-                                                <label for="avgbackground"></label>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><p> Use spacing</p></td>
-                                        <td>
-                                             <p>
-                                                <input type="checkbox" class="filled-in" id="usespacing" checked="checked"/>
-                                                <label for="usespacing"></label>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><p>Spacing</p></td>
-                                        <td>
-                                            <div class="input-field">
-                                                <input id="spacing" type="number" value="10" />
-                                                <label for="spacing" data-type="int" data-error="Has to be integer" >Default: 10 </label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <s:regionExtraction></s:regionExtraction>
                         </div>
                     </li>
                     <li>
