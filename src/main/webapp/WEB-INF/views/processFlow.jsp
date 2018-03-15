@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
         <title>OCR4All - Centralized Process Flow</title>
@@ -197,6 +198,88 @@
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
+                        <div class="collapsible-body">
+                            <ul class="collapsible" data-collapsible="expandable" data-id="settings">
+                                <li data-id="preprocessing">
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Preprocessing</div>
+                                    <div class="collapsible-body">
+                                        <ul class="collapsible" data-collapsible="expandable">
+                                            <li>
+                                                <div class="collapsible-header active"><i class="material-icons">settings</i>General</div>
+                                                <div class="collapsible-body">
+                                                    <s:preprocessing settingsType="general"></s:preprocessing>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="collapsible-header"><i class="material-icons">settings</i>Advanced</div>
+                                                <div class="collapsible-body">
+                                                    <s:preprocessing settingsType="advanced"></s:preprocessing>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li data-id="despeckling">
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Noise Removal</div>
+                                    <div class="collapsible-body">
+                                        <s:despeckling></s:despeckling>
+                                    </div>
+                                </li>
+                                <li data-id="segmentation">
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation</div>
+                                    <div class="collapsible-body">
+                                        <s:segmentation></s:segmentation>
+                                    </div>
+                                </li>
+                                <li data-id="regionExtraction">
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Region Extraction</div>
+                                    <div class="collapsible-body">
+                                        <s:regionExtraction></s:regionExtraction>
+                                    </div>
+                                </li>
+                                <li data-id="lineSegmentation">
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Line Segmentation</div>
+                                    <div class="collapsible-body">
+                                        <ul class="collapsible" data-collapsible="expandable">
+                                            <li>
+                                                <div class="collapsible-header active"><i class="material-icons">settings</i>General</div>
+                                                <div class="collapsible-body">
+                                                    <s:lineSegmentation settingsType="general"></s:lineSegmentation>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="collapsible-header"><i class="material-icons">settings</i>Advanced</div>
+                                                <div class="collapsible-body">
+                                                    <s:lineSegmentation settingsType="advanced"></s:lineSegmentation>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li data-id="recognition">
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Recogntion</div>
+                                    <div class="collapsible-body">
+                                        <ul class="collapsible" data-collapsible="expandable">
+                                            <li>
+                                                <div class="collapsible-header active"><i class="material-icons">settings</i>General</div>
+                                                <div class="collapsible-body">
+                                                    <s:recognition settingsType="general"></s:recognition>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="collapsible-header"><i class="material-icons">settings</i>Advanced</div>
+                                                <div class="collapsible-body">
+                                                    <s:recognition settingsType="advanced"></s:recognition>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </li>
                     <li>

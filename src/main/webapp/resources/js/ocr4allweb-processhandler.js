@@ -105,7 +105,7 @@ function updateProcessFlowStatus(process) {
         if( progress < 100 ) {
             $('li[data-id="' + process + '"] .status span').html("Ongoing").attr("class", "orange-text");
             // Open status collapsible first
-            openCollapsibleEntriesExclusively([ 1 ]);
+            openCollapsibleEntriesExclusively([ 2 ]);
             // Open collapsible of process that is currently executed next
             var statusCollapsible = $('.collapsible[data-id="status"]');
             var processCollapsibleEntryId = $(statusCollapsible).find('li[data-id="' + process + '"]').index();
