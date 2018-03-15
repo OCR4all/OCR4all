@@ -10,7 +10,7 @@
                 initializeImageList("Original");
 
                 // Open process selection on default
-                $('.collapsible').collapsible('open', 0);
+                $('.collapsible').first().collapsible('open', 0);
 
                 function getProcessesToExecute() {
                     var processesToExecute = [];
@@ -191,58 +191,65 @@
                             </table>
                         </div>
                     </li>
-                    <li data-id="preprocessing">
-                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Preprocessing)</div>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
                         <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No Preprocessing process running</span></p></div>
-                            <div class="progress">
-                                <div class="determinate"></div>
-                            </div>
-                        </div>
-                    </li>
-                    <li data-id="despeckling">
-                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Noise Removal)</div>
-                        <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No Noise Removal process running</span></p></div>
-                            <div class="progress">
-                                <div class="determinate"></div>
-                            </div>
-                        </div>
-                    </li>
-                    <li data-id="segmentation">
-                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Segmentation)</div>
-                        <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No Segmentation process running</span></p></div>
-                            <div class="progress">
-                                <div class="determinate"></div>
-                            </div>
-                        </div>
-                    </li>
-                    <li data-id="regionExtraction">
-                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Region Extraction)</div>
-                        <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No Region Extraction process running</span></p></div>
-                            <div class="progress">
-                                <div class="determinate"></div>
-                            </div>
-                        </div>
-                    </li>
-                    <li data-id="lineSegmentation">
-                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Line Segmentation)</div>
-                        <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No Line Segmentation process running</span></p></div>
-                            <div class="progress">
-                                <div class="determinate"></div>
-                            </div>
-                        </div>
-                    </li>
-                    <li data-id="recognition">
-                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Recognition)</div>
-                        <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No Recognition process running</span></p></div>
-                            <div class="progress">
-                                <div class="determinate"></div>
-                            </div>
+                            <ul class="collapsible" data-collapsible="expandable" data-id="status">
+                                <li data-id="preprocessing">
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Preprocessing)</div>
+                                    <div class="collapsible-body">
+                                        <div class="status"><p>Status: <span>No Preprocessing process running</span></p></div>
+                                        <div class="progress">
+                                            <div class="determinate"></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li data-id="despeckling">
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Noise Removal)</div>
+                                    <div class="collapsible-body">
+                                        <div class="status"><p>Status: <span>No Noise Removal process running</span></p></div>
+                                        <div class="progress">
+                                            <div class="determinate"></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li data-id="segmentation">
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Segmentation)</div>
+                                    <div class="collapsible-body">
+                                        <div class="status"><p>Status: <span>No Segmentation process running</span></p></div>
+                                        <div class="progress">
+                                            <div class="determinate"></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li data-id="regionExtraction">
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Region Extraction)</div>
+                                    <div class="collapsible-body">
+                                        <div class="status"><p>Status: <span>No Region Extraction process running</span></p></div>
+                                        <div class="progress">
+                                            <div class="determinate"></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li data-id="lineSegmentation">
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Line Segmentation)</div>
+                                    <div class="collapsible-body">
+                                        <div class="status"><p>Status: <span>No Line Segmentation process running</span></p></div>
+                                        <div class="progress">
+                                            <div class="determinate"></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li data-id="recognition">
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Status (Recognition)</div>
+                                    <div class="collapsible-body">
+                                        <div class="status"><p>Status: <span>No Recognition process running</span></p></div>
+                                        <div class="progress">
+                                            <div class="determinate"></div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </li>
                 </ul>

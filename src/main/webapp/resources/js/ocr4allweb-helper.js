@@ -7,27 +7,30 @@
  */
 
 // Open or close the given collapsible entry
-function handleCollapsibleEntry(entryId, action) {
+function handleCollapsibleEntry(entryId, action, collapsibleEl) {
+    collapsibleEl = collapsibleEl || $('.collapsible').eq(0);
+
     var activeCheck = false;
     if( action === 'close' )
         activeCheck = true;
 
-    var collapsibleEl = $('.collapsible').eq(0).children('li').children('.collapsible-header').eq(entryId);
-    if( $(collapsibleEl).hasClass('active') === activeCheck ) {
-        $('.collapsible').eq(0).collapsible('open', entryId);
+    var collapsibleEntry = $(collapsibleEl).children('li').children('.collapsible-header').eq(entryId);
+    if( $(collapsibleEntry).hasClass('active') === activeCheck ) {
+        $(collapsibleEl).collapsible('open', entryId);
     }
 
     // Trigger change event in case the current page uses an imageList (resizing functionality)
-    $(collapsibleEl).change();
+    $(collapsibleEntry).change();
 }
 
 // Open the given collapsible entries and close the remaining ones
-function openCollapsibleEntriesExclusively(entryIds) {
-    $.each($('.collapsible').eq(0).children('li').children('.collapsible-header'), function(index, collapsibleEntry) {
+function openCollapsibleEntriesExclusively(entryIds, collapsibleEl) {
+    collapsibleEl = collapsibleEl || $('.collapsible').eq(0);
+    $.each($(collapsibleEl).children('li').children('.collapsible-header'), function(index, collapsibleEntry) {
         var action = 'open';
         if( $.inArray(index, entryIds) < 0 )
             action = 'close';
 
-        handleCollapsibleEntry(index, action);
+        handleCollapsibleEntry(index, action, collapsibleEl);
     });
 }

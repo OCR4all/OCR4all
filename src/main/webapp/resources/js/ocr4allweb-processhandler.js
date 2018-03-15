@@ -104,8 +104,12 @@ function updateProcessFlowStatus(process) {
         $('li[data-id="' + process + '"] .determinate').attr("style", "width: " + progress + "%");
         if( progress < 100 ) {
             $('li[data-id="' + process + '"] .status span').html("Ongoing").attr("class", "orange-text");
-            // Open collapsible of process that is currently executed
-            openCollapsibleEntriesExclusively([ $('.collapsible').find('li[data-id="' + process + '"]').index() ]);
+            // Open status collapsible first
+            openCollapsibleEntriesExclusively([ 1 ]);
+            // Open collapsible of process that is currently executed next
+            var statusCollapsible = $('.collapsible[data-id="status"]');
+            var processCollapsibleEntryId = $(statusCollapsible).find('li[data-id="' + process + '"]').index();
+            openCollapsibleEntriesExclusively([ processCollapsibleEntryId ], statusCollapsible);
         }
         else {
             $('li[data-id="' + process + '"] .status span').html("Completed").attr("class", "green-text");
