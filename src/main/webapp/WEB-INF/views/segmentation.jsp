@@ -70,8 +70,8 @@
                                             <div class="input-field">
                                                 <i class="material-icons prefix">image</i>
                                                 <select id="imageType" name="imageType" class="suffix">
-                                                    <option value="Despeckled">Despeckled</option>
                                                     <option value="Binary">Binary</option>
+                                                    <option value="Despeckled">Despeckled</option>
                                                 </select>
                                                 <label></label>
                                             </div>

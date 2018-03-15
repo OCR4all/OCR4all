@@ -232,8 +232,8 @@ public class ProcessFlowController {
 
         if (processes.contains("segmentation")) {
             session.setAttribute("currentProcess", "segmentation");
-            pageIds = processFlowHelper.getValidPageIds(pageIds, "despeckling");
-            doSegmentation(pageIds, "Despeckled", true, session, response);
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
+            doSegmentation(pageIds, "Binary", true, session, response);
             if (needsExit(session, response))
                 return;
         }
