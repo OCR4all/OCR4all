@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.xml.sax.SAXException;
 
@@ -61,12 +62,12 @@ public class RegionExtractionHelper {
             throws ParserConfigurationException, SAXException, IOException {
         regionExtractionRunning = true;
         stop = false;
+        progress = 0;
 
         File pageDir = new File(projConf.PAGE_DIR);
         if (!pageDir.exists())
             pageDir.mkdir();
-
-        progress = 0;
+        deleteOldFiles(pageIds);
 
         double i = 1;
         int totalPages = pageIds.size();
@@ -85,6 +86,23 @@ public class RegionExtractionHelper {
 
         progress = 100;
         regionExtractionRunning = false;
+    }
+
+    /**
+     * Checks if process depending files already exists
+     * @param pageIds
+     * @return
+     */
+    public boolean checkIfExisting(String[] pageIds){
+        boolean exists = false;
+        for(String page : pageIds) {
+            if(new File(projConf.PAGE_DIR + page).exists()) {
+                exists = true;
+                break;
+            }
+    }
+
+    return exists;
     }
 
     /**
@@ -141,5 +159,18 @@ public class RegionExtractionHelper {
         Collections.sort(IdsForImageList);
 
         return IdsForImageList;
+    }
+
+    /**
+     * Deletion of old process related files
+     * @param pageIds
+     * @throws IOException 
+     */
+    public void deleteOldFiles(List<String> pageIds) throws IOException {
+        for(String pageId : pageIds) {
+            File page = new File(projConf.PAGE_DIR + pageId);
+            if(page.exists()) {
+                FileUtils.deleteDirectory(page);}
+        }
     }
 }

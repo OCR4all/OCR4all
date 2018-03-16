@@ -74,10 +74,9 @@ public class RegionExtractionController {
             return;
         }
 
-        // Keep a single helper object in session
         RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
         if (regionExtractionHelper == null) 
-            return;
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
 
         if (regionExtractionHelper.isRegionExtractionRunning() == true) {
@@ -139,5 +138,23 @@ public class RegionExtractionController {
             return null;
 
         return regionExtractionHelper.getIdsforRegionExtraction();
+    }
+
+    /**
+     * Response to the request to check if old process related files exists
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @param pageIds List of pageIds
+     * @return status
+     */
+    @RequestMapping(value = "/ajax/regionExtraction/exists" , method = RequestMethod.GET)
+    public @ResponseBody boolean check(HttpSession session, HttpServletResponse response, 
+           @RequestParam("pageIds[]") String[] pageIds) {
+    	RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+        if (regionExtractionHelper == null)
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        return regionExtractionHelper.checkIfExisting(pageIds);
     }
 }
