@@ -27,6 +27,15 @@
                     $('#bookname').val($('#imageType').val());
                 });
                 $('#imageType').change();
+                // Set available threads as default 
+                $.get( "ajax/generic/threads" )
+                .done(function( data ) {
+                    if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
+                        return;
+
+                    $('.collapsible[data-id="settings"] li[data-id="preprocessing"]').find('#--parallel').val(data).change();
+                    $('.collapsible[data-id="settings"] li[data-id="recognition"]').find('#--parallel').val(data).change();
+                });
 
                 var currentProcessInterval = null;
                 var lastExecutedProcess = "";
