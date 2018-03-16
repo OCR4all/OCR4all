@@ -1,6 +1,7 @@
 package de.uniwue.helper;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.opencv.core.Mat;
@@ -47,16 +48,19 @@ public class DespecklingHelper {
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param maxContourRemovalSize Maximum size of the contours to be removed
+     * @throws IOException 
      */
-    public void despeckleGivenPages(List<String> pageIds, double maxContourRemovalSize) {
+    public void despeckleGivenPages(List<String> pageIds, double maxContourRemovalSize) throws IOException {
         despecklingRunning = true;
         stop = false;
+
+        progress = 0;
 
         File DespDir = new File(projConf.DESP_IMG_DIR);
         if (!DespDir.exists())
             DespDir.mkdir();
+        deleteOldFiles(pageIds);
 
-        progress = 0;
 
         double i = 1;
         int totalPages = pageIds.size();
@@ -110,5 +114,33 @@ public class DespecklingHelper {
     */
     public boolean isDespecklingRunning() {
         return despecklingRunning;
+    }
+
+    /**
+     * Deletion of old process related files
+     * @param pageIds
+     * @throws IOException 
+     */
+    public void deleteOldFiles(List<String> pageIds) throws IOException {
+        for(String pageId : pageIds) {
+            File despImg = new File(projConf.DESP_IMG_DIR + pageId + projConf.IMG_EXT);
+            if(despImg.exists())
+                despImg.delete();
+        }
+    }
+    /**
+     * Checks if process depending files already exists
+     * @param pageIds
+     * @return
+     */
+    public boolean checkIfExisting(String[] pageIds){
+        boolean exists = false;
+        for(String page : pageIds) {
+            if(new File(projConf.DESP_IMG_DIR + page + projConf.IMG_EXT).exists() ) {
+                exists = true;
+                break;
+            }
+        }
+        return exists;
     }
 }
