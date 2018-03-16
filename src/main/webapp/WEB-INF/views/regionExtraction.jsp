@@ -26,8 +26,8 @@
                     $.get( "ajax/regionExtraction/exists?", { "pageIds[]" : selectedPages } )
                     .done(function( data ){
                         if(data === false){
-                            var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
-                            // Execute regionExtraction process
+                            var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
+                                    "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages };                            // Execute regionExtraction process
                             executeProcess(ajaxParams);
                         }
                         else{
