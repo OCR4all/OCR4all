@@ -93,7 +93,7 @@ public class ProcessFlowController {
             return;
         }
 
-        new SegmentationController().execute(pageIds, segmentationImageType, replace, session, response);
+        new SegmentationController().execute(pageIds, segmentationImageType, session, response);
     }
 
     /**

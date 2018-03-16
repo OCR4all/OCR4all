@@ -55,7 +55,7 @@
                 });
                 $('#agree').click(function() {
                     var selectedPages = getSelectedPages();
-                    var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked')};
+                    var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};
                     // Execute segmentation process
                     executeProcess(ajaxParams);
                 });

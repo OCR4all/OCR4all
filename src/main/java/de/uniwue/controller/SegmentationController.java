@@ -60,7 +60,6 @@ public class SegmentationController {
     public @ResponseBody void execute(
                @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam("imageType") String segmentationImageType,
-               @RequestParam("replace") boolean replace,
                HttpSession session, HttpServletResponse response
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
@@ -82,7 +81,7 @@ public class SegmentationController {
         String projectImageType  = (String) session.getAttribute("imageType");
 
         try {
-            segmentationHelper.MoveExtractedSegments(Arrays.asList(pageIds), segmentationImageType, projectImageType, replace);
+            segmentationHelper.MoveExtractedSegments(Arrays.asList(pageIds), segmentationImageType, projectImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationHelper.resetProgress();

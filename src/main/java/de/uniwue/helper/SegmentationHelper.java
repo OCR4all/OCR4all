@@ -53,7 +53,7 @@ public class SegmentationHelper {
      * @param replace If true, replaces the existing image files
      * @throws IOException
      */
-    public void MoveExtractedSegments(List<String> pageIds, String segmentationImageType, String projectImageType, boolean replace) throws IOException {
+    public void MoveExtractedSegments(List<String> pageIds, String segmentationImageType, String projectImageType) throws IOException {
         segmentationRunning = true;
         stop = false;
         progress = 0;
@@ -69,12 +69,7 @@ public class SegmentationHelper {
             File[] filesToMove = ProjectTypePreprocessDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
             for(File file : filesToMove) {
                 if(pageIds.contains(FilenameUtils.removeExtension(file.getName()))) {
-                    if(replace)
                         Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
-                    else {
-                        if(!new File(projConf.getImageDirectoryByType("OCR") + file.getName()).exists())
-                            Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()));
-                    }
                 }
             }
         }
