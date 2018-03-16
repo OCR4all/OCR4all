@@ -75,14 +75,27 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-
-                    var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
-                    // Execute Preprocessing process
-                    executeProcess(ajaxParams);
+                    $.get( "ajax/recognition/exists?", { "pageIds[]" : selectedPages } )
+                    .done(function( data ){
+                        if(data === false){
+                            var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                            // Execute recongition process
+                            executeProcess(ajaxParams);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
+                    });
                 });
 
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
+                });
+                $('#agree').click(function() {
+                    var selectedPages = getSelectedPages();
+                    var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                    // Execute recognition process
+                    executeProcess(ajaxParams);
                 });
             });
         </script>

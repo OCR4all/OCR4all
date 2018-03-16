@@ -41,7 +41,22 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-                    var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked')};
+                    $.get( "ajax/segmentation/exists?", { "pageIds[]" : selectedPages } )
+                    .done(function( data ){
+                        if(data === false){
+                            var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked')};
+                            // Execute segmentation process
+                            executeProcess(ajaxParams);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
+                    });
+                });
+                $('#agree').click(function() {
+                    var selectedPages = getSelectedPages();
+                    var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};
+                    // Execute segmentation process
                     executeProcess(ajaxParams);
                 });
             });
@@ -97,7 +112,7 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
     </t:body>

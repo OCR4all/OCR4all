@@ -23,12 +23,18 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-
-                    var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
-                    		           "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages };
-                    // Execute Preprocessing process
-                    executeProcess(ajaxParams);
+                    $.get( "ajax/regionExtraction/exists?", { "pageIds[]" : selectedPages } )
+                    .done(function( data ){
+                        if(data === false){
+                            var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
+                                    "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages };                            // Execute regionExtraction process
+                            executeProcess(ajaxParams);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
                     });
+                  });
 
                 $.get( "ajax/regionExtraction/getImageIds")
                 .done(function( data ) {
@@ -36,6 +42,13 @@
                 });
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
+                });
+                $('#agree').click(function() {
+                    var selectedPages = getSelectedPages();
+                    var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
+                            "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages };
+                    // Execute region extraction process
+                    executeProcess(ajaxParams);
                 });
             });
         </script>

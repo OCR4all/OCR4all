@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.xml.sax.SAXException;
 
@@ -48,26 +49,25 @@ public class RegionExtractionHelper {
     }
 
     /**
-     * TODO: commenting
+     * Executes region extraction on a list of pages
      *
      * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
-     * @param spacing
-     * @param useSpacing
-     * @param useAvgBgd
+     * @param spacing Spacing setting for region extractor
+     * @param useAvgBgd UseAvgBgd setting for region extractor
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException
      */
-    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useSpacing, boolean useAvgBgd)
+    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useAvgBgd)
             throws ParserConfigurationException, SAXException, IOException {
         regionExtractionRunning = true;
         stop = false;
+        progress = 0;
 
         File pageDir = new File(projConf.PAGE_DIR);
         if (!pageDir.exists())
             pageDir.mkdir();
-
-        progress = 0;
+        deleteOldFiles(pageIds);
 
         double i = 1;
         int totalPages = pageIds.size();
@@ -78,7 +78,7 @@ public class RegionExtractionHelper {
             String imagePath = projConf.OCR_DIR + pageId + projConf.IMG_EXT;
             String xmlPath = projConf.OCR_DIR + pageId + ".xml";
             String outputFolder = projConf.PAGE_DIR;
-            RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, useSpacing, spacing, outputFolder);
+            RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, spacing, outputFolder);
 
             progress = (int) ((double) i / totalPages * 100);
             i = i + 1;
@@ -86,6 +86,23 @@ public class RegionExtractionHelper {
 
         progress = 100;
         regionExtractionRunning = false;
+    }
+
+    /**
+     * Checks if process depending files already exists
+     * @param pageIds
+     * @return
+     */
+    public boolean checkIfExisting(String[] pageIds){
+        boolean exists = false;
+        for(String page : pageIds) {
+            if(new File(projConf.PAGE_DIR + page).exists()) {
+                exists = true;
+                break;
+            }
+    }
+
+    return exists;
     }
 
     /**
@@ -142,5 +159,18 @@ public class RegionExtractionHelper {
         Collections.sort(IdsForImageList);
 
         return IdsForImageList;
+    }
+
+    /**
+     * Deletion of old process related files
+     * @param pageIds
+     * @throws IOException 
+     */
+    public void deleteOldFiles(List<String> pageIds) throws IOException {
+        for(String pageId : pageIds) {
+            File page = new File(projConf.PAGE_DIR + pageId);
+            if(page.exists()) {
+                FileUtils.deleteDirectory(page);}
+        }
     }
 }

@@ -71,6 +71,8 @@ public class RecognitionHelper {
      * @throws IOException
      */
     public void initialize(List<String> pageIds) throws IOException {
+
+        deleteOldFiles(pageIds);
         // Initialize the status structure
         status= new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
 
@@ -95,6 +97,27 @@ public class RecognitionHelper {
                 }
             }
             status.put(pageId, tm);
+        }
+    }
+
+    /**
+     * Deletion of old process related files
+     * @param pageIds
+     */
+    public void deleteOldFiles(List<String> pageIds) {
+        for(String pageId : pageIds) {
+            if(!new File(projConf.PAGE_DIR + pageId).exists())
+                return;
+            File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
+            if (directories.length != 0) {
+                for(File dir :directories) {
+                    File[] FilesWithTxtExtension = new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(".txt"));
+                    //deletes old lineSegmentation directories
+                    for(File txt : FilesWithTxtExtension) {
+                       txt.delete();
+                   }
+                }
+            }
         }
     }
 
@@ -160,8 +183,9 @@ public class RecognitionHelper {
      */
     public void RecognizeImages(List<String> pageIds, List<String> cmdArgs) throws IOException {
         RecognitionRunning = true;
-        initialize(pageIds);
         progress = 0;
+
+        initialize(pageIds);
 
         List<String> command = new ArrayList<String>();
         List<String> LineSegmentsOfPage = getLineSegmentsOfPages(pageIds);
@@ -224,4 +248,27 @@ public class RecognitionHelper {
     public boolean isRecongitionRunning() {
         return RecognitionRunning;
     }
+
+    /**
+     * Checks if process depending files already exists
+     * @param pageIds
+     * @return
+     */
+    public boolean checkIfExisting(String[] pageIds){
+        boolean exists = false;
+    for(String page : pageIds) {
+        File[] directories = new File(projConf.PAGE_DIR
+                + page).listFiles(File::isDirectory);
+        //deletes old lineSegmentation directories
+        for(File dir : directories) {
+            if(new File(projConf.PAGE_DIR + page + File.separator + dir.getName()).listFiles((d, name) -> name.endsWith(".txt")).length != 0) {
+                exists = true;
+                break;
+            }
+        }
+    }
+
+    return exists;
+    }
+
 }

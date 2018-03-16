@@ -169,4 +169,22 @@ public class LineSegmentationController {
 
         return lineSegmentation.getIdsforLineSegmentation();
     }
+
+    /**
+     * Response to the request to check if old process related files exists
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @param pageIds List of pageIds
+     * @return status
+     */
+    @RequestMapping(value = "/ajax/lineSegmentation/exists" , method = RequestMethod.GET)
+    public @ResponseBody boolean check(HttpSession session, HttpServletResponse response, 
+           @RequestParam("pageIds[]") String[] pageIds) {
+        LineSegmentationHelper lineSegmentation = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
+        if (lineSegmentation == null)
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        return lineSegmentation.checkIfExisting(pageIds);
+    }
 }

@@ -108,12 +108,11 @@ public class ProcessFlowController {
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param segmentationImageType Type of the images (binary,despeckled)
-     * @param replace If true, replaces the existing image files
      * @param session Session of the user
      * @param response Response to the request
      */
     public void doSegmentation(
-                String[] pageIds, Object segmentationImageType, Object replace,
+                String[] pageIds, Object segmentationImageType,
                 HttpSession session, HttpServletResponse response
             ) {
         if (pageIds.length == 0) {
@@ -121,8 +120,7 @@ public class ProcessFlowController {
             return;
         }
 
-        Boolean replaceBoolean = Boolean.parseBoolean((String)replace);
-        new SegmentationController().execute(pageIds, (String)segmentationImageType, replaceBoolean, session, response);
+        new SegmentationController().execute(pageIds, (String)segmentationImageType, session, response);
     }
 
     /**
@@ -130,13 +128,12 @@ public class ProcessFlowController {
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param spacing
-     * @param useSpacing
      * @param avgBackground
      * @param session Session of the user
      * @param response Response to the request
      */
     public void doRegionExtraction(
-                String[] pageIds, Object spacing, Object useSpacing, Object avgBackground,
+                String[] pageIds, Object spacing, Object avgBackground,
                 HttpSession session, HttpServletResponse response
             ) {
         if (pageIds.length == 0) {
@@ -145,9 +142,8 @@ public class ProcessFlowController {
         }
 
         Integer spacingInteger = Integer.parseInt((String)spacing);
-        Boolean useSpacingBoolean = Boolean.parseBoolean((String)useSpacing);
         Boolean avgBackgroundBoolean = Boolean.parseBoolean((String)avgBackground);
-        new RegionExtractionController().execute(pageIds, spacingInteger, useSpacingBoolean, avgBackgroundBoolean, session, response);
+        new RegionExtractionController().execute(pageIds, spacingInteger, avgBackgroundBoolean, session, response);
     }
 
     /**
@@ -290,7 +286,7 @@ public class ProcessFlowController {
             session.setAttribute("currentProcess", "segmentation");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
             Map<String, Object> settings = processSettings.get("segmentation");
-            doSegmentation(pageIds, settings.get("imageType"), settings.get("replace"), session, response);
+            doSegmentation(pageIds, settings.get("imageType"), session, response);
             if (needsExit(session, response))
                 return;
         }
@@ -299,7 +295,7 @@ public class ProcessFlowController {
             session.setAttribute("currentProcess", "regionExtraction");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
             Map<String, Object> settings = processSettings.get("regionExtraction");
-            doRegionExtraction(pageIds, settings.get("spacing"), settings.get("usespacing"), settings.get("avgbackground"), session, response);
+            doRegionExtraction(pageIds, settings.get("spacing"), settings.get("avgbackground"), session, response);
             if (needsExit(session, response))
                 return;
         }

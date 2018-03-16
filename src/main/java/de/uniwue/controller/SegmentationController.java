@@ -1,6 +1,7 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -36,6 +37,13 @@ public class SegmentationController {
             return mv;
         }
 
+        // Keep a single helper object in session
+        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        if (segmentationHelper == null) {
+            segmentationHelper = new SegmentationHelper(projectDir);
+            session.setAttribute("segmentationHelper", segmentationHelper);
+        }
+
         return mv;
     }
 
@@ -52,7 +60,6 @@ public class SegmentationController {
     public @ResponseBody void execute(
                @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam("imageType") String segmentationImageType,
-               @RequestParam("replace") boolean replace,
                HttpSession session, HttpServletResponse response
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
@@ -64,8 +71,7 @@ public class SegmentationController {
         // Keep a single helper object in session
         SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
         if (segmentationHelper == null) {
-            segmentationHelper = new SegmentationHelper(projectDir);
-            session.setAttribute("segmentationHelper", segmentationHelper);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
         if (segmentationHelper.isSegmentationRunning() == true) {
@@ -75,7 +81,7 @@ public class SegmentationController {
         String projectImageType  = (String) session.getAttribute("imageType");
 
         try {
-            segmentationHelper.MoveExtractedSegments(pageIds, segmentationImageType, projectImageType, replace);
+            segmentationHelper.MoveExtractedSegments(Arrays.asList(pageIds), segmentationImageType, projectImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationHelper.resetProgress();
@@ -112,5 +118,23 @@ public class SegmentationController {
         }
 
         segmentationHelper.cancelProcess();
+    }
+
+    /**
+     * Response to the request to check if old process related files exists
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @param pageIds List of pageIds
+     * @return status
+     */
+    @RequestMapping(value = "/ajax/segmentation/exists" , method = RequestMethod.GET)
+    public @ResponseBody boolean check(HttpSession session, HttpServletResponse response, 
+           @RequestParam("pageIds[]") String[] pageIds) {
+    	SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        if (segmentationHelper == null)
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        return segmentationHelper.checkIfExisting(pageIds);
     }
 }

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -40,8 +40,8 @@ public class SegmentationHelper {
      *
      * @param projectDir Path to the project directory
      */
-    public SegmentationHelper(String projConf) {
-        this.projConf = new ProjectConfiguration(projConf);
+    public SegmentationHelper(String projDir) {
+        this.projConf = new ProjectConfiguration(projDir);
     }
 
     /**
@@ -53,28 +53,23 @@ public class SegmentationHelper {
      * @param replace If true, replaces the existing image files
      * @throws IOException
      */
-    public void MoveExtractedSegments(String[] pageIds, String segmentationImageType, String projectImageType, boolean replace) throws IOException {
+    public void MoveExtractedSegments(List<String> pageIds, String segmentationImageType, String projectImageType) throws IOException {
         segmentationRunning = true;
         stop = false;
+        progress = 0;
 
         File ocrDir = new File(projConf.OCR_DIR);
         if (!ocrDir.exists())
             ocrDir.mkdir();
-
-        progress = 0;
+        deleteOldFiles( pageIds);
 
         //copy process specific images
         File ProjectTypePreprocessDir = new File(projConf.getImageDirectoryByType(projectImageType));
         if(ProjectTypePreprocessDir.exists()){
             File[] filesToMove = ProjectTypePreprocessDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
             for(File file : filesToMove) {
-                if(Arrays.asList(pageIds).contains(FilenameUtils.removeExtension(file.getName()))) {
-                    if(replace)
+                if(pageIds.contains(FilenameUtils.removeExtension(file.getName()))) {
                         Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
-                    else {
-                        if(!new File(projConf.getImageDirectoryByType("OCR") + file.getName()).exists())
-                            Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()));
-                    }
                 }
             }
         }
@@ -127,5 +122,41 @@ public class SegmentationHelper {
      */
     public boolean isSegmentationRunning() {
         return segmentationRunning;
+    }
+
+    /**
+     * Deletion of old process related files
+     * @param pageIds
+     * @throws IOException 
+     */
+    public void deleteOldFiles(List<String> pageIds) throws IOException {
+        if(!new File(projConf.OCR_DIR).exists())
+            return;
+        RegionExtractionHelper regionExtracorHelper = new RegionExtractionHelper(projConf.PROJECT_DIR);
+        regionExtracorHelper.deleteOldFiles(pageIds);
+        for(String pageId : pageIds) {
+            File segPng = new File(projConf.OCR_DIR + pageId + projConf.IMG_EXT);
+            File segXml = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
+            if(segPng.exists())
+                segPng.delete();
+            if(segXml.exists())
+                segXml.delete();
+        }
+    }
+
+    /**
+     * Checks if process depending files already exists
+     * @param pageIds
+     * @return
+     */
+    public boolean checkIfExisting(String[] pageIds){
+        boolean exists = false;
+        for(String page : pageIds) {
+            if(new File(projConf.OCR_DIR + page + projConf.CONF_EXT).exists()) {
+                exists = true;
+                break;
+            }
+        }
+        return exists;
     }
 }

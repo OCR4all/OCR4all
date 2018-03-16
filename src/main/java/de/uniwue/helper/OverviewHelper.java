@@ -158,7 +158,7 @@ public class OverviewHelper {
     public void checkSegmented() {
         for (String key : overview.keySet()) {
             overview.get(key).setSegmented(true);
-            if (!new File(projConf.OCR_DIR + overview.get(key).getPageId() + projConf.CONF_EXT).exists()) 
+            if (!new File(projConf.OCR_DIR + overview.get(key).getPageId() + projConf.CONF_EXT).exists() || !new File(projConf.OCR_DIR + overview.get(key).getPageId()+ projConf.IMG_EXT).exists()) 
                 overview.get(key).setSegmented(false);
         }
     }
@@ -176,17 +176,25 @@ public class OverviewHelper {
 
     /**
      * Validates line extracted state and updates project overview
+     * @throws IOException 
      */
-    public void checkLinesExtracted() {
+    public void checkLinesExtracted() throws IOException {
         for (String key: overview.keySet()) {
             overview.get(key).setLinesExtracted(true);
 
             if (overview.get(key).isSegmentsExtracted()) {
-                File[] psegFiles = new File(projConf.PAGE_DIR
-                        + overview.get(key).getPageId()).listFiles((d, name) -> name.endsWith(".pseg"+projConf.IMG_EXT));
-
-                if (psegFiles.length == 0) 
-                    overview.get(key).setLinesExtracted(false);
+                    Files.walk(Paths.get(projConf.PAGE_DIR + FilenameUtils.removeExtension(key)), 1)
+                    .map(Path::toFile)
+                    .filter(fileEntry -> fileEntry.isFile())
+                    .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
+                    .forEach(
+                        fileEntry -> { 
+                            if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg")) {
+                                if(!new File(FilenameUtils.removeExtension(fileEntry.getAbsolutePath())+".pseg"+projConf.IMG_EXT).exists()) {
+                                    overview.get(key).setLinesExtracted(false);}
+                                }
+                            }
+                    );
             }
             else {
                 overview.get(key).setLinesExtracted(false);
@@ -196,7 +204,6 @@ public class OverviewHelper {
 
     /**
      * Validates recognition state and updates project overview
-     * TODO: Implementation. Currently no requirements specified
      */
     public void checkRecognition() {
         for (String key: overview.keySet()) {

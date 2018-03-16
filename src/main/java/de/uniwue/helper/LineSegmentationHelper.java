@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
@@ -72,6 +73,7 @@ public class LineSegmentationHelper {
      * @throws IOException
      */
     public void initialize(List<String> pageIds) throws IOException {
+        deleteOldFiles(pageIds);
         // Initialize the status structure
         status= new TreeMap<String, TreeMap<String, Boolean>>();
 
@@ -87,8 +89,47 @@ public class LineSegmentationHelper {
                         segments.put(fileEntry.getName(), false);}
                 }
             );
+
         status.put(pageId, segments);
         }
+
+    }
+
+    /**
+     * Deletion of old process related files
+     * @param pageIds
+     * @throws IOException 
+     */
+    public void deleteOldFiles(List<String> pageIds) throws IOException {
+        for(String pageId : pageIds) {
+            if(!new File(projConf.PAGE_DIR + pageId).exists())
+                return;
+            File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
+            if (directories.length != 0) {
+                for(File dir : directories)
+                    FileUtils.deleteDirectory(dir);
+            }
+            File[] FilesWithPsegExtension = new File(projConf.PAGE_DIR + pageId).listFiles((d, name) -> name.endsWith(".pseg"+ projConf.IMG_EXT));
+            for(File pseg : FilesWithPsegExtension) {
+                pseg.delete();}
+        }
+    }
+
+    /**
+     * Checks if process depending files already exists
+     * @param pageIds
+     * @return
+     */
+    public boolean checkIfExisting(String[] pageIds){
+        boolean exists = false;
+        for(String page : pageIds) {
+            if(new File(projConf.PAGE_DIR + page).exists() && new File(projConf.PAGE_DIR + page).listFiles((d, name) -> name.endsWith(".pseg"+ projConf.IMG_EXT)).length !=0) {
+                exists = true;
+                break;
+            }
+        }
+
+    return exists;
     }
 
     /**

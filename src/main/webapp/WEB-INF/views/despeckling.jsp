@@ -88,13 +88,26 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-
-                    var ajaxParams = { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val(), "pageIds[]" : selectedPages };
-                    // Execute Preprocessing process
-                    executeProcess(ajaxParams);
+                    $.get( "ajax/despeckling/exists?", { "pageIds[]" : selectedPages } )
+                    .done(function( data ){
+                        if(data === false){
+                            var ajaxParams = { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val(), "pageIds[]" : selectedPages };
+                            // Execute despeckling process
+                            executeProcess(ajaxParams);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
+                    });
                 });
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
+                });
+                $('#agree').click(function() {
+                    var selectedPages = getSelectedPages();
+                    var ajaxParams = { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val(), "pageIds[]" : selectedPages };
+                    // Execute despeckling process
+                    executeProcess(ajaxParams);
                 });
             });
         </script>

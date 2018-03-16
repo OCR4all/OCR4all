@@ -1,5 +1,6 @@
 package de.uniwue.controller;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +36,12 @@ public class DespecklingController {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
+        // Keep a single helper object in session
+        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
+        if (despecklingHelper == null) {
+            despecklingHelper = new DespecklingHelper(projectDir);
+            session.setAttribute("despecklingHelper", despecklingHelper);
+        }
 
         return mv;
     }
@@ -59,11 +66,9 @@ public class DespecklingController {
             return;
         }
 
-        // Keep a single helper object in session
         DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
         if (despecklingHelper == null) {
-            despecklingHelper = new DespecklingHelper(projectDir);
-            session.setAttribute("despecklingHelper", despecklingHelper);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
         if (despecklingHelper.isDespecklingRunning() == true) {
@@ -71,7 +76,11 @@ public class DespecklingController {
             return;
         }
 
-        despecklingHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
+        try {
+            despecklingHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
     }
 
     /**
@@ -104,5 +113,23 @@ public class DespecklingController {
             return -1;
 
         return despecklingHelper.getProgress();
+    }
+
+    /**
+     * Response to the request to check if old process related files exists
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @param pageIds List of pageIds
+     * @return status
+     */
+    @RequestMapping(value = "/ajax/despeckling/exists" , method = RequestMethod.GET)
+    public @ResponseBody boolean check(HttpSession session, HttpServletResponse response, 
+           @RequestParam("pageIds[]") String[] pageIds) {
+    	DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
+        if (despecklingHelper == null)
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        return despecklingHelper.checkIfExisting(pageIds);
     }
 }
