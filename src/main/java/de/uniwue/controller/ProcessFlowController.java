@@ -101,13 +101,12 @@ public class ProcessFlowController {
      *
      * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
      * @param spacing
-     * @param useSpacing
      * @param avgBackground
      * @param session Session of the user
      * @param response Response to the request
      */
     public void doRegionExtraction(
-                String[] pageIds, int spacing, boolean useSpacing, boolean avgBackground,
+                String[] pageIds, int spacing, boolean avgBackground,
                 HttpSession session, HttpServletResponse response
             ) {
         if (pageIds.length == 0) {
@@ -115,7 +114,7 @@ public class ProcessFlowController {
             return;
         }
 
-        new RegionExtractionController().execute(pageIds, spacing, useSpacing, avgBackground, session, response);
+        new RegionExtractionController().execute(pageIds, spacing, avgBackground, session, response);
     }
 
     /**
@@ -241,7 +240,7 @@ public class ProcessFlowController {
         if (processes.contains("regionExtraction")) {
             session.setAttribute("currentProcess", "regionExtraction");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
-            doRegionExtraction(pageIds, 10, true, false, session, response);
+            doRegionExtraction(pageIds, 10, false, session, response);
             if (needsExit(session, response))
                 return;
         }
