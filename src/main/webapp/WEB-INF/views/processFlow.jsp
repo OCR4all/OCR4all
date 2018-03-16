@@ -22,6 +22,12 @@
                     return processesToExecute;
                 }
 
+                // Needed for segmentation option
+                $('#imageType').on('change', function() {
+                    $('#bookname').val($('#imageType').val());
+                });
+                $('#imageType').change();
+
                 var currentProcessInterval = null;
                 var lastExecutedProcess = "";
                 // Handles progress updates of all processes
