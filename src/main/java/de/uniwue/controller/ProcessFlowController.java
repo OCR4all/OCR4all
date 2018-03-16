@@ -1,12 +1,13 @@
 package de.uniwue.controller;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.controller.PreprocessingController;
 import de.uniwue.helper.ProcessFlowHelper;
+import de.uniwue.model.ProcessFlowData;
 
 /**
  * Controller class for pages of process flow module
@@ -42,50 +44,76 @@ public class ProcessFlowController {
     }
 
     /**
+     * Helper functions to verify that settings for every executed process are provided
+     *
+     * @param processesToExecute Names of the processes that should be executed
+     * @param processSettings Settings for each process
+     * @param response Response to the request
+     */
+    public void validateSettings(
+                List<String> processesToExecute, Map<String, Map<String, Object>> processSettings,
+                HttpServletResponse response
+            ) {
+        for(String process : processesToExecute) {
+            if (!processSettings.containsKey(process)) {
+                response.setStatus(533); //533 = Custom: Not all necessary process settings were passed
+                return;
+            }
+        }
+    }
+
+    /**
      * Helper function to execute the Preprocessing process via its Controller
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs[] Command line arguments for the process
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs Command line arguments for the process
      * @param session Session of the user
      * @param response Response to the request
      */
-    public void doPreprocessing(String[] pageIds, String[] cmdArgs, HttpSession session, HttpServletResponse response) {
-        if (pageIds.length == 0) {
+    public void doPreprocessing(String[] pageIds, Object cmdArgs, HttpSession session, HttpServletResponse response) {
+        if (pageIds.length == 0 || !(cmdArgs instanceof List<?>)) {
             response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
         }
 
-        new PreprocessingController().execute(pageIds, cmdArgs, session, response);
+        // Convert from List to Array
+        @SuppressWarnings("unchecked")
+        List<String> cmdArgsList = (List<String>)cmdArgs;
+        String[] cmdArgsArr = new String[cmdArgsList.size()];
+        cmdArgsArr = cmdArgsList.toArray(cmdArgsArr);
+
+        new PreprocessingController().execute(pageIds, cmdArgsArr, session, response);
     }
 
     /**
      * Helper function to execute the Despeckling process via its Controller
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param maxContourRemovalSize Maximum size of the contours to be removed
      * @param session Session of the user
      * @param response Response to the request
      */
-    public void doDespeckling(String[] pageIds, double maxContourRemovalSize, HttpSession session, HttpServletResponse response) {
+    public void doDespeckling(String[] pageIds, Object maxContourRemovalSize, HttpSession session, HttpServletResponse response) {
         if (pageIds.length == 0) {
             response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
         }
 
-        new DespecklingController().execute(pageIds, maxContourRemovalSize, session, response);
+        Double maxContourRemovalSizeDouble = Double.parseDouble((String)maxContourRemovalSize);
+        new DespecklingController().execute(pageIds, maxContourRemovalSizeDouble, session, response);
     }
 
     /**
      * Helper function to execute the Segmentation process via its Controller
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param segmentationImageType Type of the images (binary,despeckled)
      * @param replace If true, replaces the existing image files
      * @param session Session of the user
      * @param response Response to the request
      */
     public void doSegmentation(
-                String[] pageIds, String segmentationImageType, boolean replace,
+                String[] pageIds, Object segmentationImageType, Object replace,
                 HttpSession session, HttpServletResponse response
             ) {
         if (pageIds.length == 0) {
@@ -93,13 +121,14 @@ public class ProcessFlowController {
             return;
         }
 
-        new SegmentationController().execute(pageIds, segmentationImageType, replace, session, response);
+        Boolean replaceBoolean = Boolean.parseBoolean((String)replace);
+        new SegmentationController().execute(pageIds, (String)segmentationImageType, replaceBoolean, session, response);
     }
 
     /**
      * Helper function to execute the RegionExtraction process via its Controller
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param spacing
      * @param useSpacing
      * @param avgBackground
@@ -107,7 +136,7 @@ public class ProcessFlowController {
      * @param response Response to the request
      */
     public void doRegionExtraction(
-                String[] pageIds, int spacing, boolean useSpacing, boolean avgBackground,
+                String[] pageIds, Object spacing, Object useSpacing, Object avgBackground,
                 HttpSession session, HttpServletResponse response
             ) {
         if (pageIds.length == 0) {
@@ -115,41 +144,56 @@ public class ProcessFlowController {
             return;
         }
 
-        new RegionExtractionController().execute(pageIds, spacing, useSpacing, avgBackground, session, response);
+        Integer spacingInteger = Integer.parseInt((String)spacing);
+        Boolean useSpacingBoolean = Boolean.parseBoolean((String)useSpacing);
+        Boolean avgBackgroundBoolean = Boolean.parseBoolean((String)avgBackground);
+        new RegionExtractionController().execute(pageIds, spacingInteger, useSpacingBoolean, avgBackgroundBoolean, session, response);
     }
 
     /**
      * Helper function to execute the LineSegmentation process via its Controller
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs[] Command line arguments for the process
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs Command line arguments for the process
      * @param session Session of the user
      * @param response Response to the request
      */
-    public void doLineSegmentation(String[] pageIds, String[] cmdArgs, HttpSession session, HttpServletResponse response) {
-        if (pageIds.length == 0) {
+    public void doLineSegmentation(String[] pageIds, Object cmdArgs, HttpSession session, HttpServletResponse response) {
+        if (pageIds.length == 0 || !(cmdArgs instanceof List<?>)) {
             response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
         }
 
-        new LineSegmentationController().execute(pageIds, cmdArgs, session, response);
+        // Convert from List to Array
+        @SuppressWarnings("unchecked")
+        List<String> cmdArgsList = (List<String>)cmdArgs;
+        String[] cmdArgsArr = new String[cmdArgsList.size()];
+        cmdArgsArr = cmdArgsList.toArray(cmdArgsArr);
+
+        new LineSegmentationController().execute(pageIds, cmdArgsArr, session, response);
     }
 
     /**
      * Helper function to execute the Recognition process via its Controller
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs[] Command line arguments for the process
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs Command line arguments for the process
      * @param session Session of the user
      * @param response Response to the request
      */
-    public void doRecognition(String[] pageIds, String[] cmdArgs, HttpSession session, HttpServletResponse response) {
-        if (pageIds.length == 0) {
+    public void doRecognition(String[] pageIds, Object cmdArgs, HttpSession session, HttpServletResponse response) {
+        if (pageIds.length == 0 || !(cmdArgs instanceof List<?>)) {
             response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
         }
 
-        new RecognitionController().execute(pageIds, cmdArgs, session, response);
+        // Convert from List to Array
+        @SuppressWarnings("unchecked")
+        List<String> cmdArgsList = (List<String>)cmdArgs;
+        String[] cmdArgsArr = new String[cmdArgsList.size()];
+        cmdArgsArr = cmdArgsList.toArray(cmdArgsArr);
+
+        new RecognitionController().execute(pageIds, cmdArgsArr, session, response);
     }
 
     /**
@@ -179,15 +223,13 @@ public class ProcessFlowController {
     /**
      * Response to the request to execute the processflow
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param processesToExecute[] Holds the names of the processes that should be executed
+     * @param processFlowData Necessary data for processflow execution
      * @param session Session of the user
      * @param response Response to the request
      */
     @RequestMapping(value = "/ajax/processFlow/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
-               @RequestParam("pageIds[]") String[] pageIds,
-               @RequestParam("processesToExecute[]") String[] processesToExecute,
+               @RequestBody ProcessFlowData processFlowData,
                HttpSession session, HttpServletResponse response
            ) {
         // Check that necessary session variables are set
@@ -198,6 +240,15 @@ public class ProcessFlowController {
             return;
         }
 
+        // Check that all variables were passed in request
+        String[] pageIds = processFlowData.getPageIds();
+        List<String> processes = processFlowData.getProcessesToExecute();
+        Map<String, Map<String, Object>> processSettings = processFlowData.getProcessSettings();
+        if (pageIds == null || processes == null || processSettings == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
         // There already is a process flow execution in progress
         String currentProcess = (String) session.getAttribute("currentProcess");
         if (currentProcess != null && !currentProcess.isEmpty()) {
@@ -205,19 +256,24 @@ public class ProcessFlowController {
             return;
         }
 
+        session.setAttribute("cancelProcessFlow", false);
+
+        // Verify that settings for every executed process are provided
+        validateSettings(processes, processSettings, response);
+        if (needsExit(session, response))
+            return;
+
         /*
          * Execute all processes consecutively
          * Store current executing process in session as point of reference
          * Determine the results after each process and use them in the next one
          * Check after execution if the process flow needs to stop and return
          */
-        List<String> processes = Arrays.asList(processesToExecute);
         ProcessFlowHelper processFlowHelper = new ProcessFlowHelper(projectDir, imageType);
-        session.setAttribute("cancelProcessFlow", false);
 
         if (processes.contains("preprocessing")) {
             session.setAttribute("currentProcess", "preprocessing");
-            doPreprocessing(pageIds, new String[0], session, response);
+            doPreprocessing(pageIds, processSettings.get("preprocessing").get("cmdArgs"), session, response);
             if (needsExit(session, response))
                 return;
         }
@@ -225,7 +281,7 @@ public class ProcessFlowController {
         if (processes.contains("despeckling")) {
             session.setAttribute("currentProcess", "despeckling");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
-            doDespeckling(pageIds, 100.0, session, response);
+            doDespeckling(pageIds, processSettings.get("despeckling").get("maxContourRemovalSize"), session, response);
             if (needsExit(session, response))
                 return;
         }
@@ -233,7 +289,8 @@ public class ProcessFlowController {
         if (processes.contains("segmentation")) {
             session.setAttribute("currentProcess", "segmentation");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
-            doSegmentation(pageIds, "Binary", true, session, response);
+            Map<String, Object> settings = processSettings.get("segmentation");
+            doSegmentation(pageIds, settings.get("imageType"), settings.get("replace"), session, response);
             if (needsExit(session, response))
                 return;
         }
@@ -241,7 +298,8 @@ public class ProcessFlowController {
         if (processes.contains("regionExtraction")) {
             session.setAttribute("currentProcess", "regionExtraction");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
-            doRegionExtraction(pageIds, 10, true, false, session, response);
+            Map<String, Object> settings = processSettings.get("regionExtraction");
+            doRegionExtraction(pageIds, settings.get("spacing"), settings.get("usespacing"), settings.get("avgbackground"), session, response);
             if (needsExit(session, response))
                 return;
         }
@@ -249,8 +307,7 @@ public class ProcessFlowController {
         if (processes.contains("lineSegmentation")) {
             session.setAttribute("currentProcess", "lineSegmentation");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "regionExtraction");
-            String[] lsCmdArgs = new String[]{ "--nocheck", "--usegauss", "--csminheight", "100000" };
-            doLineSegmentation(pageIds, lsCmdArgs, session, response);
+            doLineSegmentation(pageIds, processSettings.get("lineSegmentation").get("cmdArgs"), session, response);
             if (needsExit(session, response))
                 return;
         }
@@ -258,8 +315,7 @@ public class ProcessFlowController {
         if (processes.contains("recognition")) {
             session.setAttribute("currentProcess", "recognition");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "lineSegmentation");
-            String[] rCmdArgs = new String[]{ "--nocheck" };
-            doRecognition(pageIds, rCmdArgs, session, response);
+            doRecognition(pageIds, processSettings.get("recognition").get("cmdArgs"), session, response);
             if (needsExit(session, response))
                 return;
         }

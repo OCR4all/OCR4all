@@ -22,6 +22,56 @@
                     return processesToExecute;
                 }
 
+                // Fetch all modified parameters and return them appropriately
+                function getInputParams(process) {
+                    var params = { 'cmdArgs': [] };
+                    // Only fetch process specific settings
+                    var settingsEl = $('ul.collapsible[data-id="settings"] li[data-id="' + process + '"]');
+                    $.each($(settingsEl).find('input[type="checkbox"]'), function() {
+                        if( $(this).prop('checked') === true )
+                            params['cmdArgs'].push($(this).attr('id'));
+                    });
+                    $.each($(settingsEl).find('input[type="number"]'), function() {
+                        if( $(this).val() !== "" )
+                            params['cmdArgs'].push($(this).attr('id'), $(this).val());
+                    });
+                    $.each($(settingsEl).find('input[type="text"]'), function() {
+                        if( $(this).val() !== "")
+                            params['cmdArgs'].push($(this).attr('id'), $(this).val());
+                    });
+                    return params;
+                }
+
+                function getProcessSettings(processesToExecute) {
+                    var processSettings = {};
+                    $.each(processesToExecute, function(index, process) {
+                        switch(process) {
+                            case "preprocessing":
+                            case "lineSegmentation":
+                            case "recognition":
+                                processSettings[process] = getInputParams(process);
+                                break;
+                            case "despeckling":
+                                processSettings[process] =
+                                    { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val() };
+                                break;
+                            case "segmentation":
+                                processSettings[process] =
+                                    { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked') };
+                                break;
+                            case "regionExtraction":
+                                processSettings[process] = {
+                                    "spacing" : $('input[id="spacing"]').val(),
+                                    "usespacing" : $('input[id=usespacing]').prop('checked'),
+                                    "avgbackground" : $('input[id=avgbackground]').prop('checked')
+                                };
+                                break;
+                            default: break;
+                        }
+                    });
+                    return processSettings;
+                }
+
                 // Needed for segmentation option
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
@@ -91,8 +141,21 @@
                         return;
                     }
 
-                    var ajaxParams = { "pageIds[]" : selectedPages, "processesToExecute[]" : processesToExecute };
-                    $.post( "ajax/processFlow/execute", ajaxParams )
+                    // Execute processflow with explicit JSON content setting
+                    // Otherwise the request cannot map the transferred data correctly
+                    $.ajax({
+                        headers: { 
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json' 
+                        },
+                        'type': 'POST',
+                        'url': "ajax/processFlow/execute",
+                        'data': JSON.stringify({
+                            "pageIds" : selectedPages,
+                            "processesToExecute" : processesToExecute,
+                            "processSettings" :  getProcessSettings(processesToExecute)
+                        }),
+                    })
                     .done(function( data ) {
                         // Show notification in case the user stays on the page til the end of execution
                         $('#modal_pfsuccessfull').modal('open');
@@ -102,6 +165,7 @@
                             case 530: $('#modal_dupexecsubproc').modal('open'); break;
                             case 531: $('#modal_misssubprocdata').modal('open'); break;
                             case 532: $('#modal_inprogress').modal('open'); break;
+                            case 533: $('#modal_nosettings').modal('open'); break;
                             default:  $('#modal_executefailed').modal('open'); break;
                         }
                     });
@@ -427,7 +491,7 @@
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
-       <!-- Subprocess lacking of data -->
+        <!-- Subprocess lacking of data -->
         <div id="modal_misssubprocdata" class="modal">
             <div class="modal-content red-text">
                 <h4>Error</h4>
@@ -435,6 +499,18 @@
                     The upcoming subprocess was lacking of input data.<br />
                     This can occur if the previous subprocess has not provided the necessary data.<br />
                     Please check for errors in this provided data.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+        <!-- No process settings -->
+        <div id="modal_nosettings" class="modal">
+            <div class="modal-content red-text">
+                <h4>Error</h4>
+                <p>
+                    No settings were passed for one of the processed which shall be executed.
                 </p>
             </div>
             <div class="modal-footer">
