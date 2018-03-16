@@ -61,16 +61,31 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
+                    $.get( "ajax/lineSegmentation/exists?", { "pageIds[]" : selectedPages } )
+                    .done(function( data ){
+                        if(data === false){
+                            var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                            // Execute lineSegmentation process
+                            executeProcess(ajaxParams);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
+                    });
 
-                    var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
-                    // Execute Preprocessing process
-                    executeProcess(ajaxParams);
                 });
 
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
                 });
+                $('#agree').click(function() {
+                    var selectedPages = getSelectedPages();
+                    var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                    // Execute lineSegmentation process
+                    executeProcess(ajaxParams);
+                });
             });
+                
         </script>
     </t:head>
     <t:body heading="Line Segmentation" imageList="true" processModals="true">
