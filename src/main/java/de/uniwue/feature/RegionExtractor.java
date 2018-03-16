@@ -44,7 +44,7 @@ public class RegionExtractor {
      * @throws ParserConfigurationException 
      */
     public static void extractSegments(String xmlPath, String imagePath,
-            boolean useAvgBgd, boolean useSpacing, int spacing,
+            boolean useAvgBgd, int spacing,
             String outputFolder) throws ParserConfigurationException, SAXException, IOException {
         Page page = PageXMLImport.readPageXML(xmlPath);
         //maybe use flags if regions are extracted from binary/grayscale (which should be the case)
@@ -75,7 +75,7 @@ public class RegionExtractor {
             }
 
             String outputPath = outputFolder + outputFileName;
-            saveImage(region.getPoints(), image, useAvgBgd, useSpacing,
+            saveImage(region.getPoints(), image, useAvgBgd,
                     spacing, outputPath);
         }
 
@@ -95,7 +95,7 @@ public class RegionExtractor {
      * @throws IOException
      */
     public static void saveImage(ArrayList<Point> pointList, Mat image,
-            boolean useAvgBgd, boolean useSpacing, int spacing,
+            boolean useAvgBgd, int spacing,
             String outputPath) throws IOException {
         Scalar avgBgd = new Scalar(255, 255, 255);
 
@@ -133,7 +133,7 @@ public class RegionExtractor {
 
         Mat result = null;
 
-        if (useSpacing) {
+        if (spacing > 0) {
             Rect newRect = new Rect(new Point(rect.x - spacing, rect.y
                     - spacing), new Point(rect.br().x + spacing, rect.br().y
                     + spacing));

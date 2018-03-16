@@ -65,7 +65,6 @@ public class RegionExtractionController {
     public @ResponseBody void execute(
                 @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam("spacing") int spacing,
-                @RequestParam("usespacing") boolean usespacing,
                 @RequestParam("avgbackground") boolean avgbackground,
                 HttpSession session, HttpServletResponse response
             ) {
@@ -87,7 +86,7 @@ public class RegionExtractionController {
         }
 
         try {
-            regionExtractionHelper.executeRegionExtraction(Arrays.asList(pageIds), spacing, usespacing, avgbackground);
+            regionExtractionHelper.executeRegionExtraction(Arrays.asList(pageIds), spacing, avgbackground);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             regionExtractionHelper.resetProgress();

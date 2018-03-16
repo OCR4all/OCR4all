@@ -11,15 +11,6 @@
             </td>
         </tr>
         <tr>
-            <td><p> Use spacing</p></td>
-            <td>
-                 <p>
-                    <input type="checkbox" class="filled-in" id="usespacing" checked="checked"/>
-                    <label for="usespacing"></label>
-                </p>
-            </td>
-        </tr>
-        <tr>
             <td><p>Spacing</p></td>
             <td>
                 <div class="input-field">

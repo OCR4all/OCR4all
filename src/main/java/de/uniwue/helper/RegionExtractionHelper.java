@@ -58,7 +58,7 @@ public class RegionExtractionHelper {
      * @throws SAXException
      * @throws IOException
      */
-    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useSpacing, boolean useAvgBgd)
+    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useAvgBgd)
             throws ParserConfigurationException, SAXException, IOException {
         regionExtractionRunning = true;
         stop = false;
@@ -78,7 +78,7 @@ public class RegionExtractionHelper {
             String imagePath = projConf.OCR_DIR + pageId + projConf.IMG_EXT;
             String xmlPath = projConf.OCR_DIR + pageId + ".xml";
             String outputFolder = projConf.PAGE_DIR;
-            RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, useSpacing, spacing, outputFolder);
+            RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, spacing, outputFolder);
 
             progress = (int) ((double) i / totalPages * 100);
             i = i + 1;
