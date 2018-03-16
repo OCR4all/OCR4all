@@ -149,6 +149,18 @@
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
+                        <div id="modal_exists" class="modal">
+                            <div class="modal-content">
+                                <h4>Information</h4>
+                                    <p>
+                                      By agreeing, old process depending files will be removed
+                                    </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
+                                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                         </div>
                     </c:when>
                 </c:choose>
             </c:otherwise>

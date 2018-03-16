@@ -39,6 +39,7 @@ public class RecognitionController {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
+
         // Keep a single helper object in session
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
@@ -75,8 +76,6 @@ public class RecognitionController {
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            recognitionHelper = new RecognitionHelper(projectDir);
-            session.setAttribute("recognitionHelper", recognitionHelper);
         }
 
         if (recognitionHelper.isRecongitionRunning() == true) {
@@ -168,5 +167,23 @@ public class RecognitionController {
             return null;
 
         return recognitionHelper.getIdsforRecognition();
+    }
+
+    /**
+     * Response to the request to check if old process related files exists
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @param pageIds List of pageIds
+     * @return status
+     */
+    @RequestMapping(value = "/ajax/recognition/exists" , method = RequestMethod.GET)
+    public @ResponseBody boolean check(HttpSession session, HttpServletResponse response, 
+           @RequestParam("pageIds[]") String[] pageIds) {
+        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+        if (recognitionHelper == null)
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        return recognitionHelper.checkIfExisting(pageIds);
     }
 }
