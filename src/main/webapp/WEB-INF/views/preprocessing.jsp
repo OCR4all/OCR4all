@@ -69,13 +69,27 @@
                         return;
                     }
 
-                    var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
-                    // Execute Preprocessing process
-                    executeProcess(ajaxParams);
+                    $.get( "ajax/preprocessing/exists?", { "pageIds[]" : selectedPages } )
+                    .done(function( data ){
+                        if(data === false){
+                            var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                            // Execute Preprocessing process
+                            executeProcess(ajaxParams);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
+                    });
                 });
 
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
+                });
+                $('#agree').click(function() {
+                    var selectedPages = getSelectedPages();
+                    var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                    // Execute Preprocessing process
+                    executeProcess(ajaxParams);
                 });
             });
         </script>

@@ -37,7 +37,12 @@ public class PreprocessingController {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-
+        // Keep a single helper object in session
+        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
+        if (preprocessingHelper == null) {
+            preprocessingHelper = new PreprocessingHelper(projectDir);
+            session.setAttribute("preprocessingHelper", preprocessingHelper);
+        }
         return mv;
     }
 
@@ -65,11 +70,9 @@ public class PreprocessingController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
-        // Keep a single helper object in session
         PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
         if (preprocessingHelper == null) {
-            preprocessingHelper = new PreprocessingHelper(projectDir);
-            session.setAttribute("preprocessingHelper", preprocessingHelper);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
         if (preprocessingHelper.isPreprocessingRunning() == true) {
@@ -140,5 +143,22 @@ public class PreprocessingController {
         if (streamType.equals("err"))
             return preprocessingHelper.getProcessHandler().getConsoleErr();
         return preprocessingHelper.getProcessHandler().getConsoleOut();
+    }
+
+    /**
+     * Response to the request to check if old process related files exists
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @param pageIds List of pageIds
+     * @return status
+     */
+    @RequestMapping(value = "/ajax/preprocessing/exists" , method = RequestMethod.GET)
+    public @ResponseBody boolean check(HttpSession session, HttpServletResponse response, 
+           @RequestParam("pageIds[]") String[] pageIds) {
+    	PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
+        if (preprocessingHelper == null)
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        return preprocessingHelper.checkIfExisting(pageIds);
     }
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
@@ -122,13 +123,15 @@ public class PreprocessingHelper {
     public void preprocessPages(List<String> pageIds, List<String> cmdArgs) throws IOException {
         preprocessingRunning = true;
 
+        progress = 0;
+
         File origDir = new File(projConf.ORIG_IMG_DIR);
         if (!origDir.exists())
             return;
 
         initializePreprocessingDirectories();
+        deleteOldFiles(pageIds);
 
-        progress = 0;
         preprocPages = pageIds;
 
         List<String> command = new ArrayList<String>();
@@ -179,5 +182,37 @@ public class PreprocessingHelper {
      */
     public boolean isPreprocessingRunning() {
         return preprocessingRunning;
+    }
+
+    /**
+     * Deletion of old process related files
+     * @param pageIds
+     * @throws IOException 
+     */
+    public void deleteOldFiles(List<String> pageIds) throws IOException {
+        for(String pageId : pageIds) {
+            File binImg = new File(projConf.BINR_IMG_DIR + pageId + projConf.IMG_EXT);
+            File grayImg = new File(projConf.GRAY_IMG_DIR + pageId + projConf.IMG_EXT);
+            if(binImg.exists())
+                binImg.delete();
+            if(grayImg.exists())
+                grayImg.delete();
+        }
+    }
+
+    /**
+     * Checks if process depending files already exists
+     * @param pageIds
+     * @return
+     */
+    public boolean checkIfExisting(String[] pageIds){
+        boolean exists = false;
+        for(String page : pageIds) {
+            if(new File(projConf.BINR_IMG_DIR + page + projConf.IMG_EXT).exists() || new File(projConf.GRAY_IMG_DIR + page + projConf.IMG_EXT).exists()) {
+                exists = true;
+                break;
+            }
+        }
+        return exists;
     }
 }
