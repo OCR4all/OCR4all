@@ -31,13 +31,13 @@ public class RegionExtractor {
     public static final String SEPARATOR = "__";
     public static final int RO_ID_LENGTH = 3;
 
-    /**
+    /** 
+     * Exports the segments of a page to an xml file
      * 
      * @param xmlPath Path to the xml file
      * @param imagePath Path to the image file
      * @param useAvgBgd parameter to use AVGBgD
-     * @param useSpacing parameter to use imagePath
-     * @param spacing Todo
+     * @param spacing spacing parameter
      * @param outputFolder path to the output folder
      * @throws IOException 
      * @throws SAXException 
@@ -84,14 +84,12 @@ public class RegionExtractor {
         // System.gc();
     }
 
-    /**
-     * 
-     * @param pointList
-     * @param image
-     * @param useAvgBgd
-     * @param useSpacing
-     * @param spacing
-     * @param outputPath
+    /** 
+     * Writes the .offset information to a file
+     * @param pointList points of a region
+     * @param image Mat structure from the image
+     * @param spacing Spacing parameter of region extractor
+     * @param outputPath Path, where the file should be stored
      * @throws IOException
      */
     public static void saveImage(ArrayList<Point> pointList, Mat image,

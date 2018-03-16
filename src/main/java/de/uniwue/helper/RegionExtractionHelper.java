@@ -48,12 +48,11 @@ public class RegionExtractionHelper {
     }
 
     /**
-     * TODO: commenting
+     * Executes region extraction on a list of pages
      *
      * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
-     * @param spacing
-     * @param useSpacing
-     * @param useAvgBgd
+     * @param spacing Spacing setting for region extractor
+     * @param useAvgBgd UseAvgBgd setting for region extractor
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException
