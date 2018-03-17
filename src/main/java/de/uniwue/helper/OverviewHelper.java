@@ -182,7 +182,7 @@ public class OverviewHelper {
         for (String key: overview.keySet()) {
             overview.get(key).setLinesExtracted(true);
 
-            if (overview.get(key).isSegmentsExtracted()) {
+            if (new File(projConf.PAGE_DIR + FilenameUtils.removeExtension(key)).exists()) {
                     Files.walk(Paths.get(projConf.PAGE_DIR + FilenameUtils.removeExtension(key)), 1)
                     .map(Path::toFile)
                     .filter(fileEntry -> fileEntry.isFile())
