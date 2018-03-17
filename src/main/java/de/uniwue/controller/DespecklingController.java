@@ -66,9 +66,11 @@ public class DespecklingController {
             return;
         }
 
+        // Keep a single helper object in session
         DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
         if (despecklingHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            despecklingHelper = new DespecklingHelper(projectDir);
+            session.setAttribute("despecklingHelper", despecklingHelper);
         }
 
         if (despecklingHelper.isDespecklingRunning() == true) {

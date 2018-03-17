@@ -74,16 +74,17 @@ public class LineSegmentationController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
+        // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
         if (lineSegmentationHelper == null) {
-            return;
+            lineSegmentationHelper = new LineSegmentationHelper(projectDir);
+            session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
         }
 
         if (lineSegmentationHelper.isLineSegmentationRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
             return;
         }
-
         try {
             lineSegmentationHelper.lineSegmentPages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {

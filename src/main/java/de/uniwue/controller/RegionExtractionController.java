@@ -74,9 +74,12 @@ public class RegionExtractionController {
             return;
         }
 
+        // Keep a single helper object in session
         RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-        if (regionExtractionHelper == null) 
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if (regionExtractionHelper == null) {
+            regionExtractionHelper = new RegionExtractionHelper(projectDir);
+            session.setAttribute("regionExtractionHelper", regionExtractionHelper);
+        }
 
 
         if (regionExtractionHelper.isRegionExtractionRunning() == true) {

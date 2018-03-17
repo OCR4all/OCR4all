@@ -70,9 +70,11 @@ public class PreprocessingController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
+        // Keep a single helper object in session
         PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
         if (preprocessingHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            preprocessingHelper = new PreprocessingHelper(projectDir);
+            session.setAttribute("preprocessingHelper", preprocessingHelper);
         }
 
         if (preprocessingHelper.isPreprocessingRunning() == true) {

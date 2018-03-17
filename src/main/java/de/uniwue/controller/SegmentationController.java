@@ -71,7 +71,8 @@ public class SegmentationController {
         // Keep a single helper object in session
         SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
         if (segmentationHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            segmentationHelper = new SegmentationHelper(projectDir);
+            session.setAttribute("segmentationHelper", segmentationHelper);
         }
 
         if (segmentationHelper.isSegmentationRunning() == true) {

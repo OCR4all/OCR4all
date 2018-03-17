@@ -72,10 +72,12 @@ public class RecognitionController {
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
+
         // Keep a single helper object in session
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            recognitionHelper = new RecognitionHelper(projectDir);
+            session.setAttribute("recognitionHelper", recognitionHelper);
         }
 
         if (recognitionHelper.isRecongitionRunning() == true) {
