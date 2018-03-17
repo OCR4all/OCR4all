@@ -140,9 +140,8 @@ public class ProcessFlowController {
             response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
         }
-
         Integer spacingInteger = Integer.parseInt((String)spacing);
-        Boolean avgBackgroundBoolean = Boolean.parseBoolean((String)avgBackground);
+        Boolean avgBackgroundBoolean = Boolean.parseBoolean(avgBackground.toString());
         new RegionExtractionController().execute(pageIds, spacingInteger, avgBackgroundBoolean, session, response);
     }
 
