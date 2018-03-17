@@ -67,8 +67,15 @@ public class ProcessFlowHelper {
         Set<String> processedPages = new TreeSet<String>();
         Map<String, PageOverview> overview = overviewHelper.getOverview();
         for(Entry<String, PageOverview> pageInfo: overview.entrySet()) {
-            if (pageInfo.getValue().isPreprocessed())
-                processedPages.add(pageInfo.getValue().getPageId());
+            switch(checkProcess) {
+            case "preprocessing":    if(pageInfo.getValue().isPreprocessed()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
+            case "despeckling":      if(pageInfo.getValue().isDespeckled()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
+            case "segmentation":     if(pageInfo.getValue().isSegmented()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
+            case "regionExtraction": if(pageInfo.getValue().isSegmentsExtracted()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
+            case "lineSegmentation": if(pageInfo.getValue().isLinesExtracted()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
+            default: return new String[0];
+            }
+
         }
 
         // Convert to required data type
