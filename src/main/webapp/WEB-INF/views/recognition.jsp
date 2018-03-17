@@ -3,6 +3,7 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
+    <meta charset="utf-8"/>
         <title>OCR4All - Recognition</title>
 
         <script type="text/javascript">
