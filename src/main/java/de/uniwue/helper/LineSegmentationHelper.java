@@ -74,10 +74,13 @@ public class LineSegmentationHelper {
      */
     public void initialize(List<String> pageIds) throws IOException {
         deleteOldFiles(pageIds);
+
         // Initialize the status structure
         status= new TreeMap<String, TreeMap<String, Boolean>>();
 
         for(String pageId : pageIds) {
+            if(!new File(projConf.PAGE_DIR + pageId).exists())
+                continue;
             TreeMap<String, Boolean> segments = new TreeMap<String, Boolean>();
             Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
             .map(Path::toFile)

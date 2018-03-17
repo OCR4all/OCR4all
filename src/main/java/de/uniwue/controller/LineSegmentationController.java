@@ -60,8 +60,8 @@ public class LineSegmentationController {
      */
     @RequestMapping(value = "/ajax/lineSegmentation/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
-               @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                @RequestParam("pageIds[]") String[] pageIds,
+               @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                HttpSession session, HttpServletResponse response
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
