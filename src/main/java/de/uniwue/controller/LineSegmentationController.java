@@ -34,17 +34,16 @@ public class LineSegmentationController {
         ModelAndView mv = new ModelAndView("lineSegmentation");
 
         String projectDir = (String)session.getAttribute("projectDir");
+        if (projectDir == null) {
+            mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
+            return mv;
+        }
 
         // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
         if (lineSegmentationHelper == null) {
             lineSegmentationHelper = new LineSegmentationHelper(projectDir);
             session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
-        }
-
-        if (projectDir == null) {
-            mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
-            return mv;
         }
 
         return mv;
@@ -156,19 +155,19 @@ public class LineSegmentationController {
     }
 
     /**
-     * Response to the request to return all pageIds for the lineSegmentation page
+     * Response to the request to return all pageIds that can be used for line segmentation
      *
      * @param session Session of the user
      * @param response Response to the request
-     * @return List of pageIds
+     * @return List of valid pageIds
      */
-    @RequestMapping(value = "/ajax/lineSegmentation/getImageIds" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<String> getIdsforLineSegmentation(HttpSession session, HttpServletResponse response) {
+    @RequestMapping(value = "/ajax/lineSegmentation/getValidPageIds" , method = RequestMethod.GET)
+    public @ResponseBody ArrayList<String> getValidPageIdsforLineSegmentation(HttpSession session, HttpServletResponse response) {
         LineSegmentationHelper lineSegmentation = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
         if (lineSegmentation == null)
             return null;
 
-        return lineSegmentation.getIdsforLineSegmentation();
+        return lineSegmentation.getValidPageIdsforLineSegmentation();
     }
 
     /**
@@ -188,6 +187,6 @@ public class LineSegmentationController {
         if (lineSegmentation == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        return lineSegmentation.checkIfExisting(pageIds);
+        return lineSegmentation.doOldFilesExist(pageIds);
     }
 }

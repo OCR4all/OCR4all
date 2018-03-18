@@ -61,95 +61,64 @@ public class LineSegmentationHelper {
     }
 
     /**
-     * Structure with which the progress of the process can be monitored
-     * Example of the structure : 0002 --> segment --> false (processed)
+     * Structure to monitor the progress of the process
+     * pageId : segmentId : processedState
+     *
+     * Structure example:
+     * {
+     *     "0002": {
+     *         "0002__000__paragraph" : true,
+     *         "0002__001__heading" : false,
+     *         ...
+     *     },
+     *     ...
+     * }
      */
-    private TreeMap<String,TreeMap<String, Boolean>> status= new TreeMap<String, TreeMap<String, Boolean>>();
+    private TreeMap<String, TreeMap<String, Boolean>> processState = new TreeMap<String, TreeMap<String, Boolean>>();
 
     /**
      * Initializes the structure with which the progress of the process can be monitored
      *
-     * @param pageIds Ids of the pages
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void initialize(List<String> pageIds) throws IOException {
-        deleteOldFiles(pageIds);
-
+    public void initializeProcessState(List<String> pageIds) throws IOException {
         // Initialize the status structure
-        status= new TreeMap<String, TreeMap<String, Boolean>>();
-
+        processState = new TreeMap<String, TreeMap<String, Boolean>>();
         for(String pageId : pageIds) {
             if(!new File(projConf.PAGE_DIR + pageId).exists())
                 continue;
-            TreeMap<String, Boolean> segments = new TreeMap<String, Boolean>();
+
+            TreeMap<String, Boolean> segmentIds = new TreeMap<String, Boolean>();
             Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
             .map(Path::toFile)
             .filter(fileEntry -> fileEntry.isFile())
             .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
             .forEach(
                 fileEntry -> { 
-                    if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg")) {
-                        segments.put(fileEntry.getName(), false);}
+                    if (!fileEntry.getName().endsWith(projConf.PSEG_EXT))
+                        segmentIds.put(FilenameUtils.removeExtension(fileEntry.getName()), false);
                 }
             );
 
-        status.put(pageId, segments);
-        }
-
-    }
-
-    /**
-     * Deletion of old process related files
-     * @param pageIds
-     * @throws IOException 
-     */
-    public void deleteOldFiles(List<String> pageIds) throws IOException {
-        for(String pageId : pageIds) {
-            if(!new File(projConf.PAGE_DIR + pageId).exists())
-                return;
-            File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-            if (directories.length != 0) {
-                for(File dir : directories)
-                    FileUtils.deleteDirectory(dir);
-            }
-            File[] FilesWithPsegExtension = new File(projConf.PAGE_DIR + pageId).listFiles((d, name) -> name.endsWith(".pseg"+ projConf.IMG_EXT));
-            for(File pseg : FilesWithPsegExtension) {
-                pseg.delete();}
+            processState.put(pageId, segmentIds);
         }
     }
 
     /**
-     * Checks if process depending files already exists
-     * @param pageIds
-     * @return
-     */
-    public boolean checkIfExisting(String[] pageIds){
-        boolean exists = false;
-        for(String page : pageIds) {
-            if(new File(projConf.PAGE_DIR + page).exists() && new File(projConf.PAGE_DIR + page).listFiles((d, name) -> name.endsWith(".pseg"+ projConf.IMG_EXT)).length !=0) {
-                exists = true;
-                break;
-            }
-        }
-
-    return exists;
-    }
-
-    /**
-     * Returns the segments of a list of pages
+     * Returns the absolute path of all segment images for the pages in the processState
      *
-     * @param pageIds Id of the pages
-     * @return List of regions
+     * @return List of segment images
      * @throws IOException 
      */
-    public List<String> getSegmentsOfPage() throws IOException {
-        List<String> SegmentsOfPage = new ArrayList<String>();
-        for(String pageId : status.keySet()) {
-            for(String segment :status.get(pageId).keySet()) {
-                    SegmentsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + segment);
+    public List<String> getSegmentImagesForCurrentProcess() throws IOException {
+        List<String> segmentImages = new ArrayList<String>();
+        for (String pageId : processState.keySet()) {
+            for (String segment :processState.get(pageId).keySet()) {
+                segmentImages.add(projConf.PAGE_DIR + pageId + File.separator + segment + projConf.IMG_EXT);
             }
         }
-        return SegmentsOfPage;
+        return segmentImages;
     }
 
     /**
@@ -163,48 +132,54 @@ public class LineSegmentationHelper {
         if (lineSegmentationRunning == false)
             return progress;
 
-        int NumberOfLineSegments = 0;
-        int NumberOfProcessedLineSegments = 0;
-        for(String pageId : status.keySet()) {
-            for(String segment :status.get(pageId).keySet()) {
-                    if(status.get(pageId).get(segment)) {
-                        NumberOfProcessedLineSegments += 1;
-                        NumberOfLineSegments += 1;
-                        continue;
-                    }
-                    else {
-                        NumberOfLineSegments += 1;
-                        if(new File(projConf.PAGE_DIR + pageId + File.separator + FilenameUtils.removeExtension(segment) + ".pseg" + projConf.IMG_EXT).exists()) {
-                           status.get(pageId).put(segment, true);
-                        }
-                    }
+        int lineSegmentCount = 0;
+        int processedLineSegmentCount = 0;
+        // Identify how many segments are already processed
+        for (String pageId : processState.keySet()) {
+            for (String segmentId : processState.get(pageId).keySet()) {
+                lineSegmentCount += 1;
+
+                if (processState.get(pageId).get(segmentId) == true) {
+                    processedLineSegmentCount += 1;
+                    continue;
+                }
+
+                if (new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.PSEG_EXT).exists()) {
+                    processState.get(pageId).put(segmentId, true);
                 }
             }
+        }
 
-        return (progress != 100) ? (int) ((double) NumberOfProcessedLineSegments / NumberOfLineSegments * 100) : 100;
+        // Safe check, because ocropus-gpageseg script does not guarantee that all pseg-files are created
+        return (progress != 100) ? (int) ((double) processedLineSegmentCount / lineSegmentCount * 100) : 100;
     }
 
     /**
-     * Moves the files that were skipped by the ocrubus gpaseg
+     * Creates the line segment files of the segments that were skipped by the ocropus-gpageseg script
+     * This can occur when the image resolution is too low
+     *
      * @throws IOException
      */
-    public void copySmallSegments() throws IOException{
-        for(String pageId : status.keySet()) {
-            for(String segment :status.get(pageId).keySet()) {
-                    if(status.get(pageId).get(segment)) {
-                        continue;
-                    }
-                    else {
-                        File file = new File(projConf.PAGE_DIR + pageId + File.separator + segment);
-                        File segmentDir = new File(projConf.PAGE_DIR + pageId + File.separator + FilenameUtils.removeExtension(segment));
-                        if(!segmentDir.exists())
-                            segmentDir.mkdirs();
-                        Files.copy(Paths.get(file.getPath()), Paths.get(projConf.PAGE_DIR + pageId + File.separator + FilenameUtils.removeExtension(segment) + ".pseg" + projConf.IMG_EXT) ,StandardCopyOption.valueOf("REPLACE_EXISTING"));
-                        Files.copy(Paths.get(file.getPath()), Paths.get(segmentDir.getAbsolutePath() + File.separator + segment) ,StandardCopyOption.valueOf("REPLACE_EXISTING"));
+    public void createSkippedSegments() throws IOException{
+        for(String pageId : processState.keySet()) {
+            for(String segmentId :processState.get(pageId).keySet()) {
+                if (processState.get(pageId).get(segmentId) == true)
+                    continue;
 
-                    }
-                }
+                File segmentDir = new File(projConf.PAGE_DIR + pageId + File.separator + segmentId);
+                if(!segmentDir.exists())
+                    segmentDir.mkdirs();
+
+                // Copy segment image to own segment directory and create pseg-file to indicate successful processing
+                File segmentImage = new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.IMG_EXT);
+                Files.copy(Paths.get(segmentImage.getPath()),
+                    Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.IMG_EXT),
+                    StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                Files.copy(Paths.get(segmentImage.getPath()),
+                    Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.PSEG_EXT),
+                    StandardCopyOption.valueOf("REPLACE_EXISTING"));
             }
+        }
     }
 
     /**
@@ -220,19 +195,23 @@ public class LineSegmentationHelper {
 
         progress = 0;
 
-        initialize(pageIds);
+        // Reset line segment data
+        deleteOldFiles(pageIds);
+        initializeProcessState(pageIds);
+
         List<String> command = new ArrayList<String>();
-        List<String> SegmentsOfPage = getSegmentsOfPage();
-        for (String segment : SegmentsOfPage) {
-            // Add affected pages with their absolute path to the command list
-            command.add(segment);
+        List<String> segmentImages = getSegmentImagesForCurrentProcess();
+        for (String segmentImage : segmentImages) {
+            // Add affected line segment images with their absolute path to the command list
+            command.add(segmentImage);
         }
         command.addAll(cmdArgs);
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("ocropus-gpageseg", command, false);
 
-        copySmallSegments();
+        // Process extension to ocropus-gpageseg script
+        createSkippedSegments();
 
         progress = 100;
         lineSegmentationRunning = false;
@@ -265,23 +244,68 @@ public class LineSegmentationHelper {
     }
 
     /**
-     * Returns the ids of the pages, where the region extraction step is already done
+     * Returns the Ids of the pages, for which region extraction was already executed
      *
-     * @return List with page ids
+     * @return List of valid page Ids
      */
-    public ArrayList<String> getIdsforLineSegmentation() {
-        ArrayList<String> IdsForImageList = new ArrayList<String>();
-
+    public ArrayList<String> getValidPageIdsforLineSegmentation() {
+        ArrayList<String> validPageIds = new ArrayList<String>();
         File pageDir = new File(projConf.PAGE_DIR);
         if (!pageDir.exists())
-            return IdsForImageList;
+            return validPageIds;
 
         File[] directories = pageDir.listFiles(File::isDirectory);
         for(File file: directories) { 
-            IdsForImageList.add(file.getName());
+            validPageIds.add(file.getName());
         }
-        Collections.sort(IdsForImageList);
+        Collections.sort(validPageIds);
 
-        return IdsForImageList;
+        return validPageIds;
+    }
+
+    /**
+     * Deletion of old process related files
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @throws IOException 
+     */
+    public void deleteOldFiles(List<String> pageIds) throws IOException {
+        for(String pageId : pageIds) {
+            if (!new File(projConf.PAGE_DIR + pageId).exists())
+                return;
+
+            // Delete directories of the line segments
+            File[] lineSegmentDirectories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
+            if (lineSegmentDirectories.length != 0) {
+                for(File dir : lineSegmentDirectories)
+                    FileUtils.deleteDirectory(dir);
+            }
+
+            // Delete files that indicate successful line segementation process
+            File[] psegFiles = new File(projConf.PAGE_DIR + pageId).listFiles((d, name) -> name.endsWith(projConf.PSEG_EXT));
+            for(File pseg : psegFiles) {
+                pseg.delete();}
+        }
+    }
+
+    /**
+     * Checks if process depending files already exist
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @return Information if files exist
+     */
+    public boolean doOldFilesExist(String[] pageIds){
+        for(String page : pageIds) {
+            File pageDir = new File(projConf.PAGE_DIR + page);
+            if (!pageDir.exists())
+                continue;
+
+            // Check for folders and pseg-files
+            if (pageDir.listFiles(File::isDirectory).length != 0)
+                return true;
+            if (pageDir.listFiles((d, name) -> name.endsWith(projConf.PSEG_EXT)).length != 0)
+                return true;
+        }
+        return false;
     }
 }

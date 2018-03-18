@@ -50,6 +50,10 @@ public final class ProjectConfiguration {
      */
     public final String GRAY_IMG_EXT = ".nrm" + IMG_EXT;
     /**
+     * Default extension of files that indicate successful line segmentation
+     */
+    public final String PSEG_EXT = ".pseg" + IMG_EXT;
+    /**
      * Default configuration extension of the project
      */
     public final String CONF_EXT = ".xml";
