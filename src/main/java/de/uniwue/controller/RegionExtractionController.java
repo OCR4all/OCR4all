@@ -127,19 +127,19 @@ public class RegionExtractionController {
     }
 
     /**
-     * Response to the request to return all pageIds for the regionExtraction page
+     * Response to the request to return all pageIds that can be used for region extraction
      *
      * @param session Session of the user
      * @param response Response to the request
-     * @return List of pageIds
+     * @return List of valid pageIds
      */
-    @RequestMapping(value = "/ajax/regionExtraction/getImageIds" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<String> getIdsforRegionExtractinon(HttpSession session, HttpServletResponse response) {
+    @RequestMapping(value = "/ajax/regionExtraction/getValidPageIds" , method = RequestMethod.GET)
+    public @ResponseBody ArrayList<String> getValidPageIdsforRegionExtractinon(HttpSession session, HttpServletResponse response) {
         RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
         if (regionExtractionHelper == null)
             return null;
 
-        return regionExtractionHelper.getIdsforRegionExtraction();
+        return regionExtractionHelper.getValidPageIdsforRegionExtraction();
     }
 
     /**
@@ -159,6 +159,6 @@ public class RegionExtractionController {
         if (regionExtractionHelper == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        return regionExtractionHelper.checkIfExisting(pageIds);
+        return regionExtractionHelper.doOldFilesExist(pageIds);
     }
 }

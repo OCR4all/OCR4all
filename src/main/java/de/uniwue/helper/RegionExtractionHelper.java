@@ -67,42 +67,26 @@ public class RegionExtractionHelper {
         File pageDir = new File(projConf.PAGE_DIR);
         if (!pageDir.exists())
             pageDir.mkdir();
+
         deleteOldFiles(pageIds);
 
-        double i = 1;
-        int totalPages = pageIds.size();
+        int pageCount = pageIds.size();
+        int regionExtractedPageCount = 0;
         for (String pageId : pageIds) {
             if (stop == true) 
                 break;
 
             String imagePath = projConf.OCR_DIR + pageId + projConf.IMG_EXT;
-            String xmlPath = projConf.OCR_DIR + pageId + ".xml";
+            String xmlPath = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
             String outputFolder = projConf.PAGE_DIR;
             RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, spacing, outputFolder);
 
-            progress = (int) ((double) i / totalPages * 100);
-            i = i + 1;
+            regionExtractedPageCount++;
+            progress = (int) ((double) regionExtractedPageCount / pageCount * 100);
         }
 
         progress = 100;
         regionExtractionRunning = false;
-    }
-
-    /**
-     * Checks if process depending files already exists
-     * @param pageIds
-     * @return
-     */
-    public boolean checkIfExisting(String[] pageIds){
-        boolean exists = false;
-        for(String page : pageIds) {
-            if(new File(projConf.PAGE_DIR + page).exists()) {
-                exists = true;
-                break;
-            }
-    }
-
-    return exists;
     }
 
     /**
@@ -141,36 +125,53 @@ public class RegionExtractionHelper {
     }
 
     /**
-     * Returns the ids of the pages, where the segmentation step is already done
+     * Returns the Ids of the pages, for which region extraction was already executed
      *
-     * @return List with page ids
+     * @return List of valid page Ids
      */
-    public ArrayList<String> getIdsforRegionExtraction() {
-        ArrayList<String> IdsForImageList = new ArrayList<String>();
+    public ArrayList<String> getValidPageIdsforRegionExtraction() {
+        ArrayList<String> validPageIds = new ArrayList<String>();
 
         File ocrDir = new File(projConf.OCR_DIR);
         if (!ocrDir.exists()) {
-            return IdsForImageList;}
+            return validPageIds;}
 
-        File[] XMLfiles = ocrDir.listFiles((d, name) -> name.endsWith(".xml"));
+        File[] XMLfiles = ocrDir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
         for(File file: XMLfiles) { 
-            IdsForImageList.add(FilenameUtils.removeExtension(file.getName()));
+            validPageIds.add(FilenameUtils.removeExtension(file.getName()));
         }
-        Collections.sort(IdsForImageList);
+        Collections.sort(validPageIds);
 
-        return IdsForImageList;
+        return validPageIds;
     }
 
     /**
      * Deletion of old process related files
-     * @param pageIds
+     *
+     * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
      * @throws IOException 
      */
     public void deleteOldFiles(List<String> pageIds) throws IOException {
-        for(String pageId : pageIds) {
+        // Delete folder of the given pages
+        // This deletes the data of subsequent processes as well to preserve data integrity
+        for (String pageId : pageIds) {
             File page = new File(projConf.PAGE_DIR + pageId);
-            if(page.exists()) {
-                FileUtils.deleteDirectory(page);}
+            if (page.exists())
+                FileUtils.deleteDirectory(page);
         }
+    }
+
+    /**
+     * Checks if process depending files already exist
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @return Information if files exist
+     */
+    public boolean doOldFilesExist(String[] pageIds) {
+        for (String page : pageIds) {
+            if (new File(projConf.PAGE_DIR + page).exists())
+                return true;
+        }
+        return false;
     }
 }
