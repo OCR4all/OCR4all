@@ -38,7 +38,7 @@ public class GenericHelper {
      */
     public ArrayList<String> getPageList(String imageType) throws IOException {
         ArrayList<String> pageList = new ArrayList<String>();
-        if(!new File(projConf.getImageDirectoryByType(imageType)).exists())
+        if (!new File(projConf.getImageDirectoryByType(imageType)).exists())
             return pageList;
 
         // File depth of 1 -> no recursive (file)listing 
@@ -54,13 +54,14 @@ public class GenericHelper {
     }
 
     /**
-     * Checks if the imagetype directory exits
+     * Checks if the directory of given image type exits
+     *
      * @param imageType Type of the image directory (original, gray, binary, despeckled, OCR)
-     * @return true if the dir exists, otherwise false
+     * @return Information if the directory exists
      */
     public boolean checkIfImageDirectoryExists(String imageType) {
         String imageDir = projConf.getImageDirectoryByType(imageType);
-        if(new File(imageDir).exists())
+        if (new File(imageDir).exists())
             return true;
         return false;
     }
@@ -74,4 +75,3 @@ public class GenericHelper {
         return Runtime.getRuntime().availableProcessors();
     }
 }
-

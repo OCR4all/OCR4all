@@ -11,7 +11,6 @@ import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ImageDespeckle;
 import de.uniwue.feature.ImageResize;
 
-
 /**
  * Helper class for image based functionality
  */
