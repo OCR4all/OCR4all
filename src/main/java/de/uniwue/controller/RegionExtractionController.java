@@ -40,13 +40,13 @@ public class RegionExtractionController {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
+
         // Keep a single helper object in session
         RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
         if (regionExtractionHelper == null) {
             regionExtractionHelper = new RegionExtractionHelper(projectDir);
             session.setAttribute("regionExtractionHelper", regionExtractionHelper);
         }
-
 
         return mv;
     }
@@ -80,7 +80,6 @@ public class RegionExtractionController {
             regionExtractionHelper = new RegionExtractionHelper(projectDir);
             session.setAttribute("regionExtractionHelper", regionExtractionHelper);
         }
-
 
         if (regionExtractionHelper.isRegionExtractionRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
@@ -144,17 +143,19 @@ public class RegionExtractionController {
     }
 
     /**
-     * Response to the request to check if old process related files exists
+     * Response to the request to check if old process related files exist
      *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
      * @param session Session of the user
      * @param response Response to the request
-     * @param pageIds List of pageIds
-     * @return status
+     * @return Information if files exist
      */
     @RequestMapping(value = "/ajax/regionExtraction/exists" , method = RequestMethod.GET)
-    public @ResponseBody boolean check(HttpSession session, HttpServletResponse response, 
-           @RequestParam("pageIds[]") String[] pageIds) {
-    	RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+    public @ResponseBody boolean check(
+                @RequestParam("pageIds[]") String[] pageIds,
+                HttpSession session, HttpServletResponse response
+            ) {
+        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
         if (regionExtractionHelper == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 

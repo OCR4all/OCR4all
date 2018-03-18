@@ -48,7 +48,8 @@ import de.uniwue.helper.GenericHelper;
         return pageIds;
     }
 
-    /** Response to the request to thecks if the imageType directory exists
+    /**
+     * Response to the request to thecks if the imageType directory exists
      * 
      * @param imageType Type of the image directory (original, gray, binary, despeckled, OCR)
      * @param session Session of the user

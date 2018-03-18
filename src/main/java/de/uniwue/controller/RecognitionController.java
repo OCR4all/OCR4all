@@ -46,6 +46,7 @@ public class RecognitionController {
             recognitionHelper = new RecognitionHelper(projectDir);
             session.setAttribute("recognitionHelper", recognitionHelper);
         }
+
         return mv;
     }
 
@@ -172,16 +173,18 @@ public class RecognitionController {
     }
 
     /**
-     * Response to the request to check if old process related files exists
+     * Response to the request to check if old process related files exist
      *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
      * @param session Session of the user
      * @param response Response to the request
-     * @param pageIds List of pageIds
-     * @return status
+     * @return Information if files exist
      */
     @RequestMapping(value = "/ajax/recognition/exists" , method = RequestMethod.GET)
-    public @ResponseBody boolean check(HttpSession session, HttpServletResponse response, 
-           @RequestParam("pageIds[]") String[] pageIds) {
+    public @ResponseBody boolean check(
+                @RequestParam("pageIds[]") String[] pageIds,
+                HttpSession session, HttpServletResponse response
+            ) {
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

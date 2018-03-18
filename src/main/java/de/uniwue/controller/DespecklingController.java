@@ -36,6 +36,7 @@ public class DespecklingController {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
+
         // Keep a single helper object in session
         DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
         if (despecklingHelper == null) {
@@ -118,17 +119,19 @@ public class DespecklingController {
     }
 
     /**
-     * Response to the request to check if old process related files exists
+     * Response to the request to check if old process related files exist
      *
+     * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
      * @param session Session of the user
      * @param response Response to the request
-     * @param pageIds List of pageIds
-     * @return status
+     * @return Information if files exist
      */
     @RequestMapping(value = "/ajax/despeckling/exists" , method = RequestMethod.GET)
-    public @ResponseBody boolean check(HttpSession session, HttpServletResponse response, 
-           @RequestParam("pageIds[]") String[] pageIds) {
-    	DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
+    public @ResponseBody boolean check(
+                @RequestParam("pageIds[]") String[] pageIds,
+                HttpSession session, HttpServletResponse response
+            ) {
+        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
         if (despecklingHelper == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
