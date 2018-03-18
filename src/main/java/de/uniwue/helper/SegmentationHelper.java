@@ -47,13 +47,12 @@ public class SegmentationHelper {
     /**
      * Moves the extracted files of the segmentation process to the OCR project folder
      *
-     * @param pageIds Ids of specified pages
-     * @param segmentationImageType type of the project (binary, despeckled)
-     * @param projectImageType (gray, binary)
-     * @param replace If true, replaces the existing image files
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param segmentationImageType Image type of the segmentation (binary, despeckled)
+     * @param projectImageType Image type of the segmentation (gray, binary)
      * @throws IOException
      */
-    public void MoveExtractedSegments(List<String> pageIds, String segmentationImageType, String projectImageType) throws IOException {
+    public void moveExtractedSegments(List<String> pageIds, String segmentationImageType, String projectImageType) throws IOException {
         segmentationRunning = true;
         stop = false;
         progress = 0;
@@ -61,30 +60,37 @@ public class SegmentationHelper {
         File ocrDir = new File(projConf.OCR_DIR);
         if (!ocrDir.exists())
             ocrDir.mkdir();
-        deleteOldFiles( pageIds);
 
-        //copy process specific images
-        File ProjectTypePreprocessDir = new File(projConf.getImageDirectoryByType(projectImageType));
-        if(ProjectTypePreprocessDir.exists()){
-            File[] filesToMove = ProjectTypePreprocessDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
-            for(File file : filesToMove) {
-                if(pageIds.contains(FilenameUtils.removeExtension(file.getName()))) {
-                        Files.copy(Paths.get(file.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
+        deleteOldFiles(pageIds);
+
+        // Copy process specific images (based on project image type)
+        File projectSpecificPreprocDir = new File(projConf.getImageDirectoryByType(projectImageType));
+        if (projectSpecificPreprocDir.exists()){
+            File[] filesToMove = projectSpecificPreprocDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
+            for (File file : filesToMove) {
+                if (pageIds.contains(FilenameUtils.removeExtension(file.getName()))) {
+                    Files.copy(Paths.get(file.getPath()),
+                        Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),
+                        StandardCopyOption.valueOf("REPLACE_EXISTING"));
                 }
             }
         }
 
-        File preprocDir = new File(projConf.getImageDirectoryByType(segmentationImageType));
-        File[] filesToMove = preprocDir.listFiles((d, name) -> name.endsWith(".xml"));
-        int count_xml_dir = filesToMove.length;
-        int i = 1;
-        for (File xml : filesToMove) {
+        // Copy PageXML files (based on segmentation image type)
+        File pageXMLPreprocDir = new File(projConf.getImageDirectoryByType(segmentationImageType));
+        File[] pageXMLFiles = pageXMLPreprocDir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
+        int pageXMLCount = pageXMLFiles.length;
+        int copiedPageXMLFiles = 0;
+        for (File xml : pageXMLFiles) {
             if (stop == true) 
                 break;
 
-            progress = (int) ((double) i / count_xml_dir * 100);
-            Files.copy(Paths.get(xml.getPath()), Paths.get(projConf.getImageDirectoryByType("OCR") + xml.getName()),StandardCopyOption.valueOf("REPLACE_EXISTING"));
-            i++;
+            Files.copy(Paths.get(xml.getPath()),
+                Paths.get(projConf.getImageDirectoryByType("OCR") + xml.getName()),
+                StandardCopyOption.valueOf("REPLACE_EXISTING"));
+
+            copiedPageXMLFiles++;
+            progress = (int) ((double) copiedPageXMLFiles / pageXMLCount * 100);
         }
 
         progress = 100;
@@ -126,37 +132,44 @@ public class SegmentationHelper {
 
     /**
      * Deletion of old process related files
-     * @param pageIds
-     * @throws IOException 
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @throws IOException
      */
     public void deleteOldFiles(List<String> pageIds) throws IOException {
-        if(!new File(projConf.OCR_DIR).exists())
+        if (!new File(projConf.OCR_DIR).exists())
             return;
+
+        // Delete all files created by subsequent processes to preserve data integrity
         RegionExtractionHelper regionExtracorHelper = new RegionExtractionHelper(projConf.PROJECT_DIR);
         regionExtracorHelper.deleteOldFiles(pageIds);
-        for(String pageId : pageIds) {
+
+        // Delete image and PageXML files
+        for (String pageId : pageIds) {
             File segPng = new File(projConf.OCR_DIR + pageId + projConf.IMG_EXT);
-            File segXml = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
-            if(segPng.exists())
+            if (segPng.exists())
                 segPng.delete();
-            if(segXml.exists())
+
+            File segXml = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
+            if (segXml.exists())
                 segXml.delete();
         }
     }
 
     /**
-     * Checks if process depending files already exists
-     * @param pageIds
-     * @return
+     * Checks if process depending files already exist
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @return Information if files exist
      */
-    public boolean checkIfExisting(String[] pageIds){
-        boolean exists = false;
-        for(String page : pageIds) {
-            if(new File(projConf.OCR_DIR + page + projConf.CONF_EXT).exists()) {
-                exists = true;
-                break;
-            }
+    public boolean doOldFilesExist(String[] pageIds) {
+        for (String pageId : pageIds) {
+            // Check for image and PageXML files
+            if (new File(projConf.OCR_DIR + pageId + projConf.IMG_EXT).exists())
+                return true;
+            if (new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).exists())
+                return true;
         }
-        return exists;
+        return false;
     }
 }

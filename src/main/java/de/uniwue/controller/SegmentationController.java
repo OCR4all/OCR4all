@@ -82,7 +82,7 @@ public class SegmentationController {
 
         try {
             String projectImageType = (String) session.getAttribute("imageType");
-            segmentationHelper.MoveExtractedSegments(Arrays.asList(pageIds), segmentationImageType, projectImageType);
+            segmentationHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType, projectImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationHelper.resetProgress();
@@ -138,6 +138,6 @@ public class SegmentationController {
         if (segmentationHelper == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        return segmentationHelper.checkIfExisting(pageIds);
+        return segmentationHelper.doOldFilesExist(pageIds);
     }
 }
