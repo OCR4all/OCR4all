@@ -26,6 +26,9 @@ RUN apt-get update&& apt-get install -y \
 # Repository
 RUN cd /opt && git clone --recurse-submodules https://$username:$password@gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
 
+# Enabling direct request in Larex submodule
+RUN sed -i 's/#directrequest:<value>/directrequest:enable/' /opt/OCR4all_Web/src/main/resources/LAREX/Larex/src/main/webapp/WEB-INF/larex.config
+
 # Initial builds of maven project
 RUN cd /opt/OCR4all_Web && mvn package
 RUN cp /opt/OCR4all_Web/target/OCR4all_Web.war /var/lib/tomcat8/webapps/
