@@ -12,7 +12,7 @@
                         <div class="input-field">
                             <p>
                                <input type="checkbox" class="filled-in" id="--nocheck" checked="checked"/>
-                               <label for="usespacing"></label>
+                               <label for="--nocheck"></label>
                             </p>
                         </div>
                     </td>
@@ -23,7 +23,7 @@
                         <div class="input-field">
                              <p>
                                 <input type="checkbox" class="filled-in" id="--usegauss" checked="checked"/>
-                                <label for="usespacing"></label>
+                                <label for="--usegauss"></label>
                              </p>
                          </div>
                     </td>
@@ -63,7 +63,7 @@
                                     <div class="input-field">
                                         <p>
                                             <input type="checkbox" class="filled-in" id="--gray"/>
-                                            <label for="usespacing"></label>
+                                            <label for="--gray"></label>
                                         </p>
                                     </div>
                                 </td>
@@ -191,7 +191,7 @@
                                     <div class="input-field">
                                         <p>
                                             <input type="checkbox" class="filled-in" id="--blackseps"/>
-                                            <label for="usespacing"></label>
+                                            <label for="--blackseps"></label>
                                         </p>
                                     </div>
                                 </td>
@@ -265,7 +265,7 @@
                                     <div class="input-field">
                                         <p>
                                             <input type="checkbox" class="filled-in" id="--quit"/>
-                                            <label for="usespacing"></label>
+                                            <label for="--quit"></label>
                                         </p>
                                     </div>
                                 </td>
@@ -285,7 +285,7 @@
                                     <div class="input-field">
                                         <p>
                                             <input type="checkbox" class="filled-in" id="--debug"/>
-                                            <label for="usespacing"></label>
+                                            <label for="--debug"></label>
                                         </p>
                                     </div>
                                 </td>
