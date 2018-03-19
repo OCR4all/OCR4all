@@ -23,6 +23,7 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
+
                     $.get( "ajax/regionExtraction/exists?", { "pageIds[]" : selectedPages } )
                     .done(function( data ){
                         if(data === false){
@@ -34,12 +35,8 @@
                             $('#modal_exists').modal('open');
                         }
                     });
-                  });
-
-                $.get( "ajax/regionExtraction/getImageIds")
-                .done(function( data ) {
-                    //Todo: Show ImageList
                 });
+
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
                 });
