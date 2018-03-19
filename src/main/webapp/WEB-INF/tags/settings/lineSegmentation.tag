@@ -29,7 +29,7 @@
                     <td>
                         <div class="input-field">
                             <input id="--csminheight" type="number" step="1" value="100000"/>
-                            <label for=--csminheight data-type="float" data-error="Has to be integer">Default: 100000</label>
+                            <label for=--csminheight data-type="int" data-error="Has to be integer">Default: 100000</label>
                         </div>
                     </td>
                 </tr>
@@ -49,7 +49,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--zoom" type="number" step="0.1" />
-                                        <label for="--zoom" data-type="float" data-error="Has to be integer">Default: 0.5</label>
+                                        <label for="--zoom" data-type="float" data-error="Has to be float">Default: 0.5</label>
                                     </div>
                                 </td>
                             </tr>
@@ -76,7 +76,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--minscale" type="number" step="1" />
-                                        <label for="--minscale" data-type="float" data-error="Has to be integer">Default: 12</label>
+                                        <label for="--minscale" data-type="int" data-error="Has to be integer">Default: 12</label>
                                     </div>
                                 </td>
                             </tr>
@@ -85,7 +85,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--maxlines" type="number" step="10" />
-                                        <label for="--maxlines" data-type="float" data-error="Has to be integer">Default: 300</label>
+                                        <label for="--maxlines" data-type="int" data-error="Has to be integer">Default: 300</label>
                                     </div>
                                 </td>
                             </tr>
@@ -103,7 +103,7 @@
                                 <td>
                                     <div class="input-field">
                                     <input id="--scale" type="number" step="0.1" />
-                                    <label for="--scale" data-type="float" data-error="Has to be integer">Default: 0</label>
+                                    <label for="--scale" data-type="float" data-error="Has to be float">Default: 0</label>
                                     </div>
                                 </td>
                             </tr>
@@ -112,7 +112,7 @@
                                 <td>
                                     <div class="input-field">
                                     <input id="--hscale" type="number" step="0.1" />
-                                    <label for="--hscale" data-type="float" data-error="Has to be integer">Default: 1</label>
+                                    <label for="--hscale" data-type="float" data-error="Has to be float">Default: 1</label>
                                     </div>
                                 </td>
                             </tr>
@@ -121,7 +121,7 @@
                                 <td>
                                     <div class="input-field">
                                     <input id="--vscale" type="number" step="0.1" />
-                                    <label for="--vscale" data-type="float" data-error="Has to be integer">Default: 1</label>
+                                    <label for="--vscale" data-type="float" data-error="Has to be float">Default: 1</label>
                                     </div>
                                 </td>
                             </tr>
@@ -139,7 +139,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--threshold" type="number" step="0.1" />
-                                        <label for="--threshold" data-type="float" data-error="Has to be integer">Default: 0.2</label>
+                                        <label for="--threshold" data-type="float" data-error="Has to be float">Default: 0.2</label>
                                     </div>
                                 </td>
                             </tr>
@@ -148,7 +148,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--noise" type="number" step="1" />
-                                        <label for="--noise" data-type="float" data-error="Has to be integer">Default: 8</label>
+                                        <label for="--noise" data-type="int" data-error="Has to be integer">Default: 8</label>
                                     </div>
                                 </td>
                             </tr>
@@ -166,7 +166,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--maxseps" type="number" step="0.1" />
-                                        <label for="--maxseps" data-type="float" data-error="Has to be integer">Default: 2</label>
+                                        <label for="--maxseps" data-type="float" data-error="Has to be float">Default: 2</label>
                                     </div>
                                 </td>
                             </tr>
@@ -175,7 +175,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--sepwiden" type="number" step="10" />
-                                        <label for="--sepwiden" data-type="float" data-error="Has to be integer">Default: 10</label>
+                                        <label for="--sepwiden" data-type="int" data-error="Has to be integer">Default: 10</label>
                                     </div>
                                 </td>
                             </tr>
@@ -202,7 +202,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--maxcolseps" type="number" step="0.1" />
-                                        <label for="--maxcolseps" data-type="float" data-error="Has to be integer">Default: 2</label>
+                                        <label for="--maxcolseps" data-type="float" data-error="Has to be float">Default: 2</label>
                                     </div>
                                 </td>
                             </tr>
@@ -211,7 +211,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--csminaspect" type="number" step="0.1" />
-                                        <label for=--csminaspect data-type="float" data-error="Has to be integer">Default: 1.1</label>
+                                        <label for=--csminaspect data-type="float" data-error="Has to be float">Default: 1.1</label>
                                     </div>
                                 </td>
                             </tr>
@@ -229,7 +229,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--pad" type="number" step="0.1" />
-                                        <label for="--pad" data-type="float" data-error="Has to be integer">Default: 3</label>
+                                        <label for="--pad" data-type="float" data-error="Has to be float">Default: 3</label>
                                     </div>
                                 </td>
                              </tr>
@@ -238,7 +238,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--expand" type="number" step="0.1" />
-                                        <label for=--expand data-type="float" data-error="Has to be integer">Default: 3</label>
+                                        <label for=--expand data-type="float" data-error="Has to be float">Default: 3</label>
                                     </div>
                                 </td>
                             </tr>
@@ -265,7 +265,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--parallel" type="number" step="1" />
-                                        <label for=--parallel data-type="float" data-error="Has to be integer">Default: 0</label>
+                                        <label for=--parallel data-type="int" data-error="Has to be integer">Default: 0</label>
                                     </div>
                                 </td>
                             </tr>

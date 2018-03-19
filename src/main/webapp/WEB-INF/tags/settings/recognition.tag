@@ -19,7 +19,7 @@
                     <td><p>Line recognition model</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--model" type="text" step="0.1" />
+                            <input id="--model" type="text" />
                             <label for="--model" data-type="text">Path to the model</label>
                         </div>
                     </td>
@@ -58,7 +58,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--height" type="number" step="0.1" />
-                                        <label for="--height" data-type="float" data-error="Has to be integer">Default: -1</label>
+                                        <label for="--height" data-type="float" data-error="Has to be float">Default: -1</label>
                                     </div>
                                 </td>
                             </tr>
@@ -76,7 +76,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--pad" type="number" step="1" />
-                                        <label for="--pad" data-type="float" data-error="Has to be integer">Default: 16</label>
+                                        <label for="--pad" data-type="int" data-error="Has to be integer">Default: 16</label>
                                     </div>
                                 </td>
                             </tr>
@@ -148,7 +148,7 @@
                                 <td>
                                     <div class="input-field">
                                     <input id="--estconf" type="number" step="1" />
-                                    <label for="--estconf" data-type="float" data-error="Has to be integer">Default: 20</label>
+                                    <label for="--estconf" data-type="int" data-error="Has to be integer">Default: 20</label>
                                     </div>
                                 </td>
                             </tr>
@@ -166,7 +166,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="--context" type="number" step="0.1" />
-                                        <label for="--context" data-type="float" data-error="Has to be integer">Default: 0</label>
+                                        <label for="--context" data-type="float" data-error="Has to be float">Default: 0</label>
                                     </div>
                                 </td>
                             </tr>
