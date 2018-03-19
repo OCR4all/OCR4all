@@ -149,12 +149,14 @@
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
+                        <!-- Note that old process files exist -->
                         <div id="modal_exists" class="modal">
                             <div class="modal-content">
-                                <h4>Information</h4>
-                                    <p>
-                                      By agreeing, old process depending files will be removed
-                                    </p>
+                                <h4 class="red-text">Attention</h4>
+                                <p>
+                                    Some or all of the selected pages were already processed in a previous execution.<br/>
+                                    If you agree these old process related files will be removed before the execution.
+                                </p>
                             </div>
                             <div class="modal-footer">
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
