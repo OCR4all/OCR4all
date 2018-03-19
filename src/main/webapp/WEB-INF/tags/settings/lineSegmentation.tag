@@ -9,23 +9,19 @@
                 <tr>
                     <td><p>Disable error checking on inputs</p></td>
                     <td>
-                        <div class="input-field">
                             <p>
                                <input type="checkbox" class="filled-in" id="--nocheck" checked="checked"/>
                                <label for="--nocheck"></label>
                             </p>
-                        </div>
                     </td>
                 </tr>
                 <tr>
                     <td><p>Use gaussian instead of uniform</p></td>
                     <td>
-                        <div class="input-field">
                              <p>
                                 <input type="checkbox" class="filled-in" id="--usegauss" checked="checked"/>
                                 <label for="--usegauss"></label>
                              </p>
-                         </div>
                     </td>
                 </tr>
                 <tr>
@@ -60,12 +56,10 @@
                             <tr>
                                 <td><p>Output grayscale lines as well</p></td>
                                 <td>
-                                    <div class="input-field">
                                         <p>
                                             <input type="checkbox" class="filled-in" id="--gray"/>
                                             <label for="--gray"></label>
                                         </p>
-                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -188,12 +182,10 @@
                             <tr>
                                 <td><p>Also check for black column separators</p></td>
                                 <td>
-                                    <div class="input-field">
                                         <p>
                                             <input type="checkbox" class="filled-in" id="--blackseps"/>
                                             <label for="--blackseps"></label>
                                         </p>
-                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -262,12 +254,10 @@
                                <tr>
                                 <td><p>Be less verbose</p></td>
                                 <td>
-                                    <div class="input-field">
                                         <p>
                                             <input type="checkbox" class="filled-in" id="--quit"/>
                                             <label for="--quit"></label>
                                         </p>
-                                    </div>
                                 </td>
                             </tr>
                             <tr>
@@ -282,12 +272,10 @@
                             <tr>
                                 <td><p>Enable debug mode</p></td>
                                 <td>
-                                    <div class="input-field">
                                         <p>
                                             <input type="checkbox" class="filled-in" id="--debug"/>
                                             <label for="--debug"></label>
                                         </p>
-                                    </div>
                                 </td>
                             </tr>
                         </tbody>
