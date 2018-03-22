@@ -208,14 +208,12 @@ public class PreprocessingHelper {
      * @return Information if files exist
      */
     public boolean doOldFilesExist(String[] pageIds) {
-        boolean exists = false;
         for(String page : pageIds) {
             if (new File(projConf.BINR_IMG_DIR + page + projConf.IMG_EXT).exists() ||
                     new File(projConf.GRAY_IMG_DIR + page + projConf.IMG_EXT).exists()) {
-                exists = true;
-                break;
+                return true;
             }
         }
-        return exists;
+        return false;
     }
 }

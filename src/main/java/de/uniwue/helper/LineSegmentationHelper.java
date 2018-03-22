@@ -85,11 +85,12 @@ public class LineSegmentationHelper {
     public void initializeProcessState(List<String> pageIds) throws IOException {
         // Initialize the status structure
         processState = new TreeMap<String, TreeMap<String, Boolean>>();
+
         for(String pageId : pageIds) {
             if(!new File(projConf.PAGE_DIR + pageId).exists())
                 continue;
 
-            TreeMap<String, Boolean> segmentIds = new TreeMap<String, Boolean>();
+            TreeMap<String, Boolean> segments = new TreeMap<String, Boolean>();
             Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
             .map(Path::toFile)
             .filter(fileEntry -> fileEntry.isFile())
@@ -97,11 +98,11 @@ public class LineSegmentationHelper {
             .forEach(
                 fileEntry -> { 
                     if (!fileEntry.getName().endsWith(projConf.PSEG_EXT))
-                        segmentIds.put(FilenameUtils.removeExtension(fileEntry.getName()), false);
+                        segments.put(FilenameUtils.removeExtension(fileEntry.getName()), false);
                 }
             );
 
-            processState.put(pageId, segmentIds);
+            processState.put(pageId, segments);
         }
     }
 
@@ -202,7 +203,7 @@ public class LineSegmentationHelper {
         List<String> command = new ArrayList<String>();
         List<String> segmentImages = getSegmentImagesForCurrentProcess();
         for (String segmentImage : segmentImages) {
-            // Add affected line segment images with their absolute path to the command list
+            // Add affected segment images with their absolute path to the command list
             command.add(segmentImage);
         }
         command.addAll(cmdArgs);
@@ -271,18 +272,19 @@ public class LineSegmentationHelper {
      */
     public void deleteOldFiles(List<String> pageIds) throws IOException {
         for(String pageId : pageIds) {
-            if (!new File(projConf.PAGE_DIR + pageId).exists())
+            File pageDirectory = new File(projConf.PAGE_DIR + pageId);
+            if (!pageDirectory.exists())
                 return;
 
             // Delete directories of the line segments
-            File[] lineSegmentDirectories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
+            File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
             if (lineSegmentDirectories.length != 0) {
                 for(File dir : lineSegmentDirectories)
                     FileUtils.deleteDirectory(dir);
             }
 
             // Delete files that indicate successful line segementation process
-            File[] psegFiles = new File(projConf.PAGE_DIR + pageId).listFiles((d, name) -> name.endsWith(projConf.PSEG_EXT));
+            File[] psegFiles = pageDirectory.listFiles((d, name) -> name.endsWith(projConf.PSEG_EXT));
             for(File pseg : psegFiles) {
                 pseg.delete();}
         }
