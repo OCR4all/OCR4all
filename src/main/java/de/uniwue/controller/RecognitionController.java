@@ -157,19 +157,19 @@ public class RecognitionController {
     }
 
     /**
-     * Response to the request to return all pageIds for the recognition page
+     * Response to the request to return all pageIds that can be used for recognition
      *
      * @param session Session of the user
      * @param response Response to the request
-     * @return List of pageIds
+     * @return List of valid pageIds
      */
-    @RequestMapping(value = "/ajax/recognition/getImageIds" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/recognition/getValidPageIds" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<String> getIdsforRecognition(HttpSession session, HttpServletResponse response) {
     	RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null)
             return null;
 
-        return recognitionHelper.getIdsforRecognition();
+        return recognitionHelper.getValidPageIdsforRecognition();
     }
 
     /**
@@ -189,6 +189,6 @@ public class RecognitionController {
         if (recognitionHelper == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        return recognitionHelper.checkIfExisting(pageIds);
+        return recognitionHelper.doOldFilesExist(pageIds);
     }
 }

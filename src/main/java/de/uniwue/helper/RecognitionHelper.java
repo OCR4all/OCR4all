@@ -40,10 +40,24 @@ public class RecognitionHelper {
     private boolean RecognitionRunning = false;
 
     /**
-     * Structure with which the progress of the process can be monitored
-     * Example pf the structure : 0002 --> segment --> linesegment --> false (processed)
+     * Structure to monitor the progress of the process
+     * pageId : segmentId : lineSegmentId : processedState
+     *
+     * Structure example:
+     * {
+     *     "0002": {
+     *         "0002__000__paragraph" : {
+     *             "0002__000__paragraph__000" : true,
+     *             "0002__000__paragraph__001" : false,
+     *             ...
+     *         },
+     *         ...
+     *     },
+     *     ...
+     * }
      */
-    private TreeMap<String,TreeMap<String, TreeMap<String, Boolean>>> status= new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
+    private TreeMap<String,TreeMap<String, TreeMap<String, Boolean>>> processState =
+        new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
 
     /**
      * Constructor
@@ -67,73 +81,53 @@ public class RecognitionHelper {
     /**
      * Initializes the structure with which the progress of the process can be monitored
      *
-     * @param pageIds Ids of the pages
+     * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
      * @throws IOException
      */
     public void initialize(List<String> pageIds) throws IOException {
-
-        deleteOldFiles(pageIds);
         // Initialize the status structure
-        status= new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
+        processState = new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
 
-        for(String pageId : pageIds) {
-            TreeMap<String, TreeMap<String, Boolean>> tm = new TreeMap<String, TreeMap<String, Boolean>>();
-            // File depth of 1 -> no recursive (file)listing 
-            //TODO: At the moment general images are considered --> Make it dependent on project type
-            File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-            if (directories.length != 0) {
-                for(File dir : directories) {
-                    TreeMap<String, Boolean> filenames = new TreeMap<String, Boolean>();
+        for (String pageId : pageIds) {
+            TreeMap<String, TreeMap<String, Boolean>> segments = new TreeMap<String, TreeMap<String, Boolean>>();
+            // File depth of 1 -> no recursive (file)listing
+            // TODO: At the moment general images are considered --> Make it dependent on project type
+            File[] lineSegmentDirectories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
+            if (lineSegmentDirectories.length != 0) {
+                for (File dir : lineSegmentDirectories) {
+                    TreeMap<String, Boolean> lineSegments = new TreeMap<String, Boolean>();
                     Files.walk(Paths.get(dir.getAbsolutePath()), 1)
                     .map(Path::toFile)
                     .filter(fileEntry -> fileEntry.isFile())
                     .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
                     .forEach(
                         fileEntry -> {
-                            filenames.put(fileEntry.getName(),false);
+                            lineSegments.put(FilenameUtils.removeExtension(fileEntry.getName()), false);
                         }
                     );
-                    tm.put(dir.getName(), filenames);
+                    segments.put(dir.getName(), lineSegments);
                 }
             }
-            status.put(pageId, tm);
+
+            processState.put(pageId, segments);
         }
     }
 
     /**
-     * Deletion of old process related files
-     * @param pageIds
-     */
-    public void deleteOldFiles(List<String> pageIds) {
-        for(String pageId : pageIds) {
-            if(!new File(projConf.PAGE_DIR + pageId).exists())
-                return;
-            File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-            if (directories.length != 0) {
-                for(File dir :directories) {
-                    File[] FilesWithTxtExtension = new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(".txt"));
-                    //deletes old lineSegmentation directories
-                    for(File txt : FilesWithTxtExtension) {
-                       txt.delete();
-                   }
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns the line segments of a list of pages
+     * Returns the absolute path of all line segment images for the pages in the processState
      *
-     * @param pageIds Ids of the pages
-     * @return List of regions
+     * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
+     * @return List of line segment images
      * @throws IOException 
      */
-    public List<String> getLineSegmentsOfPages(List<String> pageIds) throws IOException {
+    public List<String> getLineSegmentImagesForCurrentProcess(List<String> pageIds) throws IOException {
         List<String> LineSegmentsOfPage = new ArrayList<String>();
-        for(String pageId : status.keySet()) {
-            for(String segment :status.get(pageId).keySet()) {
-                for(String lineSegment: status.get(pageId).get(segment).keySet()) {
-                    LineSegmentsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + segment+ File.separator+ lineSegment);
+        for (String pageId : processState.keySet()) {
+            for (String segmentId : processState.get(pageId).keySet()) {
+                for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
+                    // TODO: Change projConf.BINR_IMG_EXT to project specific image type 
+                    LineSegmentsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + segmentId +
+                        File.separator + lineSegmentId + projConf.BINR_IMG_EXT);
                 }
             }
         }
@@ -151,26 +145,26 @@ public class RecognitionHelper {
         if (RecognitionRunning == false)
             return progress;
 
-        int NumberOfLineSegments = 0;
-        int NumberOfProcessedLineSegments = 0;
-        for(String pageId : status.keySet()) {
-            for(String segment :status.get(pageId).keySet()) {
-                for(String lineSegment: status.get(pageId).get(segment).keySet()) {
-                    if(status.get(pageId).get(segment).get(lineSegment)) {
-                        NumberOfProcessedLineSegments += 1;
-                        NumberOfLineSegments += 1;
+        int lineSegmentCount = 0;
+        int processedLineSegmentCount = 0;
+         // Identify how many line segments are already processed
+        for (String pageId : processState.keySet()) {
+            for (String segmentId : processState.get(pageId).keySet()) {
+                for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
+                    lineSegmentCount += 1;
+
+                    if(processState.get(pageId).get(segmentId).get(lineSegmentId)) {
+                        processedLineSegmentCount += 1;
                         continue;
                     }
-                    else {
-                        NumberOfLineSegments += 1;
-                        if(new File(projConf.PAGE_DIR + pageId + File.separator + segment + File.separator + FilenameUtils.removeExtension(FilenameUtils.removeExtension(lineSegment))+".txt").exists()) {
-                           status.get(pageId).get(segment).put(lineSegment, true);
-                        }
+
+                    if (new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId + ".txt").exists()) {
+                        processState.get(pageId).get(segmentId).put(lineSegmentId, true);
                     }
                 }
             }
         }
-        return (progress != 100) ? (int) ((double)NumberOfProcessedLineSegments / NumberOfLineSegments * 100) : 100;
+        return (progress != 100) ? (int) ((double)processedLineSegmentCount / lineSegmentCount * 100) : 100;
     }
 
     /**
@@ -185,13 +179,15 @@ public class RecognitionHelper {
         RecognitionRunning = true;
         progress = 0;
 
+        // Reset recognition data
+        deleteOldFiles(pageIds);
         initialize(pageIds);
 
         List<String> command = new ArrayList<String>();
-        List<String> LineSegmentsOfPage = getLineSegmentsOfPages(pageIds);
-        for (String region : LineSegmentsOfPage) {
-            // Add affected pages with their absolute path to the command list
-            command.add(region);
+        List<String> lineSegmentImages = getLineSegmentImagesForCurrentProcess(pageIds);
+        for (String lineSegmentImage : lineSegmentImages) {
+            // Add affected line segment images with their absolute path to the command list
+            command.add(lineSegmentImage);
         }
         command.addAll(cmdArgs);
 
@@ -221,23 +217,24 @@ public class RecognitionHelper {
     }
 
     /**
-     * Returns the ids of the pages, where the region extraction step is already done
+     * Returns the Ids of the pages, for which region extraction was already executed
+     * TODO: Check if line segmentation process was executed, not region extraction!
      *
      * @return List with page ids
      */
-    public ArrayList<String> getIdsforRecognition() {
-        ArrayList<String> IdsForImageList = new ArrayList<String>();
+    public ArrayList<String> getValidPageIdsforRecognition() {
+        ArrayList<String> validPageIds = new ArrayList<String>();
         File pageDir = new File(projConf.PAGE_DIR);
         if (!pageDir.exists())
-            return IdsForImageList;
+            return validPageIds;
 
         File[] directories = pageDir.listFiles(File::isDirectory);
         for(File file: directories) { 
-            IdsForImageList.add(file.getName());
+            validPageIds.add(file.getName());
         }
-        Collections.sort(IdsForImageList);
+        Collections.sort(validPageIds);
 
-        return IdsForImageList;
+        return validPageIds;
     }
 
     /**
@@ -250,25 +247,47 @@ public class RecognitionHelper {
     }
 
     /**
-     * Checks if process depending files already exists
-     * @param pageIds
-     * @return
+     * Deletion of old process related files
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      */
-    public boolean checkIfExisting(String[] pageIds){
-        boolean exists = false;
-    for(String page : pageIds) {
-        File[] directories = new File(projConf.PAGE_DIR
-                + page).listFiles(File::isDirectory);
-        //deletes old lineSegmentation directories
-        for(File dir : directories) {
-            if(new File(projConf.PAGE_DIR + page + File.separator + dir.getName()).listFiles((d, name) -> name.endsWith(".txt")).length != 0) {
-                exists = true;
-                break;
+    public void deleteOldFiles(List<String> pageIds) {
+        for(String pageId : pageIds) {
+            File pageDirectory = new File(projConf.PAGE_DIR + pageId);
+            if (!pageDirectory.exists())
+                return;
+
+            File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
+            if (lineSegmentDirectories.length != 0) {
+                for (File dir : lineSegmentDirectories) {
+                    File[] txtFiles = new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(".txt"));
+                    // Delete .txt files that store the recognized text
+                    for (File txtFile : txtFiles) {
+                        txtFile.delete();
+                    }
+                }
             }
         }
     }
 
-    return exists;
-    }
+    /**
+     * Checks if process depending files already exist
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @return Information if files exist
+     */
+    public boolean doOldFilesExist(String[] pageIds) {
+        for(String pageId : pageIds) {
+            File pageDirectory = new File(projConf.PAGE_DIR + pageId);
+            if (!pageDirectory.exists())
+                break;
 
+            File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
+            for (File dir : lineSegmentDirectories) {
+                if (new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(".txt")).length != 0)
+                    return true;
+            }
+        }
+        return false;
+    }
 }
