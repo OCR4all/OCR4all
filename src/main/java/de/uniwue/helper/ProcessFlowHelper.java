@@ -1,21 +1,19 @@
 package de.uniwue.helper;
 
-import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
-import de.uniwue.model.PageOverview;
+import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessStateCollector;
 
 /**
  * Helper class for processflow pages
  */
 public class ProcessFlowHelper {
     /**
-     * Absolute path of the project on the filesystem
+     * Object to access project configuration
      */
-    private String projectDir;
+    private ProjectConfiguration projConf;
 
     /**
      * Image type of the project
@@ -30,7 +28,7 @@ public class ProcessFlowHelper {
      * @param imageType Image type of the project
      */
     public ProcessFlowHelper(String projectDir, String imageType) {
-        this.projectDir = projectDir;
+        this.projConf = new ProjectConfiguration(projectDir);
         this.imageType  = imageType;
     }
 
@@ -42,40 +40,21 @@ public class ProcessFlowHelper {
      * @return Page identifiers that were successfully processed
      */
     public String[] getValidPageIds(String[] initialPageIds, String checkProcess) {
-        // Needed to determine process results
-        OverviewHelper overviewHelper = new OverviewHelper(projectDir, imageType);
+        // Needed to determine process states
+        ProcessStateCollector procStateCol = new ProcessStateCollector(projConf, imageType);
 
-        // Get overview of pages including the status that needs to be checked
-        try {
-            for (String pageId : initialPageIds)
-                overviewHelper.initialize(pageId, false);
-
-            switch(checkProcess) {
-                case "preprocessing":    overviewHelper.checkPreprocessed(); break;
-                case "despeckling":      overviewHelper.checkDespeckled(); break;
-                case "segmentation":     overviewHelper.checkSegmented(); break;
-                case "regionExtraction": overviewHelper.checkSegmentsExtracted(); break;
-                case "lineSegmentation": overviewHelper.checkLinesExtracted(); break;
-                case "recognition":      overviewHelper.checkRecognition(); break;
-                default: return new String[0];
-            }
-        } catch (IOException e) {
-            return new String[0];
-        }
-
-        // Find correctly processed pages
+        // Verify state of each page for the given process and store the successful ones
         Set<String> processedPages = new TreeSet<String>();
-        Map<String, PageOverview> overview = overviewHelper.getOverview();
-        for(Entry<String, PageOverview> pageInfo: overview.entrySet()) {
+        for (String pageId : initialPageIds) {
             switch(checkProcess) {
-            case "preprocessing":    if(pageInfo.getValue().isPreprocessed()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
-            case "despeckling":      if(pageInfo.getValue().isDespeckled()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
-            case "segmentation":     if(pageInfo.getValue().isSegmented()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
-            case "regionExtraction": if(pageInfo.getValue().isSegmentsExtracted()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
-            case "lineSegmentation": if(pageInfo.getValue().isLinesExtracted()) {processedPages.add(pageInfo.getValue().getPageId());}; break;
-            default: return new String[0];
+                case "preprocessing":    if (procStateCol.preprocessingState(pageId)) processedPages.add(pageId); break;
+                case "despeckling":      if (procStateCol.despecklingState(pageId)) processedPages.add(pageId); break;
+                case "segmentation":     if (procStateCol.segmentationState(pageId)) processedPages.add(pageId); break;
+                case "regionExtraction": if (procStateCol.regionExtractionState(pageId)) processedPages.add(pageId); break;
+                case "lineSegmentation": if (procStateCol.lineSegmentationState(pageId)) processedPages.add(pageId); break;
+                case "recognition":      if (procStateCol.recognitionState(pageId)) processedPages.add(pageId); break;
+                default: break;
             }
-
         }
 
         // Convert to required data type

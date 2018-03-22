@@ -20,7 +20,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.model.PageOverview;
 
 public class OverviewHelper {
@@ -54,6 +56,11 @@ public class OverviewHelper {
     private ProjectConfiguration projConf;
 
     /**
+     * Object to determine process states
+     */
+    private ProcessStateCollector procStateCol;
+
+    /**
      * Constructor
      *
      * @param pathToProject  Absolute path of the project on the filesystem
@@ -62,6 +69,43 @@ public class OverviewHelper {
     public OverviewHelper(String pathToProject, String imageType) {
         this.imageType = imageType;
         this.projConf = new ProjectConfiguration(pathToProject);
+        this.procStateCol = new ProcessStateCollector(this.projConf, imageType);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param projConf  Object to access project configuration
+     * @param imageType  Image type of the project
+     */
+    public OverviewHelper(ProjectConfiguration projConf, String imageType) {
+        this.imageType = imageType;
+        this.projConf = projConf;
+    }
+
+    /**
+     * Generates status overview for one page
+     *
+     * @param pageId  Page identifier for which the overview should be generated
+     * @throws IOException
+     */
+    public void initialize(String pageId) throws IOException {
+        File pageImg = new File(projConf.ORIG_IMG_DIR + pageId + projConf.IMG_EXT);
+        if (pageImg.exists()) {
+            // Create page overview with states of all required processes
+            PageOverview pOverview = new PageOverview(pageId);
+            pOverview.setPreprocessed(procStateCol.preprocessingState(pageId));
+            pOverview.setDespeckled(procStateCol.despecklingState(pageId));
+            pOverview.setSegmented(procStateCol.segmentationState(pageId));
+            pOverview.setSegmentsExtracted(procStateCol.regionExtractionState(pageId));
+            pOverview.setLinesExtracted(procStateCol.lineSegmentationState(pageId));
+            pOverview.setRecognition(procStateCol.recognitionState(pageId));
+
+            overview.put(pageImg.getName(), pOverview);
+        }
+        else {
+            throw new IOException("Page does not exist!");
+        }
     }
 
     /**
@@ -70,175 +114,22 @@ public class OverviewHelper {
      * @throws IOException
      */
     public void initialize() throws IOException {
-        String path = projConf.ORIG_IMG_DIR;
-        if (new File(path).exists()) {
-            final File folder = new File(path);
-            for (final File fileEntry : folder.listFiles()) {
-                if (fileEntry.isFile()) {
-                    PageOverview pOverview = new PageOverview(FilenameUtils.removeExtension(fileEntry.getName()));
-                    overview.put(fileEntry.getName(), pOverview);
-                }
-            }
-
-            checkFiles();
-            checkPreprocessed();
-            checkDespeckled();
-            checkSegmented();
-            checkSegmentsExtracted();
-            checkLinesExtracted();
-            checkRecognition();
-        }
-        else {
-            throw new IOException("Folder does not exist!");
-        }
-    }
-
-    /**
-     * Generates status overview for one page
-     *
-     * @param pageID  Page identifier for which the overview should be generated
-     * @param doChecks  Determines if the state of all processes should be checked 
-     * @throws IOException
-     */
-    public void initialize(String pageID, boolean doChecks) throws IOException {
-        String path = projConf.ORIG_IMG_DIR + pageID + projConf.IMG_EXT;
-        if (new File(path).exists()) {
-            PageOverview pOverview = new PageOverview(FilenameUtils.removeExtension(new File(path).getName()));
-            overview.put(new File(path).getName(), pOverview);
-
-            if (doChecks) {
-                checkPreprocessed();
-                checkDespeckled();
-                checkSegmented();
-                checkSegmentsExtracted();
-                checkLinesExtracted();
-                checkRecognition();
+        File origImgFolder = new File(projConf.ORIG_IMG_DIR);
+        if (origImgFolder.exists()) {
+            for (final File fileEntry : origImgFolder.listFiles()) {
+                String pageId = FilenameUtils.removeExtension(fileEntry.getName());
+                initialize(pageId);
             }
         }
         else {
             throw new IOException("Folder does not exist!");
-        }
-    }
-
-    /**
-     * Generates status overview for one page
-     *
-     * @param pageID  Page identifier for which the overview should be generated
-     * @throws IOException
-     */
-    public void initialize(String pageID) throws IOException {
-        initialize(pageID, true);
-    }
-
-    /**
-     * Validates preprocessing state and updates project overview
-     */
-    public void checkPreprocessed() {
-        for (String key : overview.keySet()) {
-            overview.get(key).setPreprocessed(true);
-            if (!new File(projConf.PREPROC_DIR + imageType + File.separator + key).exists()) 
-                overview.get(key).setPreprocessed(false);
-        }
-    }
-
-    /**
-     * Validates despeckling state and updates project overview
-     */
-    public void checkDespeckled() {
-        for (String key : overview.keySet()) {
-            overview.get(key).setDespeckled(true);
-            if (!new File(projConf.DESP_IMG_DIR  + key).exists()) 
-                overview.get(key).setDespeckled(false);
-        }
-    }
-
-    /**
-     * Validates segmented state and updates project overview
-     */
-    public void checkSegmented() {
-        for (String key : overview.keySet()) {
-            overview.get(key).setSegmented(true);
-            if (!new File(projConf.OCR_DIR + overview.get(key).getPageId() + projConf.CONF_EXT).exists() || !new File(projConf.OCR_DIR + overview.get(key).getPageId()+ projConf.IMG_EXT).exists()) 
-                overview.get(key).setSegmented(false);
-        }
-    }
-
-    /**
-     * Validates segment extracted state and updates project overview
-     */
-    public void checkSegmentsExtracted() {
-        for (String key: overview.keySet()) {
-            overview.get(key).setSegmentsExtracted(true);
-            if (!new File(projConf.PAGE_DIR + overview.get(key).getPageId()).isDirectory())
-                overview.get(key).setSegmentsExtracted(false);
-        }
-    }
-
-    /**
-     * Validates line extracted state and updates project overview
-     * @throws IOException 
-     */
-    public void checkLinesExtracted() throws IOException {
-        for (String key: overview.keySet()) {
-            overview.get(key).setLinesExtracted(true);
-
-            if (new File(projConf.PAGE_DIR + FilenameUtils.removeExtension(key)).exists()) {
-                    Files.walk(Paths.get(projConf.PAGE_DIR + FilenameUtils.removeExtension(key)), 1)
-                    .map(Path::toFile)
-                    .filter(fileEntry -> fileEntry.isFile())
-                    .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
-                    .forEach(
-                        fileEntry -> { 
-                            if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg")) {
-                                if(!new File(FilenameUtils.removeExtension(fileEntry.getAbsolutePath())+".pseg"+projConf.IMG_EXT).exists()) {
-                                    overview.get(key).setLinesExtracted(false);}
-                                }
-                            }
-                    );
-            }
-            else {
-                overview.get(key).setLinesExtracted(false);
-            }
-        }
-    }
-
-    /**
-     * Validates recognition state and updates project overview
-     */
-    public void checkRecognition() {
-        for (String key: overview.keySet()) {
-            overview.get(key).setRecognition(true);
-            if (overview.get(key).isLinesExtracted()) {
-                File[] segFiles = new File(projConf.PAGE_DIR
-                        + overview.get(key).getPageId()).listFiles((d, name) -> name.endsWith(".pseg"+projConf.IMG_EXT));
-                for(File segment : segFiles) {
-                    File[] lineSegments = new File(projConf.PAGE_DIR
-                            + overview.get(key).getPageId() + File.separator + 
-                            FilenameUtils.removeExtension(FilenameUtils.removeExtension(segment.getName())))
-                            .listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
-                    if(lineSegments == null) {
-                        overview.get(key).setRecognition(false);
-                        continue;
-                    }
-                    for(File lineSegment : lineSegments) {
-                        if(!new File(projConf.PAGE_DIR + overview.get(key).getPageId() + File.separator + 
-                            FilenameUtils.removeExtension(FilenameUtils.removeExtension(segment.getName())) + File.separator + FilenameUtils.removeExtension(
-                                    FilenameUtils.removeExtension(lineSegment.getName()))+".txt").exists()) {
-                            overview.get(key).setRecognition(false);
-                            break;
-                        }
-                    }
-                }
-            }
-            else
-                overview.get(key).setRecognition(false);
         }
     }
 
     /**
      * Generates content for one page
      * This includes its segments and their lines
-     * 
+     *
      * @param pageId  Page identifier for which the content should be generated
      * @return Sorted map of page content
      * @throws IOException 
@@ -299,6 +190,7 @@ public class OverviewHelper {
 
     /**
      * List all filenames matching a pattern
+     *
      * @param root  Directory
      * @param regex Regex String for matching filenames
      * @return all files witch match the regex pattern
@@ -318,6 +210,7 @@ public class OverviewHelper {
 
     /**
      * Checks if the projectDir exits
+     *
      * @return status of the projectDir
      */
     public boolean checkProjectDir() {
@@ -326,8 +219,10 @@ public class OverviewHelper {
         return true;
 
     }
+
     /**
      * Checks if all filesnames are using the project file naming e.g (0001, 0002 ... XXXX)
+     *
      * @return true = all files are using project naming, false = files are not using project naming
      * @throws IOException 
      */
@@ -343,6 +238,7 @@ public class OverviewHelper {
 
     /**
      * Renames all files according to the project standard
+     *
      * @throws IOException 
      */
     public void renameFiles() throws IOException {
