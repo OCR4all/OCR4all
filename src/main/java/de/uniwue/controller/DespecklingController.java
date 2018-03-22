@@ -83,7 +83,7 @@ public class DespecklingController {
             despecklingHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		}
+        }
     }
 
     /**
@@ -135,6 +135,6 @@ public class DespecklingController {
         if (despecklingHelper == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        return despecklingHelper.checkIfExisting(pageIds);
+        return despecklingHelper.doOldFilesExist(pageIds);
     }
 }

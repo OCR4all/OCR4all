@@ -30,8 +30,8 @@ public class DespecklingHelper {
     private boolean stop = false;
 
     /**
-    * Indicates if a depeckling process is running
-    */
+     * Indicates if a depeckling process is running
+     */
     private boolean despecklingRunning = false;
 
     /**
@@ -59,8 +59,8 @@ public class DespecklingHelper {
         File DespDir = new File(projConf.DESP_IMG_DIR);
         if (!DespDir.exists())
             DespDir.mkdir();
-        deleteOldFiles(pageIds);
 
+        deleteOldFiles(pageIds);
 
         double i = 1;
         int totalPages = pageIds.size();
@@ -70,6 +70,7 @@ public class DespecklingHelper {
 
             Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.IMG_EXT);
             // Only the "standard" parameter is needed when despeckling
+            // "marked" is only used to highlight changes for the user
             mat = ImageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
             Imgcodecs.imwrite(projConf.DESP_IMG_DIR + File.separator + pageId + projConf.IMG_EXT, mat);
 
@@ -108,17 +109,18 @@ public class DespecklingHelper {
     }
 
     /**
-    * Gets the despeckling status
-    *
-    * @return status if the process is running
-    */
+     * Gets the despeckling status
+     *
+     * @return status if the process is running
+     */
     public boolean isDespecklingRunning() {
         return despecklingRunning;
     }
 
     /**
      * Deletion of old process related files
-     * @param pageIds
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException 
      */
     public void deleteOldFiles(List<String> pageIds) throws IOException {
@@ -128,19 +130,18 @@ public class DespecklingHelper {
                 despImg.delete();
         }
     }
+
     /**
-     * Checks if process depending files already exists
-     * @param pageIds
-     * @return
+     * Checks if process depending files already exist
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @return Information if files exist
      */
-    public boolean checkIfExisting(String[] pageIds){
-        boolean exists = false;
-        for(String page : pageIds) {
-            if(new File(projConf.DESP_IMG_DIR + page + projConf.IMG_EXT).exists() ) {
-                exists = true;
-                break;
-            }
+    public boolean doOldFilesExist(String[] pageIds) {
+        for (String page : pageIds) {
+            if (new File(projConf.DESP_IMG_DIR + page + projConf.IMG_EXT).exists())
+                return true;
         }
-        return exists;
+        return false;
     }
 }
