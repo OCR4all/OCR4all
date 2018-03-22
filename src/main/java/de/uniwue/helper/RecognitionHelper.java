@@ -161,7 +161,8 @@ public class RecognitionHelper {
                         continue;
                     }
 
-                    if (new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId + ".txt").exists()) {
+                    if (new File(projConf.PAGE_DIR + pageId + File.separator + segmentId +
+                            File.separator + lineSegmentId + projConf.REC_EXT).exists()) {
                         processState.get(pageId).get(segmentId).put(lineSegmentId, true);
                     }
                 }
@@ -263,7 +264,7 @@ public class RecognitionHelper {
             File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
             if (lineSegmentDirectories.length != 0) {
                 for (File dir : lineSegmentDirectories) {
-                    File[] txtFiles = new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(".txt"));
+                    File[] txtFiles = new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(projConf.REC_EXT));
                     // Delete .txt files that store the recognized text
                     for (File txtFile : txtFiles) {
                         txtFile.delete();
@@ -287,7 +288,7 @@ public class RecognitionHelper {
 
             File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
             for (File dir : lineSegmentDirectories) {
-                if (new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(".txt")).length != 0)
+                if (new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(projConf.REC_EXT)).length != 0)
                     return true;
             }
         }
