@@ -166,6 +166,6 @@ public class PreprocessingController {
         if (preprocessingHelper == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        return preprocessingHelper.checkIfExisting(pageIds);
+        return preprocessingHelper.doOldFilesExist(pageIds);
     }
 }

@@ -78,7 +78,7 @@ public class PreprocessingHelper {
         return processHandler;
     }
 
-    /*
+    /**
      * Create necessary Preprocessing directories if they do not exist
      */
     private void initializePreprocessingDirectories() {
@@ -105,7 +105,7 @@ public class PreprocessingHelper {
         File[] filesToMove = preprocDir.listFiles((d, name) -> name.endsWith(projConf.getImageExtensionByType(imageType)));
         Arrays.sort(filesToMove);
         for (File image : filesToMove) {
-            int pageArrayIndex = Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils.removeExtension(image.getName()))) -1;
+            int pageArrayIndex = Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils.removeExtension(image.getName()))) - 1;
             image.renameTo(new File(projConf.getImageDirectoryByType(imageType) + preprocPages.get(pageArrayIndex) + projConf.IMG_EXT));
         }
     }
@@ -185,29 +185,33 @@ public class PreprocessingHelper {
 
     /**
      * Deletion of old process related files
-     * @param pageIds
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException 
      */
     public void deleteOldFiles(List<String> pageIds) throws IOException {
-        for(String pageId : pageIds) {
+        for (String pageId : pageIds) {
             File binImg = new File(projConf.BINR_IMG_DIR + pageId + projConf.IMG_EXT);
-            File grayImg = new File(projConf.GRAY_IMG_DIR + pageId + projConf.IMG_EXT);
             if(binImg.exists())
                 binImg.delete();
+
+            File grayImg = new File(projConf.GRAY_IMG_DIR + pageId + projConf.IMG_EXT);
             if(grayImg.exists())
                 grayImg.delete();
         }
     }
 
     /**
-     * Checks if process depending files already exists
-     * @param pageIds
-     * @return
+     * Checks if process depending files already exist
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @return Information if files exist
      */
-    public boolean checkIfExisting(String[] pageIds){
+    public boolean doOldFilesExist(String[] pageIds) {
         boolean exists = false;
         for(String page : pageIds) {
-            if(new File(projConf.BINR_IMG_DIR + page + projConf.IMG_EXT).exists() || new File(projConf.GRAY_IMG_DIR + page + projConf.IMG_EXT).exists()) {
+            if (new File(projConf.BINR_IMG_DIR + page + projConf.IMG_EXT).exists() ||
+                    new File(projConf.GRAY_IMG_DIR + page + projConf.IMG_EXT).exists()) {
                 exists = true;
                 break;
             }
