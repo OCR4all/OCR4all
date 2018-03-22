@@ -172,9 +172,10 @@ public class LineSegmentationHelper {
                     segmentDir.mkdirs();
 
                 // Copy segment image to own segment directory and create pseg-file to indicate successful processing
+                // TODO: Copy ".bin.png" and ".nrm.png" segment images (depending on project image type)
                 File segmentImage = new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.IMG_EXT);
                 Files.copy(Paths.get(segmentImage.getPath()),
-                    Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.IMG_EXT),
+                    Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.BINR_IMG_EXT),
                     StandardCopyOption.valueOf("REPLACE_EXISTING"));
                 Files.copy(Paths.get(segmentImage.getPath()),
                     Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.PSEG_EXT),

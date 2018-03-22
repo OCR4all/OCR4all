@@ -102,7 +102,10 @@ public class RecognitionHelper {
                     .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
                     .forEach(
                         fileEntry -> {
-                            lineSegments.put(FilenameUtils.removeExtension(fileEntry.getName()), false);
+                            // Line segments have one of the following endings: ".bin.png" | ".nrm.png"
+                            // Therefore both extensions need to be removed
+                            String lineSegmentId = FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName()));
+                            lineSegments.put(lineSegmentId, false);
                         }
                     );
                     segments.put(dir.getName(), lineSegments);
@@ -125,7 +128,7 @@ public class RecognitionHelper {
         for (String pageId : processState.keySet()) {
             for (String segmentId : processState.get(pageId).keySet()) {
                 for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
-                    // TODO: Change projConf.BINR_IMG_EXT to project specific image type 
+                    // TODO: Change projConf.BINR_IMG_EXT to project specific image type
                     LineSegmentsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + segmentId +
                         File.separator + lineSegmentId + projConf.BINR_IMG_EXT);
                 }
