@@ -58,6 +58,14 @@ public final class ProjectConfiguration {
      */
     public final String CONF_EXT = ".xml";
     /**
+     * Default recognition extension of the project
+     */
+    public final String REC_EXT= ".txt";
+    /**
+     * Default ground truth extension of the project
+     */
+    public final String GT_EXT= ".gt.txt";
+    /**
      * Returns the file extension of the given image type
      *
      * @param imageType Type of the image
