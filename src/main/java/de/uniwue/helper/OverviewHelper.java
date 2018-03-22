@@ -189,8 +189,8 @@ public class OverviewHelper {
                     .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
                     .forEach(
                         fileEntry -> { 
-                            if(!FilenameUtils.removeExtension(fileEntry.getName()).endsWith(".pseg")) {
-                                if(!new File(FilenameUtils.removeExtension(fileEntry.getAbsolutePath())+".pseg"+projConf.IMG_EXT).exists()) {
+                            if(!fileEntry.getName().endsWith(projConf.PSEG_EXT)) {
+                                if(!new File(FilenameUtils.removeExtension(fileEntry.getAbsolutePath())+projConf.PSEG_EXT).exists()) {
                                     overview.get(key).setLinesExtracted(false);}
                                 }
                             }
@@ -210,7 +210,7 @@ public class OverviewHelper {
             overview.get(key).setRecognition(true);
             if (overview.get(key).isLinesExtracted()) {
                 File[] segFiles = new File(projConf.PAGE_DIR
-                        + overview.get(key).getPageId()).listFiles((d, name) -> name.endsWith(".pseg"+projConf.IMG_EXT));
+                        + overview.get(key).getPageId()).listFiles((d, name) -> name.endsWith(projConf.PSEG_EXT));
                 for(File segment : segFiles) {
                     File[] lineSegments = new File(projConf.PAGE_DIR
                             + overview.get(key).getPageId() + File.separator + 
@@ -223,7 +223,7 @@ public class OverviewHelper {
                     for(File lineSegment : lineSegments) {
                         if(!new File(projConf.PAGE_DIR + overview.get(key).getPageId() + File.separator + 
                             FilenameUtils.removeExtension(FilenameUtils.removeExtension(segment.getName())) + File.separator + FilenameUtils.removeExtension(
-                                    FilenameUtils.removeExtension(lineSegment.getName()))+".txt").exists()) {
+                                    FilenameUtils.removeExtension(lineSegment.getName()))+ projConf.REC_EXT).exists()) {
                             overview.get(key).setRecognition(false);
                             break;
                         }
@@ -258,7 +258,7 @@ public class OverviewHelper {
                 .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
                 .sorted()
                 .forEach(
-                    fileEntry -> { if(!fileEntry.getName().contains("pseg")){
+                    fileEntry -> { if(!fileEntry.getName().contains(projConf.PSEG_EXT)){
                                       pageContent.put(FilenameUtils.removeExtension(fileEntry.getName()), new String[0]); }}
                 );
             }
