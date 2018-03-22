@@ -1,6 +1,6 @@
 [submodule "src/main/resources/ocropy"]
 	path = src/main/resources/ocropy
-	url = https://github.com/tmbdev/ocropy.git
+	url = https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/mptv.git
 [submodule "src/main/resources/LAREX"]
 	path = src/main/resources/LAREX
 	url = https://github.com/chreul/LAREX.git
