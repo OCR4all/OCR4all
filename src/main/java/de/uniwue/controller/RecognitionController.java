@@ -43,7 +43,8 @@ public class RecognitionController {
         // Keep a single helper object in session
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
-            recognitionHelper = new RecognitionHelper(projectDir);
+            String projectImageType = (String) session.getAttribute("imageType");
+            recognitionHelper = new RecognitionHelper(projectDir, projectImageType);
             session.setAttribute("recognitionHelper", recognitionHelper);
         }
 
@@ -77,7 +78,8 @@ public class RecognitionController {
         // Keep a single helper object in session
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
-            recognitionHelper = new RecognitionHelper(projectDir);
+            String projectImageType = (String) session.getAttribute("imageType");
+            recognitionHelper = new RecognitionHelper(projectDir,projectImageType);
             session.setAttribute("recognitionHelper", recognitionHelper);
         }
 

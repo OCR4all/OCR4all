@@ -66,6 +66,7 @@ public class RegionExtractionController {
                 @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam("spacing") int spacing,
                 @RequestParam("avgbackground") boolean avgbackground,
+                @RequestParam("parallel") int parallel,
                 HttpSession session, HttpServletResponse response
             ) {
         String projectDir = (String) session.getAttribute("projectDir");
@@ -73,6 +74,7 @@ public class RegionExtractionController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
+
 
         // Keep a single helper object in session
         RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
@@ -87,11 +89,34 @@ public class RegionExtractionController {
         }
 
         try {
-            regionExtractionHelper.executeRegionExtraction(Arrays.asList(pageIds), spacing, avgbackground);
+            regionExtractionHelper.executeRegionExtraction(Arrays.asList(pageIds), spacing, avgbackground, parallel);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             regionExtractionHelper.resetProgress();
         }
+    }
+
+    /**
+     * Response to the request to return the output of the region extraction process
+     *
+     * @param streamType Type of the console output (out | err)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Console output
+     */
+    @RequestMapping(value = "/ajax/regionExtraction/console" , method = RequestMethod.GET)
+    public @ResponseBody String console(
+                @RequestParam("streamType") String streamType,
+                HttpSession session, HttpServletResponse response
+            ) {
+    	RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+        if (regionExtractionHelper == null) {
+            return "";
+        }
+
+        if (streamType.equals("err"))
+            return regionExtractionHelper.getProcessHandler().getConsoleErr();
+        return regionExtractionHelper.getProcessHandler().getConsoleOut();
     }
 
     /**

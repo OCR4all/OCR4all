@@ -133,7 +133,7 @@ public class ProcessFlowController {
      * @param response Response to the request
      */
     public void doRegionExtraction(
-                String[] pageIds, Object spacing, Object avgBackground,
+                String[] pageIds, Object spacing, Object avgBackground, Object parallel,
                 HttpSession session, HttpServletResponse response
             ) {
         if (pageIds.length == 0) {
@@ -143,7 +143,8 @@ public class ProcessFlowController {
 
         Integer spacingInteger = Integer.parseInt((String)spacing);
         Boolean avgBackgroundBoolean = Boolean.parseBoolean(avgBackground.toString());
-        new RegionExtractionController().execute(pageIds, spacingInteger, avgBackgroundBoolean, session, response);
+        Integer parallelInteger = Integer.parseInt((String)parallel);
+        new RegionExtractionController().execute(pageIds, spacingInteger, avgBackgroundBoolean, parallelInteger, session, response);
     }
 
     /**
@@ -295,7 +296,7 @@ public class ProcessFlowController {
             session.setAttribute("currentProcess", "regionExtraction");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
             Map<String, Object> settings = processSettings.get("regionExtraction");
-            doRegionExtraction(pageIds, settings.get("spacing"), settings.get("avgbackground"), session, response);
+            doRegionExtraction(pageIds, settings.get("spacing"), settings.get("avgbackground"), settings.get("parallel"), session, response);
             if (needsExit(session, response))
                 return;
         }

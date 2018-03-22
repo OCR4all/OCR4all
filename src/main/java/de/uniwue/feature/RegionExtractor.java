@@ -3,6 +3,7 @@ package de.uniwue.feature;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -43,9 +44,11 @@ public class RegionExtractor {
      * @throws SAXException 
      * @throws ParserConfigurationException 
      */
-    public static void extractSegments(String xmlPath, String imagePath,
+    public static List<String> extractSegments(String xmlPath, String imagePath,
             boolean useAvgBgd, int spacing,
             String outputFolder) throws ParserConfigurationException, SAXException, IOException {
+        // List of extracted regions
+        List<String> regions = new ArrayList<String>();
         Page page = PageXMLImport.readPageXML(xmlPath);
         //maybe use flags if regions are extracted from binary/grayscale (which should be the case)
         Mat image = Imgcodecs.imread(imagePath);
@@ -75,13 +78,16 @@ public class RegionExtractor {
             }
 
             String outputPath = outputFolder + outputFileName;
-            saveImage(region.getPoints(), image, useAvgBgd,
+            boolean status = saveImage(region.getPoints(), image, useAvgBgd,
                     spacing, outputPath);
+            if(status == true)
+                regions.add(outputPath);
         }
 
         image.release();
         // force garbage collection, if necessary; maybe somewhere else and not after every image
         // System.gc();
+		return regions;
     }
 
     /** 
@@ -92,7 +98,7 @@ public class RegionExtractor {
      * @param outputPath Path, where the file should be stored
      * @throws IOException
      */
-    public static void saveImage(ArrayList<Point> pointList, Mat image,
+    public static boolean saveImage(ArrayList<Point> pointList, Mat image,
             boolean useAvgBgd, int spacing,
             String outputPath) throws IOException {
         Scalar avgBgd = new Scalar(255, 255, 255);
@@ -119,7 +125,7 @@ public class RegionExtractor {
                 .br().y <= image.height() - 1)) {
             System.out.println("Rect out of range! Skipping region! "
                     + outputPath);
-            return;
+            return false;
         }
 
         String offsetPath = FilenameUtils.removeExtension(outputPath)
@@ -154,6 +160,7 @@ public class RegionExtractor {
 
         Imgcodecs.imwrite(outputPath, result);
         releaseAll(mask, bgd, result);
+        return true;
     }
 
     /**

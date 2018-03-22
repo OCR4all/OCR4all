@@ -42,11 +42,17 @@ public class LineSegmentationHelper {
     private boolean lineSegmentationRunning = false;
 
     /**
+     * Imagetype of the project
+     */
+    private String projectImagetype;
+    /**
      * Constructor
      *
      * @param projectDir Path to the project directory
+     * @param projectImageType Type of the project (gray, binary)
      */
-    public LineSegmentationHelper(String projectDir) {
+    public LineSegmentationHelper(String projectDir, String projectImageType) {
+        this.projectImagetype = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
     }
@@ -94,11 +100,10 @@ public class LineSegmentationHelper {
             Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
             .map(Path::toFile)
             .filter(fileEntry -> fileEntry.isFile())
-            .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
+            .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImagetype)))
             .forEach(
                 fileEntry -> { 
-                    if (!fileEntry.getName().endsWith(projConf.PSEG_EXT))
-                        segments.put(FilenameUtils.removeExtension(fileEntry.getName()), false);
+                    segments.put(FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName())), false);
                 }
             );
 
@@ -172,11 +177,15 @@ public class LineSegmentationHelper {
                     segmentDir.mkdirs();
 
                 // Copy segment image to own segment directory and create pseg-file to indicate successful processing
-                // TODO: Copy ".bin.png" and ".nrm.png" segment images (depending on project image type)
+                switch(projectImagetype) {
+                case "binary": Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.BINR_IMG_EXT),
+                        Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.BINR_IMG_EXT),
+                        StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                case "gray": Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.BINR_IMG_EXT),
+                        Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.GRAY_IMG_EXT),
+                        StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                }
                 File segmentImage = new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.IMG_EXT);
-                Files.copy(Paths.get(segmentImage.getPath()),
-                    Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.BINR_IMG_EXT),
-                    StandardCopyOption.valueOf("REPLACE_EXISTING"));
                 Files.copy(Paths.get(segmentImage.getPath()),
                     Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.PSEG_EXT),
                     StandardCopyOption.valueOf("REPLACE_EXISTING"));

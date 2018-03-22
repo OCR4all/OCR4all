@@ -117,16 +117,6 @@ public class ProcessHandler {
     public ProcessHandler() {}
 
     /**
-     * Constructor
-     * @param concatenateConsoleOut ConsoleOutput of an previous process
-     * @param concatenateErrOut ErrConsoleOutput of an previous process
-     */
-    public ProcessHandler(String concatenateConsoleOut, String concatenateErrOut) {
-        this.consoleOut = concatenateConsoleOut;
-        this.consoleErr = concatenateErrOut;
-    }
-
-    /**
      * Sets the state to determine the reading setting of the process std.out/std.err
      *
      * @param fetchProcessConsole Console fetch setting

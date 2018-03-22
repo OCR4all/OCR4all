@@ -42,7 +42,8 @@ public class LineSegmentationController {
         // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
         if (lineSegmentationHelper == null) {
-            lineSegmentationHelper = new LineSegmentationHelper(projectDir);
+            String projectImageType = (String) session.getAttribute("imageType");
+            lineSegmentationHelper = new LineSegmentationHelper(projectDir,projectImageType);
             session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
         }
 
@@ -76,7 +77,8 @@ public class LineSegmentationController {
         // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
         if (lineSegmentationHelper == null) {
-            lineSegmentationHelper = new LineSegmentationHelper(projectDir);
+            String projectImageType = (String) session.getAttribute("imageType");
+            lineSegmentationHelper = new LineSegmentationHelper(projectDir,projectImageType);
             session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
         }
 
