@@ -14,7 +14,7 @@
                 });
 
                 // Initialize process update and set options
-                initializeProcessUpdate("regionExtraction", [ 0 ], [ 1 ], false);
+                initializeProcessUpdate("regionExtraction", [ 0 ], [ 1 ], true);
 
                 // Process handling (execute despeckling for all pages with current settings)
                 $('button[data-id="execute"]').click(function() {
@@ -28,7 +28,8 @@
                     .done(function( data ){
                         if(data === false){
                             var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
-                                    "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages };                            // Execute regionExtraction process
+                                    "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages,  "parallel" : $('input[id="--parallel"]').val() };
+                            // Execute regionExtraction process
                             executeProcess(ajaxParams);
                         }
                         else{
@@ -43,10 +44,19 @@
                 $('#agree').click(function() {
                     var selectedPages = getSelectedPages();
                     var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
-                            "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages };
+                            "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages, "parallel" : $('input[id="--parallel"]').val() };
                     // Execute region extraction process
                     executeProcess(ajaxParams);
                 });
+
+                // Set available threads as default 
+                $.get( "ajax/generic/threads" )
+                .done(function( data ) {
+                    if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
+                        return;
+
+                    $('#--parallel').val(data).change();
+                })
             });
         </script>
     </t:head>
@@ -75,6 +85,14 @@
                             <div class="status"><p>Status: <span>No Region Extraction process running</span></p></div>
                             <div class="progress">
                                 <div class="determinate"></div>
+                            </div>
+                            <div class="console">
+                                 <ul class="tabs">
+                                     <li class="tab" data-refid="consoleOut" class="active"><a href="#consoleOut">Console Output</a></li>
+                                     <li class="tab" data-refid="consoleErr"><a href="#consoleErr">Console Error</a></li>
+                                 </ul>
+                                <div id="consoleOut"><pre></pre></div>
+                                <div id="consoleErr"><pre></pre></div>
                             </div>
                         </div>
                     </li>

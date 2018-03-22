@@ -19,5 +19,14 @@
                 </div>
             </td>
         </tr>
+                <tr>
+                    <td><p>Number of parallel threads for program execution</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--parallel" type="number" />
+                            <label for="--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                        </div>
+                    </td>
+                </tr>
     </tbody>
 </table>

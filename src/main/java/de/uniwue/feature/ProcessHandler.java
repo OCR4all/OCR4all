@@ -114,7 +114,7 @@ public class ProcessHandler {
     /**
      * Constructor
      */
-    public ProcessHandler() { }
+    public ProcessHandler() {}
 
     /**
      * Sets the state to determine the reading setting of the process std.out/std.err

@@ -58,13 +58,17 @@ public class RecognitionHelper {
      */
     private TreeMap<String,TreeMap<String, TreeMap<String, Boolean>>> processState =
         new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
-
+    /**
+     * Type of the project
+     */
+    private String projectImagetype;
     /**
      * Constructor
      *
      * @param projectDir Path to the project directory
      */
-    public RecognitionHelper(String projectDir) {
+    public RecognitionHelper(String projectDir, String projectImageType) {
+        this.projectImagetype = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
     }
@@ -91,7 +95,6 @@ public class RecognitionHelper {
         for (String pageId : pageIds) {
             TreeMap<String, TreeMap<String, Boolean>> segments = new TreeMap<String, TreeMap<String, Boolean>>();
             // File depth of 1 -> no recursive (file)listing
-            // TODO: At the moment general images are considered --> Make it dependent on project type
             File[] lineSegmentDirectories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
             if (lineSegmentDirectories.length != 0) {
                 for (File dir : lineSegmentDirectories) {
@@ -99,7 +102,7 @@ public class RecognitionHelper {
                     Files.walk(Paths.get(dir.getAbsolutePath()), 1)
                     .map(Path::toFile)
                     .filter(fileEntry -> fileEntry.isFile())
-                    .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
+                    .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImagetype)))
                     .forEach(
                         fileEntry -> {
                             // Line segments have one of the following endings: ".bin.png" | ".nrm.png"
@@ -128,9 +131,8 @@ public class RecognitionHelper {
         for (String pageId : processState.keySet()) {
             for (String segmentId : processState.get(pageId).keySet()) {
                 for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
-                    // TODO: Change projConf.BINR_IMG_EXT to project specific image type
                     LineSegmentsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + segmentId +
-                        File.separator + lineSegmentId + projConf.BINR_IMG_EXT);
+                        File.separator + lineSegmentId + projConf.getImageExtensionByType(projectImagetype));
                 }
             }
         }

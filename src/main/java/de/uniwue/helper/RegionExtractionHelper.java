@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.xml.sax.SAXException;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.RegionExtractor;
 
 /**
@@ -23,6 +24,11 @@ public class RegionExtractionHelper {
      * Object to access project configuration
      */
     private ProjectConfiguration projConf;
+
+    /**
+     * Helper object for process handling
+     */
+    private ProcessHandler processHandler;
 
     /**
      * Status of the progress
@@ -46,6 +52,7 @@ public class RegionExtractionHelper {
      */
     public RegionExtractionHelper(String projectDir) {
         projConf = new ProjectConfiguration(projectDir);
+        processHandler = new ProcessHandler();
     }
 
     /**
@@ -58,7 +65,7 @@ public class RegionExtractionHelper {
      * @throws SAXException
      * @throws IOException
      */
-    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useAvgBgd)
+    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useAvgBgd, int parallel)
             throws ParserConfigurationException, SAXException, IOException {
         regionExtractionRunning = true;
         stop = false;
@@ -72,6 +79,7 @@ public class RegionExtractionHelper {
 
         int pageCount = pageIds.size();
         int regionExtractedPageCount = 0;
+        processHandler = new ProcessHandler();
         for (String pageId : pageIds) {
             if (stop == true) 
                 break;
@@ -79,8 +87,16 @@ public class RegionExtractionHelper {
             String imagePath = projConf.OCR_DIR + pageId + projConf.IMG_EXT;
             String xmlPath = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
             String outputFolder = projConf.PAGE_DIR;
-            RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, spacing, outputFolder);
+            List<String> regions = RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, spacing, outputFolder);
+            List<String> command = new ArrayList<String>();
+            for(String pathToRegion :regions)
+                command.add(pathToRegion);
+            command.add("--parallel");
+            command.add(Integer.toString(parallel));
+            command.add("-n");
 
+            processHandler.setFetchProcessConsole(true);
+            processHandler.startProcess("ocropus-nlbin", command, false);
             regionExtractedPageCount++;
             progress = (int) ((double) regionExtractedPageCount / pageCount * 100);
         }
@@ -173,5 +189,14 @@ public class RegionExtractionHelper {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Gets the process handler object
+     *
+     * @return Returns the process Helper
+     */
+    public ProcessHandler getProcessHandler() {
+        return processHandler;
     }
 }
