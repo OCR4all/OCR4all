@@ -15,6 +15,15 @@
                         </div>
                     </td>
                 </tr>
+                <tr>
+                    <td><p>Output this many top confusion</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--confusion" type="number" step="1" value = "10"/>
+                            <label for="--confusion" data-type="int" data-error="Has to be int">Default: 10</label>
+                        </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </c:when>
@@ -38,15 +47,6 @@
                             <input type="checkbox" class="filled-in" id="--skipmissing" />
                             <label for="--skipmissing"></label>
                         </p>
-                    </td>
-                </tr>
-                <tr>
-                    <td><p>Output this many top confusion</p></td>
-                    <td>
-                        <div class="input-field">
-                            <input id="--confusion" type="number" step="1" />
-                            <label for="--confusion" data-type="int" data-error="Has to be int">Default: 10</label>
-                        </div>
                     </td>
                 </tr>
                 <tr>
