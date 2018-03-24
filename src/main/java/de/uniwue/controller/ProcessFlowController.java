@@ -294,7 +294,7 @@ public class ProcessFlowController {
 
         if (processes.contains("regionExtraction")) {
             session.setAttribute("currentProcess", "regionExtraction");
-            pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentationLarex");
             Map<String, Object> settings = processSettings.get("regionExtraction");
             doRegionExtraction(pageIds, settings.get("spacing"), settings.get("avgbackground"), settings.get("parallel"), session, response);
             if (needsExit(session, response))

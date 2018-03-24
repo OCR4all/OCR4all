@@ -384,9 +384,9 @@
                                     </div>
                                 </li>
                                 <li data-id="segmentationLarex">
-                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Segmentation</div>
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Segmentation (LAREX)</div>
                                     <div class="collapsible-body">
-                                        <div class="status"><p>Status: <span>No Segmentation process running</span></p></div>
+                                        <div class="status"><p>Status: <span>No Segmentation Larex process running</span></p></div>
                                         <div class="progress">
                                             <div class="determinate"></div>
                                         </div>
