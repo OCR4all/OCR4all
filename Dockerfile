@@ -1,11 +1,6 @@
 # Base Image
 FROM ubuntu
 
-# Arguments
-# Temporary required until repository is public
-ARG username
-ARG password
-
 # Enable Networking on port 8080
 EXPOSE 8080
 
@@ -24,7 +19,7 @@ RUN apt-get update&& apt-get install -y \
 && rm -rf /var/lib/apt/lists/*
 
 # Repository
-RUN cd /opt && git clone --recurse-submodules https://$username:$password@gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
+RUN cd /opt && git clone --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
 
 # Enabling direct request in Larex submodule
 RUN sed -i 's/#directrequest:<value>/directrequest:enable/' /opt/OCR4all_Web/src/main/resources/LAREX/Larex/src/main/webapp/WEB-INF/larex.config
@@ -43,6 +38,7 @@ RUN mkdir /var/ocr4all && chmod g+w /var/ocr4all && chgrp tomcat8 /var/ocr4all
 # Install ocropy
 RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
     wget -nd http://www.tmbdev.net/en-default.pyrnn.gz && \
+    mkdir models && \
     mv en-default.pyrnn.gz models/ && \
     python2.7 setup.py install
 
