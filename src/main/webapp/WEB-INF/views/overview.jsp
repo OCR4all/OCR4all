@@ -62,6 +62,7 @@
                         },
                     });
                 }
+
                 $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         if( !$('.collapsible').find('li').eq(0).hasClass('active') )
@@ -69,30 +70,32 @@
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
-                        $.get( "ajax/overview/checkDir?", { "projectDir" : $('#projectDir').val(),
-                            "imageType" : $('#imageType').val() } )
-                        .done(function( data ){
-                            if( data === true){
-                                $.get( "ajax/overview/check?", { "projectDir" : $('#projectDir').val(),
-                                    "imageType" : $('#imageType').val() } )
+                        var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
+                        // Check if directory exists
+                        $.get( "ajax/overview/checkDir?", ajaxParams )
+                        .done(function( data ) {
+                            if( data === true ) {
+                                // Check if filenames match project specific naming convention
+                                $.get( "ajax/overview/checkFileNames?", ajaxParams )
                                 .done(function( data ) {
-                                    if( data === true)
+                                    if( data === true ) {
                                         datatable();
+                                    }
                                     else{
-                                        $('#modal_choose').modal('open');
+                                        $('#modal_filerename').modal('open');
                                     }
                                 });
                             }
                             else{
                                 $('#projectDir').addClass('invalid').focus();
                             }
-
                         });
-
                     }
                 });
+
+                // Execute file rename only after the user agreed
                 $('#agree').click(function() {
-                    $.get( "ajax/overview/rename" )
+                    $.get( "ajax/overview/renameFiles" )
                     .done(function( data ) {
                         datatable();
                     });
@@ -172,11 +175,12 @@
                 </button>
             </div>
         </div>
-        <div id="modal_choose" class="modal">
+        <div id="modal_filerename" class="modal">
             <div class="modal-content">
-                <h4>Information</h4>
+                <h4 class="red-text">Attention</h4>
                     <p>
-                      By agreeing, files will be renamed according to the project standard
+                        Some or all files do not match the required naming convention for this tool.<br />
+                        If you agree the affected files will be renamed automatically.
                     </p>
             </div>
             <div class="modal-footer">

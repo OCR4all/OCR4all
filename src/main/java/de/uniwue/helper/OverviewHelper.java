@@ -10,7 +10,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +85,7 @@ public class OverviewHelper {
     /**
      * Generates status overview for one page
      *
-     * @param pageId  Page identifier for which the overview should be generated
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
     public void initialize(String pageId) throws IOException {
@@ -130,52 +129,51 @@ public class OverviewHelper {
      * Generates content for one page
      * This includes its segments and their lines
      *
-     * @param pageId  Page identifier for which the content should be generated
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @return Sorted map of page content
      * @throws IOException 
      */
     public Map<String, String[]> pageContent(String pageId) throws IOException {
-        Map<String,String[]> pageContent = new TreeMap<String, String[]>();
-        if (new File(projConf.PAGE_DIR + overview.get(pageId).getPageId()).exists()) {
-            File[] directories = new File(projConf.PAGE_DIR
-                    + overview.get(pageId).getPageId()).listFiles(File::isDirectory);
+        Map<String, String[]> pageContent = new TreeMap<String, String[]>();
+        if (!new File(projConf.PAGE_DIR + pageId).exists())
+            return pageContent;
 
-            if (directories.length == 0) {
-                // File depth of 1 -> no recursive (file)listing 
-                Files.walk(Paths.get(projConf.PAGE_DIR
-                        + overview.get(pageId).getPageId()), 1)
-                .map(Path::toFile)
-                .filter(fileEntry -> fileEntry.isFile())
-                .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
-                .sorted()
-                .forEach(
-                    fileEntry -> { if(!fileEntry.getName().contains("pseg")){
-                                      pageContent.put(FilenameUtils.removeExtension(fileEntry.getName()), new String[0]); }}
-                );
+        // Get all extracted segments / regions
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
+        .map(Path::toFile)
+        .filter(fileEntry -> fileEntry.isFile())
+        .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
+        .filter(fileEntry -> !fileEntry.getName().endsWith(projConf.BINR_IMG_EXT))
+        .filter(fileEntry -> !fileEntry.getName().endsWith(projConf.GRAY_IMG_EXT))
+        .filter(fileEntry -> !fileEntry.getName().endsWith(projConf.PSEG_EXT))
+        .sorted()
+        .forEach(
+            fileEntry -> {
+                // Initialize pageContent data structure with all segments/regions
+                pageContent.put(FilenameUtils.removeExtension(fileEntry.getName()), new String[0]);
             }
+        );
 
-            for (int folder = 0; folder < directories.length; folder++) {
-                File dir = new File(directories[folder].toString());
-                File[] files;
-                int extensionLength = 0;
-                if (imageType.equals("Gray")) {
-                    files = dir.listFiles((d, name) -> name.endsWith(projConf.GRAY_IMG_EXT));
-                    extensionLength = projConf.GRAY_IMG_EXT.length();
+        // Add all extracted line segments to previously initialized data structure
+        File[] segmentDirs = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
+        for (File segmentDir : segmentDirs) {
+            List<String> segmentIds = new ArrayList<String>();
+            Files.walk(Paths.get(segmentDir.getAbsolutePath()), 1)
+            .map(Path::toFile)
+            .filter(fileEntry -> fileEntry.isFile())
+            .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(imageType)))
+            .sorted()
+            .forEach(
+                fileEntry -> {
+                    // Call removeExtension twice, due to "Binary"|"Gray" image extensions (".bin.png"|".nrm.png")
+                    segmentIds.add(FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName())));
                 }
-                else {
-                    files = dir.listFiles((d, name) -> name.endsWith(projConf.BINR_IMG_EXT));
-                    extensionLength = projConf.BINR_IMG_EXT.length();
-                }
+            );
 
-                List<String> fileNames = new ArrayList<String>();
-                for (int file = 0; file < files.length; file++) {
-                    fileNames.add(FilenameUtils.getBaseName(
-                            files[file].toString().substring(0, files[file].toString().length() - extensionLength)));
-                }
-                Collections.sort(fileNames);
-                pageContent.put((directories[folder].getName()), fileNames.toArray(new String[fileNames.size()]));
-            }
+            pageContent.put(segmentDir.getName(), segmentIds.toArray(new String[segmentIds.size()]));
         }
+ 
         return pageContent;
     }
 

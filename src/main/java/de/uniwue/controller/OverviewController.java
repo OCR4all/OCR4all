@@ -74,7 +74,7 @@ public class OverviewController {
         String pageImage = pageId + ".png";
         mv.addObject("pageOverview", overviewHelper.getOverview().get(pageImage));
         try {
-            mv.addObject("segments", overviewHelper.pageContent(pageImage));
+            mv.addObject("segments", overviewHelper.pageContent(pageId));
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -122,52 +122,50 @@ public class OverviewController {
      */
     @RequestMapping(value ="/ajax/overview/checkDir" , method = RequestMethod.GET)
     public @ResponseBody boolean checkDir(
-            @RequestParam("projectDir") String projectDir,
-            @RequestParam("imageType") String imageType,
-            HttpSession session, HttpServletResponse response, HttpServletRequest request
-        ) {
-
+                @RequestParam("projectDir") String projectDir,
+                @RequestParam("imageType") String imageType,
+                HttpSession session, HttpServletResponse response, HttpServletRequest request
+            ) {
         // Add file separator to end of the path (for usage in JSP files)
         if (!projectDir.endsWith(File.separator))
             projectDir = projectDir + File.separator;
 
         // Resets the session, so that all previous moduleHelper attributes are discarded
         session.invalidate();
-        HttpSession NewSession = request.getSession();
+        HttpSession newSession = request.getSession();
 
         // Store project directory in session (serves as entry point)
-        NewSession.setAttribute("projectDir", projectDir);
-        NewSession.setAttribute("imageType", imageType);
+        newSession.setAttribute("projectDir", projectDir);
+        newSession.setAttribute("imageType", imageType);
 
         // Keep a single helper object in session (change if not existing or project is changed)
-        OverviewHelper overviewHelper = (OverviewHelper) NewSession.getAttribute("overviewHelper");
+        OverviewHelper overviewHelper = (OverviewHelper) newSession.getAttribute("overviewHelper");
         if (overviewHelper == null) {
             overviewHelper = new OverviewHelper(projectDir, imageType);
-            NewSession.setAttribute("overviewHelper", overviewHelper);
+            newSession.setAttribute("overviewHelper", overviewHelper);
         }
-        return overviewHelper.checkProjectDir();
 
+        return overviewHelper.checkProjectDir();
     }
     /**
      * Response to the request to check the filenames
+     *
      * @param session Session of the user
      * @param response Response to the request
      * @return Returns the status of the filename check
      */
-    @RequestMapping(value ="/ajax/overview/check" , method = RequestMethod.GET)
-    public @ResponseBody boolean checkFiles(
-            HttpSession session, HttpServletResponse response
-        ) {
+    @RequestMapping(value ="/ajax/overview/checkFileNames" , method = RequestMethod.GET)
+    public @ResponseBody boolean checkFiles(HttpSession session, HttpServletResponse response) {
+        boolean fileRenameRequired = false;
 
         // Keep a single helper object in session (change if not existing or project is changed)
         OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
-        if (overviewHelper == null ) 
+        if (overviewHelper == null ) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return fileRenameRequired;
+        }
 
-        boolean fileRenameRequired = false;
         fileRenameRequired = overviewHelper.checkFiles();
-
-        // @RequestMapping automatically transforms object to json format
         return fileRenameRequired;
     }
 
@@ -177,10 +175,8 @@ public class OverviewController {
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value ="/ajax/overview/rename" , method = RequestMethod.GET)
-    public @ResponseBody void renameFiles(
-            HttpSession session, HttpServletResponse response
-        ) {
+    @RequestMapping(value ="/ajax/overview/renameFiles" , method = RequestMethod.GET)
+    public @ResponseBody void renameFiles(HttpSession session, HttpServletResponse response) {
         OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
         if (overviewHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
