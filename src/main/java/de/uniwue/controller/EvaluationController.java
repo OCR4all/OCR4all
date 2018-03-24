@@ -43,7 +43,7 @@ public class EvaluationController {
         // Keep a single helper object in session
         EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
         if (evaluationHelper == null) {
-        	evaluationHelper = new EvaluationHelper(projectDir, projectImageType);
+            evaluationHelper = new EvaluationHelper(projectDir, projectImageType);
             session.setAttribute("evaluationHelper", evaluationHelper);
         }
 
@@ -78,7 +78,7 @@ public class EvaluationController {
         // Keep a single helper object in session
         EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
         if (evaluationHelper == null) {
-        	evaluationHelper = new EvaluationHelper(projectDir, projectImageType);
+            evaluationHelper = new EvaluationHelper(projectDir, projectImageType);
             session.setAttribute("evaluationHelper", evaluationHelper);
         }
 
@@ -88,7 +88,7 @@ public class EvaluationController {
         }
 
         try {
-        	evaluationHelper.evaluatePages(Arrays.asList(pageIds), cmdArgList);
+            evaluationHelper.evaluatePages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             evaluationHelper.resetProgress();
@@ -103,7 +103,7 @@ public class EvaluationController {
      */
     @RequestMapping(value = "/ajax/evaluation/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-    	EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
+        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
         if (evaluationHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
@@ -121,7 +121,7 @@ public class EvaluationController {
      */
     @RequestMapping(value = "/ajax/evaluation/progress" , method = RequestMethod.GET)
     public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
-    	EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
+        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
         if (evaluationHelper == null) {
             return -1;
         }
@@ -141,7 +141,7 @@ public class EvaluationController {
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
             ) {
-    	EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
+        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
         if (evaluationHelper == null) {
             return "";
         }

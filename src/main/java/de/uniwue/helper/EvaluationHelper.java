@@ -57,9 +57,9 @@ public class EvaluationHelper {
     }
 
     /**
-     * Returns the absolute path of all gt files for the pages in the processState
+     * Returns the absolute path of all ".gt.txt" files for the pages in the processState
      *
-     * @return List of gt files
+     * @return List of ".gt.txt" files
      * @throws IOException 
      */
     public List<String> getGtFilesOfPages(List<String> pageIds){
@@ -91,8 +91,8 @@ public class EvaluationHelper {
         progress = 0;
 
         List<String> command = new ArrayList<String>();
-        List<String> GtFiles = getGtFilesOfPages(pageIds);
-        for (String gtFile : GtFiles) {
+        List<String> gtFiles = getGtFilesOfPages(pageIds);
+        for (String gtFile : gtFiles) {
             // Add affected line segment images with their absolute path to the command list
             command.add(gtFile);
         }
@@ -110,7 +110,7 @@ public class EvaluationHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
-    	evaluationRunning = false;
+        evaluationRunning = false;
         progress = -1;
     }
 
@@ -137,10 +137,6 @@ public class EvaluationHelper {
      * @return Progress percentage
      */
     public int getProgress() {
-        // Prevent function from calculation progress if process is not running
-        if (evaluationRunning == false)
-            return progress;
-
         return progress;
     }
 }
