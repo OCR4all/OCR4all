@@ -28,7 +28,19 @@
             <li class="nav-separator"></li>
             <li><a href="Preprocessing">Preprocessing</a></li>
             <li><a href="Despeckling">Noise Removal</a></li>
-            <li><a href="Segmentation">Segmentation</a></li>
+            <li>
+                <ul class="collapsible collapsible-expandable">
+                    <li>
+                        <a class="collapsible-header">Segmentation</a>
+                        <div class="collapsible-body">
+                            <ul>
+                                <li><a href="Segmentation">Segmentation (LAREX)</a></li>
+                                <li><a href="#!">Segmentation (Dummy)</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </li>
             <li><a href="RegionExtraction">Region Extraction</a></li>
             <li><a href="LineSegmentation">Line Segmentation</a></li>
             <li><a href="Recognition">Recognition</a></li>

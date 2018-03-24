@@ -47,7 +47,7 @@
             var pageTitle = $('.page-title').first().text();
             $(".side-nav li a").each(function() {
                 if( $(this).text() == pageTitle )
-                    $(this).parent().addClass("active");
+                    $(this).parent().addClass("selected");
             });
 
             // Initialize select form elements
@@ -57,7 +57,11 @@
             $('.modal').modal();
 
             // Initialize tabs
-            $('ul.tabs').tabs(); 
+            $('ul.tabs').tabs();
+
+            // Expand all side navigation collapsibles (to show nested elements)
+            $('.side-nav .collapsible-header').addClass('active');
+            $('.side-nav .collapsible').collapsible();
         });
     </script>
 

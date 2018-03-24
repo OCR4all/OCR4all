@@ -9,8 +9,14 @@ ul.side-nav {
   font-size: 25px;
   padding: 0px 32px 34px 32px;
 }
-.side-nav li.active, nav ul a:hover {
+.side-nav li.selected, nav ul a:hover {
   background-color: #8c9eff;
+}
+.side-nav ul.collapsible > li > a {
+  padding-left: 32px;
+}
+.side-nav ul.collapsible > li ul > li > a {
+  padding-left: 47px;
 }
 .nav-separator {
   margin: 10px 20px;
