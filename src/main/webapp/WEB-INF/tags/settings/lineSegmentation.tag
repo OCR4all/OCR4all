@@ -33,6 +33,18 @@
                         </div>
                     </td>
                 </tr>
+                <tr>
+                    <td><p>Output grayscale lines as well</p></td>
+                    <td>
+                             <c:choose>
+                                 <c:when test='${imageType == "Gray"}'><c:set value='checked="checked"' var="setCheckboxImageType"></c:set></c:when>
+                             </c:choose>
+                             <p>
+                                 <input type="checkbox" class="filled-in" id="--gray" ${setCheckboxImageType}/>
+                                 <label for="--gray"></label>
+                             </p>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </c:when>
@@ -51,15 +63,6 @@
                                         <input id="--zoom" type="number" step="0.1" />
                                         <label for="--zoom" data-type="float" data-error="Has to be float">Default: 0.5</label>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><p>Output grayscale lines as well</p></td>
-                                <td>
-                                        <p>
-                                            <input type="checkbox" class="filled-in" id="--gray"/>
-                                            <label for="--gray"></label>
-                                        </p>
                                 </td>
                             </tr>
                         </tbody>
