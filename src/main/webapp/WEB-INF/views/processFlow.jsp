@@ -11,7 +11,7 @@
                 initializeImageList("Original");
 
                 // Open process selection on default
-                $('.collapsible').first().collapsible('open', 0);
+                $('.collapsible').eq(1).collapsible('open', 0);
 
                 function getProcessesToExecute() {
                     var processesToExecute = [];
