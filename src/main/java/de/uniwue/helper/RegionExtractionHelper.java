@@ -26,6 +26,12 @@ public class RegionExtractionHelper {
     private ProjectConfiguration projConf;
 
     /**
+     * Image type of the project
+     * Possible values: { Binary, Gray }
+     */
+    private String projectImageType;
+
+    /**
      * Helper object for process handling
      */
     private ProcessHandler processHandler;
@@ -50,7 +56,8 @@ public class RegionExtractionHelper {
      *
      * @param projectDir Path to the project directory
      */
-    public RegionExtractionHelper(String projectDir) {
+    public RegionExtractionHelper(String projectDir, String projectImageType) {
+        this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
     }

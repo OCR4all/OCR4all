@@ -34,7 +34,8 @@ public class LineSegmentationController {
         ModelAndView mv = new ModelAndView("lineSegmentation");
 
         String projectDir = (String)session.getAttribute("projectDir");
-        if (projectDir == null) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
@@ -42,7 +43,6 @@ public class LineSegmentationController {
         // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
         if (lineSegmentationHelper == null) {
-            String projectImageType = (String) session.getAttribute("imageType");
             lineSegmentationHelper = new LineSegmentationHelper(projectDir,projectImageType);
             session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
         }
@@ -65,7 +65,8 @@ public class LineSegmentationController {
                HttpSession session, HttpServletResponse response
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty()) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -77,7 +78,6 @@ public class LineSegmentationController {
         // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
         if (lineSegmentationHelper == null) {
-            String projectImageType = (String) session.getAttribute("imageType");
             lineSegmentationHelper = new LineSegmentationHelper(projectDir,projectImageType);
             session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
         }

@@ -36,7 +36,8 @@ public class RegionExtractionController {
 
         String projectDir = (String)session.getAttribute("projectDir");
 
-        if (projectDir == null) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
@@ -44,7 +45,7 @@ public class RegionExtractionController {
         // Keep a single helper object in session
         RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
         if (regionExtractionHelper == null) {
-            regionExtractionHelper = new RegionExtractionHelper(projectDir);
+            regionExtractionHelper = new RegionExtractionHelper(projectDir, projectImageType);
             session.setAttribute("regionExtractionHelper", regionExtractionHelper);
         }
 
@@ -70,7 +71,8 @@ public class RegionExtractionController {
                 HttpSession session, HttpServletResponse response
             ) {
         String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty()) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -79,7 +81,7 @@ public class RegionExtractionController {
         // Keep a single helper object in session
         RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
         if (regionExtractionHelper == null) {
-            regionExtractionHelper = new RegionExtractionHelper(projectDir);
+            regionExtractionHelper = new RegionExtractionHelper(projectDir, projectImageType);
             session.setAttribute("regionExtractionHelper", regionExtractionHelper);
         }
 

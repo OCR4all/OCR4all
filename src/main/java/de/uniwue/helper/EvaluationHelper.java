@@ -15,6 +15,12 @@ public class EvaluationHelper {
     private ProjectConfiguration projConf;
 
     /**
+     * Image type of the project
+     * Possible values: { Binary, Gray }
+     */
+    private String projectImageType;
+
+    /**
      * Helper object for process handling
      */
     private ProcessHandler processHandler;
@@ -33,8 +39,10 @@ public class EvaluationHelper {
      * Constructor
      *
      * @param projectDir Path to the project directory
+     * @param projectImageType Type of the project (binary, gray)
      */
-    public EvaluationHelper(String projectDir) {
+    public EvaluationHelper(String projectDir, String projectImageType) {
+        this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
     }

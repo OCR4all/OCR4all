@@ -33,7 +33,8 @@ public class PreprocessingController {
         ModelAndView mv = new ModelAndView("preprocessing");
 
         String projectDir = (String)session.getAttribute("projectDir");
-        if (projectDir == null) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
@@ -41,7 +42,7 @@ public class PreprocessingController {
         // Keep a single helper object in session
         PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
         if (preprocessingHelper == null) {
-            preprocessingHelper = new PreprocessingHelper(projectDir);
+            preprocessingHelper = new PreprocessingHelper(projectDir, projectImageType);
             session.setAttribute("preprocessingHelper", preprocessingHelper);
         }
 
@@ -63,7 +64,8 @@ public class PreprocessingController {
                HttpSession session, HttpServletResponse response
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty()) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -75,7 +77,7 @@ public class PreprocessingController {
         // Keep a single helper object in session
         PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
         if (preprocessingHelper == null) {
-            preprocessingHelper = new PreprocessingHelper(projectDir);
+            preprocessingHelper = new PreprocessingHelper(projectDir, projectImageType);
             session.setAttribute("preprocessingHelper", preprocessingHelper);
         }
 

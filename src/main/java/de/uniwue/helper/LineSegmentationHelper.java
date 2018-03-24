@@ -42,9 +42,11 @@ public class LineSegmentationHelper {
     private boolean lineSegmentationRunning = false;
 
     /**
-     * Imagetype of the project
+     * Image type of the project
+     * Possible values: { Binary, Gray }
      */
-    private String projectImagetype;
+    private String projectImageType;
+
     /**
      * Constructor
      *
@@ -52,7 +54,7 @@ public class LineSegmentationHelper {
      * @param projectImageType Type of the project (gray, binary)
      */
     public LineSegmentationHelper(String projectDir, String projectImageType) {
-        this.projectImagetype = projectImageType;
+        this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
     }
@@ -100,7 +102,7 @@ public class LineSegmentationHelper {
             Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
             .map(Path::toFile)
             .filter(fileEntry -> fileEntry.isFile())
-            .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImagetype)))
+            .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImageType)))
             .forEach(
                 fileEntry -> { 
                     segments.put(FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName())), false);
@@ -177,7 +179,7 @@ public class LineSegmentationHelper {
                     segmentDir.mkdirs();
 
                 // Copy segment image to own segment directory and create pseg-file to indicate successful processing
-                switch(projectImagetype) {
+                switch(projectImageType) {
                 case "binary": Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.BINR_IMG_EXT),
                         Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.BINR_IMG_EXT),
                         StandardCopyOption.valueOf("REPLACE_EXISTING"));

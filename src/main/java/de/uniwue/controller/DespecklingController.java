@@ -32,7 +32,8 @@ public class DespecklingController {
         ModelAndView mv = new ModelAndView("despeckling");
 
         String projectDir = (String)session.getAttribute("projectDir");
-        if (projectDir == null) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
@@ -40,7 +41,7 @@ public class DespecklingController {
         // Keep a single helper object in session
         DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
         if (despecklingHelper == null) {
-            despecklingHelper = new DespecklingHelper(projectDir);
+            despecklingHelper = new DespecklingHelper(projectDir, projectImageType);
             session.setAttribute("despecklingHelper", despecklingHelper);
         }
 
@@ -62,7 +63,8 @@ public class DespecklingController {
                 HttpSession session, HttpServletResponse response
             ) {
         String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty()) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -70,7 +72,7 @@ public class DespecklingController {
         // Keep a single helper object in session
         DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
         if (despecklingHelper == null) {
-            despecklingHelper = new DespecklingHelper(projectDir);
+            despecklingHelper = new DespecklingHelper(projectDir, projectImageType);
             session.setAttribute("despecklingHelper", despecklingHelper);
         }
 

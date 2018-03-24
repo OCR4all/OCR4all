@@ -34,7 +34,8 @@ public class EvaluationController {
         ModelAndView mv = new ModelAndView("evaluation");
 
         String projectDir = (String)session.getAttribute("projectDir");
-        if (projectDir == null) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
@@ -42,7 +43,7 @@ public class EvaluationController {
         // Keep a single helper object in session
         EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
         if (evaluationHelper == null) {
-        	evaluationHelper = new EvaluationHelper(projectDir);
+        	evaluationHelper = new EvaluationHelper(projectDir, projectImageType);
             session.setAttribute("evaluationHelper", evaluationHelper);
         }
 
@@ -64,7 +65,8 @@ public class EvaluationController {
                HttpSession session, HttpServletResponse response
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty()) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -76,7 +78,7 @@ public class EvaluationController {
         // Keep a single helper object in session
         EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
         if (evaluationHelper == null) {
-        	evaluationHelper = new EvaluationHelper(projectDir);
+        	evaluationHelper = new EvaluationHelper(projectDir, projectImageType);
             session.setAttribute("evaluationHelper", evaluationHelper);
         }
 

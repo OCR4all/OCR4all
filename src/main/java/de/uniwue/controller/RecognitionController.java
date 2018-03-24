@@ -35,7 +35,8 @@ public class RecognitionController {
         ModelAndView mv = new ModelAndView("recognition");
 
         String projectDir = (String)session.getAttribute("projectDir");
-        if (projectDir == null) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
@@ -43,7 +44,6 @@ public class RecognitionController {
         // Keep a single helper object in session
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
-            String projectImageType = (String) session.getAttribute("imageType");
             recognitionHelper = new RecognitionHelper(projectDir, projectImageType);
             session.setAttribute("recognitionHelper", recognitionHelper);
         }
@@ -66,7 +66,8 @@ public class RecognitionController {
                HttpSession session, HttpServletResponse response
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty()) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -78,7 +79,6 @@ public class RecognitionController {
         // Keep a single helper object in session
         RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null) {
-            String projectImageType = (String) session.getAttribute("imageType");
             recognitionHelper = new RecognitionHelper(projectDir,projectImageType);
             session.setAttribute("recognitionHelper", recognitionHelper);
         }

@@ -21,6 +21,12 @@ public class SegmentationHelper {
     private ProjectConfiguration projConf;
 
     /**
+     * Image type of the project
+     * Possible values: { Binary, Gray }
+     */
+    private String projectImageType;
+
+    /**
      * Status of the Segmentation progress
      */
     private int progress = -1;
@@ -39,8 +45,10 @@ public class SegmentationHelper {
      * Constructor
      *
      * @param projectDir Path to the project directory
+     * @param projectImageType Type of the project (binary,gray)
      */
-    public SegmentationHelper(String projDir) {
+    public SegmentationHelper(String projDir, String projectImageType) {
+        this.projectImageType = projectImageType;
         this.projConf = new ProjectConfiguration(projDir);
     }
 
@@ -49,10 +57,9 @@ public class SegmentationHelper {
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param segmentationImageType Image type of the segmentation (binary, despeckled)
-     * @param projectImageType Image type of the segmentation (gray, binary)
      * @throws IOException
      */
-    public void moveExtractedSegments(List<String> pageIds, String segmentationImageType, String projectImageType) throws IOException {
+    public void moveExtractedSegments(List<String> pageIds, String segmentationImageType) throws IOException {
         segmentationRunning = true;
         stop = false;
         progress = 0;
@@ -141,7 +148,7 @@ public class SegmentationHelper {
             return;
 
         // Delete all files created by subsequent processes to preserve data integrity
-        RegionExtractionHelper regionExtracorHelper = new RegionExtractionHelper(projConf.PROJECT_DIR);
+        RegionExtractionHelper regionExtracorHelper = new RegionExtractionHelper(projConf.PROJECT_DIR, this.projectImageType);
         regionExtracorHelper.deleteOldFiles(pageIds);
 
         // Delete image and PageXML files

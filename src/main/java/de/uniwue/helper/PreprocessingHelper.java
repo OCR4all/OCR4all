@@ -21,6 +21,12 @@ public class PreprocessingHelper {
     private ProjectConfiguration projConf;
 
     /**
+     * Image type of the project
+     * Possible values: { Binary, Gray }
+     */
+    private String projectImageType;
+
+    /**
      * Helper object for process handling
      */
     private ProcessHandler processHandler;
@@ -44,8 +50,9 @@ public class PreprocessingHelper {
      * Constructor
      *
      * @param projectDir Path to the project directory
+     * @param projectImageType Type of the project (binary, gray)
      */
-    public PreprocessingHelper(String projectDir) {
+    public PreprocessingHelper(String projectDir, String projectImageType) {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
     }

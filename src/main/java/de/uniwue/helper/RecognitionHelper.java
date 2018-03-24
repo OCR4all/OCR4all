@@ -25,6 +25,12 @@ public class RecognitionHelper {
     private ProjectConfiguration projConf;
 
     /**
+     * Image type of the project
+     * Possible values: { Binary, Gray }
+     */
+    private String projectImageType;
+
+    /**
      * Helper object for process handling
      */
     private ProcessHandler processHandler;
@@ -58,17 +64,15 @@ public class RecognitionHelper {
      */
     private TreeMap<String,TreeMap<String, TreeMap<String, Boolean>>> processState =
         new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
-    /**
-     * Type of the project
-     */
-    private String projectImagetype;
+
     /**
      * Constructor
      *
      * @param projectDir Path to the project directory
+     * @param projectImageType Type of the project (binary, gray)
      */
     public RecognitionHelper(String projectDir, String projectImageType) {
-        this.projectImagetype = projectImageType;
+        this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
     }
@@ -102,7 +106,7 @@ public class RecognitionHelper {
                     Files.walk(Paths.get(dir.getAbsolutePath()), 1)
                     .map(Path::toFile)
                     .filter(fileEntry -> fileEntry.isFile())
-                    .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImagetype)))
+                    .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImageType)))
                     .forEach(
                         fileEntry -> {
                             // Line segments have one of the following endings: ".bin.png" | ".nrm.png"
@@ -132,7 +136,7 @@ public class RecognitionHelper {
             for (String segmentId : processState.get(pageId).keySet()) {
                 for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
                     LineSegmentsOfPage.add(projConf.PAGE_DIR + pageId + File.separator + segmentId +
-                        File.separator + lineSegmentId + projConf.getImageExtensionByType(projectImagetype));
+                        File.separator + lineSegmentId + projConf.getImageExtensionByType(projectImageType));
                 }
             }
         }

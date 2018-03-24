@@ -32,7 +32,8 @@ public class SegmentationController {
         ModelAndView mv = new ModelAndView("segmentation");
 
         String projectDir = (String)session.getAttribute("projectDir");
-        if (projectDir == null) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
@@ -40,7 +41,7 @@ public class SegmentationController {
         // Keep a single helper object in session
         SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
         if (segmentationHelper == null) {
-            segmentationHelper = new SegmentationHelper(projectDir);
+            segmentationHelper = new SegmentationHelper(projectDir, projectImageType);
             session.setAttribute("segmentationHelper", segmentationHelper);
         }
 
@@ -63,7 +64,8 @@ public class SegmentationController {
                HttpSession session, HttpServletResponse response
            ) {
         String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty()) {
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -71,7 +73,7 @@ public class SegmentationController {
         // Keep a single helper object in session
         SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
         if (segmentationHelper == null) {
-            segmentationHelper = new SegmentationHelper(projectDir);
+            segmentationHelper = new SegmentationHelper(projectDir, projectImageType);
             session.setAttribute("segmentationHelper", segmentationHelper);
         }
 
@@ -81,8 +83,7 @@ public class SegmentationController {
         }
 
         try {
-            String projectImageType = (String) session.getAttribute("imageType");
-            segmentationHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType, projectImageType);
+            segmentationHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationHelper.resetProgress();
