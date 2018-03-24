@@ -14,6 +14,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessHandler;
+import de.uniwue.feature.ProcessStateCollector;
 
 /**
  * Helper class for recognition module
@@ -29,6 +30,11 @@ public class RecognitionHelper {
      * Possible values: { Binary, Gray }
      */
     private String projectImageType;
+
+    /**
+     * Object to determine process states
+     */
+    private ProcessStateCollector procStateCol;
 
     /**
      * Helper object for process handling
@@ -74,6 +80,7 @@ public class RecognitionHelper {
     public RecognitionHelper(String projectDir, String projectImageType) {
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
         processHandler = new ProcessHandler();
     }
 
@@ -287,16 +294,9 @@ public class RecognitionHelper {
      * @return Information if files exist
      */
     public boolean doOldFilesExist(String[] pageIds) {
-        for(String pageId : pageIds) {
-            File pageDirectory = new File(projConf.PAGE_DIR + pageId);
-            if (!pageDirectory.exists())
-                break;
-
-            File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
-            for (File dir : lineSegmentDirectories) {
-                if (new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(projConf.REC_EXT)).length != 0)
-                    return true;
-            }
+        for (String pageId : pageIds) {
+            if (procStateCol.recognitionState(pageId) == true)
+                return true;
         }
         return false;
     }

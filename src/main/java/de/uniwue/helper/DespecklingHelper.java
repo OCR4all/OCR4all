@@ -9,6 +9,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ImageDespeckle;
+import de.uniwue.feature.ProcessStateCollector;
 
 /**
  * Helper class for despeckling module
@@ -20,10 +21,9 @@ public class DespecklingHelper {
     private ProjectConfiguration projConf;
 
     /**
-     * Image type of the project
-     * Possible values: { Binary, Gray }
+     * Object to determine process states
      */
-    private String projectImageType;
+    private ProcessStateCollector procStateCol;
 
     /**
      * Status of the progress
@@ -47,8 +47,8 @@ public class DespecklingHelper {
      * @param projectImageType Type of the project (binary, gray)
      */
     public DespecklingHelper(String projectDir, String projectImageType) {
-        this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
     }
 
     /**
@@ -146,8 +146,8 @@ public class DespecklingHelper {
      * @return Information if files exist
      */
     public boolean doOldFilesExist(String[] pageIds) {
-        for (String page : pageIds) {
-            if (new File(projConf.DESP_IMG_DIR + page + projConf.IMG_EXT).exists())
+        for (String pageId : pageIds) {
+            if (procStateCol.despecklingState(pageId) == true);
                 return true;
         }
         return false;

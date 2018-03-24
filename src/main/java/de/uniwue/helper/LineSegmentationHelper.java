@@ -16,6 +16,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessHandler;
+import de.uniwue.feature.ProcessStateCollector;
 
 /**
  * Helper class for line segmenting pages, which also calls the ocropus-gpageseg program
@@ -25,6 +26,17 @@ public class LineSegmentationHelper {
      * Object to access project configuration
      */
     private ProjectConfiguration projConf;
+
+    /**
+     * Image type of the project
+     * Possible values: { Binary, Gray }
+     */
+    private String projectImageType;
+
+    /**
+     * Object to determine process states
+     */
+    private ProcessStateCollector procStateCol;
 
     /**
      * Helper object for process handling
@@ -42,33 +54,6 @@ public class LineSegmentationHelper {
     private boolean lineSegmentationRunning = false;
 
     /**
-     * Image type of the project
-     * Possible values: { Binary, Gray }
-     */
-    private String projectImageType;
-
-    /**
-     * Constructor
-     *
-     * @param projectDir Path to the project directory
-     * @param projectImageType Type of the project (gray, binary)
-     */
-    public LineSegmentationHelper(String projectDir, String projectImageType) {
-        this.projectImageType = projectImageType;
-        projConf = new ProjectConfiguration(projectDir);
-        processHandler = new ProcessHandler();
-    }
-
-    /**
-     * Gets the process handler object
-     *
-     * @return Returns the process Helper
-     */
-    public ProcessHandler getProcessHandler() {
-        return processHandler;
-    }
-
-    /**
      * Structure to monitor the progress of the process
      * pageId : segmentId : processedState
      *
@@ -83,6 +68,28 @@ public class LineSegmentationHelper {
      * }
      */
     private TreeMap<String, TreeMap<String, Boolean>> processState = new TreeMap<String, TreeMap<String, Boolean>>();
+
+    /**
+     * Constructor
+     *
+     * @param projectDir Path to the project directory
+     * @param projectImageType Type of the project (gray, binary)
+     */
+    public LineSegmentationHelper(String projectDir, String projectImageType) {
+        this.projectImageType = projectImageType;
+        projConf = new ProjectConfiguration(projectDir);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        processHandler = new ProcessHandler();
+    }
+
+    /**
+     * Gets the process handler object
+     *
+     * @return Returns the process Helper
+     */
+    public ProcessHandler getProcessHandler() {
+        return processHandler;
+    }
 
     /**
      * Initializes the structure with which the progress of the process can be monitored
@@ -309,15 +316,8 @@ public class LineSegmentationHelper {
      * @return Information if files exist
      */
     public boolean doOldFilesExist(String[] pageIds){
-        for(String page : pageIds) {
-            File pageDir = new File(projConf.PAGE_DIR + page);
-            if (!pageDir.exists())
-                continue;
-
-            // Check for folders and pseg-files
-            if (pageDir.listFiles(File::isDirectory).length != 0)
-                return true;
-            if (pageDir.listFiles((d, name) -> name.endsWith(projConf.PSEG_EXT)).length != 0)
+        for(String pageId : pageIds) {
+            if (procStateCol.lineSegmentationState(pageId) == true)
                 return true;
         }
         return false;

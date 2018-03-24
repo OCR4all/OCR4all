@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessStateCollector;
 
 /**
  * Helper class for segmentation larex module
@@ -25,6 +26,11 @@ public class SegmentationLarexHelper {
      * Possible values: { Binary, Gray }
      */
     private String projectImageType;
+
+    /**
+     * Object to determine process states
+     */
+    private ProcessStateCollector procStateCol;
 
     /**
      * Status of the SegmentationLarex progress
@@ -49,7 +55,8 @@ public class SegmentationLarexHelper {
      */
     public SegmentationLarexHelper(String projDir, String projectImageType) {
         this.projectImageType = projectImageType;
-        this.projConf = new ProjectConfiguration(projDir);
+        projConf = new ProjectConfiguration(projDir);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
     }
 
     /**
@@ -171,10 +178,7 @@ public class SegmentationLarexHelper {
      */
     public boolean doOldFilesExist(String[] pageIds) {
         for (String pageId : pageIds) {
-            // Check for image and PageXML files
-            if (new File(projConf.OCR_DIR + pageId + projConf.IMG_EXT).exists())
-                return true;
-            if (new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).exists())
+            if (procStateCol.segmentationState(pageId) == true)
                 return true;
         }
         return false;

@@ -7,6 +7,7 @@ import java.util.List;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessHandler;
+import de.uniwue.feature.ProcessStateCollector;
 
 public class EvaluationHelper {
     /**
@@ -15,10 +16,9 @@ public class EvaluationHelper {
     private ProjectConfiguration projConf;
 
     /**
-     * Image type of the project
-     * Possible values: { Binary, Gray }
+     * Object to determine process states
      */
-    private String projectImageType;
+    private ProcessStateCollector procStateCol;
 
     /**
      * Helper object for process handling
@@ -42,9 +42,9 @@ public class EvaluationHelper {
      * @param projectImageType Type of the project (binary, gray)
      */
     public EvaluationHelper(String projectDir, String projectImageType) {
-        this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
     }
 
     /**

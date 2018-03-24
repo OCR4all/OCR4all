@@ -14,6 +14,7 @@ import org.xml.sax.SAXException;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessHandler;
+import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.feature.RegionExtractor;
 
 /**
@@ -26,10 +27,9 @@ public class RegionExtractionHelper {
     private ProjectConfiguration projConf;
 
     /**
-     * Image type of the project
-     * Possible values: { Binary, Gray }
+     * Object to determine process states
      */
-    private String projectImageType;
+    private ProcessStateCollector procStateCol;
 
     /**
      * Helper object for process handling
@@ -57,9 +57,18 @@ public class RegionExtractionHelper {
      * @param projectDir Path to the project directory
      */
     public RegionExtractionHelper(String projectDir, String projectImageType) {
-        this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
         processHandler = new ProcessHandler();
+    }
+
+    /**
+     * Gets the process handler object
+     *
+     * @return Returns the process Helper
+     */
+    public ProcessHandler getProcessHandler() {
+        return processHandler;
     }
 
     /**
@@ -191,19 +200,10 @@ public class RegionExtractionHelper {
      * @return Information if files exist
      */
     public boolean doOldFilesExist(String[] pageIds) {
-        for (String page : pageIds) {
-            if (new File(projConf.PAGE_DIR + page).exists())
+        for (String pageId : pageIds) {
+            if (procStateCol.regionExtractionState(pageId))
                 return true;
         }
         return false;
-    }
-
-    /**
-     * Gets the process handler object
-     *
-     * @return Returns the process Helper
-     */
-    public ProcessHandler getProcessHandler() {
-        return processHandler;
     }
 }

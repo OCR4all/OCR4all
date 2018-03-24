@@ -10,6 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessHandler;
+import de.uniwue.feature.ProcessStateCollector;
 
 /**
  * Helper class for preprocessing pages, which also calls the ocrubus-nlbin program 
@@ -21,10 +22,9 @@ public class PreprocessingHelper {
     private ProjectConfiguration projConf;
 
     /**
-     * Image type of the project
-     * Possible values: { Binary, Gray }
+     * Object to determine process states
      */
-    private String projectImageType;
+    private ProcessStateCollector procStateCol;
 
     /**
      * Helper object for process handling
@@ -54,6 +54,7 @@ public class PreprocessingHelper {
      */
     public PreprocessingHelper(String projectDir, String projectImageType) {
         projConf = new ProjectConfiguration(projectDir);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
         processHandler = new ProcessHandler();
     }
 
@@ -215,11 +216,9 @@ public class PreprocessingHelper {
      * @return Information if files exist
      */
     public boolean doOldFilesExist(String[] pageIds) {
-        for(String page : pageIds) {
-            if (new File(projConf.BINR_IMG_DIR + page + projConf.IMG_EXT).exists() ||
-                    new File(projConf.GRAY_IMG_DIR + page + projConf.IMG_EXT).exists()) {
+        for(String pageId : pageIds) {
+            if (procStateCol.preprocessingState(pageId) == true)
                 return true;
-            }
         }
         return false;
     }
