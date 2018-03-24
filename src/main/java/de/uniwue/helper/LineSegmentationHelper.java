@@ -34,6 +34,11 @@ public class LineSegmentationHelper {
     private String projectImageType;
 
     /**
+     * Object to use generic functionalities
+     */
+    private GenericHelper genericHelper;
+
+    /**
      * Object to determine process states
      */
     private ProcessStateCollector procStateCol;
@@ -78,6 +83,7 @@ public class LineSegmentationHelper {
     public LineSegmentationHelper(String projectDir, String projectImageType) {
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
+        genericHelper = new GenericHelper(projConf);
         procStateCol = new ProcessStateCollector(projConf, projectImageType);
         processHandler = new ProcessHandler();
     }
@@ -267,19 +273,18 @@ public class LineSegmentationHelper {
      * Returns the Ids of the pages, for which region extraction was already executed
      *
      * @return List of valid page Ids
+     * @throws IOException 
      */
-    public ArrayList<String> getValidPageIdsforLineSegmentation() {
+    public ArrayList<String> getValidPageIdsforLineSegmentation() throws IOException {
+        // Get all pages and check which ones are already region extracted
         ArrayList<String> validPageIds = new ArrayList<String>();
-        File pageDir = new File(projConf.PAGE_DIR);
-        if (!pageDir.exists())
-            return validPageIds;
-
-        File[] directories = pageDir.listFiles(File::isDirectory);
-        for(File file: directories) { 
-            validPageIds.add(file.getName());
+        ArrayList<String> allPageIds = genericHelper.getPageList("Original");
+        for (String pageId : allPageIds) {
+            if (procStateCol.regionExtractionState(pageId) == true)
+                validPageIds.add(pageId);
         }
-        Collections.sort(validPageIds);
 
+        Collections.sort(validPageIds);
         return validPageIds;
     }
 

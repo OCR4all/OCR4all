@@ -30,6 +30,15 @@ public class GenericHelper {
     }
 
     /**
+     * Constructor
+     *
+     * @param projConf Project configuration object
+     */
+    public GenericHelper(ProjectConfiguration projConf) {
+        this.projConf = projConf;
+    }
+
+    /**
      * Gets all page IDs of the project
      *
      * @param imageType Type of the images

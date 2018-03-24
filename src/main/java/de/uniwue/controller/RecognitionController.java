@@ -167,11 +167,16 @@ public class RecognitionController {
      */
     @RequestMapping(value = "/ajax/recognition/getValidPageIds" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<String> getIdsforRecognition(HttpSession session, HttpServletResponse response) {
-    	RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
         if (recognitionHelper == null)
             return null;
 
-        return recognitionHelper.getValidPageIdsforRecognition();
+        try {
+            return recognitionHelper.getValidPageIdsforRecognition();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return null;
+        }
     }
 
     /**

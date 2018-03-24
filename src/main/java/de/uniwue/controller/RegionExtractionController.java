@@ -166,7 +166,12 @@ public class RegionExtractionController {
         if (regionExtractionHelper == null)
             return null;
 
-        return regionExtractionHelper.getValidPageIdsforRegionExtraction();
+        try {
+            return regionExtractionHelper.getValidPageIdsforRegionExtraction();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return null;
+        }
     }
 
     /**

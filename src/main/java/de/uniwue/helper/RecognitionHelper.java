@@ -32,6 +32,11 @@ public class RecognitionHelper {
     private String projectImageType;
 
     /**
+     * Object to use generic functionalities
+     */
+    private GenericHelper genericHelper;
+
+    /**
      * Object to determine process states
      */
     private ProcessStateCollector procStateCol;
@@ -80,6 +85,7 @@ public class RecognitionHelper {
     public RecognitionHelper(String projectDir, String projectImageType) {
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projectDir);
+        genericHelper = new GenericHelper(projConf);
         procStateCol = new ProcessStateCollector(projConf, projectImageType);
         processHandler = new ProcessHandler();
     }
@@ -234,23 +240,21 @@ public class RecognitionHelper {
     }
 
     /**
-     * Returns the Ids of the pages, for which region extraction was already executed
-     * TODO: Check if line segmentation process was executed, not region extraction!
+     * Returns the Ids of the pages, for which line segmentation was already executed
      *
      * @return List with page ids
+     * @throws IOException 
      */
-    public ArrayList<String> getValidPageIdsforRecognition() {
+    public ArrayList<String> getValidPageIdsforRecognition() throws IOException {
+        // Get all pages and check which ones are already line segmented
         ArrayList<String> validPageIds = new ArrayList<String>();
-        File pageDir = new File(projConf.PAGE_DIR);
-        if (!pageDir.exists())
-            return validPageIds;
-
-        File[] directories = pageDir.listFiles(File::isDirectory);
-        for(File file: directories) { 
-            validPageIds.add(file.getName());
+        ArrayList<String> allPageIds = genericHelper.getPageList("Original");
+        for (String pageId : allPageIds) {
+            if (procStateCol.lineSegmentationState(pageId) == true)
+                validPageIds.add(pageId);
         }
-        Collections.sort(validPageIds);
 
+        Collections.sort(validPageIds);
         return validPageIds;
     }
 

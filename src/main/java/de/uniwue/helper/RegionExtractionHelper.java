@@ -9,7 +9,6 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.xml.sax.SAXException;
 
 import de.uniwue.config.ProjectConfiguration;
@@ -25,6 +24,11 @@ public class RegionExtractionHelper {
      * Object to access project configuration
      */
     private ProjectConfiguration projConf;
+
+    /**
+     * Object to use generic functionalities
+     */
+    private GenericHelper genericHelper;
 
     /**
      * Object to determine process states
@@ -58,6 +62,7 @@ public class RegionExtractionHelper {
      */
     public RegionExtractionHelper(String projectDir, String projectImageType) {
         projConf = new ProjectConfiguration(projectDir);
+        genericHelper = new GenericHelper(projConf);
         procStateCol = new ProcessStateCollector(projConf, projectImageType);
         processHandler = new ProcessHandler();
     }
@@ -160,20 +165,18 @@ public class RegionExtractionHelper {
      * Returns the Ids of the pages, for which region extraction was already executed
      *
      * @return List of valid page Ids
+     * @throws IOException 
      */
-    public ArrayList<String> getValidPageIdsforRegionExtraction() {
+    public ArrayList<String> getValidPageIdsforRegionExtraction() throws IOException {
+        // Get all pages and check which ones are already segmented
         ArrayList<String> validPageIds = new ArrayList<String>();
-
-        File ocrDir = new File(projConf.OCR_DIR);
-        if (!ocrDir.exists()) {
-            return validPageIds;}
-
-        File[] XMLfiles = ocrDir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
-        for(File file: XMLfiles) { 
-            validPageIds.add(FilenameUtils.removeExtension(file.getName()));
+        ArrayList<String> allPageIds = genericHelper.getPageList("Original");
+        for (String pageId : allPageIds) {
+            if (procStateCol.segmentationState(pageId) == true)
+                validPageIds.add(pageId);
         }
-        Collections.sort(validPageIds);
 
+        Collections.sort(validPageIds);
         return validPageIds;
     }
 

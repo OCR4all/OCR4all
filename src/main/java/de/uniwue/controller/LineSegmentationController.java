@@ -169,7 +169,12 @@ public class LineSegmentationController {
         if (lineSegmentation == null)
             return null;
 
-        return lineSegmentation.getValidPageIdsforLineSegmentation();
+        try {
+            return lineSegmentation.getValidPageIdsforLineSegmentation();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return null;
+        }
     }
 
     /**
