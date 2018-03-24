@@ -8,7 +8,7 @@
 
 // Open or close the given collapsible entry
 function handleCollapsibleEntry(entryId, action, collapsibleEl) {
-    collapsibleEl = collapsibleEl || $('.collapsible').eq(0);
+    collapsibleEl = collapsibleEl || $('.collapsible').eq(1);
 
     var activeCheck = false;
     if( action === 'close' )
@@ -25,7 +25,7 @@ function handleCollapsibleEntry(entryId, action, collapsibleEl) {
 
 // Open the given collapsible entries and close the remaining ones
 function openCollapsibleEntriesExclusively(entryIds, collapsibleEl) {
-    collapsibleEl = collapsibleEl || $('.collapsible').eq(0);
+    collapsibleEl = collapsibleEl || $('.collapsible').eq(1);
     $.each($(collapsibleEl).children('li').children('.collapsible-header'), function(index, collapsibleEntry) {
         var action = 'open';
         if( $.inArray(index, entryIds) < 0 )
