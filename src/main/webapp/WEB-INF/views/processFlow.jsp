@@ -85,6 +85,7 @@
 
                     $('.collapsible[data-id="settings"] li[data-id="preprocessing"]').find('#--parallel').val(data).change();
                     $('.collapsible[data-id="settings"] li[data-id="recognition"]').find('#--parallel').val(data).change();
+                    $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find('#--parallel').val(data).change();
                 });
 
                 var currentProcessInterval = null;
