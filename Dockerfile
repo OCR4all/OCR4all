@@ -45,6 +45,7 @@ RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
 RUN ln -s /usr/local/bin/ocropus-nlbin /bin/ocropus-nlbin
 RUN ln -s /usr/local/bin/ocropus-gpageseg /bin/ocropus-gpageseg
 RUN ln -s /usr/local/bin/ocropus-rpred /bin/ocropus-rpred
+RUN ln -s /usr/local/bin/ocropus-econf /bin/ocropus-econf
 
 # Start server when container is started
 # Enviroment variable
