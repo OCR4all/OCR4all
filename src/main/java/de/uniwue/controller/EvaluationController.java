@@ -40,7 +40,7 @@ public class EvaluationController {
         }
 
         // Keep a single helper object in session
-        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("preprocessingHelper");
+        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
         if (evaluationHelper == null) {
         	evaluationHelper = new EvaluationHelper(projectDir);
             session.setAttribute("evaluationHelper", evaluationHelper);
