@@ -13,23 +13,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import de.uniwue.helper.SegmentationHelper;
+import de.uniwue.helper.SegmentationLarexHelper;
 
 /**
- * Controller class for pages of segmentation module
+ * Controller class for pages of segmentation larex module
  * Use response.setStatus to trigger AJAX fail (and therefore show errors)
  */
 @Controller
-public class SegmentationController {
+public class SegmentationLarexController {
     /**
-     * Response to the request to send the content of the /Segmentation page
+     * Response to the request to send the content of the /SegmentationLarex page
      *
      * @param session Session of the user
-     * @return Returns the content of the /Segmentation page
+     * @return Returns the content of the /SegmentationLarex page
      */
-    @RequestMapping("/Segmentation")
+    @RequestMapping("/SegmentationLarex")
     public ModelAndView show(HttpSession session) {
-        ModelAndView mv = new ModelAndView("segmentation");
+        ModelAndView mv = new ModelAndView("segmentationLarex");
 
         String projectDir = (String)session.getAttribute("projectDir");
         String projectImageType = (String) session.getAttribute("imageType");
@@ -39,10 +39,10 @@ public class SegmentationController {
         }
 
         // Keep a single helper object in session
-        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
         if (segmentationHelper == null) {
-            segmentationHelper = new SegmentationHelper(projectDir, projectImageType);
-            session.setAttribute("segmentationHelper", segmentationHelper);
+            segmentationHelper = new SegmentationLarexHelper(projectDir, projectImageType);
+            session.setAttribute("segmentationLarexHelper", segmentationHelper);
         }
 
         return mv;
@@ -57,7 +57,7 @@ public class SegmentationController {
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value = "/ajax/segmentation/execute", method = RequestMethod.POST)
+    @RequestMapping(value = "/ajax/segmentationLarex/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
                @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam("imageType") String segmentationImageType,
@@ -71,10 +71,10 @@ public class SegmentationController {
         }
 
         // Keep a single helper object in session
-        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
         if (segmentationHelper == null) {
-            segmentationHelper = new SegmentationHelper(projectDir, projectImageType);
-            session.setAttribute("segmentationHelper", segmentationHelper);
+            segmentationHelper = new SegmentationLarexHelper(projectDir, projectImageType);
+            session.setAttribute("segmentationLarexHelper", segmentationHelper);
         }
 
         if (segmentationHelper.isSegmentationRunning() == true) {
@@ -91,14 +91,14 @@ public class SegmentationController {
     }
 
     /**
-     * Response to the request to return the progress status of the segmentation service
+     * Response to the request to return the progress status of the segmentation larex service
      *
      * @param session Session of the user
      * @return Current progress (range: 0 - 100)
      */
-    @RequestMapping(value = "/ajax/segmentation/progress" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/segmentationLarex/progress" , method = RequestMethod.GET)
     public @ResponseBody int progress(HttpSession session) {
-        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
         if (segmentationHelper == null)
             return -1;
 
@@ -106,14 +106,14 @@ public class SegmentationController {
     }
 
     /**
-     * Response to the request to cancel the segmentation copy process
+     * Response to the request to cancel the segmentation larex copy process
      *
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value = "/ajax/segmentation/cancel", method = RequestMethod.POST)
+    @RequestMapping(value = "/ajax/segmentationLarex/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
         if (segmentationHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
@@ -130,12 +130,12 @@ public class SegmentationController {
      * @param response Response to the request
      * @return Information if files exist
      */
-    @RequestMapping(value = "/ajax/segmentation/exists" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/segmentationLarex/exists" , method = RequestMethod.GET)
     public @ResponseBody boolean check(
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
         if (segmentationHelper == null)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 

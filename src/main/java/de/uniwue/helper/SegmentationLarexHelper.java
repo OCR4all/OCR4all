@@ -12,9 +12,9 @@ import org.apache.commons.io.FilenameUtils;
 import de.uniwue.config.ProjectConfiguration;
 
 /**
- * Helper class for segmentation module
+ * Helper class for segmentation larex module
  */
-public class SegmentationHelper {
+public class SegmentationLarexHelper {
     /**
      * Object to access project configuration
      */
@@ -27,7 +27,7 @@ public class SegmentationHelper {
     private String projectImageType;
 
     /**
-     * Status of the Segmentation progress
+     * Status of the SegmentationLarex progress
      */
     private int progress = -1;
 
@@ -37,7 +37,7 @@ public class SegmentationHelper {
     private boolean stop = false;
 
     /**
-     * Indicates if a Segmentation process is already running
+     * Indicates if a SegmentationLarex process is already running
      */
     private boolean segmentationRunning = false;
 
@@ -47,7 +47,7 @@ public class SegmentationHelper {
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary,gray)
      */
-    public SegmentationHelper(String projDir, String projectImageType) {
+    public SegmentationLarexHelper(String projDir, String projectImageType) {
         this.projectImageType = projectImageType;
         this.projConf = new ProjectConfiguration(projDir);
     }
@@ -129,7 +129,7 @@ public class SegmentationHelper {
     }
 
     /**
-     * Gets the Segmentation status
+     * Gets the SegmentationLarex status
      *
      * @return status if the process is running
      */

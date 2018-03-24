@@ -104,14 +104,14 @@ public class ProcessFlowController {
     }
 
     /**
-     * Helper function to execute the Segmentation process via its Controller
+     * Helper function to execute the SegmentationLarex process via its Controller
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param segmentationImageType Type of the images (binary,despeckled)
      * @param session Session of the user
      * @param response Response to the request
      */
-    public void doSegmentation(
+    public void doSegmentationLarex(
                 String[] pageIds, Object segmentationImageType,
                 HttpSession session, HttpServletResponse response
             ) {
@@ -120,7 +120,7 @@ public class ProcessFlowController {
             return;
         }
 
-        new SegmentationController().execute(pageIds, (String)segmentationImageType, session, response);
+        new SegmentationLarexController().execute(pageIds, (String)segmentationImageType, session, response);
     }
 
     /**
@@ -283,11 +283,11 @@ public class ProcessFlowController {
                 return;
         }
 
-        if (processes.contains("segmentation")) {
-            session.setAttribute("currentProcess", "segmentation");
+        if (processes.contains("segmentationLarex")) {
+            session.setAttribute("currentProcess", "segmentationLarex");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
-            Map<String, Object> settings = processSettings.get("segmentation");
-            doSegmentation(pageIds, settings.get("imageType"), session, response);
+            Map<String, Object> settings = processSettings.get("segmentationLarex");
+            doSegmentationLarex(pageIds, settings.get("imageType"), session, response);
             if (needsExit(session, response))
                 return;
         }
@@ -362,12 +362,12 @@ public class ProcessFlowController {
         if (terminate != null && terminate == true) {
             // Cancel current process
             switch(currentProcess) {
-                case "preprocessing":    new PreprocessingController().cancel(session, response); break;
-                case "despeckling":      new DespecklingController().cancel(session, response); break;
-                case "segmentation":     new SegmentationController().cancel(session, response); break;
-                case "regionExtraction": new RegionExtractionController().cancel(session, response); break;
-                case "lineSegmentation": new LineSegmentationController().cancel(session, response); break;
-                case "recognition":      new RecognitionController().cancel(session, response); break;
+                case "preprocessing":     new PreprocessingController().cancel(session, response); break;
+                case "despeckling":       new DespecklingController().cancel(session, response); break;
+                case "segmentationLarex": new SegmentationLarexController().cancel(session, response); break;
+                case "regionExtraction":  new RegionExtractionController().cancel(session, response); break;
+                case "lineSegmentation":  new LineSegmentationController().cancel(session, response); break;
+                case "recognition":       new RecognitionController().cancel(session, response); break;
                 default: return;
             }
         }

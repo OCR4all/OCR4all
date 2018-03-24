@@ -3,13 +3,13 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
-        <title>OCR4All - Segmentation</title>
+        <title>OCR4All - Segmentation (LAREX)</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initializeImageList("Despeckled", true);
+                initializeImageList("Binary", true);
 
-                initializeProcessUpdate("segmentation", [ 0 ], [ 1 ], false);
+                initializeProcessUpdate("segmentationLarex", [ 0 ], [ 1 ], false);
 
                 // Prevent redirecting to Larex if image folder does not exist
                 $("#larexForm").submit(function(e){
@@ -41,9 +41,9 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-                    $.get( "ajax/segmentation/exists?", { "pageIds[]" : selectedPages } )
-                    .done(function( data ){
-                        if(data === false){
+                    $.get( "ajax/segmentationLarex/exists?", { "pageIds[]" : selectedPages } )
+                    .done(function( data ) {
+                        if(data === false) {
                             var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked')};
                             // Execute segmentation process
                             executeProcess(ajaxParams);
@@ -62,7 +62,7 @@
             });
         </script>
     </t:head>
-    <t:body heading="Segmentation" imageList="true" processModals="true">
+    <t:body heading="Segmentation (LAREX)" imageList="true" processModals="true">
         <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
@@ -78,7 +78,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">line_style</i>Segmentation</div>
                         <div class="collapsible-body">
-                            <s:segmentation></s:segmentation>
+                            <s:segmentationLarex></s:segmentationLarex>
                         </div>
                     </li>
                     <li>

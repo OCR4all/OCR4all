@@ -55,7 +55,7 @@
                                 processSettings[process] =
                                     { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val() };
                                 break;
-                            case "segmentation":
+                            case "segmentationLarex":
                                 processSettings[process] =
                                     { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked') };
                                 break;
@@ -72,7 +72,7 @@
                     return processSettings;
                 }
 
-                // Needed for segmentation option
+                // Needed for segmentation larex option
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
                 });
@@ -240,11 +240,11 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><p>Segmentation</p></td>
+                                        <td><p>Segmentation (LAREX)</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runSegmentationProcess" data-id="segmentation" checked="checked" />
-                                                <label for="runSegmentationProcess"></label>
+                                                <input type="checkbox" class="filled-in" id="runSegmentationLarexProcess" data-id="segmentationLarex" checked="checked" />
+                                                <label for="runSegmentationLarexProcess"></label>
                                             </p>
                                         </td>
                                     </tr>
@@ -308,10 +308,10 @@
                                         <s:despeckling></s:despeckling>
                                     </div>
                                 </li>
-                                <li data-id="segmentation">
-                                    <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation</div>
+                                <li data-id="segmentationLarex">
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation (LAREX)</div>
                                     <div class="collapsible-body">
-                                        <s:segmentation></s:segmentation>
+                                        <s:segmentationLarex></s:segmentationLarex>
                                     </div>
                                 </li>
                                 <li data-id="regionExtraction">
@@ -383,7 +383,7 @@
                                         </div>
                                     </div>
                                 </li>
-                                <li data-id="segmentation">
+                                <li data-id="segmentationLarex">
                                     <div class="collapsible-header"><i class="material-icons">info_outline</i>Segmentation</div>
                                     <div class="collapsible-body">
                                         <div class="status"><p>Status: <span>No Segmentation process running</span></p></div>
