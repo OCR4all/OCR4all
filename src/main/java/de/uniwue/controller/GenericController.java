@@ -21,6 +21,43 @@ import de.uniwue.helper.GenericHelper;
 @Controller
  class GenericController {
     /**
+     * Check if mandatory session variables are set correctly
+     *
+     * @param session Session of the user
+     * @param response response to the request
+     * @return
+     */
+    public static boolean isSessionValid(HttpSession session, HttpServletResponse response) {
+        String projectDir = (String) session.getAttribute("projectDir");
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public GenericHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        GenericHelper genericHelper = (GenericHelper) session.getAttribute("genericHelper");
+        if (genericHelper == null) {
+            genericHelper = new GenericHelper(session.getAttribute("projectDir").toString());
+            session.setAttribute("genericHelper", genericHelper);
+        }
+        return genericHelper;
+    }
+
+    /**
      * Response to the request to return all pageIds of the specified imageType
      *
      * @param imageType Type of the image e.g.(gray, binary, original)
@@ -33,12 +70,11 @@ import de.uniwue.helper.GenericHelper;
                 @RequestParam("imageType") String imageType,
                 HttpSession session, HttpServletResponse response
             ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty())
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        GenericHelper genericHelper = provideHelper(session, response);
+        if (genericHelper == null)
+            return null;
 
         ArrayList<String> pageIds = null;
-        GenericHelper genericHelper = new GenericHelper(projectDir);
         try {
             pageIds = genericHelper.getPageList(imageType);
         }
@@ -49,8 +85,8 @@ import de.uniwue.helper.GenericHelper;
     }
 
     /**
-     * Response to the request to thecks if the imageType directory exists
-     * 
+     * Response to the request to check if the imageType directory exists
+     *
      * @param imageType Type of the image directory (original, gray, binary, despeckled, OCR)
      * @param session Session of the user
      * @param response Response to the request
@@ -61,11 +97,10 @@ import de.uniwue.helper.GenericHelper;
                 @RequestParam("imageType") String imageType,
                 HttpSession session, HttpServletResponse response
             ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        if (projectDir == null || projectDir.isEmpty())
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        GenericHelper genericHelper = provideHelper(session, response);
+        if (genericHelper == null)
+            return false;
 
-        GenericHelper genericHelper = new GenericHelper(projectDir);
         return genericHelper.checkIfImageDirectoryExists(imageType);
     }
 
@@ -78,21 +113,5 @@ import de.uniwue.helper.GenericHelper;
     @RequestMapping(value = "/ajax/generic/threads" , method = RequestMethod.GET)
     public @ResponseBody int hostProcessors(HttpSession session) {
         return GenericHelper.getLogicalThreadCount();
-    }
-
-    /**
-     *  Check if session variable is empty
-     * @param session Session of the user
-     * @param response response to the request
-     * @return
-     */
-    public static boolean checkSession( HttpSession session, HttpServletResponse response) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return false;
-        }
-        return true;
     }
 }

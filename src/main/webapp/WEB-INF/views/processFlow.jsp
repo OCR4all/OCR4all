@@ -63,7 +63,8 @@
                                 processSettings[process] = {
                                     "spacing" : $('input[id="spacing"]').val(),
                                     "usespacing" : $('input[id=usespacing]').prop('checked'),
-                                    "avgbackground" : $('input[id=avgbackground]').prop('checked')
+                                    "avgbackground" : $('input[id=avgbackground]').prop('checked'),
+                                    "parallel" : $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find('#--parallel').val()
                                 };
                                 break;
                             default: break;
@@ -116,6 +117,11 @@
                                 // Continuous progress update needs to be initiated
                                 currentProcessInterval = setInterval(initiateProgressHandling, 1000);
                             }
+                            else {
+                                // Final update of the last exectued process status
+                                updateProcessFlowStatus(lastExecutedProcess);
+                            }
+
                             // Initial progress update for newly executed processes
                             updateProcessFlowStatus(process);
                         }
@@ -183,6 +189,9 @@
                     $.post( "ajax/processFlow/cancel", ajaxParams)
                     .done(function( data ) {
                         initiateProgressHandling();
+                        if( finalize === false )
+                            displayProcessFlowCancel();
+
                         $('#' + modalId).modal('open');
                     })
                     .fail(function( jqXHR, data ) {
@@ -190,6 +199,7 @@
                             $('#modal_noprocess').modal('open');
                         }
                         else {
+                            displayProcessFlowCancel(false);
                             $('#modal_failcancel').modal('open');
                         }
                     });

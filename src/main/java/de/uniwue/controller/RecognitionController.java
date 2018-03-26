@@ -1,7 +1,6 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +24,29 @@ import de.uniwue.helper.RecognitionHelper;
 @Controller
 public class RecognitionController {
     /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public RecognitionHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (GenericController.isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+        if (recognitionHelper == null) {
+            recognitionHelper = new RecognitionHelper(
+                session.getAttribute("projectDir").toString(),
+                session.getAttribute("imageType").toString()
+            );
+            session.setAttribute("recognitionHelper", recognitionHelper);
+        }
+        return recognitionHelper;
+    }
+
+    /**
      * Response to the request to send the content of the /Recognition page
      *
      * @param session Session of the user
@@ -33,11 +55,12 @@ public class RecognitionController {
     @RequestMapping("/Recognition")
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("recognition");
-        if(!GenericController.checkSession(session, response)) {
+
+        RecognitionHelper recognitionHelper = provideHelper(session, response);
+        if (recognitionHelper == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-        setHelperSession(session);
         return mv;
     }
 
@@ -55,9 +78,10 @@ public class RecognitionController {
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                HttpSession session, HttpServletResponse response
            ) {
-        if(!GenericController.checkSession(session, response)) 
+        RecognitionHelper recognitionHelper = provideHelper(session, response);
+        if (recognitionHelper == null)
             return;
-        RecognitionHelper recognitionHelper = setHelperSession(session);
+
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
@@ -88,10 +112,9 @@ public class RecognitionController {
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
             ) {
-        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
-        if (recognitionHelper == null) {
+        RecognitionHelper recognitionHelper = provideHelper(session, response);
+        if (recognitionHelper == null)
             return "";
-        }
 
         if (streamType.equals("err"))
             return recognitionHelper.getProcessHandler().getConsoleErr();
@@ -106,11 +129,9 @@ public class RecognitionController {
      */
     @RequestMapping(value = "/ajax/recognition/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
-        if (recognitionHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        RecognitionHelper recognitionHelper = provideHelper(session, response);
+        if (recognitionHelper == null)
             return;
-        }
 
         recognitionHelper.cancelProcess();
     }
@@ -124,10 +145,9 @@ public class RecognitionController {
      */
     @RequestMapping(value = "/ajax/recognition/progress" , method = RequestMethod.GET)
     public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
-        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
-        if (recognitionHelper == null) {
+        RecognitionHelper recognitionHelper = provideHelper(session, response);
+        if (recognitionHelper == null)
             return -1;
-        }
 
         try {
             return recognitionHelper.getProgress();
@@ -146,7 +166,7 @@ public class RecognitionController {
      */
     @RequestMapping(value = "/ajax/recognition/getValidPageIds" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<String> getIdsforRecognition(HttpSession session, HttpServletResponse response) {
-        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+        RecognitionHelper recognitionHelper = provideHelper(session, response);
         if (recognitionHelper == null)
             return null;
 
@@ -171,24 +191,10 @@ public class RecognitionController {
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        if(!GenericController.checkSession(session, response)) 
+        RecognitionHelper recognitionHelper = provideHelper(session, response);
+        if (recognitionHelper == null)
             return false;
-        RecognitionHelper recognitionHelper = setHelperSession(session);
 
         return recognitionHelper.doOldFilesExist(pageIds);
-    }
-
-    /**
-     * Creates the helper object and puts it in the session of the user
-     * @param session Session of the user
-     * @return Returns the helper object of the process
-     */
-    public RecognitionHelper setHelperSession(HttpSession session) {
-    RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
-    if (recognitionHelper == null) {
-        recognitionHelper = new RecognitionHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
-        session.setAttribute("recognitionHelper", recognitionHelper);
-        }
-    return recognitionHelper;
     }
 }

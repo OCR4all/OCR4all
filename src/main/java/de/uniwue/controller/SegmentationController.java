@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import de.uniwue.helper.SegmentationDummyHelper;
 import de.uniwue.helper.SegmentationHelper;
 
 /**
@@ -16,6 +18,28 @@ import de.uniwue.helper.SegmentationHelper;
  */
 @Controller
 public class SegmentationController {
+    /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public SegmentationHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (GenericController.isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
+        if (segmentationHelper == null) {
+            segmentationHelper = new SegmentationHelper(
+                session.getAttribute("projectDir").toString(),
+                session.getAttribute("imageType").toString()
+            );
+            session.setAttribute("segmentationHelper", segmentationHelper);
+        }
+        return segmentationHelper;
+    }
 
     /**
      * Response to the request to check if old process related files exist
@@ -30,24 +54,11 @@ public class SegmentationController {
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        if(!GenericController.checkSession(session, response)) 
+        SegmentationHelper segmentationHelper = provideHelper(session, response);
+        if (segmentationHelper == null)
             return false;
-        SegmentationHelper segmentationHelper = setHelperSession(session);
 
         return segmentationHelper.doOldFilesExist(pageIds);
     }
 
-    /**
-     * Creates the helper object and puts it in the session of the user
-     * @param session Session of the user
-     * @return Returns the helper object of the process
-     */
-    public SegmentationHelper setHelperSession(HttpSession session) {
-        SegmentationHelper segmentationHelper = (SegmentationHelper) session.getAttribute("segmentationHelper");
-    if (segmentationHelper == null) {
-        segmentationHelper = new SegmentationHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
-        session.setAttribute("segmentationHelper", segmentationHelper);
-        }
-    return segmentationHelper;
-    }
 }

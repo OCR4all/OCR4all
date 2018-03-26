@@ -24,6 +24,29 @@ import de.uniwue.helper.EvaluationHelper;
 @Controller
 public class EvaluationController {
     /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public EvaluationHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (GenericController.isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
+        if (evaluationHelper == null) {
+            evaluationHelper = new EvaluationHelper(
+                session.getAttribute("projectDir").toString(),
+                session.getAttribute("imageType").toString()
+            );
+            session.setAttribute("evaluationHelper", evaluationHelper);
+        }
+        return evaluationHelper;
+    }
+
+    /**
      * Response to the request to send the content of the /Evaluation page
      *
      * @param session Session of the user
@@ -33,11 +56,11 @@ public class EvaluationController {
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("evaluation");
 
-        if(!GenericController.checkSession(session, response)) {
+        EvaluationHelper evaluationHelper = provideHelper(session, response);
+        if (evaluationHelper == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-        setHelperSession(session);
         return mv;
     }
 
@@ -55,10 +78,9 @@ public class EvaluationController {
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                HttpSession session, HttpServletResponse response
            ) {
-        if(!GenericController.checkSession(session, response)) 
+        EvaluationHelper evaluationHelper = provideHelper(session, response);
+        if (evaluationHelper == null)
             return;
-        EvaluationHelper evaluationHelper = setHelperSession(session);
-
 
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
@@ -85,11 +107,9 @@ public class EvaluationController {
      */
     @RequestMapping(value = "/ajax/evaluation/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
-        if (evaluationHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        EvaluationHelper evaluationHelper = provideHelper(session, response);
+        if (evaluationHelper == null)
             return;
-        }
 
         evaluationHelper.cancelProcess();
     }
@@ -103,10 +123,9 @@ public class EvaluationController {
      */
     @RequestMapping(value = "/ajax/evaluation/progress" , method = RequestMethod.GET)
     public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
-        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
-        if (evaluationHelper == null) {
+        EvaluationHelper evaluationHelper = provideHelper(session, response);
+        if (evaluationHelper == null)
             return -1;
-        }
 
         return evaluationHelper.getProgress();
     }
@@ -123,10 +142,9 @@ public class EvaluationController {
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
             ) {
-        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
-        if (evaluationHelper == null) {
+        EvaluationHelper evaluationHelper = provideHelper(session, response);
+        if (evaluationHelper == null)
             return "";
-        }
 
         if (streamType.equals("err"))
             return evaluationHelper.getProcessHandler().getConsoleErr();
@@ -142,7 +160,7 @@ public class EvaluationController {
      */
     @RequestMapping(value = "/ajax/evaluation/getValidPageIds" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<String> getValidPageIdsforEvaluation(HttpSession session, HttpServletResponse response) {
-    	EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
+        EvaluationHelper evaluationHelper = provideHelper(session, response);
         if (evaluationHelper == null)
             return null;
 
@@ -152,19 +170,5 @@ public class EvaluationController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return null;
         }
-    }
-
-    /**
-     * Creates the helper object and puts it in the session of the user
-     * @param session Session of the user
-     * @return Returns the helper object of the process
-     */
-    public EvaluationHelper setHelperSession(HttpSession session) {
-    	EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
-    if (evaluationHelper == null) {
-    	evaluationHelper = new EvaluationHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
-        session.setAttribute("evaluationHelper", evaluationHelper);
-        }
-    return evaluationHelper;
     }
 }

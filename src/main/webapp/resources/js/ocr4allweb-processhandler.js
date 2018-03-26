@@ -120,6 +120,21 @@ function updateProcessFlowStatus(process) {
     });
 }
 
+//Function to display cancel information of current process on processflow page exclusively
+function displayProcessFlowCancel(success) {
+    success = success || true;
+
+    var currentProcessStatusSpan = $('ul[data-id="status"] li.active .status span');
+    if( currentProcessStatusSpan !== undefined ) {
+        if( success === true ) {
+            $(currentProcessStatusSpan).html("Process cancelled");
+        }
+        else {
+            $(currentProcessStatusSpan).html("ERROR: Error during process cancelling").attr("class", "red-text");
+        }
+    }
+}
+
 // Function to handle process progress
 function updateProcessStatus(initial) {
     initial = initial || false;

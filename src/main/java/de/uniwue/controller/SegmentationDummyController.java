@@ -21,6 +21,30 @@ import de.uniwue.helper.SegmentationDummyHelper;
  */
 @Controller
 public class SegmentationDummyController {
+
+    /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public SegmentationDummyHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (GenericController.isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        SegmentationDummyHelper segmentationDummyHelper = (SegmentationDummyHelper) session.getAttribute("segmentationDummyHelper");
+        if (segmentationDummyHelper == null) {
+            segmentationDummyHelper = new SegmentationDummyHelper(
+                session.getAttribute("projectDir").toString(),
+                session.getAttribute("imageType").toString()
+            );
+            session.setAttribute("segmentationDummyHelper", segmentationDummyHelper);
+        }
+        return segmentationDummyHelper;
+    }
+
     /**
      * Response to the request to send the content of the /SegmentationDummy page
      *
@@ -31,11 +55,11 @@ public class SegmentationDummyController {
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("segmentationDummy");
 
-        if(!GenericController.checkSession(session, response)) {
+        SegmentationDummyHelper segmentationDummyHelper = provideHelper(session, response);
+        if(segmentationDummyHelper == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-        setHelperSession(session);
         return mv;
     }
 
@@ -54,9 +78,9 @@ public class SegmentationDummyController {
                @RequestParam("imageType") String segmentationImageType,
                HttpSession session, HttpServletResponse response
            ) {
-        if(!GenericController.checkSession(session, response)) 
+        SegmentationDummyHelper segmentationDummyHelper = provideHelper(session, response);
+        if (segmentationDummyHelper == null)
             return;
-        SegmentationDummyHelper segmentationDummyHelper = setHelperSession(session);
 
         if (segmentationDummyHelper.isSegmentationRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
@@ -78,8 +102,8 @@ public class SegmentationDummyController {
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/segmentationDummy/progress" , method = RequestMethod.GET)
-    public @ResponseBody int progress(HttpSession session) {
-        SegmentationDummyHelper segmentationDummyHelper = (SegmentationDummyHelper) session.getAttribute("segmentationDummyHelper");
+    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
+        SegmentationDummyHelper segmentationDummyHelper = provideHelper(session, response);
         if (segmentationDummyHelper == null)
             return -1;
 
@@ -94,26 +118,10 @@ public class SegmentationDummyController {
      */
     @RequestMapping(value = "/ajax/segmentationDummy/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        SegmentationDummyHelper segmentationDummyHelper = (SegmentationDummyHelper) session.getAttribute("segmentationDummyHelper");
-        if (segmentationDummyHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        SegmentationDummyHelper segmentationDummyHelper = provideHelper(session, response);
+        if (segmentationDummyHelper == null)
             return;
-        }
-
         segmentationDummyHelper.cancelProcess();
     }
 
-    /**
-     * Creates the helper object and puts it in the session of the user
-     * @param session Session of the user
-     * @return Returns the helper object of the process
-     */
-    public SegmentationDummyHelper setHelperSession(HttpSession session) {
-        SegmentationDummyHelper segmentationDummyHelper = (SegmentationDummyHelper) session.getAttribute("segmentationDummyHelper");
-        if (segmentationDummyHelper == null) {
-            segmentationDummyHelper = new SegmentationDummyHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
-            session.setAttribute("segmentationDummyHelper", segmentationDummyHelper);
-            }
-        return segmentationDummyHelper;
-    }
 }

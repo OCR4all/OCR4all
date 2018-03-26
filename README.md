@@ -9,8 +9,7 @@ These instructions will get you a [Docker container](https://www.docker.com/what
 
 ### Prerequisites
 
-[Docker](https://www.docker.com)
-For installation instructions see the [Official Installation Guide](https://docs.docker.com/install/)
+[Docker](https://www.docker.com) (for installation instructions see the [Official Installation Guide](https://docs.docker.com/install/))
 
 ### Installing
 
@@ -31,10 +30,11 @@ docker run -p 8080:8080 \
 
 Explanation of variables used above:
 * `<IMAGE_NAME>` - Name of the Docker image
-* `<OCR_DATA_DIR>` - Directory in which the OCR data is located on your local machine 
-* `<OCR_MODEL_DIR>` - Directory in which the OCR models are located on your local machine 
+* `<OCR_DATA_DIR>` - Directory in which the OCR data is located on your local machine
+* `<OCR_MODEL_DIR>` - Directory in which the OCR models are located on your local machine
 
-The container will be started by default after executing the `docker run` command. If you want to start the container again later use `docker ps -a` to list all available containers with their Container IDs and then use `docker start <CONTAINER_ID>` to start the desired container.
+The container will be started by default after executing the `docker run` command.
+If you want to start the container again later use `docker ps -a` to list all available containers with their Container IDs and then use `docker start <CONTAINER_ID>` to start the desired container.
 
 You can now access the project via following URL: http://localhost:8080/OCR4all_Web/
 
@@ -53,6 +53,12 @@ Afterwards you can follow the installation guide above as it is a new clean inst
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [Spring](https://spring.io/) - Java Framework
 * [Materialize](http://materializecss.com/) - Front-end Framework
+* [jQuery](https://jquery.com/) - JavaScript Library
+
+## Included Projects
+
+* [LAREX](https://github.com/chreul/LAREX) - Layout analysis on early printed books
+* [OCRopus](https://github.com/tmbdev/ocropy) - Collection of document analysis programs
 
 ## Authors
 

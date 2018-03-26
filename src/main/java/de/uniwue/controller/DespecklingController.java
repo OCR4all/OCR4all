@@ -22,6 +22,29 @@ import de.uniwue.helper.DespecklingHelper;
 @Controller
 public class DespecklingController {
     /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public DespecklingHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (GenericController.isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
+        if (despecklingHelper == null) {
+            despecklingHelper = new DespecklingHelper(
+                session.getAttribute("projectDir").toString(),
+                session.getAttribute("imageType").toString()
+            );
+            session.setAttribute("despecklingHelper", despecklingHelper);
+        }
+        return despecklingHelper;
+    }
+
+    /**
      * Response to the request to send the content of the /Despeckling page
      *
      * @param session Session of the user
@@ -31,11 +54,11 @@ public class DespecklingController {
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("despeckling");
 
-        if(!GenericController.checkSession(session, response)) {
+        DespecklingHelper despecklingHelper = provideHelper(session, response);
+        if (despecklingHelper == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-        setHelperSession(session);
         return mv;
     }
 
@@ -53,9 +76,10 @@ public class DespecklingController {
                 @RequestParam("maxContourRemovalSize") double maxContourRemovalSize,
                 HttpSession session, HttpServletResponse response
             ) {
-        if(!GenericController.checkSession(session, response)) 
+        DespecklingHelper despecklingHelper = provideHelper(session, response);
+        if (despecklingHelper == null)
             return;
-        DespecklingHelper despecklingHelper = setHelperSession(session);
+
         if (despecklingHelper.isDespecklingRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
             return;
@@ -76,24 +100,23 @@ public class DespecklingController {
      */
     @RequestMapping(value = "/ajax/despeckling/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
-        if (despecklingHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        DespecklingHelper despecklingHelper = provideHelper(session, response);
+        if (despecklingHelper == null)
             return;
-        }
 
         despecklingHelper.cancelDespecklingProcess();
     }
 
     /**
-     * Response to the request to return the progress status of the preprocess service
+     * Response to the request to return the progress status of the despeckling service
      *
      * @param session Session of the user
+     * @param response Response to the request
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/despeckling/progress" , method = RequestMethod.GET)
-    public @ResponseBody int progress(HttpSession session) {
-        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
+    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
+        DespecklingHelper despecklingHelper = provideHelper(session, response);
         if (despecklingHelper == null)
             return -1;
 
@@ -113,23 +136,10 @@ public class DespecklingController {
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        if(!GenericController.checkSession(session, response)) 
+        DespecklingHelper despecklingHelper = provideHelper(session, response);
+        if (despecklingHelper == null)
             return false;
-        DespecklingHelper despecklingHelper = setHelperSession(session);
-        return despecklingHelper.doOldFilesExist(pageIds);
-    }
 
-    /**
-     * Creates the helper object and puts it in the session of the user
-     * @param session Session of the user
-     * @return Returns the helper object of the process
-     */
-    public DespecklingHelper setHelperSession(HttpSession session) {
-        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
-    if (despecklingHelper == null) {
-    	despecklingHelper = new DespecklingHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
-        session.setAttribute("despecklingHelper", despecklingHelper);
-        }
-    return despecklingHelper;
+        return despecklingHelper.doOldFilesExist(pageIds);
     }
 }
