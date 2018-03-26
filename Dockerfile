@@ -32,8 +32,12 @@ RUN cp /opt/OCR4all_Web/src/main/resources/GTC_Web/target/GTC_Web.war /var/lib/t
 RUN cd /opt/OCR4all_Web/src/main/resources/LAREX/Larex && mvn package 
 RUN cp /opt/OCR4all_Web/src/main/resources/LAREX/Larex/target/Larex.war /var/lib/tomcat8/webapps/
 
-# Grant tomcat permissions to ocr4all volume
-RUN mkdir /var/ocr4all && chmod g+w /var/ocr4all && chgrp tomcat8 /var/ocr4all
+# Create ocr4all directories and grant tomcat permissions
+RUN mkdir /var/ocr4all && \
+    mkdir /var/ocr4all/data && \
+    mkdir /var/ocr4all/models && \
+    chmod -R g+w /var/ocr4all && \
+    chgrp -R tomcat8 /var/ocr4all
 
 # Install ocropy
 RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
@@ -42,10 +46,8 @@ RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
     mv en-default.pyrnn.gz models/ && \
     python2.7 setup.py install
 
-RUN ln -s /usr/local/bin/ocropus-nlbin /bin/ocropus-nlbin
-RUN ln -s /usr/local/bin/ocropus-gpageseg /bin/ocropus-gpageseg
-RUN ln -s /usr/local/bin/ocropus-rpred /bin/ocropus-rpred
-RUN ln -s /usr/local/bin/ocropus-econf /bin/ocropus-econf
+# Make all ocropus scripts available to JAVA environment
+RUN for OCR_SCRIPT in `cd /usr/local/bin && ls ocropus-*`; do ln -s /usr/local/bin/$OCR_SCRIPT /bin/$OCR_SCRIPT; done
 
 # Start server when container is started
 # Enviroment variable
@@ -56,6 +58,7 @@ RUN ln -s /var/lib/tomcat8/common $CATALINA_HOME/common && \
     ln -s /etc/tomcat8 $CATALINA_HOME/conf && \
     mkdir $CATALINA_HOME/temp && \
     mkdir $CATALINA_HOME/webapps && \
+    mkdir $CATALINA_HOME/logs && \
     ln -s /var/lib/tomcat8/webapps/OCR4all_Web.war $CATALINA_HOME/webapps && \
     ln -s /var/lib/tomcat8/webapps/GTC_Web.war $CATALINA_HOME/webapps && \
     ln -s /var/lib/tomcat8/webapps/Larex.war $CATALINA_HOME/webapps
