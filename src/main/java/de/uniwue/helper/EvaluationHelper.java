@@ -3,6 +3,7 @@ package de.uniwue.helper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.uniwue.config.ProjectConfiguration;
@@ -19,6 +20,11 @@ public class EvaluationHelper {
      * Object to determine process states
      */
     private ProcessStateCollector procStateCol;
+
+    /**
+     * Object to use generic functionalities
+     */
+    private GenericHelper genericHelper;
 
     /**
      * Helper object for process handling
@@ -45,6 +51,7 @@ public class EvaluationHelper {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
         procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        genericHelper = new GenericHelper(projConf);
     }
 
     /**
@@ -142,5 +149,24 @@ public class EvaluationHelper {
             return progress;
 
         return progress;
+    }
+
+    /**
+     * Returns the Ids of the pages, for which recognition process was already executed
+     *
+     * @return List of valid page Ids
+     * @throws IOException 
+     */
+    public ArrayList<String> getValidPageIdsforEvaluation() throws IOException {
+        // Get all pages and check which one were already recognized
+        ArrayList<String> validPageIds = new ArrayList<String>();
+        ArrayList<String> allPageIds = genericHelper.getPageList("Original");
+        for (String pageId : allPageIds) {
+            if (procStateCol.recognitionState(pageId) == true)
+                validPageIds.add(pageId);
+        }
+
+        Collections.sort(validPageIds);
+        return validPageIds;
     }
 }

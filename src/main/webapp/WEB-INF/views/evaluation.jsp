@@ -7,8 +7,11 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                // Load image list
-                initializeImageList("OCR");
+                // Load image list with fetched static page Ids (pages valid for levaluation)
+                $.get( "ajax/evaluation/getValidPageIds")
+                .done(function( data ) {
+                    initializeImageList("OCR", false, data);
+                });
 
                 // Initialize process update and set options
                 initializeProcessUpdate("evaluation", [ 0 ], [ 2 ], true)
