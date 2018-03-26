@@ -28,23 +28,14 @@ public class DespecklingController {
      * @return Returns the content of the /Despeckling page
      */
     @RequestMapping("/Despeckling")
-    public ModelAndView show(HttpSession session) {
+    public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("despeckling");
 
-        String projectDir = (String)session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
+        if(!GenericController.checkSession(session, response)) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-
-        // Keep a single helper object in session
-        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
-        if (despecklingHelper == null) {
-            despecklingHelper = new DespecklingHelper(projectDir, projectImageType);
-            session.setAttribute("despecklingHelper", despecklingHelper);
-        }
-
+        setHelperSession(session);
         return mv;
     }
 
@@ -62,20 +53,9 @@ public class DespecklingController {
                 @RequestParam("maxContourRemovalSize") double maxContourRemovalSize,
                 HttpSession session, HttpServletResponse response
             ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
             return;
-        }
-
-        // Keep a single helper object in session
-        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
-        if (despecklingHelper == null) {
-            despecklingHelper = new DespecklingHelper(projectDir, projectImageType);
-            session.setAttribute("despecklingHelper", despecklingHelper);
-        }
-
+        DespecklingHelper despecklingHelper = setHelperSession(session);
         if (despecklingHelper.isDespecklingRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
             return;
@@ -129,14 +109,27 @@ public class DespecklingController {
      * @return Information if files exist
      */
     @RequestMapping(value = "/ajax/despeckling/exists" , method = RequestMethod.GET)
-    public @ResponseBody boolean check(
+    public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
-        if (despecklingHelper == null)
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
+        if(!GenericController.checkSession(session, response)) 
+            return false;
+        DespecklingHelper despecklingHelper = setHelperSession(session);
         return despecklingHelper.doOldFilesExist(pageIds);
+    }
+
+    /**
+     * Creates the helper object and puts it in the session of the user
+     * @param session Session of the user
+     * @return Returns the helper object of the process
+     */
+    public DespecklingHelper setHelperSession(HttpSession session) {
+        DespecklingHelper despecklingHelper = (DespecklingHelper) session.getAttribute("despecklingHelper");
+    if (despecklingHelper == null) {
+    	despecklingHelper = new DespecklingHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
+        session.setAttribute("despecklingHelper", despecklingHelper);
+        }
+    return despecklingHelper;
     }
 }

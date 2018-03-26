@@ -29,23 +29,13 @@ public class PreprocessingController {
      * @return Returns the content of the /Preprocessing page
      */
     @RequestMapping("/Preprocessing")
-    public ModelAndView show(HttpSession session) {
+    public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("preprocessing");
-
-        String projectDir = (String)session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
+        if(!GenericController.checkSession(session, response)) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-
-        // Keep a single helper object in session
-        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
-        if (preprocessingHelper == null) {
-            preprocessingHelper = new PreprocessingHelper(projectDir, projectImageType);
-            session.setAttribute("preprocessingHelper", preprocessingHelper);
-        }
-
+        setHelperSession(session);
         return mv;
     }
 
@@ -63,23 +53,13 @@ public class PreprocessingController {
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                HttpSession session, HttpServletResponse response
            ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
             return;
-        }
+        PreprocessingHelper preprocessingHelper = setHelperSession(session);
 
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
-
-        // Keep a single helper object in session
-        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
-        if (preprocessingHelper == null) {
-            preprocessingHelper = new PreprocessingHelper(projectDir, projectImageType);
-            session.setAttribute("preprocessingHelper", preprocessingHelper);
-        }
 
         if (preprocessingHelper.isPreprocessingRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
@@ -160,14 +140,28 @@ public class PreprocessingController {
      * @return Information if files exist
      */
     @RequestMapping(value = "/ajax/preprocessing/exists" , method = RequestMethod.GET)
-    public @ResponseBody boolean check(
+    public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
-        if (preprocessingHelper == null)
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
+            return false;
+        PreprocessingHelper preprocessingHelper = setHelperSession(session);
 
         return preprocessingHelper.doOldFilesExist(pageIds);
+    }
+
+    /**
+     * Creates the helper object and puts it in the session of the user
+     * @param session Session of the user
+     * @return Returns the helper object of the process
+     */
+    public PreprocessingHelper setHelperSession(HttpSession session) {
+    PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
+    if (preprocessingHelper == null) {
+        preprocessingHelper = new PreprocessingHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
+        session.setAttribute("preprocessingHelper", preprocessingHelper);
+        }
+    return preprocessingHelper;
     }
 }

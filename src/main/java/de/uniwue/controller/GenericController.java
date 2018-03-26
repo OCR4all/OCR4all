@@ -79,5 +79,20 @@ import de.uniwue.helper.GenericHelper;
     public @ResponseBody int hostProcessors(HttpSession session) {
         return GenericHelper.getLogicalThreadCount();
     }
-}
 
+    /**
+     *  Check if session variable is empty
+     * @param session Session of the user
+     * @param response response to the request
+     * @return
+     */
+    public static boolean checkSession( HttpSession session, HttpServletResponse response) {
+        String projectDir = (String) session.getAttribute("projectDir");
+        String projectImageType = (String) session.getAttribute("imageType");
+        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return false;
+        }
+        return true;
+    }
+}

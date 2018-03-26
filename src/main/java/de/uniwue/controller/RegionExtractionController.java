@@ -31,24 +31,14 @@ public class RegionExtractionController {
      * @return Returns the content of the /RegionExtraction page
      */
     @RequestMapping("/RegionExtraction")
-    public ModelAndView show(HttpSession session) {
+    public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("regionExtraction");
 
-        String projectDir = (String)session.getAttribute("projectDir");
-
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
+        if(!GenericController.checkSession(session, response)) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-
-        // Keep a single helper object in session
-        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-        if (regionExtractionHelper == null) {
-            regionExtractionHelper = new RegionExtractionHelper(projectDir, projectImageType);
-            session.setAttribute("regionExtractionHelper", regionExtractionHelper);
-        }
-
+        setHelperSession(session);
         return mv;
     }
 
@@ -70,20 +60,9 @@ public class RegionExtractionController {
                 @RequestParam("parallel") int parallel,
                 HttpSession session, HttpServletResponse response
             ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
             return;
-        }
-
-
-        // Keep a single helper object in session
-        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-        if (regionExtractionHelper == null) {
-            regionExtractionHelper = new RegionExtractionHelper(projectDir, projectImageType);
-            session.setAttribute("regionExtractionHelper", regionExtractionHelper);
-        }
+        RegionExtractionHelper regionExtractionHelper = setHelperSession(session);
 
         if (regionExtractionHelper.isRegionExtractionRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
@@ -183,14 +162,28 @@ public class RegionExtractionController {
      * @return Information if files exist
      */
     @RequestMapping(value = "/ajax/regionExtraction/exists" , method = RequestMethod.GET)
-    public @ResponseBody boolean check(
+    public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-        if (regionExtractionHelper == null)
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
+            return false;
+        RegionExtractionHelper regionExtractionHelper = setHelperSession(session);
 
         return regionExtractionHelper.doOldFilesExist(pageIds);
+    }
+
+    /**
+     * Creates the helper object and puts it in the session of the user
+     * @param session Session of the user
+     * @return Returns the helper object of the process
+     */
+    public RegionExtractionHelper setHelperSession(HttpSession session) {
+        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+    if (regionExtractionHelper == null) {
+        regionExtractionHelper = new RegionExtractionHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
+        session.setAttribute("regionExtractionHelper", regionExtractionHelper);
+        }
+    return regionExtractionHelper;
     }
 }

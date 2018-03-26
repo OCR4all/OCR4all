@@ -28,23 +28,14 @@ public class SegmentationLarexController {
      * @return Returns the content of the /SegmentationLarex page
      */
     @RequestMapping("/SegmentationLarex")
-    public ModelAndView show(HttpSession session) {
+    public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("segmentationLarex");
 
-        String projectDir = (String)session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
+        if(!GenericController.checkSession(session, response)) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-
-        // Keep a single helper object in session
-        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
-        if (segmentationHelper == null) {
-            segmentationHelper = new SegmentationLarexHelper(projectDir, projectImageType);
-            session.setAttribute("segmentationLarexHelper", segmentationHelper);
-        }
-
+        setHelperSession(session);
         return mv;
     }
 
@@ -63,30 +54,20 @@ public class SegmentationLarexController {
                @RequestParam("imageType") String segmentationImageType,
                HttpSession session, HttpServletResponse response
            ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
             return;
-        }
+        SegmentationLarexHelper segmentationLarexHelper = setHelperSession(session);
 
-        // Keep a single helper object in session
-        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
-        if (segmentationHelper == null) {
-            segmentationHelper = new SegmentationLarexHelper(projectDir, projectImageType);
-            session.setAttribute("segmentationLarexHelper", segmentationHelper);
-        }
-
-        if (segmentationHelper.isSegmentationRunning() == true) {
+        if (segmentationLarexHelper.isSegmentationRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
             return;
         }
 
         try {
-            segmentationHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType);
+        	segmentationLarexHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            segmentationHelper.resetProgress();
+            segmentationLarexHelper.resetProgress();
         }
     }
 
@@ -131,14 +112,28 @@ public class SegmentationLarexController {
      * @return Information if files exist
      */
     @RequestMapping(value = "/ajax/segmentationLarex/exists" , method = RequestMethod.GET)
-    public @ResponseBody boolean check(
+    public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
-        if (segmentationHelper == null)
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
+            return false;
+        SegmentationLarexHelper segmentationLarexHelper = setHelperSession(session);
 
-        return segmentationHelper.doOldFilesExist(pageIds);
+        return segmentationLarexHelper.doOldFilesExist(pageIds);
+    }
+
+    /**
+     * Creates the helper object and puts it in the session of the user
+     * @param session Session of the user
+     * @return Returns the helper object of the process
+     */
+    public SegmentationLarexHelper setHelperSession(HttpSession session) {
+        SegmentationLarexHelper segmentationLarexHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
+    if (segmentationLarexHelper == null) {
+        segmentationLarexHelper = new SegmentationLarexHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
+        session.setAttribute("segmentationLarexHelper", segmentationLarexHelper);
+        }
+    return segmentationLarexHelper;
     }
 }

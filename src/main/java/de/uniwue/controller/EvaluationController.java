@@ -30,23 +30,14 @@ public class EvaluationController {
      * @return Returns the content of the /Evaluation page
      */
     @RequestMapping("/Evaluation")
-    public ModelAndView show(HttpSession session) {
+    public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("evaluation");
 
-        String projectDir = (String)session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
+        if(!GenericController.checkSession(session, response)) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-
-        // Keep a single helper object in session
-        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
-        if (evaluationHelper == null) {
-            evaluationHelper = new EvaluationHelper(projectDir, projectImageType);
-            session.setAttribute("evaluationHelper", evaluationHelper);
-        }
-
+        setHelperSession(session);
         return mv;
     }
 
@@ -64,23 +55,14 @@ public class EvaluationController {
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                HttpSession session, HttpServletResponse response
            ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
             return;
-        }
+        EvaluationHelper evaluationHelper = setHelperSession(session);
+
 
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
-
-        // Keep a single helper object in session
-        EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
-        if (evaluationHelper == null) {
-            evaluationHelper = new EvaluationHelper(projectDir, projectImageType);
-            session.setAttribute("evaluationHelper", evaluationHelper);
-        }
 
         if (evaluationHelper.isEvaluationRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
@@ -170,5 +152,19 @@ public class EvaluationController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return null;
         }
+    }
+
+    /**
+     * Creates the helper object and puts it in the session of the user
+     * @param session Session of the user
+     * @return Returns the helper object of the process
+     */
+    public EvaluationHelper setHelperSession(HttpSession session) {
+    	EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
+    if (evaluationHelper == null) {
+    	evaluationHelper = new EvaluationHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
+        session.setAttribute("evaluationHelper", evaluationHelper);
+        }
+    return evaluationHelper;
     }
 }

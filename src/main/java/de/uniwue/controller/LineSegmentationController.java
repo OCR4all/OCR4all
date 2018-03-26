@@ -30,23 +30,14 @@ public class LineSegmentationController {
      * @return Returns the content of the /LineSegmentation page
      */
     @RequestMapping("/LineSegmentation")
-    public ModelAndView show(HttpSession session) {
+    public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("lineSegmentation");
 
-        String projectDir = (String)session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
+        if(!GenericController.checkSession(session, response)) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-
-        // Keep a single helper object in session
-        LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
-        if (lineSegmentationHelper == null) {
-            lineSegmentationHelper = new LineSegmentationHelper(projectDir,projectImageType);
-            session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
-        }
-
+        setHelperSession(session);
         return mv;
     }
 
@@ -64,23 +55,13 @@ public class LineSegmentationController {
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                HttpSession session, HttpServletResponse response
            ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
             return;
-        }
+        LineSegmentationHelper lineSegmentationHelper = setHelperSession(session);
 
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
-
-        // Keep a single helper object in session
-        LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
-        if (lineSegmentationHelper == null) {
-            lineSegmentationHelper = new LineSegmentationHelper(projectDir,projectImageType);
-            session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
-        }
 
         if (lineSegmentationHelper.isLineSegmentationRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
@@ -186,14 +167,28 @@ public class LineSegmentationController {
      * @return Information if files exist
      */
     @RequestMapping(value = "/ajax/lineSegmentation/exists" , method = RequestMethod.GET)
-    public @ResponseBody boolean check(
+    public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response 
             ) {
-        LineSegmentationHelper lineSegmentation = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
-        if (lineSegmentation == null)
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
+            return false;
+        LineSegmentationHelper lineSegmentationHelper = setHelperSession(session);
 
-        return lineSegmentation.doOldFilesExist(pageIds);
+        return lineSegmentationHelper.doOldFilesExist(pageIds);
+    }
+
+    /**
+     * Creates the helper object and puts it in the session of the user
+     * @param session Session of the user
+     * @return Returns the helper object of the process
+     */
+    public LineSegmentationHelper setHelperSession(HttpSession session) {
+        LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
+    if (lineSegmentationHelper == null) {
+    	lineSegmentationHelper = new LineSegmentationHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
+        session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
+        }
+    return lineSegmentationHelper;
     }
 }

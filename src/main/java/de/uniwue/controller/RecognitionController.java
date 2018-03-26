@@ -31,23 +31,13 @@ public class RecognitionController {
      * @return Returns the content of the /Recognition page
      */
     @RequestMapping("/Recognition")
-    public ModelAndView show(HttpSession session) {
+    public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("recognition");
-
-        String projectDir = (String)session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
+        if(!GenericController.checkSession(session, response)) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-
-        // Keep a single helper object in session
-        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
-        if (recognitionHelper == null) {
-            recognitionHelper = new RecognitionHelper(projectDir, projectImageType);
-            session.setAttribute("recognitionHelper", recognitionHelper);
-        }
-
+        setHelperSession(session);
         return mv;
     }
 
@@ -65,23 +55,12 @@ public class RecognitionController {
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                HttpSession session, HttpServletResponse response
            ) {
-        String projectDir = (String) session.getAttribute("projectDir");
-        String projectImageType = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || projectImageType == null || projectImageType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
             return;
-        }
-
+        RecognitionHelper recognitionHelper = setHelperSession(session);
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
-
-        // Keep a single helper object in session
-        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
-        if (recognitionHelper == null) {
-            recognitionHelper = new RecognitionHelper(projectDir,projectImageType);
-            session.setAttribute("recognitionHelper", recognitionHelper);
-        }
 
         if (recognitionHelper.isRecongitionRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
@@ -188,14 +167,28 @@ public class RecognitionController {
      * @return Information if files exist
      */
     @RequestMapping(value = "/ajax/recognition/exists" , method = RequestMethod.GET)
-    public @ResponseBody boolean check(
+    public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
-        if (recognitionHelper == null)
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(!GenericController.checkSession(session, response)) 
+            return false;
+        RecognitionHelper recognitionHelper = setHelperSession(session);
 
         return recognitionHelper.doOldFilesExist(pageIds);
+    }
+
+    /**
+     * Creates the helper object and puts it in the session of the user
+     * @param session Session of the user
+     * @return Returns the helper object of the process
+     */
+    public RecognitionHelper setHelperSession(HttpSession session) {
+    RecognitionHelper recognitionHelper = (RecognitionHelper) session.getAttribute("recognitionHelper");
+    if (recognitionHelper == null) {
+        recognitionHelper = new RecognitionHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
+        session.setAttribute("recognitionHelper", recognitionHelper);
+        }
+    return recognitionHelper;
     }
 }
