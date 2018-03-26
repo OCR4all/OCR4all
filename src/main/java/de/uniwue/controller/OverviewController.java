@@ -159,7 +159,7 @@ public class OverviewController {
         newSession.setAttribute("projectDir", projectDir);
         newSession.setAttribute("imageType", imageType);
 
-        OverviewHelper overviewHelper = provideHelper(session, response);
+        OverviewHelper overviewHelper = provideHelper(newSession, response);
         if (overviewHelper == null)
             return false;
 
