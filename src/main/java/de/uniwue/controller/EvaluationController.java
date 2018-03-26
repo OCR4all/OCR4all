@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.EvaluationHelper;
-import de.uniwue.helper.LineSegmentationHelper;
 
 /**
  * Controller class for pages of evaluation module
@@ -160,7 +159,7 @@ public class EvaluationController {
      * @return List of valid pageIds
      */
     @RequestMapping(value = "/ajax/evaluation/getValidPageIds" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<String> getValidPageIdsforLineSegmentation(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody ArrayList<String> getValidPageIdsforEvaluation(HttpSession session, HttpServletResponse response) {
     	EvaluationHelper evaluationHelper = (EvaluationHelper) session.getAttribute("evaluationHelper");
         if (evaluationHelper == null)
             return null;

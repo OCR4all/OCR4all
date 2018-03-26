@@ -7,7 +7,7 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                // Load image list with fetched static page Ids (pages valid for levaluation)
+                // Load image list with fetched static page Ids (pages valid for evaluation)
                 $.get( "ajax/evaluation/getValidPageIds")
                 .done(function( data ) {
                     initializeImageList("OCR", false, data);
