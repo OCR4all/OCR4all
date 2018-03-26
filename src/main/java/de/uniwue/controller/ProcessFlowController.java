@@ -104,14 +104,14 @@ public class ProcessFlowController {
     }
 
     /**
-     * Helper function to execute the SegmentationLarex process via its Controller
+     * Helper function to execute the doSegmentationDummy process via its Controller
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param segmentationImageType Type of the images (binary,despeckled)
      * @param session Session of the user
      * @param response Response to the request
      */
-    public void doSegmentationLarex(
+    public void doSegmentationDummy(
                 String[] pageIds, Object segmentationImageType,
                 HttpSession session, HttpServletResponse response
             ) {
@@ -120,7 +120,7 @@ public class ProcessFlowController {
             return;
         }
 
-        new SegmentationLarexController().execute(pageIds, (String)segmentationImageType, session, response);
+        new SegmentationDummyController().execute(pageIds, (String)segmentationImageType, session, response);
     }
 
     /**
@@ -283,18 +283,18 @@ public class ProcessFlowController {
                 return;
         }
 
-        if (processes.contains("segmentationLarex")) {
-            session.setAttribute("currentProcess", "segmentationLarex");
+        if (processes.contains("segmentationDummy")) {
+            session.setAttribute("currentProcess", "segmentationDummy");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
-            Map<String, Object> settings = processSettings.get("segmentationLarex");
-            doSegmentationLarex(pageIds, settings.get("imageType"), session, response);
+            Map<String, Object> settings = processSettings.get("segmentationDummy");
+            doSegmentationDummy(pageIds, settings.get("imageType"), session, response);
             if (needsExit(session, response))
                 return;
         }
 
         if (processes.contains("regionExtraction")) {
             session.setAttribute("currentProcess", "regionExtraction");
-            pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentationLarex");
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
             Map<String, Object> settings = processSettings.get("regionExtraction");
             doRegionExtraction(pageIds, settings.get("spacing"), settings.get("avgbackground"), settings.get("parallel"), session, response);
             if (needsExit(session, response))
@@ -364,7 +364,7 @@ public class ProcessFlowController {
             switch(currentProcess) {
                 case "preprocessing":     new PreprocessingController().cancel(session, response); break;
                 case "despeckling":       new DespecklingController().cancel(session, response); break;
-                case "segmentationLarex": new SegmentationLarexController().cancel(session, response); break;
+                case "segmentationDummy": new SegmentationDummyController().cancel(session, response); break;
                 case "regionExtraction":  new RegionExtractionController().cancel(session, response); break;
                 case "lineSegmentation":  new LineSegmentationController().cancel(session, response); break;
                 case "recognition":       new RecognitionController().cancel(session, response); break;

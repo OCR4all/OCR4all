@@ -49,7 +49,7 @@ public class ProcessFlowHelper {
             switch(checkProcess) {
                 case "preprocessing":     if (procStateCol.preprocessingState(pageId)) processedPages.add(pageId); break;
                 case "despeckling":       if (procStateCol.despecklingState(pageId)) processedPages.add(pageId); break;
-                case "segmentationLarex": if (procStateCol.segmentationState(pageId)) processedPages.add(pageId); break;
+                case "segmentation":      if (procStateCol.segmentationState(pageId)) processedPages.add(pageId); break;
                 case "regionExtraction":  if (procStateCol.regionExtractionState(pageId)) processedPages.add(pageId); break;
                 case "lineSegmentation":  if (procStateCol.lineSegmentationState(pageId)) processedPages.add(pageId); break;
                 case "recognition":       if (procStateCol.recognitionState(pageId)) processedPages.add(pageId); break;

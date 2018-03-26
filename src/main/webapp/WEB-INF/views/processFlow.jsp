@@ -55,7 +55,7 @@
                                 processSettings[process] =
                                     { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val() };
                                 break;
-                            case "segmentationLarex":
+                            case "segmentationDummy":
                                 processSettings[process] =
                                     { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked') };
                                 break;
@@ -73,11 +73,6 @@
                     return processSettings;
                 }
 
-                // Needed for segmentation larex option
-                $('#imageType').on('change', function() {
-                    $('#bookname').val($('#imageType').val());
-                });
-                $('#imageType').change();
                 // Set available threads as default 
                 $.get( "ajax/generic/threads" )
                 .done(function( data ) {
@@ -251,11 +246,11 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><p>Segmentation (LAREX)</p></td>
+                                        <td><p>Segmentation (Dummy)</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runSegmentationLarexProcess" data-id="segmentationLarex" checked="checked" />
-                                                <label for="runSegmentationLarexProcess"></label>
+                                                <input type="checkbox" class="filled-in" id="runSegmentationDummyProcess" data-id="segmentationDummy" checked="checked" />
+                                                <label for="runSegmentationDummyProcess"></label>
                                             </p>
                                         </td>
                                     </tr>
@@ -319,10 +314,10 @@
                                         <s:despeckling></s:despeckling>
                                     </div>
                                 </li>
-                                <li data-id="segmentationLarex">
-                                    <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation (LAREX)</div>
+                                <li data-id="segmentationDummy">
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation (Dummy)</div>
                                     <div class="collapsible-body">
-                                        <s:segmentationLarex></s:segmentationLarex>
+                                        <s:segmentationDummy></s:segmentationDummy>
                                     </div>
                                 </li>
                                 <li data-id="regionExtraction">
@@ -394,10 +389,10 @@
                                         </div>
                                     </div>
                                 </li>
-                                <li data-id="segmentationLarex">
-                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Segmentation (LAREX)</div>
+                                <li data-id="segmentationDummy">
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Segmentation (Dummy)</div>
                                     <div class="collapsible-body">
-                                        <div class="status"><p>Status: <span>No Segmentation Larex process running</span></p></div>
+                                        <div class="status"><p>Status: <span>No Segmentation (Dummy) process running</span></p></div>
                                         <div class="progress">
                                             <div class="determinate"></div>
                                         </div>
