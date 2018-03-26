@@ -88,7 +88,7 @@ public class SegmentationDummyController {
         }
 
         try {
-        	segmentationDummyHelper.extractXmlFiles(Arrays.asList(pageIds), segmentationImageType);
+            segmentationDummyHelper.extractXmlFiles(Arrays.asList(pageIds), segmentationImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationDummyHelper.resetProgress();
@@ -121,6 +121,7 @@ public class SegmentationDummyController {
         SegmentationDummyHelper segmentationDummyHelper = provideHelper(session, response);
         if (segmentationDummyHelper == null)
             return;
+
         segmentationDummyHelper.cancelProcess();
     }
 

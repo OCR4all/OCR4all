@@ -144,5 +144,4 @@ public class SegmentationLarexHelper {
     public boolean isSegmentationRunning() {
         return segmentationRunning;
     }
-
 }

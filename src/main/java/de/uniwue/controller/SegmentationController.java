@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.uniwue.helper.SegmentationDummyHelper;
 import de.uniwue.helper.SegmentationHelper;
 
 /**
@@ -60,5 +59,4 @@ public class SegmentationController {
 
         return segmentationHelper.doOldFilesExist(pageIds);
     }
-
 }
