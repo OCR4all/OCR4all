@@ -22,6 +22,29 @@ import de.uniwue.helper.SegmentationLarexHelper;
 @Controller
 public class SegmentationLarexController {
     /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public SegmentationLarexHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (GenericController.isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        SegmentationLarexHelper segmentationLarexHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
+        if (segmentationLarexHelper == null) {
+            segmentationLarexHelper = new SegmentationLarexHelper(
+                session.getAttribute("projectDir").toString(),
+                session.getAttribute("imageType").toString()
+            );
+            session.setAttribute("segmentationLarexHelper", segmentationLarexHelper);
+        }
+        return segmentationLarexHelper;
+    }
+
+    /**
      * Response to the request to send the content of the /SegmentationLarex page
      *
      * @param session Session of the user
@@ -31,11 +54,11 @@ public class SegmentationLarexController {
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("segmentationLarex");
 
-        if(!GenericController.checkSession(session, response)) {
+        SegmentationLarexHelper segmentationLarexHelper = provideHelper(session, response);
+        if (segmentationLarexHelper == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-        setHelperSession(session);
         return mv;
     }
 
@@ -54,9 +77,9 @@ public class SegmentationLarexController {
                @RequestParam("imageType") String segmentationImageType,
                HttpSession session, HttpServletResponse response
            ) {
-        if(!GenericController.checkSession(session, response)) 
+        SegmentationLarexHelper segmentationLarexHelper = provideHelper(session, response);
+        if (segmentationLarexHelper == null)
             return;
-        SegmentationLarexHelper segmentationLarexHelper = setHelperSession(session);
 
         if (segmentationLarexHelper.isSegmentationRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
@@ -64,7 +87,7 @@ public class SegmentationLarexController {
         }
 
         try {
-        	segmentationLarexHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType);
+            segmentationLarexHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationLarexHelper.resetProgress();
@@ -75,15 +98,16 @@ public class SegmentationLarexController {
      * Response to the request to return the progress status of the segmentation larex service
      *
      * @param session Session of the user
+     * @param response Response to the request
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/segmentationLarex/progress" , method = RequestMethod.GET)
-    public @ResponseBody int progress(HttpSession session) {
-        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
-        if (segmentationHelper == null)
+    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
+        SegmentationLarexHelper segmentationLarexHelper = provideHelper(session, response);
+        if (segmentationLarexHelper == null)
             return -1;
 
-        return segmentationHelper.getProgress();
+        return segmentationLarexHelper.getProgress();
     }
 
     /**
@@ -94,13 +118,11 @@ public class SegmentationLarexController {
      */
     @RequestMapping(value = "/ajax/segmentationLarex/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
-        if (segmentationHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        SegmentationLarexHelper segmentationLarexHelper = provideHelper(session, response);
+        if (segmentationLarexHelper == null)
             return;
-        }
 
-        segmentationHelper.cancelProcess();
+        segmentationLarexHelper.cancelProcess();
     }
 
     /**
@@ -116,24 +138,10 @@ public class SegmentationLarexController {
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        if(!GenericController.checkSession(session, response)) 
+        SegmentationLarexHelper segmentationLarexHelper = provideHelper(session, response);
+        if (segmentationLarexHelper == null)
             return false;
-        SegmentationLarexHelper segmentationLarexHelper = setHelperSession(session);
 
         return segmentationLarexHelper.doOldFilesExist(pageIds);
-    }
-
-    /**
-     * Creates the helper object and puts it in the session of the user
-     * @param session Session of the user
-     * @return Returns the helper object of the process
-     */
-    public SegmentationLarexHelper setHelperSession(HttpSession session) {
-        SegmentationLarexHelper segmentationLarexHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
-    if (segmentationLarexHelper == null) {
-        segmentationLarexHelper = new SegmentationLarexHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
-        session.setAttribute("segmentationLarexHelper", segmentationLarexHelper);
-        }
-    return segmentationLarexHelper;
     }
 }

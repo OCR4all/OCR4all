@@ -25,6 +25,29 @@ import de.uniwue.helper.RegionExtractionHelper;
 @Controller
 public class RegionExtractionController {
     /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public RegionExtractionHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (GenericController.isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+        if (regionExtractionHelper == null) {
+            regionExtractionHelper = new RegionExtractionHelper(
+                session.getAttribute("projectDir").toString(),
+                session.getAttribute("imageType").toString()
+            );
+            session.setAttribute("regionExtractionHelper", regionExtractionHelper);
+        }
+        return regionExtractionHelper;
+    }
+
+    /**
      * Response to the request to send the content of the /RegionExtraction page
      *
      * @param session Session of the user
@@ -34,11 +57,11 @@ public class RegionExtractionController {
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("regionExtraction");
 
-        if(!GenericController.checkSession(session, response)) {
+        RegionExtractionHelper regionExtractionHelper = provideHelper(session, response);
+        if (regionExtractionHelper == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-        setHelperSession(session);
         return mv;
     }
 
@@ -60,9 +83,9 @@ public class RegionExtractionController {
                 @RequestParam("parallel") int parallel,
                 HttpSession session, HttpServletResponse response
             ) {
-        if(!GenericController.checkSession(session, response)) 
+        RegionExtractionHelper regionExtractionHelper = provideHelper(session, response);
+        if (regionExtractionHelper == null)
             return;
-        RegionExtractionHelper regionExtractionHelper = setHelperSession(session);
 
         if (regionExtractionHelper.isRegionExtractionRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
@@ -90,10 +113,9 @@ public class RegionExtractionController {
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
             ) {
-    	RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-        if (regionExtractionHelper == null) {
+        RegionExtractionHelper regionExtractionHelper = provideHelper(session, response);
+        if (regionExtractionHelper == null)
             return "";
-        }
 
         if (streamType.equals("err"))
             return regionExtractionHelper.getProcessHandler().getConsoleErr();
@@ -104,11 +126,12 @@ public class RegionExtractionController {
      * Response to the request to return the progress status of the region extraction service
      *
      * @param session Session of the user
+     * @param response Response to the request
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/regionExtraction/progress" , method = RequestMethod.GET)
-    public @ResponseBody int progress(HttpSession session) {
-        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
+        RegionExtractionHelper regionExtractionHelper = provideHelper(session, response);
         if (regionExtractionHelper == null)
             return -1;
 
@@ -123,11 +146,9 @@ public class RegionExtractionController {
      */
     @RequestMapping(value = "/ajax/regionExtraction/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-        if (regionExtractionHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        RegionExtractionHelper regionExtractionHelper = provideHelper(session, response);
+        if (regionExtractionHelper == null)
             return;
-        }
 
         regionExtractionHelper.cancelProcess();
     }
@@ -141,7 +162,7 @@ public class RegionExtractionController {
      */
     @RequestMapping(value = "/ajax/regionExtraction/getValidPageIds" , method = RequestMethod.GET)
     public @ResponseBody ArrayList<String> getValidPageIdsforRegionExtractinon(HttpSession session, HttpServletResponse response) {
-        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
+        RegionExtractionHelper regionExtractionHelper = provideHelper(session, response);
         if (regionExtractionHelper == null)
             return null;
 
@@ -166,24 +187,10 @@ public class RegionExtractionController {
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        if(!GenericController.checkSession(session, response)) 
+        RegionExtractionHelper regionExtractionHelper = provideHelper(session, response);
+        if (regionExtractionHelper == null)
             return false;
-        RegionExtractionHelper regionExtractionHelper = setHelperSession(session);
 
         return regionExtractionHelper.doOldFilesExist(pageIds);
-    }
-
-    /**
-     * Creates the helper object and puts it in the session of the user
-     * @param session Session of the user
-     * @return Returns the helper object of the process
-     */
-    public RegionExtractionHelper setHelperSession(HttpSession session) {
-        RegionExtractionHelper regionExtractionHelper = (RegionExtractionHelper) session.getAttribute("regionExtractionHelper");
-    if (regionExtractionHelper == null) {
-        regionExtractionHelper = new RegionExtractionHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
-        session.setAttribute("regionExtractionHelper", regionExtractionHelper);
-        }
-    return regionExtractionHelper;
     }
 }

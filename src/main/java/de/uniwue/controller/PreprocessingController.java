@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 import de.uniwue.helper.PreprocessingHelper;
 
 /**
@@ -23,6 +24,29 @@ import de.uniwue.helper.PreprocessingHelper;
 @Controller
 public class PreprocessingController {
     /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public PreprocessingHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (GenericController.isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
+        if (preprocessingHelper == null) {
+            preprocessingHelper = new PreprocessingHelper(
+                session.getAttribute("projectDir").toString(),
+                session.getAttribute("imageType").toString()
+            );
+            session.setAttribute("preprocessingHelper", preprocessingHelper);
+        }
+        return preprocessingHelper;
+    }
+
+    /**
      * Response to the request to send the content of the /Preprocessing page
      *
      * @param session Session of the user
@@ -31,11 +55,12 @@ public class PreprocessingController {
     @RequestMapping("/Preprocessing")
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("preprocessing");
-        if(!GenericController.checkSession(session, response)) {
+
+        PreprocessingHelper preprocessingHelper = provideHelper(session, response);
+        if (preprocessingHelper == null) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
             return mv;
         }
-        setHelperSession(session);
         return mv;
     }
 
@@ -53,9 +78,9 @@ public class PreprocessingController {
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
                HttpSession session, HttpServletResponse response
            ) {
-        if(!GenericController.checkSession(session, response)) 
+        PreprocessingHelper preprocessingHelper = provideHelper(session, response);
+        if (preprocessingHelper == null)
             return;
-        PreprocessingHelper preprocessingHelper = setHelperSession(session);
 
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
@@ -82,11 +107,9 @@ public class PreprocessingController {
      */
     @RequestMapping(value = "/ajax/preprocessing/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
-        if (preprocessingHelper == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        PreprocessingHelper preprocessingHelper = provideHelper(session, response);
+        if (preprocessingHelper == null)
             return;
-        }
 
         preprocessingHelper.cancelProcess();
     }
@@ -100,10 +123,9 @@ public class PreprocessingController {
      */
     @RequestMapping(value = "/ajax/preprocessing/progress" , method = RequestMethod.GET)
     public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
-        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
-        if (preprocessingHelper == null) {
+        PreprocessingHelper preprocessingHelper = provideHelper(session, response);
+        if (preprocessingHelper == null)
             return -1;
-        }
 
         return preprocessingHelper.getProgress();
     }
@@ -121,10 +143,9 @@ public class PreprocessingController {
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
             ) {
-        PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
-        if (preprocessingHelper == null) {
+        PreprocessingHelper preprocessingHelper = provideHelper(session, response);
+        if (preprocessingHelper == null)
             return "";
-        }
 
         if (streamType.equals("err"))
             return preprocessingHelper.getProcessHandler().getConsoleErr();
@@ -144,24 +165,10 @@ public class PreprocessingController {
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response
             ) {
-        if(!GenericController.checkSession(session, response)) 
+        PreprocessingHelper preprocessingHelper = provideHelper(session, response);
+        if (preprocessingHelper == null)
             return false;
-        PreprocessingHelper preprocessingHelper = setHelperSession(session);
 
         return preprocessingHelper.doOldFilesExist(pageIds);
-    }
-
-    /**
-     * Creates the helper object and puts it in the session of the user
-     * @param session Session of the user
-     * @return Returns the helper object of the process
-     */
-    public PreprocessingHelper setHelperSession(HttpSession session) {
-    PreprocessingHelper preprocessingHelper = (PreprocessingHelper) session.getAttribute("preprocessingHelper");
-    if (preprocessingHelper == null) {
-        preprocessingHelper = new PreprocessingHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
-        session.setAttribute("preprocessingHelper", preprocessingHelper);
-        }
-    return preprocessingHelper;
     }
 }
