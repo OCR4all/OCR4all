@@ -36,9 +36,7 @@
                 <tr>
                     <td><p>Output grayscale lines as well</p></td>
                     <td>
-                             <c:choose>
-                                 <c:when test='${imageType == "Gray"}'><c:set value='checked="checked"' var="setCheckboxImageType"></c:set></c:when>
-                             </c:choose>
+                             <c:if test='${imageType == "Gray"}'><c:set value='checked="checked"' var="setCheckboxImageType"></c:set></c:if>
                              <p>
                                  <input type="checkbox" class="filled-in" id="--gray" ${setCheckboxImageType}/>
                                  <label for="--gray"></label>
