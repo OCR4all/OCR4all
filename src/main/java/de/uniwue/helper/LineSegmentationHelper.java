@@ -188,22 +188,25 @@ public class LineSegmentationHelper {
                     continue;
 
                 File segmentDir = new File(projConf.PAGE_DIR + pageId + File.separator + segmentId);
-                if(!segmentDir.exists())
+                if (!segmentDir.exists())
                     segmentDir.mkdirs();
 
                 // Copy segment image to own segment directory and create pseg-file to indicate successful processing
                 switch(projectImageType) {
-                case "binary": Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.BINR_IMG_EXT),
-                        Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.BINR_IMG_EXT),
-                        StandardCopyOption.valueOf("REPLACE_EXISTING"));
-                case "gray": Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.BINR_IMG_EXT),
-                        Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.GRAY_IMG_EXT),
-                        StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                    case "Gray":
+                        Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.GRAY_IMG_EXT),
+                            Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.GRAY_IMG_EXT),
+                            StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                    case "Binary":
+                        Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.BINR_IMG_EXT),
+                            Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.BINR_IMG_EXT),
+                            StandardCopyOption.valueOf("REPLACE_EXISTING"));
+
+                        Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.IMG_EXT),
+                            Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.PSEG_EXT),
+                            StandardCopyOption.valueOf("REPLACE_EXISTING"));
+                    default: break;
                 }
-                File segmentImage = new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.IMG_EXT);
-                Files.copy(Paths.get(segmentImage.getPath()),
-                    Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.PSEG_EXT),
-                    StandardCopyOption.valueOf("REPLACE_EXISTING"));
             }
         }
     }
