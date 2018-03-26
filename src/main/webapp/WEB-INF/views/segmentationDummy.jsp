@@ -60,7 +60,7 @@
 
                 <ul class="collapsible" data-collapsible="expandable">
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">line_style</i>Segmentation</div>
+                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
                         <div class="collapsible-body">
                             <s:segmentationDummy></s:segmentationDummy>
                         </div>
