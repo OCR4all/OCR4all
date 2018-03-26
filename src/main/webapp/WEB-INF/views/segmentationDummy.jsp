@@ -3,29 +3,13 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
-        <title>OCR4All - Segmentation (LAREX)</title>
+        <title>OCR4All - Segmentation (Dummy)</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 initializeImageList("Binary", true);
 
-                initializeProcessUpdate("segmentationLarex", [ 0 ], [ 1 ], false);
-
-                // Prevent redirecting to Larex if image folder does not exist
-                $("#larexForm").submit(function(e){
-                    $.ajax({
-                        url : "ajax/generic/checkDir",
-                        type: "GET",
-                        data: { "imageType" : $('#imageType').val() },
-                        async : false,
-                        success : function( dirExists ) {
-                            if( dirExists === false){
-                                $('#modal_alert').modal('open');
-                                e.preventDefault();
-                            }
-                        },
-                    });
-                });
+                initializeProcessUpdate("segmentationDummy", [ 0 ], [ 1 ], false);
 
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
@@ -62,11 +46,11 @@
             });
         </script>
     </t:head>
-    <t:body heading="Segmentation (LAREX)" imageList="true" processModals="true">
+    <t:body heading="Segmentation (Dummy)" imageList="true" processModals="true">
         <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
-                    Apply Segmentation results
+                    Execute
                     <i class="material-icons right">chevron_right</i>
                 </button>
                 <button data-id="cancel" class="btn waves-effect waves-light">
@@ -78,7 +62,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">line_style</i>Segmentation</div>
                         <div class="collapsible-body">
-                            <s:segmentationLarex></s:segmentationLarex>
+                            <s:segmentationDummy></s:segmentationDummy>
                         </div>
                     </li>
                     <li>
@@ -93,7 +77,7 @@
                 </ul>
 
                 <button data-id="execute" class="btn waves-effect waves-light">
-                    Apply Segmentation results
+                    Execute
                     <i class="material-icons right">chevron_right</i>
                 </button>
                 <button data-id="cancel" class="btn waves-effect waves-light">

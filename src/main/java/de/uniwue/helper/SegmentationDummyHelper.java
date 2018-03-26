@@ -8,14 +8,15 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.w3c.dom.Document;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessStateCollector;
+import de.uniwue.feature.pageXML.PageXMLWriter;
 
-/**
- * Helper class for segmentation larex module
- */
-public class SegmentationLarexHelper {
+public class SegmentationDummyHelper {
     /**
      * Object to access project configuration
      */
@@ -47,13 +48,14 @@ public class SegmentationLarexHelper {
      */
     private boolean segmentationRunning = false;
 
+
     /**
      * Constructor
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary,gray)
      */
-    public SegmentationLarexHelper(String projDir, String projectImageType) {
+    public SegmentationDummyHelper(String projDir, String projectImageType) {
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projDir);
         procStateCol = new ProcessStateCollector(projConf, projectImageType);
@@ -66,11 +68,11 @@ public class SegmentationLarexHelper {
      * @param segmentationImageType Image type of the segmentation (binary, despeckled)
      * @throws IOException
      */
-    public void moveExtractedSegments(List<String> pageIds, String segmentationImageType) throws IOException {
+    public void extractXmlFiles(List<String> pageIds, String segmentationImageType) throws IOException {
         segmentationRunning = true;
         stop = false;
         progress = 0;
-
+        
         File ocrDir = new File(projConf.OCR_DIR);
         if (!ocrDir.exists())
             ocrDir.mkdir();
@@ -83,35 +85,38 @@ public class SegmentationLarexHelper {
         if (projectSpecificPreprocDir.exists()){
             File[] filesToMove = projectSpecificPreprocDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
             for (File file : filesToMove) {
-                if (pageIds.contains(FilenameUtils.removeExtension(file.getName()))) {
+                if (pageIds.contains(FilenameUtils.removeExtension(file.getName())) && stop == false) {
                     Files.copy(Paths.get(file.getPath()),
                         Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),
                         StandardCopyOption.valueOf("REPLACE_EXISTING"));
                 }
             }
         }
-
-        // Copy PageXML files (based on segmentation image type)
-        File pageXMLPreprocDir = new File(projConf.getImageDirectoryByType(segmentationImageType));
-        File[] pageXMLFiles = pageXMLPreprocDir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
-        int pageXMLCount = pageXMLFiles.length;
-        int copiedPageXMLFiles = 0;
-        for (File xml : pageXMLFiles) {
-            if (stop == true) 
-                break;
-
-            Files.copy(Paths.get(xml.getPath()),
-                Paths.get(projConf.getImageDirectoryByType("OCR") + xml.getName()),
-                StandardCopyOption.valueOf("REPLACE_EXISTING"));
-
-            copiedPageXMLFiles++;
-            progress = (int) ((double) copiedPageXMLFiles / pageXMLCount * 100);
+        int processedPages = 0;
+        // generates XML files for each page
+        File segmentationTypeDir = new File(projConf.getImageDirectoryByType(segmentationImageType));
+        if (segmentationTypeDir.exists()){
+            File[] imageFiles = segmentationTypeDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
+            for (File file : imageFiles) {
+                if (pageIds.contains(FilenameUtils.removeExtension(file.getName())) && stop == false) {
+                    extractXML(file,projConf.OCR_DIR);
+                    progress = (int) ((double) processedPages / pageIds.size() * 100);
+                }
+            }
         }
-
         progress = 100;
         segmentationRunning = false;
     }
 
+    public void extractXML(File file, String outputFolder) {
+        String imagePath = file.getAbsolutePath();
+        String imageFilename = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1);
+        Mat image = Imgcodecs.imread(imagePath);
+        if(image.width() == 0)
+            return;
+        Document xml = PageXMLWriter.getPageXML(image, imageFilename, "");
+        PageXMLWriter.saveDocument(xml, imageFilename, outputFolder);
+    }
     /**
      * Returns the progress of the job
      *
@@ -144,5 +149,4 @@ public class SegmentationLarexHelper {
     public boolean isSegmentationRunning() {
         return segmentationRunning;
     }
-
 }

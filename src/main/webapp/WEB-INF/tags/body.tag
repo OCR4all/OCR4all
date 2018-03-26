@@ -35,7 +35,7 @@
                         <div class="collapsible-body">
                             <ul>
                                 <li><a href="SegmentationLarex">Segmentation (LAREX)</a></li>
-                                <li><a href="#!">Segmentation (Dummy)</a></li>
+                                <li><a href="SegmentationDummy">Segmentation (Dummy)</a></li>
                             </ul>
                         </div>
                     </li>

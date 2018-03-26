@@ -13,23 +13,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import de.uniwue.helper.SegmentationLarexHelper;
+import de.uniwue.helper.SegmentationDummyHelper;
 
 /**
- * Controller class for pages of segmentation larex module
+ * Controller class for pages of segmentation dummy module
  * Use response.setStatus to trigger AJAX fail (and therefore show errors)
  */
 @Controller
-public class SegmentationLarexController {
+public class SegmentationDummyController {
     /**
-     * Response to the request to send the content of the /SegmentationLarex page
+     * Response to the request to send the content of the /SegmentationDummy page
      *
      * @param session Session of the user
-     * @return Returns the content of the /SegmentationLarex page
+     * @return Returns the content of the /SegmentationDummy page
      */
-    @RequestMapping("/SegmentationLarex")
+    @RequestMapping("/SegmentationDummy")
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
-        ModelAndView mv = new ModelAndView("segmentationLarex");
+        ModelAndView mv = new ModelAndView("segmentationDummy");
 
         if(!GenericController.checkSession(session, response)) {
             mv.addObject("error", "Session expired.\nPlease return to the Project Overview page.");
@@ -40,7 +40,7 @@ public class SegmentationLarexController {
     }
 
     /**
-     * Response to the request to copy the XML files
+     * Response to the request to execute the process
      *
      * @param pageIds Ids of specified pages
      * @param imageType Type of the images (binary,despeckled)
@@ -48,7 +48,7 @@ public class SegmentationLarexController {
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value = "/ajax/segmentationLarex/execute", method = RequestMethod.POST)
+    @RequestMapping(value = "/ajax/segmentationDummy/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
                @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam("imageType") String segmentationImageType,
@@ -56,51 +56,51 @@ public class SegmentationLarexController {
            ) {
         if(!GenericController.checkSession(session, response)) 
             return;
-        SegmentationLarexHelper segmentationLarexHelper = setHelperSession(session);
+        SegmentationDummyHelper segmentationDummyHelper = setHelperSession(session);
 
-        if (segmentationLarexHelper.isSegmentationRunning() == true) {
+        if (segmentationDummyHelper.isSegmentationRunning() == true) {
             response.setStatus(530); //530 = Custom: Process still running
             return;
         }
 
         try {
-        	segmentationLarexHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType);
+        	segmentationDummyHelper.extractXmlFiles(Arrays.asList(pageIds), segmentationImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            segmentationLarexHelper.resetProgress();
+            segmentationDummyHelper.resetProgress();
         }
     }
 
     /**
-     * Response to the request to return the progress status of the segmentation larex service
+     * Response to the request to return the progress status of the segmentation dummy service
      *
      * @param session Session of the user
      * @return Current progress (range: 0 - 100)
      */
-    @RequestMapping(value = "/ajax/segmentationLarex/progress" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/segmentationDummy/progress" , method = RequestMethod.GET)
     public @ResponseBody int progress(HttpSession session) {
-        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
-        if (segmentationHelper == null)
+        SegmentationDummyHelper segmentationDummyHelper = (SegmentationDummyHelper) session.getAttribute("segmentationDummyHelper");
+        if (segmentationDummyHelper == null)
             return -1;
 
-        return segmentationHelper.getProgress();
+        return segmentationDummyHelper.getProgress();
     }
 
     /**
-     * Response to the request to cancel the segmentation larex copy process
+     * Response to the request to cancel the segmentation dummy process
      *
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value = "/ajax/segmentationLarex/cancel", method = RequestMethod.POST)
+    @RequestMapping(value = "/ajax/segmentationDummy/cancel", method = RequestMethod.POST)
     public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
-        SegmentationLarexHelper segmentationHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
-        if (segmentationHelper == null) {
+        SegmentationDummyHelper segmentationDummyHelper = (SegmentationDummyHelper) session.getAttribute("segmentationDummyHelper");
+        if (segmentationDummyHelper == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
-        segmentationHelper.cancelProcess();
+        segmentationDummyHelper.cancelProcess();
     }
 
     /**
@@ -108,12 +108,12 @@ public class SegmentationLarexController {
      * @param session Session of the user
      * @return Returns the helper object of the process
      */
-    public SegmentationLarexHelper setHelperSession(HttpSession session) {
-        SegmentationLarexHelper segmentationLarexHelper = (SegmentationLarexHelper) session.getAttribute("segmentationLarexHelper");
-    if (segmentationLarexHelper == null) {
-        segmentationLarexHelper = new SegmentationLarexHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
-        session.setAttribute("segmentationLarexHelper", segmentationLarexHelper);
-        }
-    return segmentationLarexHelper;
+    public SegmentationDummyHelper setHelperSession(HttpSession session) {
+        SegmentationDummyHelper segmentationDummyHelper = (SegmentationDummyHelper) session.getAttribute("segmentationDummyHelper");
+        if (segmentationDummyHelper == null) {
+            segmentationDummyHelper = new SegmentationDummyHelper(session.getAttribute("projectDir").toString(), session.getAttribute("imageType").toString());
+            session.setAttribute("segmentationDummyHelper", segmentationDummyHelper);
+            }
+        return segmentationDummyHelper;
     }
 }
