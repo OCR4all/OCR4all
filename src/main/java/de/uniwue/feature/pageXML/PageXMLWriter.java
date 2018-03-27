@@ -119,11 +119,11 @@ public class PageXMLWriter {
 
             //tl, tr, br, bl
             Point[] points = new Point[4];
-            points[0] = new Point(0, 0);
-            points[1] = new Point(image.width() - 1, 0);
-            points[2] = new Point(image.width() - 1, image.height() - 1);
-            points[3] = new Point(0, image.height() - 1);
-            
+            points[0] = new Point(1, 1);
+            points[1] = new Point(image.width() - 2, 1);
+            points[2] = new Point(image.width() - 2, image.height() - 2);
+            points[3] = new Point(1, image.height() - 2);
+
             switch (pageXMLVersion) {
             case "2017-07-15":
                 addPoints2017(document, coordsElement, points);
