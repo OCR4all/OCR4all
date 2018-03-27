@@ -13,7 +13,6 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.w3c.dom.Document;
 
 import de.uniwue.config.ProjectConfiguration;
-import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.feature.pageXML.PageXMLWriter;
 
 public class SegmentationDummyHelper {
@@ -27,11 +26,6 @@ public class SegmentationDummyHelper {
      * Possible values: { Binary, Gray }
      */
     private String projectImageType;
-
-    /**
-     * Object to determine process states
-     */
-    private ProcessStateCollector procStateCol;
 
     /**
      * Status of the SegmentationLarex progress
@@ -58,7 +52,6 @@ public class SegmentationDummyHelper {
     public SegmentationDummyHelper(String projDir, String projectImageType) {
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projDir);
-        procStateCol = new ProcessStateCollector(projConf, projectImageType);
     }
 
     /**
