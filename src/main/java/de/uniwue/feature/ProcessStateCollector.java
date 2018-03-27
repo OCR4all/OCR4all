@@ -71,24 +71,13 @@ public class ProcessStateCollector {
     }
 
     /**
-     * Determines the "RegionExtraction" process state of a given page
+     * Checks whether the required image files in "OCR/Pages/{pageId}" directory exist or not
      *
      * @param pageID Identifier of the page (e.g 0002,0003)
-     * @return "RegionExtraction" state of the page
+     * @param includePseg Determines if the ".pseg.png" file should be checked as well (for line segmentation only)
+     * @return Information if the required image files exist
      */
-    public boolean regionExtractionState(String pageId) {
-        if (!new File(projConf.PAGE_DIR + pageId).isDirectory())
-            return false;
-        return true;
-    }
-
-    /**
-     * Determines the "LineSegmentation" process state of a given page
-     *
-     * @param pageID Identifier of the page (e.g 0002,0003)
-     * @return "LineSegmentation" state of the page
-     */
-    public boolean lineSegmentationState(String pageId) {
+    public boolean existPageDirImageFiles(String pageId, boolean includePseg) {
         File pageDir = new File(projConf.PAGE_DIR + pageId);
         if (!pageDir.exists())
             return false;
@@ -101,13 +90,48 @@ public class ProcessStateCollector {
             !name.endsWith(projConf.PSEG_EXT)
         );
 
-        // Check that for every region file a ".pseg.png" exists (successful line segmentation)
+        if (plainRegionImgFiles.length == 0)
+            return false;
+
+        // Check that for every region file a ".bin.png" and ".nrm.png exists (successful region extraction)
+        // If required, check that for every region file a ".pseg.png" exists (successful line segmentation)
         for (File imgFile : plainRegionImgFiles) {
-            if (!new File(FilenameUtils.removeExtension(imgFile.getAbsolutePath()) + projConf.PSEG_EXT).exists())
+            if (!new File(FilenameUtils.removeExtension(imgFile.getAbsolutePath()) + projConf.BINR_IMG_EXT).exists())
                 return false;
+
+            if (!new File(FilenameUtils.removeExtension(imgFile.getAbsolutePath()) + projConf.GRAY_IMG_EXT).exists())
+                return false;
+
+            if (includePseg == true) {
+                if (!new File(FilenameUtils.removeExtension(imgFile.getAbsolutePath()) + projConf.PSEG_EXT).exists())
+                    return false;
+            }
         }
 
         return true;
+    }
+
+    /**
+     * Determines the "RegionExtraction" process state of a given page
+     *
+     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @return "RegionExtraction" state of the page
+     */
+    public boolean regionExtractionState(String pageId) {
+        // Check that for every region file a ".bin.png" and ".nrm.png exists (successful region extraction)
+        return existPageDirImageFiles(pageId, false);
+    }
+
+    /**
+     * Determines the "LineSegmentation" process state of a given page
+     *
+     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @return "LineSegmentation" state of the page
+     */
+    public boolean lineSegmentationState(String pageId) {
+        // Check that for every region file a ".bin.png" and ".nrm.png exists (successful region extraction)
+        // Check that for every region file a ".pseg.png" exists (successful line segmentation)
+        return existPageDirImageFiles(pageId, true);
     }
 
     /**
