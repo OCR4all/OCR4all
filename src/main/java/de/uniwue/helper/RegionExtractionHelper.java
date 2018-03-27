@@ -76,6 +76,7 @@ public class RegionExtractionHelper {
         return processHandler;
     }
 
+    
     /**
      * Executes region extraction on a list of pages
      *
@@ -91,7 +92,7 @@ public class RegionExtractionHelper {
         regionExtractionRunning = true;
         stop = false;
         progress = 0;
-
+        List<String> regions = new ArrayList<String>();
         File pageDir = new File(projConf.PAGE_DIR);
         if (!pageDir.exists())
             pageDir.mkdir();
@@ -108,16 +109,21 @@ public class RegionExtractionHelper {
             String imagePath = projConf.OCR_DIR + pageId + projConf.IMG_EXT;
             String xmlPath = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
             String outputFolder = projConf.PAGE_DIR;
-            List<String> regions = RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, spacing, outputFolder);
-            List<String> command = new ArrayList<String>();
-            for(String pathToRegion :regions)
-                command.add(pathToRegion);
-            command.add("--parallel");
-            command.add(Integer.toString(parallel));
-            command.add("-n");
+            regions.addAll(RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, spacing, outputFolder));
+            // Optimization so that the ocropus-nlbin script will only be executed if the number of regions are at least matching the parallel parameter value
+            // If this were not the case, the nlbin script could only use one core for pages that consist of only one segment. The rest of the cores would just idle
+            if (regions.size() >= parallel == true) {
+                List<String> command = new ArrayList<String>();
+                for(String pathToRegion :regions)
+                    command.add(pathToRegion);
+                command.add("--parallel");
+                command.add(Integer.toString(parallel));
+                command.add("-n");
 
-            processHandler.setFetchProcessConsole(true);
-            processHandler.startProcess("ocropus-nlbin", command, false);
+                processHandler.setFetchProcessConsole(true);
+                processHandler.startProcess("ocropus-nlbin", command, false);
+                regions.clear();
+            }
             regionExtractedPageCount++;
             progress = (int) ((double) regionExtractedPageCount / pageCount * 100);
         }
