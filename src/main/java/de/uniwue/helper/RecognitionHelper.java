@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
@@ -218,6 +219,9 @@ public class RecognitionHelper {
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("ocropus-rpred", command, false);
 
+        // Process extension to ocropus-gpageseg script
+        createSkippedSegments();
+
         progress = 100;
         RecognitionRunning = false;
     }
@@ -286,6 +290,23 @@ public class RecognitionHelper {
                     for (File txtFile : txtFiles) {
                         txtFile.delete();
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates the recognition files of the linesegments that were skipped by the ocropus-rpred script
+     *
+     * @throws IOException
+     */
+    public void createSkippedSegments() throws IOException{
+        for(String pageId : processState.keySet()) {
+            for(String segmentId :processState.get(pageId).keySet()) {
+                for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
+                    if (processState.get(pageId).get(segmentId).get(lineSegmentId) == true)
+                        continue;
+                    FileUtils.writeStringToFile(new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId + projConf.GT_EXT), "", "UTF8");
                 }
             }
         }
