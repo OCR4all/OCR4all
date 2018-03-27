@@ -1,4 +1,3 @@
-
 # OCR4all_Web
 
 Provides OCR (optical character recognition) services through web applications
@@ -34,11 +33,13 @@ Explanation of variables used above:
 * `<OCR_MODEL_DIR>` - Directory in which the OCR models are located on your local machine
 
 The container will be started by default after executing the `docker run` command.
+
 If you want to start the container again later use `docker ps -a` to list all available containers with their Container IDs and then use `docker start <CONTAINER_ID>` to start the desired container.
 
 You can now access the project via following URL: http://localhost:8080/OCR4all_Web/
 
 ### Updating
+
 To update the source code of the project you currently need to reinstall the image.
 
 This can be achieved with executing the following command first:
@@ -46,6 +47,28 @@ This can be achieved with executing the following command first:
 docker image rm <IMAGE_NAME>
 ```
 Afterwards you can follow the installation guide above as it is a new clean installation.
+
+## Development
+
+In case you want shell access on your Docker container for development or testing purposes the container needs to be created with the following command (including the `--entrypoint` option):
+```
+docker run -p 8080:8080 \
+    --entrypoint /bin/bash
+    -v <OCR_DATA_DIR>:/var/ocr4all/data \
+    -v <OCR_MODEL_DIR>:/var/ocr4all/models \
+    -it <IMAGE_NAME>
+```
+
+The container will be started by default after executing the `docker run` command.
+
+If you want to start the container again later use `docker ps -a` to list all available containers with their Container IDs and then use `docker start <CONTAINER_ID>` to start the desired container. To gain shell access again use `docker attach <CONTAINER_ID>`.
+
+Because the entrypoint has changed, Tomcat will not start automatically and the following command needs to be executed after the container startup:
+```
+/etc/init.d/tomcat8 start
+```
+
+For information on how to update the project take a look into the commands within the [Dockerfile](Dockerfile).
 
 ## Built With
 
