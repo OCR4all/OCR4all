@@ -10,7 +10,6 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
-import de.uniwue.feature.ProcessStateCollector;
 
 /**
  * Helper class for segmentation larex module
@@ -27,12 +26,7 @@ public class SegmentationLarexHelper {
      */
     private String projectImageType;
 
-    /**
-     * Object to determine process states
-     */
-    private ProcessStateCollector procStateCol;
-
-    /**
+     /**
      * Status of the SegmentationLarex progress
      */
     private int progress = -1;
@@ -56,7 +50,6 @@ public class SegmentationLarexHelper {
     public SegmentationLarexHelper(String projDir, String projectImageType) {
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projDir);
-        procStateCol = new ProcessStateCollector(projConf, projectImageType);
     }
 
     /**
