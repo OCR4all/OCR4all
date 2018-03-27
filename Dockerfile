@@ -33,9 +33,9 @@ RUN cd /opt/OCR4all_Web/src/main/resources/LAREX/Larex && mvn package
 RUN cp /opt/OCR4all_Web/src/main/resources/LAREX/Larex/target/Larex.war /var/lib/tomcat8/webapps/
 
 # Create ocr4all directories and grant tomcat permissions
-RUN mkdir /var/ocr4all && \
-    mkdir /var/ocr4all/data && \
-    mkdir /var/ocr4all/models && \
+RUN mkdir -p /var/ocr4all/data && \
+    mkdir -p /var/ocr4all/models/default && \
+    mkdir -p /var/ocr4all/models/custom && \
     chmod -R g+w /var/ocr4all && \
     chgrp -R tomcat8 /var/ocr4all
 
@@ -45,6 +45,14 @@ RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
     mkdir models && \
     mv en-default.pyrnn.gz models/ && \
     python2.7 setup.py install
+
+# Make ocropus standard model available to OS environment
+RUN mkdir /usr/local/share/ocropus
+RUN ln -s /opt/OCR4all_Web/src/main/resources/ocropy/models/en-default.pyrnn.gz /usr/local/share/ocropus/en-default.pyrnn.gz
+# Make pretrained ocropus models available to project environment
+RUN for OCR_MODEL in `cd /opt/OCR4all_Web/src/main/resources/ocropy/pretraining/models && ls`; \
+        do ln -s /opt/OCR4all_Web/src/main/resources/ocropy/pretraining/models/$OCR_MODEL /var/ocr4all/models/default/$OCR_MODEL; \
+    done
 
 # Make all ocropus scripts available to JAVA environment
 RUN for OCR_SCRIPT in `cd /usr/local/bin && ls ocropus-*`; do ln -s /usr/local/bin/$OCR_SCRIPT /bin/$OCR_SCRIPT; done

@@ -23,7 +23,7 @@ With the help of the image a container can now be created with the following com
 ```
 docker run -p 8080:8080 \
     -v <OCR_DATA_DIR>:/var/ocr4all/data \
-    -v <OCR_MODEL_DIR>:/var/ocr4all/models \
+    -v <OCR_MODEL_DIR>:/var/ocr4all/models/custom \
     -it <IMAGE_NAME>
 ```
 
@@ -55,7 +55,7 @@ In case you want shell access on your Docker container for development or testin
 docker run -p 8080:8080 \
     --entrypoint /bin/bash
     -v <OCR_DATA_DIR>:/var/ocr4all/data \
-    -v <OCR_MODEL_DIR>:/var/ocr4all/models \
+    -v <OCR_MODEL_DIR>:/var/ocr4all/models/custom \
     -it <IMAGE_NAME>
 ```
 
