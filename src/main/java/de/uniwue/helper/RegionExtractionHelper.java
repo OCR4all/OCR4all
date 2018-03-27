@@ -112,7 +112,7 @@ public class RegionExtractionHelper {
             regions.addAll(RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, spacing, outputFolder));
             // Optimization so that the ocropus-nlbin script will only be executed if the number of regions are at least matching the parallel parameter value
             // If this were not the case, the nlbin script could only use one core for pages that consist of only one segment. The rest of the cores would just idle
-            if (regions.size() >= parallel == true) {
+            if (regions.size() >= parallel || regionExtractedPageCount == pageIds.size() - 1) {
                 List<String> command = new ArrayList<String>();
                 for(String pathToRegion :regions)
                     command.add(pathToRegion);
