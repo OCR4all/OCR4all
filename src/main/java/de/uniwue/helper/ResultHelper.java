@@ -134,11 +134,11 @@ public class ResultHelper {
     private void initializeResultDirectories() {
         File resultDir = new File(projConf.RESULT_DIR);
         if (!resultDir.exists())
-        	resultDir.mkdir();
+            resultDir.mkdir();
 
         File resultPagesDir = new File(projConf.RESULT_PAGES_DIR);
         if (!resultPagesDir.exists())
-        	resultPagesDir.mkdir();
+            resultPagesDir.mkdir();
 
     }
 
@@ -152,83 +152,97 @@ public class ResultHelper {
     public void executeProcess(List<String> pageIds, String ResultType) throws IOException {
         stopProcess = false;
         progress = 0;
+
         initializeResultDirectories();
-        if(ResultType.equals("textResult"))
-            executetxtProcess(pageIds);
-        if(ResultType.equals("xmlResult"))
+
+        if (ResultType.equals("txt")) {
+            executeTextProcess(pageIds);
+        }
+        else if (ResultType.equals("xml")) {
             executeXmlProcess(pageIds);
+        }
+
         progress = 100;
     }
 
     /**
-     * Executes result txt generation process on all specified pages
+     * Executes result XML generation process on all specified pages
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @param ResultType specified resultType (txt, xml)
      * @throws IOException
      */
     public void executeXmlProcess(List<String> pageIds) throws IOException {
         File dir = new File(projConf.OCR_DIR);
         if(!dir.exists())
             return;
+
         File[] xmlFiles = dir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        int processedPages = 1; 
+
+        int processedPages = 1;
         for (File xmlFile : xmlFiles) {
-            if(stopProcess == true)
+            if (stopProcess == true)
                 return;
+
             List<String> command = new ArrayList<String>();
             command.add(xmlFile.getAbsolutePath());
             processHandler.startProcess("pagedir2pagexml.py", command, false);
+
             progress = (int) ((double) processedPages / xmlFiles.length * 100);
             processedPages++;
         }
     }
 
     /**
-     * Executes result xml generation process on all specified pages
+     * Executes result TXT generation process on all specified pages
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @param ResultType specified resultType (txt, xml)
      * @throws IOException
      */
-    public void executetxtProcess(List<String> pageIds) throws IOException {
+    public void executeTextProcess(List<String> pageIds) throws IOException {
         initialize(pageIds);
+
         TreeMap<String, String> pageResult = new TreeMap<String, String>();
-        int LineSegmentsCount = 0;
-        for(String pageId : processState.keySet()) {
-            for(String segmentId : processState.get(pageId).keySet()) {
-                LineSegmentsCount += processState.get(pageId).get(segmentId).size();
+        int lineSegmentsCount = 0;
+        for (String pageId : processState.keySet()) {
+            for (String segmentId : processState.get(pageId).keySet()) {
+                lineSegmentsCount += processState.get(pageId).get(segmentId).size();
             }
         }
 
         int processedLineSegments = 1;
-        for(String pageId : processState.keySet()) {
+        for (String pageId : processState.keySet()) {
             pageResult.put(pageId, new String());
-            for(String segmentId : processState.get(pageId).keySet()) {
-                for(String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
-                    if(stopProcess == true)
+
+            for (String segmentId : processState.get(pageId).keySet()) {
+                for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
+                    if (stopProcess == true)
                         return;
 
-                    Path path = Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId + projConf.GT_EXT);
-                    if(!Files.exists(path))
-                        path = Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId + projConf.REC_EXT);
+                    String lineSegDir = projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId;
+                    Path path = Paths.get(lineSegDir + projConf.GT_EXT);
+                    if (!Files.exists(path))
+                        path = Paths.get(lineSegDir + projConf.REC_EXT);
+
                     BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"));
                     String currentLine = new String();
-                    while((currentLine = reader.readLine()) != null){
+                    while ((currentLine = reader.readLine()) != null){
                         pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
                     }
-                    progress = (int) ((double) processedLineSegments / LineSegmentsCount * 100);
+
+                    progress = (int) ((double) processedLineSegments / lineSegmentsCount * 100);
                     processedLineSegments++;
                 }
             }
             Files.write(Paths.get(projConf.RESULT_PAGES_DIR + pageId + ".txt"), pageResult.get(pageId).getBytes());
         }
-        String CompleteResult = new String();
-        for(String pageId: pageResult.keySet())
-            CompleteResult += pageResult.get(pageId) + "\n";
-        Files.write(Paths.get(projConf.RESULT_DIR + "complete" + ".txt"), CompleteResult.getBytes());
+
+        String completeResult = new String();
+        for (String pageId: pageResult.keySet()) {
+            completeResult += pageResult.get(pageId) + "\n";
+        }
+        Files.write(Paths.get(projConf.RESULT_DIR + "complete" + ".txt"), completeResult.getBytes());
     }
 
     /**

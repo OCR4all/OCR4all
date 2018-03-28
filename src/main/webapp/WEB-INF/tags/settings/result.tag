@@ -7,8 +7,8 @@
                 <div class="input-field">
                     <i class="material-icons prefix">image</i>
                     <select id="resultType" name="resultType" class="suffix">
-                        <option value="textResult">Text files</option>
-                        <option value="xmlResult">XML files</option>
+                        <option value="txt">Text files</option>
+                        <option value="xml">XML files</option>
                     </select>
                     <label></label>
                 </div>
