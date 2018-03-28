@@ -105,7 +105,8 @@ public class ProcessConflictDetector {
         if (currentProcesses.contains("regionExtraction")
                 || currentProcesses.contains("lineSegmentation")
                 || currentProcesses.contains("recognition")
-                || currentProcesses.contains("evaluation"))
+                || currentProcesses.contains("evaluation")
+                || currentProcesses.contains("result"))
             return PREV_PROCESS;
 
         return NO_CONFLICT;
@@ -134,7 +135,8 @@ public class ProcessConflictDetector {
         if (currentProcesses.contains("regionExtraction")
                 || currentProcesses.contains("lineSegmentation")
                 || currentProcesses.contains("recognition")
-                || currentProcesses.contains("evaluation"))
+                || currentProcesses.contains("evaluation")
+                || currentProcesses.contains("result"))
             return PREV_PROCESS;
 
         return NO_CONFLICT;
@@ -158,7 +160,8 @@ public class ProcessConflictDetector {
 
         if (currentProcesses.contains("lineSegmentation")
                 || currentProcesses.contains("recognition")
-                || currentProcesses.contains("evaluation"))
+                || currentProcesses.contains("evaluation")
+                || currentProcesses.contains("result"))
             return PREV_PROCESS;
 
         return NO_CONFLICT;
@@ -181,7 +184,8 @@ public class ProcessConflictDetector {
             return PROCESS_FLOW;
 
         if (currentProcesses.contains("recognition")
-                || currentProcesses.contains("evaluation"))
+                || currentProcesses.contains("evaluation")
+                || currentProcesses.contains("result"))
             return PREV_PROCESS;
 
         return NO_CONFLICT;
@@ -203,7 +207,8 @@ public class ProcessConflictDetector {
         if (currentProcesses.contains("processFlow"))
             return PROCESS_FLOW;
 
-        if (currentProcesses.contains("evaluation"))
+        if (currentProcesses.contains("evaluation")
+                || currentProcesses.contains("result"))
             return PREV_PROCESS;
 
         return NO_CONFLICT;
@@ -220,6 +225,25 @@ public class ProcessConflictDetector {
             return NO_CONFLICT;
 
         if (currentProcesses.contains("evaluation"))
+            return SAME_PROCESS;
+
+        if (currentProcesses.contains("processFlow"))
+            return PROCESS_FLOW;
+
+        return NO_CONFLICT;
+    }
+
+    /**
+     * Determines conflicts with the Evaluation process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public static int resultConflict(List<String> currentProcesses) {
+        if (currentProcesses.size() == 0)
+            return NO_CONFLICT;
+
+        if (currentProcesses.contains("result"))
             return SAME_PROCESS;
 
         if (currentProcesses.contains("processFlow"))

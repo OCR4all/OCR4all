@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
 
@@ -43,11 +44,6 @@ public class ResultHelper {
      * Progress of the result process
      */
     private int progress = -1;
-
-    /**
-     * Indicates if a result process is already running
-     */
-    private boolean resultRunning = false;
 
     /**
      * Indicates if the result process should be stopped
@@ -154,7 +150,6 @@ public class ResultHelper {
      * @throws IOException
      */
     public void executeProcess(List<String> pageIds, String ResultType) throws IOException {
-        resultRunning = true;
         stopProcess = false;
         progress = 0;
         initializeResultDirectories();
@@ -162,7 +157,6 @@ public class ResultHelper {
             executetxtProcess(pageIds);
         if(ResultType.equals("xmlResult"))
             executeXmlProcess(pageIds);
-        resultRunning = false;
         progress = 100;
     }
 
@@ -241,17 +235,7 @@ public class ResultHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
-    	resultRunning = false;
         progress = -1;
-    }
-
-    /**
-     * Gets the Result status
-     *
-     * @return status if the process is running
-     */
-    public boolean isResultRunning() {
-        return resultRunning;
     }
 
     /**
@@ -289,5 +273,15 @@ public class ResultHelper {
      */
     public int getProgress() {
         return progress;
+    }
+
+    /**
+     * Determines conflicts with the process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.resultConflict(currentProcesses);
     }
 }

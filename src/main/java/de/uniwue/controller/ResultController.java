@@ -3,6 +3,7 @@ package de.uniwue.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -35,7 +36,7 @@ public class ResultController {
         // Keep a single helper object in session
         ResultHelper resultHelper = (ResultHelper) session.getAttribute("resultHelper");
         if (resultHelper == null) {
-        	resultHelper = new ResultHelper(
+            resultHelper = new ResultHelper(
                 session.getAttribute("projectDir").toString(),
                 session.getAttribute("imageType").toString()
             );
@@ -76,22 +77,22 @@ public class ResultController {
                @RequestParam(value = "resultType", required = true) String resultType,
                HttpSession session, HttpServletResponse response
            ) {
-    	ResultHelper resultHelper = provideHelper(session, response);
+        ResultHelper resultHelper = provideHelper(session, response);
         if (resultHelper == null)
             return;
 
-
-        if (resultHelper.isResultRunning() == true) {
-            response.setStatus(530); //530 = Custom: Process still running
+        int conflictType = resultHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
-        }
 
+        GenericController.addToProcessList(session, "result");
         try {
-        	resultHelper.executeProcess(Arrays.asList(pageIds), resultType);
+            resultHelper.executeProcess(Arrays.asList(pageIds), resultType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resultHelper.resetProgress();
         }
+        GenericController.removeFromProcessList(session, "result");
     }
 
     /**
