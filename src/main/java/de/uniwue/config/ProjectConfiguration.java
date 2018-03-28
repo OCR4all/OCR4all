@@ -110,6 +110,17 @@ public final class ProjectConfiguration {
      * Absolute path to preprocessed despeckled images (is made absolute in Constructor)
      */
     public String DESP_IMG_DIR = PREPROC_DIR + "Despeckled" + File.separator;
+
+    /**** Result related directories ****/
+
+    /**
+     * Absolute path to Result directory (is made absolute in Constructor)
+     */
+    public String RESULT_DIR = "Results" + File.separator;
+    /**
+     * Absolute path to Result pages directory (is made absolute in Constructor)
+     */
+    public String RESULT_PAGES_DIR = RESULT_DIR + "Pages" + File.separator;
     /**
      * Returns the filesystem path of the given image type
      *
