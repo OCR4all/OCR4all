@@ -107,7 +107,7 @@ public class SegmentationDummyHelper {
         Mat image = Imgcodecs.imread(imagePath);
         if(image.width() == 0)
             return;
-        Document xml = PageXMLWriter.getPageXML(image, imageFilename, "");
+        Document xml = PageXMLWriter.getPageXML(image, imageFilename, "2017-07-15");
         PageXMLWriter.saveDocument(xml, imageFilename, outputFolder);
     }
     /**
