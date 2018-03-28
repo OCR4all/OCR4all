@@ -13,7 +13,6 @@ from math import sin, cos, radians
 from lxml import etree
 from PIL import Image
 
-from tqdm import tqdm
 import click
 
 
@@ -216,7 +215,7 @@ def loopfiles(ocrindex, gtindex, xmlfiles):
         a subfolder called 'Pages' in the same directory.
     """
     if xmlfiles:
-        for xmlfile in tqdm(xmlfiles):
+        for xmlfile in xmlfiles:
             pagexmlcombine(ocrindex, gtindex, xmlfile)
 
 if __name__ == '__main__':
