@@ -87,17 +87,18 @@ public class RegionExtractionController {
         if (regionExtractionHelper == null)
             return;
 
-        if (regionExtractionHelper.isRegionExtractionRunning() == true) {
-            response.setStatus(530); //530 = Custom: Process still running
+        int conflictType = regionExtractionHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
-        }
 
+        GenericController.addToProcessList(session, "regionExtraction");
         try {
             regionExtractionHelper.executeRegionExtraction(Arrays.asList(pageIds), spacing, avgbackground, parallel);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             regionExtractionHelper.resetProgress();
         }
+        GenericController.removeFromProcessList(session, "regionExtraction");
     }
 
     /**

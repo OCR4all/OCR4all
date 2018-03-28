@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
 
@@ -263,15 +264,6 @@ public class RecognitionHelper {
     }
 
     /**
-     * Returns the Recognition status
-     *
-     * @return status if the process is running
-     */
-    public boolean isRecongitionRunning() {
-        return RecognitionRunning;
-    }
-
-    /**
      * Deletion of old process related files
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
@@ -285,8 +277,11 @@ public class RecognitionHelper {
             File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
             if (lineSegmentDirectories.length != 0) {
                 for (File dir : lineSegmentDirectories) {
-                    File[] txtFiles = new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(projConf.REC_EXT));
                     // Delete .txt files that store the recognized text
+                    // Keep .gt.txt files that store already manually corrected text
+                    File[] txtFiles = new File(dir.getAbsolutePath()).listFiles(
+                        (d, name) -> name.endsWith(projConf.REC_EXT) && !name.endsWith(projConf.GT_EXT)
+                    );
                     for (File txtFile : txtFiles) {
                         txtFile.delete();
                     }
@@ -324,5 +319,15 @@ public class RecognitionHelper {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Determines conflicts with the process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.recognitionConflict(currentProcesses);
     }
 }

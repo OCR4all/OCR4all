@@ -80,16 +80,17 @@ public class DespecklingController {
         if (despecklingHelper == null)
             return;
 
-        if (despecklingHelper.isDespecklingRunning() == true) {
-            response.setStatus(530); //530 = Custom: Process still running
+        int conflictType = despecklingHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
-        }
 
+        GenericController.addToProcessList(session, "despeckling");
         try {
             despecklingHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+        GenericController.removeFromProcessList(session, "despeckling");
     }
 
     /**

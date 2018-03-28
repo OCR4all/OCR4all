@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
 
@@ -183,15 +184,6 @@ public class PreprocessingHelper {
     }
 
     /**
-     * Gets the Preprocessing status
-     *
-     * @return status if the process is running
-     */
-    public boolean isPreprocessingRunning() {
-        return preprocessingRunning;
-    }
-
-    /**
      * Deletion of old process related files
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
@@ -221,5 +213,15 @@ public class PreprocessingHelper {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Determines conflicts with the process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.preprocessingConflict(currentProcesses);
     }
 }

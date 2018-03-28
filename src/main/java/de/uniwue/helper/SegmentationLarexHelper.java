@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 
 /**
  * Helper class for segmentation larex module
@@ -37,11 +38,6 @@ public class SegmentationLarexHelper {
     private boolean stop = false;
 
     /**
-     * Indicates if a SegmentationLarex process is already running
-     */
-    private boolean segmentationRunning = false;
-
-    /**
      * Constructor
      *
      * @param projectDir Path to the project directory
@@ -60,7 +56,6 @@ public class SegmentationLarexHelper {
      * @throws IOException
      */
     public void moveExtractedSegments(List<String> pageIds, String segmentationImageType) throws IOException {
-        segmentationRunning = true;
         stop = false;
         progress = 0;
 
@@ -102,7 +97,6 @@ public class SegmentationLarexHelper {
         }
 
         progress = 100;
-        segmentationRunning = false;
     }
 
     /**
@@ -118,7 +112,6 @@ public class SegmentationLarexHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
-        segmentationRunning = false;
         progress = -1;
     }
 
@@ -130,11 +123,12 @@ public class SegmentationLarexHelper {
     }
 
     /**
-     * Gets the SegmentationLarex status
+     * Determines conflicts with the process
      *
-     * @return status if the process is running
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
      */
-    public boolean isSegmentationRunning() {
-        return segmentationRunning;
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.segmentationLarexConflict(currentProcesses);
     }
 }

@@ -82,21 +82,22 @@ public class LineSegmentationController {
         if (lineSegmentationHelper == null)
             return;
 
-        List<String> cmdArgList = new ArrayList<String>();
-        if (cmdArgs != null)
-            cmdArgList = Arrays.asList(cmdArgs);
-
-        if (lineSegmentationHelper.isLineSegmentationRunning() == true) {
-            response.setStatus(530); //530 = Custom: Process still running
+        int conflictType = lineSegmentationHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
-        }
 
+        GenericController.addToProcessList(session, "lineSegmentation");
         try {
+            List<String> cmdArgList = new ArrayList<String>();
+            if (cmdArgs != null)
+                cmdArgList = Arrays.asList(cmdArgs);
+
             lineSegmentationHelper.lineSegmentPages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             lineSegmentationHelper.resetProgress();
         }
+        GenericController.removeFromProcessList(session, "lineSegmentation");
     }
 
     /**

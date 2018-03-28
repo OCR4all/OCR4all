@@ -1,9 +1,11 @@
 package de.uniwue.helper;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessStateCollector;
 
 /**
@@ -60,5 +62,15 @@ public class ProcessFlowHelper {
         // Convert to required data type
         String[] processedPagesArr = processedPages.toArray(new String[processedPages.size()]);
         return processedPagesArr;
+    }
+
+    /**
+     * Determines conflicts with the process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.processFlowConflict(currentProcesses);
     }
 }

@@ -82,17 +82,18 @@ public class SegmentationDummyController {
         if (segmentationDummyHelper == null)
             return;
 
-        if (segmentationDummyHelper.isSegmentationRunning() == true) {
-            response.setStatus(530); //530 = Custom: Process still running
+        int conflictType = segmentationDummyHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
-        }
 
+        GenericController.addToProcessList(session, "segmentationDummy");
         try {
             segmentationDummyHelper.extractXmlFiles(Arrays.asList(pageIds), segmentationImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationDummyHelper.resetProgress();
         }
+        GenericController.removeFromProcessList(session, "segmentationDummy");
     }
 
     /**

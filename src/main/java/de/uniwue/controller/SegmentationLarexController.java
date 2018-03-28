@@ -81,17 +81,18 @@ public class SegmentationLarexController {
         if (segmentationLarexHelper == null)
             return;
 
-        if (segmentationLarexHelper.isSegmentationRunning() == true) {
-            response.setStatus(530); //530 = Custom: Process still running
+        int conflictType = segmentationLarexHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
-        }
 
+        GenericController.addToProcessList(session, "segmentationLarex");
         try {
             segmentationLarexHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationLarexHelper.resetProgress();
         }
+        GenericController.addToProcessList(session, "segmentationLarex");
     }
 
     /**
