@@ -301,7 +301,9 @@ public class RecognitionHelper {
                 for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
                     if (processState.get(pageId).get(segmentId).get(lineSegmentId) == true)
                         continue;
-                    FileUtils.writeStringToFile(new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId + projConf.GT_EXT), "", "UTF8");
+
+                    FileUtils.writeStringToFile(new File(projConf.PAGE_DIR + pageId + File.separator +
+                        segmentId + File.separator + lineSegmentId + projConf.REC_EXT), "", "UTF8");
                 }
             }
         }
