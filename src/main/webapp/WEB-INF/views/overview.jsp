@@ -11,6 +11,8 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
+                var datatableReloadIntveral = null;
+                // Responsible for initializing and updating datatable contents
                 function datatable(){
                     // Allow reinitializing DataTable with new data
                     if( $.fn.DataTable.isDataTable("#overviewTable") ) {
@@ -23,9 +25,8 @@
                             "url"    : "ajax/overview/list",
                             "dataSrc": function (data) { return data; },
                             "error"  : function() {
-                                if( !$('.collapsible').find('li').eq(0).hasClass('active') )
-                                    $('.collapsible').collapsible('open', 0);
-                                $('#projectDir').addClass('invalid');
+                                openCollapsibleEntriesExclusively([0]);
+                                $('#projectDir').addClass('invalid').focus();
                             }
                         },
                         columns: [
@@ -49,14 +50,13 @@
                             });
                         },
                         initComplete: function() {
-                            if( !$('.collapsible').find('li').eq(1).hasClass('active') )
-                                $('.collapsible').collapsible('open', 1);
+                            openCollapsibleEntriesExclusively([1]);
 
                             // Initialize select input
                             $('select').material_select();
 
                             // Update overview continuously
-                            setInterval( function() {
+                            datatableReloadIntveral = setInterval( function() {
                                 overviewTable.ajax.reload(null, false);
                             }, 10000);
                         },
@@ -65,8 +65,7 @@
 
                 $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
-                        if( !$('.collapsible').find('li').eq(0).hasClass('active') )
-                            $('.collapsible').collapsible('open', 0);
+                        openCollapsibleEntriesExclusively([0]);
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
@@ -86,8 +85,11 @@
                                     }
                                 });
                             }
-                            else{
+                            else {
+                                openCollapsibleEntriesExclusively([0]);
                                 $('#projectDir').addClass('invalid').focus();
+                                // Prevent datatable from reloading an invalid directory
+                                clearInterval(datatableReloadIntveral);
                             }
                         });
                     }
@@ -105,7 +107,7 @@
                 if( $.trim($('#projectDir').val()).length !== 0 ) {
                     $("button").first().trigger( "click" );
                 } else {
-                    $('.collapsible').collapsible('open', 0);
+                    openCollapsibleEntriesExclusively([0]);
                 }
             });
         </script>
