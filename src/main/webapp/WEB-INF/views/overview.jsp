@@ -63,35 +63,48 @@
                     });
                 }
 
+                // Responsible for verification and loading of the project
+                function projectInitialization(newPageVisit) {
+                    var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
+                    // Check if directory exists
+                    $.get( "ajax/overview/checkDir?", ajaxParams )
+                    .done(function( data ) {
+                        if( data === true ) {
+                            // Check if filenames match project specific naming convention
+                            $.get( "ajax/overview/checkFileNames?", ajaxParams )
+                            .done(function( data ) {
+                                if( data === true ) {
+                                    // Two scenarios for loading overview page:
+                                    // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
+                                    // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
+                                    if( newPageVisit == false ) {
+                                        location.reload();
+                                    }
+                                    else {
+                                        datatable();
+                                    }
+                                }
+                                else{
+                                    $('#modal_filerename').modal('open');
+                                }
+                            });
+                        }
+                        else {
+                            openCollapsibleEntriesExclusively([0]);
+                            $('#projectDir').addClass('invalid').focus();
+                            // Prevent datatable from reloading an invalid directory
+                            clearInterval(datatableReloadIntveral);
+                        }
+                    });
+                }
+
                 $("button").click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         openCollapsibleEntriesExclusively([0]);
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
-                        var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
-                        // Check if directory exists
-                        $.get( "ajax/overview/checkDir?", ajaxParams )
-                        .done(function( data ) {
-                            if( data === true ) {
-                                // Check if filenames match project specific naming convention
-                                $.get( "ajax/overview/checkFileNames?", ajaxParams )
-                                .done(function( data ) {
-                                    if( data === true ) {
-                                        datatable();
-                                    }
-                                    else{
-                                        $('#modal_filerename').modal('open');
-                                    }
-                                });
-                            }
-                            else {
-                                openCollapsibleEntriesExclusively([0]);
-                                $('#projectDir').addClass('invalid').focus();
-                                // Prevent datatable from reloading an invalid directory
-                                clearInterval(datatableReloadIntveral);
-                            }
-                        });
+                        projectInitialization(false);
                     }
                 });
 
@@ -105,7 +118,7 @@
 
                 // Trigger overview table fetching on pageload
                 if( $.trim($('#projectDir').val()).length !== 0 ) {
-                    $("button").first().trigger( "click" );
+                    projectInitialization(true);
                 } else {
                     openCollapsibleEntriesExclusively([0]);
                 }
