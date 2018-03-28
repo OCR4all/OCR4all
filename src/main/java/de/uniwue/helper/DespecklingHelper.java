@@ -9,6 +9,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ImageDespeckle;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessStateCollector;
 
 /**
@@ -36,11 +37,6 @@ public class DespecklingHelper {
     private boolean stop = false;
 
     /**
-     * Indicates if a depeckling process is running
-     */
-    private boolean despecklingRunning = false;
-
-    /**
      * Constructor
      *
      * @param projectDir Path to the project directory
@@ -59,7 +55,6 @@ public class DespecklingHelper {
      * @throws IOException 
      */
     public void despeckleGivenPages(List<String> pageIds, double maxContourRemovalSize) throws IOException {
-        despecklingRunning = true;
         stop = false;
 
         progress = 0;
@@ -87,7 +82,6 @@ public class DespecklingHelper {
         }
 
         progress = 100;
-        despecklingRunning = false;
     }
 
     /**
@@ -105,7 +99,6 @@ public class DespecklingHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
-        despecklingRunning = false;
         progress = -1;
     }
 
@@ -114,15 +107,6 @@ public class DespecklingHelper {
      */
     public void cancelDespecklingProcess() {
         stop = true;
-    }
-
-    /**
-     * Gets the despeckling status
-     *
-     * @return status if the process is running
-     */
-    public boolean isDespecklingRunning() {
-        return despecklingRunning;
     }
 
     /**
@@ -151,5 +135,15 @@ public class DespecklingHelper {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Determines conflicts with the process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.despecklingConflict(currentProcesses);
     }
 }

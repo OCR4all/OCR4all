@@ -86,17 +86,18 @@ public class EvaluationController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
-        if (evaluationHelper.isEvaluationRunning() == true) {
-            response.setStatus(530); //530 = Custom: Process still running
+        int conflictType = evaluationHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
-        }
 
+        GenericController.addToProcessList(session, "evaluation");
         try {
             evaluationHelper.evaluatePages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             evaluationHelper.resetProgress();
         }
+        GenericController.removeFromProcessList(session, "evaluation");
     }
 
     /**

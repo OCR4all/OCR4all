@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.feature.RegionExtractor;
@@ -44,11 +45,6 @@ public class RegionExtractionHelper {
      * Status of the progress
      */
     private int progress = -1;
-
-    /**
-     * Indicates if a region extraction process is already running
-     */
-    private boolean regionExtractionRunning = false;
 
     /**
      * Indicates if the process should be cancelled
@@ -89,7 +85,6 @@ public class RegionExtractionHelper {
      */
     public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useAvgBgd, int parallel)
             throws ParserConfigurationException, SAXException, IOException {
-        regionExtractionRunning = true;
         stop = false;
         progress = 0;
         List<String> regions = new ArrayList<String>();
@@ -129,7 +124,6 @@ public class RegionExtractionHelper {
         }
 
         progress = 100;
-        regionExtractionRunning = false;
     }
 
     /**
@@ -147,7 +141,6 @@ public class RegionExtractionHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
-        regionExtractionRunning = false;
         progress = -1;
     }
 
@@ -156,15 +149,6 @@ public class RegionExtractionHelper {
      */
     public void cancelProcess() {
         stop = true;
-    }
-
-    /**
-     * Gets the region extraction status
-     *
-     * @return status if the process is running
-     */
-    public boolean isRegionExtractionRunning() {
-        return regionExtractionRunning;
     }
 
     /**
@@ -214,5 +198,15 @@ public class RegionExtractionHelper {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Determines conflicts with the process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.regionExtractionConflict(currentProcesses);
     }
 }

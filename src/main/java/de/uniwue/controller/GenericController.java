@@ -2,6 +2,7 @@ package de.uniwue.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.helper.GenericHelper;
 
 /**
@@ -35,6 +37,81 @@ import de.uniwue.helper.GenericHelper;
             return false;
         }
         return true;
+    }
+
+    /**
+     * Adds the given process to the session processList
+     *
+     * @param session Session of the user
+     * @param process Process that needs to be added
+     */
+    @SuppressWarnings("unchecked")
+    public static void addToProcessList(HttpSession session, String process) {
+        List<String> processList = (List<String>) session.getAttribute("processList");
+        if (processList == null)
+            processList = new ArrayList<String>();
+
+        processList.add(process);
+        session.setAttribute("processList", processList);
+    }
+
+    /**
+     * Removes the given process from the session processList
+     *
+     * @param session Session of the user
+     * @param process Process that needs to be removed
+     */
+    @SuppressWarnings("unchecked")
+    public static void removeFromProcessList(HttpSession session, String process) {
+        List<String> processList = (List<String>) session.getAttribute("processList");
+        if (processList == null)
+            return;
+
+        processList.remove(process);
+        session.setAttribute("processList", processList);
+    }
+
+    /**
+     * Returns the current processList from the session
+     * This list is maintained in every process controller and holds running processes
+     *
+     * @param session Session of the user
+     */
+    @SuppressWarnings("unchecked")
+    public static List<String> getProcessList(HttpSession session) {
+        List<String> processList = (List<String>) session.getAttribute("processList");
+        if (processList == null)
+            processList = new ArrayList<String>();
+
+        return processList;
+    }
+
+    /**
+     * 
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Type of process conflict
+     * @return
+     */
+    public static boolean hasProcessConflict(HttpSession session, HttpServletResponse response, int conflictType) {
+        switch(conflictType) {
+            case ProcessConflictDetector.SAME_PROCESS:
+                response.setStatus(530); //530 = Custom: Process still running
+                return true;
+            case ProcessConflictDetector.SAME_PROCESS_TYPE:
+                response.setStatus(535); //535 = Custom: Process with same type is still running
+                return true;
+            case ProcessConflictDetector.PREV_PROCESS:
+                response.setStatus(536); //536 = Custom: Process conflicts with upcoming process
+                return true;
+            case ProcessConflictDetector.PROCESS_FLOW:
+                response.setStatus(537); //537 = Custom: ProcessFlow conflict
+                return true;
+            case ProcessConflictDetector.NO_CONFLICT:
+            default:
+                return false;
+        }
     }
 
     /**

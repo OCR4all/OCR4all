@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
 
@@ -263,15 +264,6 @@ public class RecognitionHelper {
     }
 
     /**
-     * Returns the Recognition status
-     *
-     * @return status if the process is running
-     */
-    public boolean isRecongitionRunning() {
-        return RecognitionRunning;
-    }
-
-    /**
      * Deletion of old process related files
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
@@ -327,5 +319,15 @@ public class RecognitionHelper {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Determines conflicts with the process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.recognitionConflict(currentProcesses);
     }
 }

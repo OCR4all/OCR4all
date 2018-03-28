@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
 
@@ -264,15 +265,6 @@ public class LineSegmentationHelper {
     }
 
     /**
-     * Gets the Line Segmentation status
-     *
-     * @return status if the process is running
-     */
-    public boolean isLineSegmentationRunning() {
-        return lineSegmentationRunning;
-    }
-
-    /**
      * Returns the Ids of the pages, for which region extraction was already executed
      *
      * @return List of valid page Ids
@@ -329,5 +321,15 @@ public class LineSegmentationHelper {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Determines conflicts with the process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.lineSegmentationConflict(currentProcesses);
     }
 }

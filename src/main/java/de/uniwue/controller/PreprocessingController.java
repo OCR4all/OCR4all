@@ -86,17 +86,18 @@ public class PreprocessingController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
-        if (preprocessingHelper.isPreprocessingRunning() == true) {
-            response.setStatus(530); //530 = Custom: Process still running
+        int conflictType = preprocessingHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
-        }
 
+        GenericController.addToProcessList(session, "preprocessing");
         try {
             preprocessingHelper.preprocessPages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             preprocessingHelper.resetProgress();
         }
+        GenericController.removeFromProcessList(session, "preprocessing");
     }
 
     /**

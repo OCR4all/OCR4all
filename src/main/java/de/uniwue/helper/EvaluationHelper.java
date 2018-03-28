@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
 
@@ -35,11 +36,6 @@ public class EvaluationHelper {
      * Progress of the Evaluation process
      */
     private int progress = -1;
-
-    /**
-     * Indicates if a Evaluation process is already running
-     */
-    private boolean evaluationRunning = false;
 
     /**
      * Constructor
@@ -93,8 +89,6 @@ public class EvaluationHelper {
      * @throws IOException
      */
     public void evaluatePages(List<String> pageIds, List<String> cmdArgs) throws IOException {
-        evaluationRunning = true;
-
         progress = 0;
 
         List<String> command = new ArrayList<String>();
@@ -109,7 +103,6 @@ public class EvaluationHelper {
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("ocropus-econf", command, false);
 
-        evaluationRunning = false;
         progress = 100;
     }
 
@@ -117,17 +110,7 @@ public class EvaluationHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
-        evaluationRunning = false;
         progress = -1;
-    }
-
-    /**
-     * Gets the Evaluation status
-     *
-     * @return status if the process is running
-     */
-    public boolean isEvaluationRunning() {
-        return evaluationRunning;
     }
 
     /**
@@ -164,5 +147,15 @@ public class EvaluationHelper {
 
         Collections.sort(validPageIds);
         return validPageIds;
+    }
+
+    /**
+     * Determines conflicts with the process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.evaluationConflict(currentProcesses);
     }
 }

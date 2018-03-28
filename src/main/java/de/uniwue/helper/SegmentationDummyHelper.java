@@ -13,6 +13,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.w3c.dom.Document;
 
 import de.uniwue.config.ProjectConfiguration;
+import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.pageXML.PageXMLWriter;
 
 public class SegmentationDummyHelper {
@@ -38,12 +39,6 @@ public class SegmentationDummyHelper {
     private boolean stop = false;
 
     /**
-     * Indicates if a SegmentationLarex process is already running
-     */
-    private boolean segmentationRunning = false;
-
-
-    /**
      * Constructor
      *
      * @param projectDir Path to the project directory
@@ -62,10 +57,9 @@ public class SegmentationDummyHelper {
      * @throws IOException
      */
     public void extractXmlFiles(List<String> pageIds, String segmentationImageType) throws IOException {
-        segmentationRunning = true;
         stop = false;
         progress = 0;
-        
+
         File ocrDir = new File(projConf.OCR_DIR);
         if (!ocrDir.exists())
             ocrDir.mkdir();
@@ -85,6 +79,7 @@ public class SegmentationDummyHelper {
                 }
             }
         }
+
         int processedPages = 0;
         // generates XML files for each page
         File segmentationTypeDir = new File(projConf.getImageDirectoryByType(segmentationImageType));
@@ -97,8 +92,8 @@ public class SegmentationDummyHelper {
                 }
             }
         }
+
         progress = 100;
-        segmentationRunning = false;
     }
 
     public void extractXML(File file, String outputFolder) {
@@ -123,7 +118,6 @@ public class SegmentationDummyHelper {
      * Resets the progress (use if an error occurs)
      */
     public void resetProgress() {
-        segmentationRunning = false;
         progress = -1;
     }
 
@@ -135,11 +129,12 @@ public class SegmentationDummyHelper {
     }
 
     /**
-     * Gets the SegmentationLarex status
+     * Determines conflicts with the process
      *
-     * @return status if the process is running
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
      */
-    public boolean isSegmentationRunning() {
-        return segmentationRunning;
+    public int getConflictType(List<String> currentProcesses) {
+        return ProcessConflictDetector.segmentationDummyConflict(currentProcesses);
     }
 }

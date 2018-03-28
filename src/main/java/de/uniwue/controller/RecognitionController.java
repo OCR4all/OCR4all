@@ -86,17 +86,18 @@ public class RecognitionController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
-        if (recognitionHelper.isRecongitionRunning() == true) {
-            response.setStatus(530); //530 = Custom: Process still running
+        int conflictType = recognitionHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
-        }
 
+        GenericController.addToProcessList(session, "recognition");
         try {
             recognitionHelper.RecognizeImages(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             recognitionHelper.resetProgress();
         }
+        GenericController.removeFromProcessList(session, "recognition");
     }
 
     /**
