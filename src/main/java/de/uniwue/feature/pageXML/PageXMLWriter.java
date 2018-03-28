@@ -115,7 +115,7 @@ public class PageXMLWriter {
             //create and add a single paragraph region covering the entire page
             Element regionElement = document.createElement("TextRegion");
             regionElement.setAttribute("type", "paragraph");
-            pageElement.setAttribute("id", "r0");
+            regionElement.setAttribute("id", "r0");
             Element coordsElement = document.createElement("Coords");
 
             //tl, tr, br, bl
