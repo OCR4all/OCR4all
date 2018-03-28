@@ -213,18 +213,31 @@ function executeProcess(ajaxParams) {
 
         $.post( "ajax/" + globalController + "/execute", ajaxParams )
         .fail(function( jqXHR, data ) {
-            if (jqXHR.status == 530) {
+            switch(jqXHR.status) {
+            case 530:
                 $('#modal_inprogress').modal('open');
-                stopProcessUpdate("ERROR: There is still an ongoing process", "red-text");
-                // Execute collapsible change after 1 second to prevent issues with updateProcessStatus AJAX call
-                setTimeout(function() { openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction); }, 1000);
-            }
-            else {
+                stopProcessUpdate("ERROR: The process is still running", "red-text");
+                break;
+            case 535:
+                $('#modal_sameprocesstype').modal('open');
+                stopProcessUpdate("ERROR: A process with the same type is still running", "red-text");
+                break;
+            case 536:
+                $('#modal_processconflict').modal('open');
+                stopProcessUpdate("ERROR: The process execution conflicts with a running process", "red-text");
+                break;
+            case 537:
+                $('#modal_processflowconflict').modal('open');
+                stopProcessUpdate("ERROR: The process execution conflicts with the ProcessFlow", "red-text");
+                break;
+            default:
                 $('#modal_executefailed').modal('open');
                 stopProcessUpdate("ERROR: Error during process execution", "red-text");
-                // Execute collapsible change after 1 second to prevent issues with updateProcessStatus AJAX call
-                setTimeout(function() { openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction); }, 1000);
+                break;
             }
+
+            // Execute collapsible change after 1 second to prevent issues with updateProcessStatus AJAX call
+            setTimeout(function() { openCollapsibleEntriesExclusively(globalCollapsibleOpenOnAction); }, 1000);
         });
     }
 }

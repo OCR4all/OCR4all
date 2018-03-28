@@ -107,6 +107,48 @@
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
+                        <!-- Process of the same type is still running -->
+                        <div id="modal_sameprocesstype" class="modal">
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
+                                <p>
+                                    The execution of the ${heading} process failed.<br/>
+                                    A process of the same type is still running.<br/>
+                                    Please wait until this process is finished and start the process again later.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                        </div>
+                        <!-- Process conflicts with upcoming process -->
+                        <div id="modal_processconflict" class="modal">
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
+                                <p>
+                                    The execution of the ${heading} process failed.<br/>
+                                    Another process that requires files provided by this process is still running.<br/>
+                                    Please wait until this process is finished and start the process again later.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                        </div>
+                        <!-- ProcessFlow conflict -->
+                        <div id="modal_processflowconflict" class="modal">
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
+                                <p>
+                                    The execution of the ${heading} process failed.<br/>
+                                    A ProcessFlow is still running.<br/>
+                                    Please wait until the ProcessFlow is finished and start the process again later.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                        </div>
                         <!-- Selection error handling -->
                         <div id="modal_errorhandling" class="modal">
                             <div class="modal-content red-text">
