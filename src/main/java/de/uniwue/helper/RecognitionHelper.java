@@ -285,8 +285,11 @@ public class RecognitionHelper {
             File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
             if (lineSegmentDirectories.length != 0) {
                 for (File dir : lineSegmentDirectories) {
-                    File[] txtFiles = new File(dir.getAbsolutePath()).listFiles((d, name) -> name.endsWith(projConf.REC_EXT));
                     // Delete .txt files that store the recognized text
+                    // Keep .gt.txt files that store already manually corrected text
+                    File[] txtFiles = new File(dir.getAbsolutePath()).listFiles(
+                        (d, name) -> name.endsWith(projConf.REC_EXT) && !name.endsWith(projConf.GT_EXT)
+                    );
                     for (File txtFile : txtFiles) {
                         txtFile.delete();
                     }
