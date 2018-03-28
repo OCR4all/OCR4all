@@ -212,6 +212,8 @@ public class ResultHelper {
         }
 
         int processedLineSegments = 1;
+        // For each page: Concatenation of the recognition/gt output of the linesegmentation of the page
+        //                Saving output to a txt file (located at /Results/Pages/)
         for (String pageId : processState.keySet()) {
             pageResult.put(pageId, new String());
 
@@ -221,6 +223,7 @@ public class ResultHelper {
                         return;
 
                     String lineSegDir = projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId;
+                    // Using the gt output when available otherwise the recognition output
                     Path path = Paths.get(lineSegDir + projConf.GT_EXT);
                     if (!Files.exists(path))
                         path = Paths.get(lineSegDir + projConf.REC_EXT);
@@ -237,7 +240,7 @@ public class ResultHelper {
             }
             Files.write(Paths.get(projConf.RESULT_PAGES_DIR + pageId + ".txt"), pageResult.get(pageId).getBytes());
         }
-
+        // The recognition/gt output of the the specified pages is concatenated
         String completeResult = new String();
         for (String pageId: pageResult.keySet()) {
             completeResult += pageResult.get(pageId) + "\n";
