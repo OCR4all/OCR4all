@@ -220,6 +220,8 @@ public class RecognitionHelper {
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("ocropus-rpred", command, false);
 
+        // Execute progress update to fill processState data structure with correct values
+        getProgress();
         // Process extension to ocropus-gpageseg script
         createSkippedSegments();
 
