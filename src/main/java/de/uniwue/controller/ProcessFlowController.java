@@ -25,6 +25,29 @@ import de.uniwue.model.ProcessFlowData;
 @Controller
 public class ProcessFlowController {
     /**
+     * Manages the helper object and stores it in the session
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the helper object of the process
+     */
+    public ProcessFlowHelper provideHelper(HttpSession session, HttpServletResponse response) {
+        if (GenericController.isSessionValid(session, response) == false)
+            return null;
+
+        // Keep a single helper object in session
+        ProcessFlowHelper processFlowHelper = (ProcessFlowHelper) session.getAttribute("processFlowHelper");
+        if (processFlowHelper == null) {
+            processFlowHelper = new ProcessFlowHelper(
+                session.getAttribute("projectDir").toString(),
+                session.getAttribute("imageType").toString()
+            );
+            session.setAttribute("processFlowHelper", processFlowHelper);
+        }
+        return processFlowHelper;
+    }
+
+    /**
      * Response to the request to send the content of the /ProcessFlow page
      *
      * @param session Session of the user
@@ -82,7 +105,7 @@ public class ProcessFlowController {
         String[] cmdArgsArr = new String[cmdArgsList.size()];
         cmdArgsArr = cmdArgsList.toArray(cmdArgsArr);
 
-        new PreprocessingController().execute(pageIds, cmdArgsArr, session, response);
+        new PreprocessingController().execute(pageIds, cmdArgsArr, session, response, true);
     }
 
     /**
@@ -100,7 +123,7 @@ public class ProcessFlowController {
         }
 
         Double maxContourRemovalSizeDouble = Double.parseDouble((String)maxContourRemovalSize);
-        new DespecklingController().execute(pageIds, maxContourRemovalSizeDouble, session, response);
+        new DespecklingController().execute(pageIds, maxContourRemovalSizeDouble, session, response, true);
     }
 
     /**
@@ -120,7 +143,7 @@ public class ProcessFlowController {
             return;
         }
 
-        new SegmentationDummyController().execute(pageIds, (String)segmentationImageType, session, response);
+        new SegmentationDummyController().execute(pageIds, (String)segmentationImageType, session, response, true);
     }
 
     /**
@@ -144,7 +167,8 @@ public class ProcessFlowController {
         Integer spacingInteger = Integer.parseInt((String)spacing);
         Boolean avgBackgroundBoolean = Boolean.parseBoolean(avgBackground.toString());
         Integer parallelInteger = Integer.parseInt((String)parallel);
-        new RegionExtractionController().execute(pageIds, spacingInteger, avgBackgroundBoolean, parallelInteger, session, response);
+        new RegionExtractionController().execute(pageIds, spacingInteger, avgBackgroundBoolean, parallelInteger,
+            session, response, true);
     }
 
     /**
@@ -167,7 +191,7 @@ public class ProcessFlowController {
         String[] cmdArgsArr = new String[cmdArgsList.size()];
         cmdArgsArr = cmdArgsList.toArray(cmdArgsArr);
 
-        new LineSegmentationController().execute(pageIds, cmdArgsArr, session, response);
+        new LineSegmentationController().execute(pageIds, cmdArgsArr, session, response, true);
     }
 
     /**
@@ -190,7 +214,7 @@ public class ProcessFlowController {
         String[] cmdArgsArr = new String[cmdArgsList.size()];
         cmdArgsArr = cmdArgsList.toArray(cmdArgsArr);
 
-        new RecognitionController().execute(pageIds, cmdArgsArr, session, response);
+        new RecognitionController().execute(pageIds, cmdArgsArr, session, response, true);
     }
 
     /**
@@ -201,16 +225,11 @@ public class ProcessFlowController {
      * @return Exit decision
      */
     public boolean needsExit(HttpSession session, HttpServletResponse response) {
-        // Error in process execution
-        if (response.getStatus() != 200) {
-            session.setAttribute("currentProcess", "");
-            return true;
-        }
-
-        // Cancel of process flow execution was triggered
+        // Error in process execution or canceling of process flow execution was triggered
         Boolean cancelProcessFlow = (Boolean) session.getAttribute("cancelProcessFlow");
-        if (cancelProcessFlow == true) {
+        if (response.getStatus() != 200 || cancelProcessFlow == true) {
             session.setAttribute("currentProcess", "");
+            GenericController.removeFromProcessList(session, "processFlow");
             return true;
         }
 
@@ -229,13 +248,13 @@ public class ProcessFlowController {
                @RequestBody ProcessFlowData processFlowData,
                HttpSession session, HttpServletResponse response
            ) {
-        // Check that necessary session variables are set
-        String projectDir = (String) session.getAttribute("projectDir");
-        String imageType  = (String) session.getAttribute("imageType");
-        if (projectDir == null || projectDir.isEmpty() || imageType == null || imageType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        ProcessFlowHelper processFlowHelper = provideHelper(session, response);
+        if (processFlowHelper == null)
             return;
-        }
+
+        int conflictType = processFlowHelper.getConflictType(GenericController.getProcessList(session));
+        if (GenericController.hasProcessConflict(session, response, conflictType))
+            return;
 
         // Check that all variables were passed in request
         String[] pageIds = processFlowData.getPageIds();
@@ -243,13 +262,6 @@ public class ProcessFlowController {
         Map<String, Map<String, Object>> processSettings = processFlowData.getProcessSettings();
         if (pageIds == null || processes == null || processSettings == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        // There already is a process flow execution in progress
-        String currentProcess = (String) session.getAttribute("currentProcess");
-        if (currentProcess != null && !currentProcess.isEmpty()) {
-            response.setStatus(532); //532 = Custom: Process Flow execution still running
             return;
         }
 
@@ -266,7 +278,7 @@ public class ProcessFlowController {
          * Determine the results after each process and use them in the next one
          * Check after execution if the process flow needs to stop and return
          */
-        ProcessFlowHelper processFlowHelper = new ProcessFlowHelper(projectDir, imageType);
+        GenericController.addToProcessList(session, "processFlow");
 
         if (processes.contains("preprocessing")) {
             session.setAttribute("currentProcess", "preprocessing");
@@ -318,6 +330,7 @@ public class ProcessFlowController {
         }
 
         session.setAttribute("currentProcess", "");
+        GenericController.removeFromProcessList(session, "processFlow");
     }
 
     /**

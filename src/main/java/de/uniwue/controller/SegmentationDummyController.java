@@ -73,18 +73,20 @@ public class SegmentationDummyController {
      * @param replace If true, replaces the existing image files
      * @param session Session of the user
      * @param response Response to the request
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      */
     @RequestMapping(value = "/ajax/segmentationDummy/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
                @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam("imageType") String segmentationImageType,
-               HttpSession session, HttpServletResponse response
+               HttpSession session, HttpServletResponse response,
+               @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
            ) {
         SegmentationDummyHelper segmentationDummyHelper = provideHelper(session, response);
         if (segmentationDummyHelper == null)
             return;
 
-        int conflictType = segmentationDummyHelper.getConflictType(GenericController.getProcessList(session));
+        int conflictType = segmentationDummyHelper.getConflictType(GenericController.getProcessList(session), inProcessFlow);
         if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
 

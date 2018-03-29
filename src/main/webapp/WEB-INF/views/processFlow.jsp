@@ -164,10 +164,10 @@
                     })
                     .fail(function( jqXHR, data ) {
                         switch(jqXHR.status) {
-                            case 530: $('#modal_dupexecsubproc').modal('open'); break;
+                            case 530: $('#modal_inprogress').modal('open'); break;
                             case 531: $('#modal_misssubprocdata').modal('open'); break;
-                            case 532: $('#modal_inprogress').modal('open'); break;
                             case 533: $('#modal_nosettings').modal('open'); break;
+                            case 536: $('#modal_dupexecsubproc').modal('open'); break;
                             default:  $('#modal_executefailed').modal('open'); break;
                         }
                     });

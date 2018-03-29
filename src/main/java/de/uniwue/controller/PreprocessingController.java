@@ -71,12 +71,14 @@ public class PreprocessingController {
      * @param cmdArgs[] Command line arguments for preprocessing process
      * @param session Session of the user
      * @param response Response to the request
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      */
     @RequestMapping(value = "/ajax/preprocessing/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
                @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
-               HttpSession session, HttpServletResponse response
+               HttpSession session, HttpServletResponse response,
+               @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
            ) {
         PreprocessingHelper preprocessingHelper = provideHelper(session, response);
         if (preprocessingHelper == null)
@@ -86,7 +88,7 @@ public class PreprocessingController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
-        int conflictType = preprocessingHelper.getConflictType(GenericController.getProcessList(session));
+        int conflictType = preprocessingHelper.getConflictType(GenericController.getProcessList(session), inProcessFlow);
         if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
 

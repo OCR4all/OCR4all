@@ -37,16 +37,17 @@ public class ProcessConflictDetector {
      * Determines conflicts with the Preprocessing process
      *
      * @param currentProcesses Processes that are currently running
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      * @return Type of process conflict
      */
-    public static int preprocessingConflict(List<String> currentProcesses) {
+    public static int preprocessingConflict(List<String> currentProcesses, boolean inProcessFlow) {
         if (currentProcesses.size() == 0)
             return NO_CONFLICT;
 
         if (currentProcesses.contains("preprocessing"))
             return SAME_PROCESS;
 
-        if (currentProcesses.contains("processFlow"))
+        if (currentProcesses.contains("processFlow") && !inProcessFlow)
             return PROCESS_FLOW;
 
         if (currentProcesses.contains("despeckling"))
@@ -63,16 +64,17 @@ public class ProcessConflictDetector {
      * Determines conflicts with the Despeckling process
      *
      * @param currentProcesses Processes that are currently running
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      * @return Type of process conflict
      */
-    public static int despecklingConflict(List<String> currentProcesses) {
+    public static int despecklingConflict(List<String> currentProcesses, boolean inProcessFlow) {
         if (currentProcesses.size() == 0)
             return NO_CONFLICT;
 
         if (currentProcesses.contains("despeckling"))
             return SAME_PROCESS;
 
-        if (currentProcesses.contains("processFlow"))
+        if (currentProcesses.contains("processFlow") && !inProcessFlow)
             return PROCESS_FLOW;
 
         int segmentationConflictType = segmentationConflict(currentProcesses, true);
@@ -116,16 +118,17 @@ public class ProcessConflictDetector {
      * Determines conflicts with the SegmentationDummy process
      *
      * @param currentProcesses Processes that are currently running
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      * @return Type of process conflict
      */
-    public static int segmentationDummyConflict(List<String> currentProcesses) {
+    public static int segmentationDummyConflict(List<String> currentProcesses, boolean inProcessFlow) {
         if (currentProcesses.size() == 0)
             return NO_CONFLICT;
 
         if (currentProcesses.contains("segmentationDummy"))
             return SAME_PROCESS;
 
-        if (currentProcesses.contains("processFlow"))
+        if (currentProcesses.contains("processFlow") && !inProcessFlow)
             return PROCESS_FLOW;
 
         int segmentationConflictType = segmentationConflict(currentProcesses, true);
@@ -146,16 +149,17 @@ public class ProcessConflictDetector {
      * Determines conflicts with the RegionExtraction process
      *
      * @param currentProcesses Processes that are currently running
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      * @return Type of process conflict
      */
-    public static int regionExtractionConflict(List<String> currentProcesses) {
+    public static int regionExtractionConflict(List<String> currentProcesses, boolean inProcessFlow) {
         if (currentProcesses.size() == 0)
             return NO_CONFLICT;
 
         if (currentProcesses.contains("regionExtraction"))
             return SAME_PROCESS;
 
-        if (currentProcesses.contains("processFlow"))
+        if (currentProcesses.contains("processFlow") && !inProcessFlow)
             return PROCESS_FLOW;
 
         if (currentProcesses.contains("lineSegmentation")
@@ -171,16 +175,17 @@ public class ProcessConflictDetector {
      * Determines conflicts with the LineSegmentation process
      *
      * @param currentProcesses Processes that are currently running
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      * @return Type of process conflict
      */
-    public static int lineSegmentationConflict(List<String> currentProcesses) {
+    public static int lineSegmentationConflict(List<String> currentProcesses, boolean inProcessFlow) {
         if (currentProcesses.size() == 0)
             return NO_CONFLICT;
 
         if (currentProcesses.contains("lineSegmentation"))
             return SAME_PROCESS;
 
-        if (currentProcesses.contains("processFlow"))
+        if (currentProcesses.contains("processFlow") && !inProcessFlow)
             return PROCESS_FLOW;
 
         if (currentProcesses.contains("recognition")
@@ -195,16 +200,17 @@ public class ProcessConflictDetector {
      * Determines conflicts with the Recognition process
      *
      * @param currentProcesses Processes that are currently running
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      * @return Type of process conflict
      */
-    public static int recognitionConflict(List<String> currentProcesses) {
+    public static int recognitionConflict(List<String> currentProcesses, boolean inProcessFlow) {
         if (currentProcesses.size() == 0)
             return NO_CONFLICT;
 
         if (currentProcesses.contains("recognition"))
             return SAME_PROCESS;
 
-        if (currentProcesses.contains("processFlow"))
+        if (currentProcesses.contains("processFlow") && !inProcessFlow)
             return PROCESS_FLOW;
 
         if (currentProcesses.contains("evaluation")

@@ -204,9 +204,10 @@ public class RegionExtractionHelper {
      * Determines conflicts with the process
      *
      * @param currentProcesses Processes that are currently running
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      * @return Type of process conflict
      */
-    public int getConflictType(List<String> currentProcesses) {
-        return ProcessConflictDetector.regionExtractionConflict(currentProcesses);
+    public int getConflictType(List<String> currentProcesses, boolean inProcessFlow) {
+        return ProcessConflictDetector.regionExtractionConflict(currentProcesses, inProcessFlow);
     }
 }
