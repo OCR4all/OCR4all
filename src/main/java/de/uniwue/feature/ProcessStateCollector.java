@@ -167,9 +167,9 @@ public class ProcessStateCollector {
 
     /**
      * Determines the "ResultGeneration" process state of a given page
-     * @param resultType 
      *
      * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param resultType Type of the result, which should be checked (xml, txt) 
      * @return "result" state of the page
      */
     public boolean resultGenerationState(String pageId, String resultType) {

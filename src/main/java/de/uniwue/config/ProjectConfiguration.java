@@ -35,6 +35,9 @@ public final class ProjectConfiguration {
      */
     public ProjectConfiguration() { }
 
+    /**** ProjectDataDirectories ****/
+
+    public final String PROJ_PARENT_DIR = File.separator +"var" + File.separator + "ocr4all" + File.separator +"data" + File.separator;
     /**** Extensions ****/
 
     /**

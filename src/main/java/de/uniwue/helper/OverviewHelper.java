@@ -234,6 +234,16 @@ public class OverviewHelper {
         return status;
     }
 
+    public static HashMap<String, String> listProjects(){
+        ProjectConfiguration projectConf = new ProjectConfiguration();
+        HashMap<String, String> projects = new HashMap<String, String>();
+        File projParentDir = new File(projectConf.PROJ_PARENT_DIR);
+        File[] projectsDirs = projParentDir.listFiles(File::isDirectory);
+        for(File project: projectsDirs)
+             projects.put(project.getName(), project.getAbsolutePath());
+        return projects;
+        
+    }
     /**
      * Renames all files according to the project standard
      *

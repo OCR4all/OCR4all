@@ -3,6 +3,7 @@ package de.uniwue.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -205,5 +206,17 @@ public class OverviewController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Response to rename the filenames according to the project standard
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="/ajax/overview/listProjects" , method = RequestMethod.GET)
+    public @ResponseBody HashMap<String, String> listProjects(HttpSession session, HttpServletResponse response) {
+
+        return OverviewHelper.listProjects();
     }
 }

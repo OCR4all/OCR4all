@@ -11,12 +11,25 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
+                $('select').on('contentChanged', function() {
+                    $(this).material_select();
+                 });
                 // Adjust data selection based on project specific type
                 function handleProcessDataSelection() {
                     var projectDataSelectionType = $('#projectDataSelectionType').val();
                     if( projectDataSelectionType === 'fixedStructure' ) {
                         $('#projectDir').parents('tr').hide();
                         $('#projectSelection').parents('tr').show();
+                        $.get( "ajax/overview/listProjects?")
+                        .done(function( data ) {
+                             $.each(data, function(key, value) {   
+                                 $('#projectSelection')
+                                     .append($("<option></option>")
+                                                .attr("value",value)
+                                                .text(key));
+                                 $('#projectSelection').trigger('contentChanged');
+                            });
+                        });
 
                         //TODO: Load project data via controller AJAX request and create option elements
                     }
@@ -33,7 +46,7 @@
                 // Always use projectDir input as entry point
                 // Therefore update it when changing the project data via dropdown method
                 $('#projectSelection').on('change', function() {
-                    $('#projectDir').val($(this.val()));
+                    $('#projectDir').val($('#projectSelection').val());
                 });
 
                 var datatableReloadIntveral = null;
