@@ -155,6 +155,10 @@ i.material-icons.tooltipped {
   font-weight: bold;
   padding: 0;
 }
+i.material-icons.image-list-broken-image {
+  float: none !important;
+  margin: 0 !important;
+}
 i.material-icons.image-list-trigger {
   position: absolute;
   left: 35px;
