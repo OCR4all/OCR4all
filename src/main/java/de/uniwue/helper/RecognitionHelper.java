@@ -290,6 +290,8 @@ public class RecognitionHelper {
                 }
             }
         }
+        ResultHelper resultHelper = new ResultHelper(projConf.PROJECT_DIR, projectImageType);
+        resultHelper.deleteOldFiles(pageIds);
     }
 
     /**
