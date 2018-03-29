@@ -172,6 +172,7 @@ public class ResultGenerationHelper {
      */
     public void executeXmlProcess(List<String> pageIds) throws IOException {
         File dir = new File(projConf.OCR_DIR);
+        deleteOldFiles(pageIds,"xml");
         if(!dir.exists())
             return;
 
@@ -203,8 +204,8 @@ public class ResultGenerationHelper {
      * @throws IOException
      */
     public void executeTextProcess(List<String> pageIds) throws IOException {
-        deleteOldFiles(pageIds);
         initialize(pageIds);
+        deleteOldFiles(pageIds,"txt");
 
         TreeMap<String, String> pageResult = new TreeMap<String, String>();
         int lineSegmentsCount = 0;
@@ -300,27 +301,37 @@ public class ResultGenerationHelper {
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      */
-    public void deleteOldFiles(List<String> pageIds) {
+    public void deleteOldFiles(List<String> pageIds, String type) {
         // Delete result of each page
         for(String pageId : pageIds) {
-            File pageResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
-            if (pageResult.exists())
-                pageResult.delete();
+            if(type.equals("txt")) {
+                File pageTxtResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
+                if (pageTxtResult.exists())
+                    pageTxtResult.delete();
+            }
+            if(type.equals("xml")) {
+                File pageXmlResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.CONF_EXT);
+                if (pageXmlResult.exists())
+                    pageXmlResult.delete();
+            }
         }
-       // delete the concatenated result of the pages
-       File completeResult = new File(projConf.RESULT_DIR + "complete"+ projConf.REC_EXT);
-       if (completeResult.exists())
-           completeResult.delete();
+        if(type.equals("txt")) {
+           // delete the concatenated result of the pages
+           File completeResult = new File(projConf.RESULT_DIR + "complete"+ projConf.REC_EXT);
+           if (completeResult.exists())
+               completeResult.delete();
+        }
     }
     /**
      * Checks if process depending files already exist
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param resultType Type of the result (xml, txt)
      * @return Information if files exist
      */
-    public boolean doOldFilesExist(String[] pageIds) {
+    public boolean doOldFilesExist(String[] pageIds, String resultType) {
         for (String pageId : pageIds) {
-            if (procStateCol.resultGenerationState(pageId) == true)
+            if (procStateCol.resultGenerationState(pageId, resultType) == true)
                 return true;
         }
         return false;

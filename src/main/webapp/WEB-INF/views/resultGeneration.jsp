@@ -23,22 +23,16 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-                    if ($('#resultType').val() === "txt"){
-                        $.get( "ajax/resultGeneration/exists?", { "pageIds[]" : selectedPages } )
-                        .done(function( data ){
-                            if(data === false){
-                                // Execute result process
-                                executeProcess(ajaxParams);
-                            }
-                            else{
-                                $('#modal_exists').modal('open');
-                            }
-                        });
-                    }
-                    else {
-                        // Execute result process
-                        executeProcess(ajaxParams);
-                    }
+                    $.get( "ajax/resultGeneration/exists?", { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() } )
+                    .done(function( data ){
+                        if(data === false){
+                            // Execute result process
+                            executeProcess(ajaxParams);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
+                    });
                 });
 
                 $('button[data-id="cancel"]').click(function() {

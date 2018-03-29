@@ -167,12 +167,18 @@ public class ProcessStateCollector {
 
     /**
      * Determines the "ResultGeneration" process state of a given page
+     * @param resultType 
      *
      * @param pageID Identifier of the page (e.g 0002,0003)
      * @return "result" state of the page
      */
-    public boolean resultGenerationState(String pageId) {
-        File pageResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
+    public boolean resultGenerationState(String pageId, String resultType) {
+        File pageResult;
+        if(resultType.equals("xml")) 
+            pageResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.CONF_EXT);
+        else
+            pageResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
         return pageResult.exists();
     }
+
 }

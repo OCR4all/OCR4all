@@ -279,7 +279,8 @@ public class RecognitionHelper {
     public void deleteOldFiles(List<String> pageIds) {
         // Delete all files created by subsequent processes to preserve data integrity
         ResultGenerationHelper resultGenerationHelper = new ResultGenerationHelper(projConf.PROJECT_DIR, projectImageType);
-        resultGenerationHelper.deleteOldFiles(pageIds);
+        resultGenerationHelper.deleteOldFiles(pageIds, "txt");
+        resultGenerationHelper.deleteOldFiles(pageIds, "xml");
 
         for(String pageId : pageIds) {
             File pageDirectory = new File(projConf.PAGE_DIR + pageId);

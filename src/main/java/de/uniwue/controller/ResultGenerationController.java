@@ -151,6 +151,7 @@ public class ResultGenerationController {
      * Response to the request to check if old process related files exist
      *
      * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param resultType Type of the result, which should be checked (xml, txt) 
      * @param session Session of the user
      * @param response Response to the request
      * @return Information if files exist
@@ -158,12 +159,13 @@ public class ResultGenerationController {
     @RequestMapping(value = "/ajax/resultGeneration/exists" , method = RequestMethod.GET)
     public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
+                @RequestParam(value = "resultType", required = true) String resultType,
                 HttpSession session, HttpServletResponse response
             ) {
         ResultGenerationHelper resultGenerationHelper = provideHelper(session, response);
         if (resultGenerationHelper == null)
             return false;
 
-        return resultGenerationHelper.doOldFilesExist(pageIds);
+        return resultGenerationHelper.doOldFilesExist(pageIds, resultType);
     }
 }
