@@ -47,19 +47,15 @@ public class PreprocessingHelper {
     /** 
      * Pages to preprocess
      */
-    private List<String> preprocPages = new ArrayList<String>();
 
     /**
      * Structure to monitor the progress of the process
-     * pageId : segmentId : processedState
+     * pageId : processedState
      *
      * Structure example:
      * {
-     *     "0002": {
-     *         "0002__000__paragraph" : true,
-     *         "0002__001__heading" : false,
-     *         ...
-     *     },
+     *     "0002": true,
+     *     "0003 : false,
      *     ...
      * }
      */
@@ -168,7 +164,6 @@ public class PreprocessingHelper {
         initializePreprocessingDirectories();
         deleteOldFiles(pageIds);
         initializeProcessState(pageIds);
-        preprocPages = pageIds;
 
         List<String> command = new ArrayList<String>();
         for (String pageId : pageIds) {
@@ -183,13 +178,6 @@ public class PreprocessingHelper {
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("ocropus-nlbin", command, false);
 
-        // Workaround in case that some images could not be preprocessed successfully
-        //if (progress < 90)
-        //    progress = 90;
-
-        // Move preprocessed pages to projDirConf.PREPROC_DIR
-       // moveImageFiles("Binary");
-       // moveImageFiles("Gray");
         getProgress();
         preprocessingRunning = false;
         progress = 100;
