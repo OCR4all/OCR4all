@@ -52,6 +52,8 @@
                             "error"  : function() {
                                 openCollapsibleEntriesExclusively([0]);
                                 $('#projectDir').addClass('invalid').focus();
+                                // Prevent datatable from reloading an invalid directory
+                                clearInterval(datatableReloadIntveral);
                             }
                         },
                         columns: [
