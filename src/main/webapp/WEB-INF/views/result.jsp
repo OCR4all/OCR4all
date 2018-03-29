@@ -62,7 +62,7 @@
 
                 <ul class="collapsible" data-collapsible="expandable">
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings (General)</div>
+                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
                         <div class="collapsible-body">
                             <s:result></s:result>
                         </div>

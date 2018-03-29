@@ -2,10 +2,10 @@
 <table class="compact">
     <tbody>
         <tr>
-            <td><p>Result type</p></td>
+            <td><p>Result file type</p></td>
             <td>
                 <div class="input-field">
-                    <i class="material-icons prefix">image</i>
+                    <i class="material-icons prefix">insert_drive_file</i>
                     <select id="resultType" name="resultType" class="suffix">
                         <option value="txt">Text files</option>
                         <option value="xml">XML files</option>

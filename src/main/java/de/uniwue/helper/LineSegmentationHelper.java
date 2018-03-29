@@ -240,6 +240,8 @@ public class LineSegmentationHelper {
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("ocropus-gpageseg", command, false);
 
+        // Execute progress update to fill processState data structure with correct values
+        getProgress();
         // Process extension to ocropus-gpageseg script
         createSkippedSegments();
 
