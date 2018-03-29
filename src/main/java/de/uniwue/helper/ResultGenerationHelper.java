@@ -183,9 +183,12 @@ public class ResultGenerationHelper {
         for (File xmlFile : xmlFiles) {
             if (stopProcess == true)
                 return;
-
+            if(!pageIds.contains(FilenameUtils.removeExtension(xmlFile.getName())))
+                continue;
             List<String> command = new ArrayList<String>();
             command.add(xmlFile.getAbsolutePath());
+            command.add("--output");
+            command.add(projConf.RESULT_PAGES_DIR + xmlFile.getName());
             processHandler.startProcess("pagedir2pagexml.py", command, false);
 
             progress = (int) ((double) processedPages / xmlFiles.length * 100);
