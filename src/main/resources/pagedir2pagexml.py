@@ -15,7 +15,7 @@ from PIL import Image
 
 
 
-def pagexmlcombine(ocrindex, gtindex, xmlfile):
+def pagexmlcombine(ocrindex, gtindex, xmlfile, output):
 
     xmlfile = path.abspath(xmlfile)
     pagedir = path.split(xmlfile)[0] + '/Pages'    
@@ -199,19 +199,19 @@ def pagexmlcombine(ocrindex, gtindex, xmlfile):
     xmlcontent = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>' + xmlcontent
     
     # write file
-    with open(xmlfile, "w", encoding='utf-8') as f:
+    with open(path.abspath(output), "w", encoding='utf-8') as f:
         f.write(xmlcontent)
         
         
         
-def loopfiles(ocrindex, gtindex, xmlfiles):
+def loopfiles(ocrindex, gtindex, xmlfiles, output):
     """
         Takes a bunch of PageXML files and integrates information retrieved from
         a subfolder called 'Pages' in the same directory.
     """
     if xmlfiles:
         for xmlfile in xmlfiles:
-            pagexmlcombine(ocrindex, gtindex, xmlfile)
+            pagexmlcombine(ocrindex, gtindex, xmlfile, output)
 
 
 parser = argparse.ArgumentParser("""
@@ -219,8 +219,9 @@ XML output generation tool
 """)
 parser.add_argument('-ocrx','--ocrindex',type=int,default=1,help='Index attribute of the OCR text.')
 parser.add_argument('-gtx','--gtindex',type=int,default=0,help='Index attribute of the ground truth text.')
+parser.add_argument('-o','--output', type=str, help='Output directory')
 parser.add_argument('xmlfiles',nargs='+')
 args = parser.parse_args()
 
 if __name__ == '__main__':
-    loopfiles(args.ocrindex, args.gtindex, args.xmlfiles)
+    loopfiles(args.ocrindex, args.gtindex, args.xmlfiles, args.output)
