@@ -24,7 +24,6 @@ RUN apt-get update&& apt-get install -y \
 # Repository
 RUN cd /opt && git clone --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
 
-RUN cd /opt/OCR4all_Web && git checkout -b development origin/development
 # Enabling direct request in Larex submodule
 RUN sed -i 's/#directrequest:<value>/directrequest:enable/' /opt/OCR4all_Web/src/main/resources/LAREX/Larex/src/main/webapp/WEB-INF/larex.config
 
