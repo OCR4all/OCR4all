@@ -7,6 +7,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.apache.commons.io.FilenameUtils;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -55,8 +58,10 @@ public class SegmentationDummyHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param segmentationImageType Image type of the segmentation (binary, despeckled)
      * @throws IOException
+     * @throws TransformerException 
+     * @throws ParserConfigurationException 
      */
-    public void extractXmlFiles(List<String> pageIds, String segmentationImageType) throws IOException {
+    public void extractXmlFiles(List<String> pageIds, String segmentationImageType) throws IOException, ParserConfigurationException, TransformerException {
         stop = false;
         progress = 0;
 
@@ -96,7 +101,7 @@ public class SegmentationDummyHelper {
         progress = 100;
     }
 
-    public void extractXML(File file, String outputFolder) {
+    public void extractXML(File file, String outputFolder) throws ParserConfigurationException, TransformerException {
         String imagePath = file.getAbsolutePath();
         String imageFilename = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1);
         Mat image = Imgcodecs.imread(imagePath);
