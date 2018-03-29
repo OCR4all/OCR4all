@@ -3,10 +3,8 @@ package de.uniwue.helper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.concurrent.SynchronousQueue;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -43,10 +41,6 @@ public class PreprocessingHelper {
      * Indicates if a Preprocessing process is already running
      */
     private boolean preprocessingRunning = false;
-
-    /** 
-     * Pages to preprocess
-     */
 
     /**
      * Structure to monitor the progress of the process
