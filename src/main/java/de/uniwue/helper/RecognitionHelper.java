@@ -203,6 +203,12 @@ public class RecognitionHelper {
     public void RecognizeImages(List<String> pageIds, List<String> cmdArgs) throws IOException {
         RecognitionRunning = true;
         progress = 0;
+        int index;
+        if (cmdArgs.contains("--model")) {
+            index = cmdArgs.indexOf("--model");
+            if(new File(cmdArgs.get(index + 1)).exists() == false)
+                throw new IOException("Model does not exist under the specified path");
+        }
 
         // Reset recognition data
         deleteOldFiles(pageIds);
