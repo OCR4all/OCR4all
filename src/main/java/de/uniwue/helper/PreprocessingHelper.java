@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.concurrent.SynchronousQueue;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -48,6 +50,22 @@ public class PreprocessingHelper {
     private List<String> preprocPages = new ArrayList<String>();
 
     /**
+     * Structure to monitor the progress of the process
+     * pageId : segmentId : processedState
+     *
+     * Structure example:
+     * {
+     *     "0002": {
+     *         "0002__000__paragraph" : true,
+     *         "0002__001__heading" : false,
+     *         ...
+     *     },
+     *     ...
+     * }
+     */
+    private TreeMap<String, Boolean> processState = new TreeMap<String, Boolean>();
+
+    /**
      * Constructor
      *
      * @param projectDir Path to the project directory
@@ -69,14 +87,25 @@ public class PreprocessingHelper {
         if (preprocessingRunning == false)
             return progress;
 
-        File preprocDir = new File(projConf.PREPROC_DIR);
-        File[] binFiles = preprocDir.listFiles((d, name) -> name.endsWith(projConf.BINR_IMG_EXT));
-        // Calculate the progress of the Preprocessing process 
-        // Maximum progress = 90%, since the preprocessed files still need to be moved
-        if (binFiles.length != 0)
-            progress =  (int) ((double) binFiles.length / preprocPages.size() * 0.9 * 100);
-        return progress;
-    }
+        int imageCount = 0;
+        int processedImageCount = 0;
+        // Identify how many segments are already processed
+        for (String pageId : processState.keySet()) {
+            imageCount += 1;
+            if (processState.get(pageId) == true) {
+                processedImageCount += 1;
+                continue;
+            }
+            File binImage = new File(projConf.PREPROC_DIR + pageId + projConf.BINR_IMG_EXT);
+            File grayImage = new File(projConf.PREPROC_DIR + pageId + projConf.GRAY_IMG_EXT);
+            if (binImage.exists() && grayImage.exists()) {
+                binImage.renameTo(new File(projConf.BINR_IMG_DIR + FilenameUtils.removeExtension(FilenameUtils.removeExtension(binImage.getName())) + projConf.IMG_EXT));
+                grayImage.renameTo(new File(projConf.BINR_IMG_DIR + FilenameUtils.removeExtension(FilenameUtils.removeExtension(grayImage.getName())) + projConf.IMG_EXT));
+                processState.put(pageId, true);
+            }
+        }
+        return (progress != 100) ? (int) ((double) processedImageCount / imageCount * 100) : 100;
+     }
 
     /**
      * Gets the process handler object
@@ -105,17 +134,16 @@ public class PreprocessingHelper {
     }
 
     /**
-     * Move the images of the given type to the appropriate Preprocessing folder
+     * Initializes the structure with which the progress of the process can be monitored
      *
-     * @param imageType Type of the image
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @throws IOException
      */
-    private void moveImageFiles(String imageType) {
-        File preprocDir = new File(projConf.PREPROC_DIR);
-        File[] filesToMove = preprocDir.listFiles((d, name) -> name.endsWith(projConf.getImageExtensionByType(imageType)));
-        Arrays.sort(filesToMove);
-        for (File image : filesToMove) {
-            int pageArrayIndex = Integer.parseInt(FilenameUtils.removeExtension(FilenameUtils.removeExtension(image.getName()))) - 1;
-            image.renameTo(new File(projConf.getImageDirectoryByType(imageType) + preprocPages.get(pageArrayIndex) + projConf.IMG_EXT));
+    public void initializeProcessState(List<String> pageIds) throws IOException {
+        // Initialize the status structure
+        processState = new TreeMap<String, Boolean>();
+        for(String pageId : pageIds) {
+            processState.put(pageId, false);
         }
     }
 
@@ -139,7 +167,7 @@ public class PreprocessingHelper {
 
         initializePreprocessingDirectories();
         deleteOldFiles(pageIds);
-
+        initializeProcessState(pageIds);
         preprocPages = pageIds;
 
         List<String> command = new ArrayList<String>();
@@ -156,13 +184,13 @@ public class PreprocessingHelper {
         processHandler.startProcess("ocropus-nlbin", command, false);
 
         // Workaround in case that some images could not be preprocessed successfully
-        if (progress < 90)
-            progress = 90;
+        //if (progress < 90)
+        //    progress = 90;
 
         // Move preprocessed pages to projDirConf.PREPROC_DIR
-        moveImageFiles("Binary");
-        moveImageFiles("Gray");
-
+       // moveImageFiles("Binary");
+       // moveImageFiles("Gray");
+        getProgress();
         preprocessingRunning = false;
         progress = 100;
     }
