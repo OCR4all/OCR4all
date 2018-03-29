@@ -9,11 +9,10 @@ from os import path
 from glob import glob
 from time import gmtime, strftime
 from math import sin, cos, radians
-
+import argparse
 from lxml import etree
 from PIL import Image
 
-import click
 
 
 def pagexmlcombine(ocrindex, gtindex, xmlfile):
@@ -112,12 +111,12 @@ def pagexmlcombine(ocrindex, gtindex, xmlfile):
             
             # ocr text
             for fpath in glob(lpath + ".txt"):
-                with open(fpath) as f:
+                with open(fpath, encoding='utf-8') as f:
                     coordmap[rid]["lines"][lid]["ocr"] =  f.read().strip()
                 
             # gt text
             for fpath in glob(lpath + ".gt.txt"):
-                with open(fpath) as f:
+                with open(fpath, encoding='utf-8') as f:
                     coordmap[rid]["lines"][lid]["gt"] =  f.read().strip()
                     
     # start writing coordmap back to xml
@@ -200,15 +199,11 @@ def pagexmlcombine(ocrindex, gtindex, xmlfile):
     xmlcontent = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>' + xmlcontent
     
     # write file
-    with open(xmlfile, "w") as f:
+    with open(xmlfile, "w", encoding='utf-8') as f:
         f.write(xmlcontent)
         
         
         
-@click.command()
-@click.option('--ocrindex', '-ocrx', default=1, help='Index attribute of the OCR text.')
-@click.option('--gtindex', '-gtx', default=0, help='Index attribute of the ground truth text.')
-@click.argument('xmlfiles', type=click.Path(exists=True, dir_okay=False, writable=True), nargs=-1)
 def loopfiles(ocrindex, gtindex, xmlfiles):
     """
         Takes a bunch of PageXML files and integrates information retrieved from
@@ -218,5 +213,14 @@ def loopfiles(ocrindex, gtindex, xmlfiles):
         for xmlfile in xmlfiles:
             pagexmlcombine(ocrindex, gtindex, xmlfile)
 
+
+parser = argparse.ArgumentParser("""
+XML output generation tool
+""")
+parser.add_argument('-ocrx','--ocrindex',type=int,default=1,help='Index attribute of the OCR text.')
+parser.add_argument('-gtx','--gtindex',type=int,default=0,help='Index attribute of the ground truth text.')
+parser.add_argument('xmlfiles',nargs='+')
+args = parser.parse_args()
+
 if __name__ == '__main__':
-    loopfiles()
+    loopfiles(args.ocrindex, args.gtindex, args.xmlfiles)
