@@ -11,6 +11,31 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
+                // Adjust data selection based on project specific type
+                function handleProcessDataSelection() {
+                    var projectDataSelectionType = $('#projectDataSelectionType').val();
+                    if( projectDataSelectionType === 'fixedStructure' ) {
+                        $('#projectDir').parents('tr').hide();
+                        $('#projectSelection').parents('tr').show();
+
+                        //TODO: Load project data via controller AJAX request and create option elements
+                    }
+                    else {
+                        $('#projectDir').parents('tr').show();
+                        $('#projectSelection').parents('tr').hide();
+                    }
+                }
+                $('#projectDataSelectionType').on('change', function() {
+                    handleProcessDataSelection();
+                });
+                handleProcessDataSelection();
+
+                // Always use projectDir input as entry point
+                // Therefore update it when changing the project data via dropdown method
+                $('#projectSelection').on('change', function() {
+                    $('#projectDir').val($(this.val()));
+                });
+
                 var datatableReloadIntveral = null;
                 // Responsible for initializing and updating datatable contents
                 function datatable(){
@@ -67,7 +92,9 @@
                 function projectInitialization(newPageVisit) {
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
                     // Check if directory exists
-                    $.get( "ajax/overview/checkDir?", ajaxParams )
+                    $.get( "ajax/overview/checkDir?",
+                           $.extend(ajaxParams, { "projectDataSelectionType" : $('#projectDataSelectionType').val() })
+                    )
                     .done(function( data ) {
                         if( data === true ) {
                             // Check if filenames match project specific naming convention
