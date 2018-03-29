@@ -95,7 +95,10 @@
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
                     // Check if directory exists
                     $.get( "ajax/overview/checkDir?",
-                           $.extend(ajaxParams, { "projectDataSelectionType" : $('#projectDataSelectionType').val() })
+                           $.extend(ajaxParams, {
+                               "projectDataSelectionType" : $('#projectDataSelectionType').val(),
+                               "resetSession" : !newPageVisit, // Only force new session if project loading is triggered by user
+                           })
                     )
                     .done(function( data ) {
                         if( data === true ) {

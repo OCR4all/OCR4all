@@ -138,6 +138,7 @@ public class OverviewController {
      * @param projectDir Absolute path to the project
      * @param imageType Project type (Binary or Gray)
      * @param projectDataSelectionType Determines how the user selects project data (dropdown|free text)
+     * @param resetSession Triggers the creation and usage of a new session
      * @param session Session of the user
      * @param response Response to the request
      * @return Returns the status of the projectDir check
@@ -147,6 +148,7 @@ public class OverviewController {
                 @RequestParam("projectDir") String projectDir,
                 @RequestParam("imageType") String imageType,
                 @RequestParam("projectDataSelectionType") String projectDataSelectionType,
+                @RequestParam("resetSession") Boolean resetSession,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
             ) {
         // Add file separator to end of the path (for usage in JSP files)
@@ -154,10 +156,11 @@ public class OverviewController {
             projectDir = projectDir + File.separator;
 
         // Resets the session, so that all previous moduleHelper attributes are discarded
-        session.invalidate();
-        HttpSession newSession = request.getSession();
+        if (resetSession == true)
+            session.invalidate();
 
         // Store necessary project related variables in session (serves as entry point)
+        HttpSession newSession = request.getSession();
         newSession.setAttribute("projectDir", projectDir);
         newSession.setAttribute("imageType", imageType);
         newSession.setAttribute("projectDataSelectionType", projectDataSelectionType);
