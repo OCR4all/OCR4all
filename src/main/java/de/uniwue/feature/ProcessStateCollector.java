@@ -166,13 +166,13 @@ public class ProcessStateCollector {
     }
 
     /**
-     * Determines the "Result" process state of a given page
+     * Determines the "ResultGeneration" process state of a given page
      *
      * @param pageID Identifier of the page (e.g 0002,0003)
      * @return "result" state of the page
      */
-    public boolean resultState(String pageId) {
+    public boolean resultGenerationState(String pageId) {
         File pageResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
-        return pageResult.exists() ? true : false;
+        return pageResult.exists();
     }
 }

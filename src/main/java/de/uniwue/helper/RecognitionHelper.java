@@ -271,6 +271,10 @@ public class RecognitionHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      */
     public void deleteOldFiles(List<String> pageIds) {
+        // Delete all files created by subsequent processes to preserve data integrity
+        ResultGenerationHelper resultGenerationHelper = new ResultGenerationHelper(projConf.PROJECT_DIR, projectImageType);
+        resultGenerationHelper.deleteOldFiles(pageIds);
+
         for(String pageId : pageIds) {
             File pageDirectory = new File(projConf.PAGE_DIR + pageId);
             if (!pageDirectory.exists())
@@ -290,8 +294,6 @@ public class RecognitionHelper {
                 }
             }
         }
-        ResultHelper resultHelper = new ResultHelper(projConf.PROJECT_DIR, projectImageType);
-        resultHelper.deleteOldFiles(pageIds);
     }
 
     /**

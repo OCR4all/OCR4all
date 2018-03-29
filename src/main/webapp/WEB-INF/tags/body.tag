@@ -46,7 +46,7 @@
             <li><a href="Recognition">Recognition</a></li>
             <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Correction</a></li>
             <li><a href="Evaluation">Evaluation</a></li>
-            <li><a href="Result">Result</a></li>
+            <li><a href="ResultGeneration">Result Generation</a></li>
             <li class="nav-separator"></li>
         </ul>
     </header>

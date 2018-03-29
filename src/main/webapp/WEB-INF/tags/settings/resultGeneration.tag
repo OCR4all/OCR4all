@@ -1,4 +1,4 @@
-<%@ tag description="Result settings" pageEncoding="UTF-8" %>
+<%@ tag description="Result Generation settings" pageEncoding="UTF-8" %>
 <table class="compact">
     <tbody>
         <tr>
