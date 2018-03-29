@@ -153,6 +153,7 @@ public class ResultHelper {
         stopProcess = false;
         progress = 0;
 
+        deleteOldFiles(pageIds);
         initializeResultDirectories();
 
         if (ResultType.equals("txt")) {
@@ -292,6 +293,36 @@ public class ResultHelper {
         return progress;
     }
 
+    /**
+     * Deletion of old process related files
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     */
+    public void deleteOldFiles(List<String> pageIds) {
+        // Delete result of each page
+        for(String pageId : pageIds) {
+            File pageResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
+            if (pageResult.exists())
+                pageResult.delete();
+        }
+       // delete the concatenated result of the pages
+       File completeResult = new File(projConf.RESULT_DIR + "complete"+ projConf.REC_EXT);
+       if (completeResult.exists())
+           completeResult.delete();
+    }
+    /**
+     * Checks if process depending files already exist
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @return Information if files exist
+     */
+    public boolean doOldFilesExist(String[] pageIds) {
+        for (String pageId : pageIds) {
+            if (procStateCol.resultState(pageId) == true)
+                return true;
+        }
+        return false;
+    }
     /**
      * Determines conflicts with the process
      *

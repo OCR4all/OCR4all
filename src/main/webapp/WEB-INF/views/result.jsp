@@ -22,13 +22,28 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-                    var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() };
-                    // Execute result process
-                    executeProcess(ajaxParams);
+                    $.get( "ajax/result/exists?", { "pageIds[]" : selectedPages } )
+                    .done(function( data ){
+                        if(data === false){
+                            var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() };
+                            // Execute recongition process
+                            executeProcess(ajaxParams);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
+                    });
                 });
 
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
+                });
+
+                $('#agree').click(function() {
+                    var selectedPages = getSelectedPages();
+                    var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() };
+                    // Execute recognition process
+                    executeProcess(ajaxParams);
                 });
             });
         </script>

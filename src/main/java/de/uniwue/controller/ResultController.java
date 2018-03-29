@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.uniwue.helper.RecognitionHelper;
 import de.uniwue.helper.ResultHelper;
 
 /**
@@ -145,5 +146,25 @@ public class ResultController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return null;
         }
+    }
+
+    /**
+     * Response to the request to check if old process related files exist
+     *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Information if files exist
+     */
+    @RequestMapping(value = "/ajax/result/exists" , method = RequestMethod.GET)
+    public @ResponseBody boolean filesExists(
+                @RequestParam("pageIds[]") String[] pageIds,
+                HttpSession session, HttpServletResponse response
+            ) {
+        ResultHelper resultHelper = provideHelper(session, response);
+        if (resultHelper == null)
+            return false;
+
+        return resultHelper.doOldFilesExist(pageIds);
     }
 }
