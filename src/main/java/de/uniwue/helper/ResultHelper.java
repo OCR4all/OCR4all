@@ -153,7 +153,6 @@ public class ResultHelper {
         stopProcess = false;
         progress = 0;
 
-        deleteOldFiles(pageIds);
         initializeResultDirectories();
 
         if (ResultType.equals("txt")) {
@@ -202,6 +201,7 @@ public class ResultHelper {
      * @throws IOException
      */
     public void executeTextProcess(List<String> pageIds) throws IOException {
+        deleteOldFiles(pageIds);
         initialize(pageIds);
 
         TreeMap<String, String> pageResult = new TreeMap<String, String>();

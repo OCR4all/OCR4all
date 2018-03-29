@@ -18,21 +18,27 @@
 
                 $('button[data-id="execute"]').click(function() {
                     var selectedPages = getSelectedPages();
+                    var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() };
                     if( selectedPages.length === 0 ) {
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-                    $.get( "ajax/result/exists?", { "pageIds[]" : selectedPages } )
-                    .done(function( data ){
-                        if(data === false){
-                            var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() };
-                            // Execute recongition process
-                            executeProcess(ajaxParams);
-                        }
-                        else{
-                            $('#modal_exists').modal('open');
-                        }
-                    });
+                    if ($('#resultType').val() === "txt"){
+                        $.get( "ajax/result/exists?", { "pageIds[]" : selectedPages } )
+                        .done(function( data ){
+                            if(data === false){
+                                // Execute result process
+                                executeProcess(ajaxParams);
+                            }
+                            else{
+                                $('#modal_exists').modal('open');
+                            }
+                        });
+                    }
+                    else {
+                        // Execute result process
+                        executeProcess(ajaxParams);
+                    }
                 });
 
                 $('button[data-id="cancel"]').click(function() {
@@ -42,7 +48,7 @@
                 $('#agree').click(function() {
                     var selectedPages = getSelectedPages();
                     var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() };
-                    // Execute recognition process
+                    // Execute result process
                     executeProcess(ajaxParams);
                 });
             });
