@@ -11,28 +11,25 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                $('select').on('contentChanged', function() {
-                    $(this).material_select();
-                 });
                 // Adjust data selection based on project specific type
                 function handleProcessDataSelection() {
                     var projectDataSelectionType = $('#projectDataSelectionType').val();
                     if( projectDataSelectionType === 'fixedStructure' ) {
                         $('#projectDir').parents('tr').hide();
                         $('#projectSelection').parents('tr').show();
+
+                        // Load project data via controller AJAX request and create option elements
                         $('#projectSelection').empty();
-                        $.get( "ajax/overview/listProjects?")
+                        $.get( "ajax/overview/listProjects")
                         .done(function( data ) {
-                             $.each(data, function(key, value) {   
+                             $.each(data, function(key, value) {
                                  $('#projectSelection')
                                      .append($("<option></option>")
-                                                .attr("value",value)
-                                                .text(key));
-                                 $('#projectSelection').trigger('contentChanged');
-                            });
+                                         .attr("value", value)
+                                         .text(key));
+                             });
+                             $('#projectSelection').material_select();
                         });
-
-                        //TODO: Load project data via controller AJAX request and create option elements
                     }
                     else {
                         $('#projectDir').parents('tr').show();
@@ -47,7 +44,7 @@
                 // Always use projectDir input as entry point
                 // Therefore update it when changing the project data via dropdown method
                 $('#projectSelection').on('change', function() {
-                    $('#projectDir').val($('#projectSelection').val());
+                    $('#projectDir').val($(this).val());
                 });
 
                 var datatableReloadIntveral = null;
