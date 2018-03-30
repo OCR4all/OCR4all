@@ -98,6 +98,9 @@
                         else{
                             $('#modal_exists').modal('open');
                         }
+                    })
+                    .fail(function( data ) {
+                        $('#modal_exists_failed').modal('open');
                     });
                 });
                 $('button[data-id="cancel"]').click(function() {

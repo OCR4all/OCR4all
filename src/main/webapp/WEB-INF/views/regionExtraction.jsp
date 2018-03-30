@@ -35,6 +35,9 @@
                         else{
                             $('#modal_exists').modal('open');
                         }
+                    })
+                    .fail(function( data ) {
+                        $('#modal_exists_failed').modal('open');
                     });
                 });
 

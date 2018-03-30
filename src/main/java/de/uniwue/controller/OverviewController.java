@@ -174,6 +174,23 @@ public class OverviewController {
     }
 
     /**
+     * Response to the request to validate the project dir
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the validation status of the project dir
+     */
+    @RequestMapping(value ="/ajax/overview/validate" , method = RequestMethod.GET)
+    public @ResponseBody boolean validateProjectDir(HttpSession session, HttpServletResponse response) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null)
+            return false;
+
+        return overviewHelper.validateProjectDir();
+    }
+
+
+    /**
      * Response to the request to check the filenames
      *
      * @param session Session of the user

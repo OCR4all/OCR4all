@@ -219,7 +219,21 @@
                                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                          </div>
-                    </c:when>
+                        <!-- Note that exist check failed-->
+                        <div id="modal_exists_failed" class="modal">
+                            <div class="modal-content">
+                                <h4 class="red-text">Attention</h4>
+                                <p>
+                                    The existing files could not be checked.<br/>
+                                    Due to this error, the process can not be started.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
+                                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                         </div>
+                     </c:when>
                 </c:choose>
             </c:otherwise>
         </c:choose>

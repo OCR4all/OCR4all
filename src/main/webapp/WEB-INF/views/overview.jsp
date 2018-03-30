@@ -80,22 +80,31 @@
                     )
                     .done(function( data ) {
                         if( data === true ) {
-                            // Check if filenames match project specific naming convention
-                            $.get( "ajax/overview/checkFileNames?", ajaxParams )
+                            $.get( "ajax/overview/validate?" )
                             .done(function( data ) {
                                 if( data === true ) {
-                                    // Two scenarios for loading overview page:
-                                    // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
-                                    // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
-                                    if( newPageVisit == false ) {
-                                        location.reload();
-                                    }
-                                    else {
-                                        datatable();
-                                    }
+
+                                    // Check if filenames match project specific naming convention
+                                    $.get( "ajax/overview/checkFileNames?", ajaxParams )
+                                    .done(function( data ) {
+                                         if( data === true ) {
+                                             // Two scenarios for loading overview page:
+                                             // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
+                                             // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
+                                             if( newPageVisit == false ) {
+                                                 location.reload();
+                                             }
+                                             else {
+                                                 datatable();
+                                             }
+                                         }
+                                         else{
+                                            $('#modal_filerename').modal('open');
+                                         }
+                                    });
                                 }
                                 else{
-                                    $('#modal_filerename').modal('open');
+                                    $('#modal_validateDir').modal('open');
                                 }
                             });
                         }
@@ -105,6 +114,9 @@
                             // Prevent datatable from reloading an invalid directory
                             clearInterval(datatableReloadIntveral);
                         }
+                    })
+                    .fail(function( data ) {
+                        $('#modal_checkDir_failed').modal('open');
                     });
                 }
 
@@ -123,6 +135,9 @@
                     $.get( "ajax/overview/renameFiles" )
                     .done(function( data ) {
                         datatable();
+                    })
+                    .fail(function( data ) {
+                        $('#modal_exists_failed').modal('open');
                     });
                 });
 
@@ -170,6 +185,44 @@
                     <p>
                         Some or all files do not match the required naming convention for this tool.<br />
                         If you agree the affected files will be renamed automatically.
+                    </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
+                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+         </div>
+        <div id="modal_filerename_failed" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Attention</h4>
+                    <p>
+                        The process to rename the files failed.<br />
+                        Due to this error, the page Overview can not be displayed
+                    </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
+                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+         </div>
+        <div id="modal_validateDir" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Attention</h4>
+                    <p>
+                        The selected project directory doesn not have the required structure.
+                    </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
+                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+         </div>
+        <div id="modal_checkDir_failed" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Attention</h4>
+                    <p>
+                        The process to check the specified directory failed.<br />
+                        Due to this error, the page Overview can not be displayed
                     </p>
             </div>
             <div class="modal-footer">
