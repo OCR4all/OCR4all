@@ -94,7 +94,7 @@
                     $.get( "ajax/processFlow/current" )
                     .done(function( process ) {
                         // Update all processes on initial page load or execution
-                        if( lastExecutedProcess === "" ) {
+                        if( lastExecutedProcess === "" && process !== "" ) {
                             $.each($('#processSelection input[type="checkbox"]'), function() {
                                 updateProcessFlowStatus($(this).attr('data-id'));
                             });
