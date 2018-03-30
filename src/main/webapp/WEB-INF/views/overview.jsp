@@ -179,6 +179,7 @@
                 </button>
             </div>
         </div>
+
         <div id="modal_filerename" class="modal">
             <div class="modal-content">
                 <h4 class="red-text">Attention</h4>
@@ -193,40 +194,39 @@
             </div>
          </div>
         <div id="modal_filerename_failed" class="modal">
-            <div class="modal-content">
-                <h4 class="red-text">Attention</h4>
+            <div class="modal-content red-text">
+                <h4>Error</h4>
                     <p>
-                        The process to rename the files failed.<br />
-                        Due to this error, the page Overview can not be displayed
+                        Renaming of the image files failed.<br />
+                        Due to this error the project could not be loaded.
                     </p>
             </div>
             <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
          </div>
         <div id="modal_validateDir" class="modal">
-            <div class="modal-content">
-                <h4 class="red-text">Attention</h4>
+            <div class="modal-content red-text">
+                <h4>Error</h4>
                     <p>
-                        The selected project directory doesn not have the required structure.
+                        The selected project directory does not have the required structure.<br />
+                        Please put the project related image files in a sub-directory named "Original".<br />
+                        Until then the project cannot be loaded successfully.
                     </p>
             </div>
             <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
          </div>
         <div id="modal_checkDir_failed" class="modal">
-            <div class="modal-content">
-                <h4 class="red-text">Attention</h4>
+            <div class="modal-content red-text">
+                <h4>Error</h4>
                     <p>
-                        The process to check the specified directory failed.<br />
-                        Due to this error, the page Overview can not be displayed
+                        The specified project directory could not accessed.<br />
+                        Due to this error the project could not be loaded.
                     </p>
             </div>
             <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
          </div>

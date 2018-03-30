@@ -205,7 +205,7 @@
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
-                        <!-- Note that old process files exist -->
+                        <!-- Note that old process related files exist -->
                         <div id="modal_exists" class="modal">
                             <div class="modal-content">
                                 <h4 class="red-text">Attention</h4>
@@ -219,17 +219,16 @@
                                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                          </div>
-                        <!-- Note that exist check failed-->
+                        <!-- Check for process related files failed-->
                         <div id="modal_exists_failed" class="modal">
-                            <div class="modal-content">
-                                <h4 class="red-text">Attention</h4>
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
                                 <p>
-                                    The existing files could not be checked.<br/>
-                                    Due to this error, the process can not be started.
+                                    It could not be verified if old process related files exist.<br/>
+                                    Due to this error, the process cannot be started to ensure data integrity.
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
                                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                          </div>
