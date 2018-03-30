@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import de.uniwue.helper.OverviewHelper;
 import de.uniwue.helper.RecognitionHelper;
 
 /**
@@ -211,7 +210,6 @@ public class RecognitionController {
      */
     @RequestMapping(value ="/ajax/recognition/listModels" , method = RequestMethod.GET)
     public @ResponseBody HashMap<String, String> listModels(HttpSession session, HttpServletResponse response) {
-
         try {
             return RecognitionHelper.listModels();
         } catch (IOException e) {

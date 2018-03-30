@@ -338,31 +338,47 @@ public class RecognitionHelper {
     }
 
     /**
-     * Lists all Models
+     * Lists all available Models from the model directory
+     *
      * @return Map of models (key = modelName | value = path)
      * @throws IOException 
      */
     public static HashMap<String, String> listModels() throws IOException{
-        ProjectConfiguration projectConf = new ProjectConfiguration();
         HashMap<String, String> models = new HashMap<String, String>();
-        // Add default models to map
-        File modelsDefaultDir = new File(projectConf.MODEL_DEFAULT_DIR);
 
-        File[] modelFiles = modelsDefaultDir.listFiles((d, name) -> name.endsWith(projectConf.MODEL_EXT));
-        for(File model : modelFiles) {
+        File modelsDir = new File(ProjectConfiguration.PROJ_MODEL_DIR);
+        if (!modelsDir.exists())
+            return models;
+
+        File modelsDefaultDir = new File(ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR);
+        if (!modelsDefaultDir.exists())
+            return models;
+
+        // Add default models to map
+        File[] modelFiles = modelsDefaultDir.listFiles((d, name) -> name.endsWith(ProjectConfiguration.MODEL_EXT));
+        for (File model : modelFiles) {
              String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(model.getName()));
-             models.put(modelName , model.getAbsolutePath());
+             models.put(modelName, model.getAbsolutePath());
         }
+
+        File modelsCustomDir = new File(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR);
+        if (!modelsCustomDir.exists())
+            return models;
+
         // Add custom models to map
-        Files.walk(Paths.get(projectConf.MODEL_CUSTOM_DIR))
+        Files.walk(Paths.get(modelsCustomDir.getAbsolutePath()))
         .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.getName().endsWith(projectConf.MODEL_EXT))
-        .forEach((f)->{
-            String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(f.getName()));
-            if(!f.getParentFile().getName().equals("Custom"))
-                modelName = f.getParentFile().getName() + File.separator + modelName;
-            models.put(modelName, f.getAbsolutePath());
+        .filter(fileEntry -> fileEntry.getName().endsWith(ProjectConfiguration.MODEL_EXT))
+        .forEach(
+            fileEntry->{
+                String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName()));
+                // In case the model is located in a sub-directory, add the sub-directory as identifier to its name
+                if (!fileEntry.getParentFile().getName().equals("custom"))
+                    modelName = fileEntry.getParentFile().getName() + File.separator + modelName;
+
+                models.put(modelName, fileEntry.getAbsolutePath());
         });
+
         return models;
     }
 

@@ -216,7 +216,6 @@ public class OverviewController {
      */
     @RequestMapping(value ="/ajax/overview/listProjects" , method = RequestMethod.GET)
     public @ResponseBody HashMap<String, String> listProjects(HttpSession session, HttpServletResponse response) {
-
         return OverviewHelper.listProjects();
     }
 }

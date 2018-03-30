@@ -235,16 +235,22 @@ public class OverviewHelper {
     }
 
     /**
-     * Lists all projects
+     * Lists all available projects from the data directory
+     *
      * @return Map of projects (key = projName | value = path)
      */
     public static HashMap<String, String> listProjects(){
-        ProjectConfiguration projectConf = new ProjectConfiguration();
         HashMap<String, String> projects = new HashMap<String, String>();
-        File projParentDir = new File(projectConf.PROJ_PARENT_DIR);
-        File[] projectsDirs = projParentDir.listFiles(File::isDirectory);
-        for(File project: projectsDirs)
+
+        File projDataDir = new File(ProjectConfiguration.PROJ_DATA_DIR);
+        if (!projDataDir.exists())
+            return projects;
+
+        File[] projectsDirs = projDataDir.listFiles(File::isDirectory);
+        for (File project: projectsDirs) {
              projects.put(project.getName(), project.getAbsolutePath());
+        }
+
         return projects;
     }
 
