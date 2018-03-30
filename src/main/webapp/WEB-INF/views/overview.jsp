@@ -147,6 +147,9 @@
                             // Prevent datatable from reloading an invalid directory
                             clearInterval(datatableReloadIntveral);
                         }
+                    })
+                    .fail(function( data ) {
+                        $('#modal_checkDir_failed').modal('open');
                     });
                 }
 
@@ -165,6 +168,9 @@
                     $.get( "ajax/overview/renameFiles" )
                     .done(function( data ) {
                         datatable();
+                    })
+                    .fail(function( data ) {
+                        $('#modal_exists_failed').modal('open');
                     });
                 });
 
@@ -219,11 +225,37 @@
                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
          </div>
+        <div id="modal_filerename_failed" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Attention</h4>
+                    <p>
+                        The process to rename the files failed.<br />
+                        Due to this error, the page Overview can not be displayed
+                    </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
+                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+         </div>
         <div id="modal_validateDir" class="modal">
             <div class="modal-content">
                 <h4 class="red-text">Attention</h4>
                     <p>
                         The selected project directory doesn not have the required structure.
+                    </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
+                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+         </div>
+        <div id="modal_checkDir_failed" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Attention</h4>
+                    <p>
+                        The process to check the specified directory failed.<br />
+                        Due to this error, the page Overview can not be displayed
                     </p>
             </div>
             <div class="modal-footer">
