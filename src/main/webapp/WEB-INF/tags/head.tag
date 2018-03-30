@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ attribute name="imageList" required="false" %>
 <%@ attribute name="processHandler" required="false" %>
+<%@ attribute name="projectDataSel" required="false" %>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -34,6 +35,13 @@
         <%-- Include JS files to provide process handling functionality --%>
         <c:when test="${not empty processHandler}">
             <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-processhandler.js"></script>
+        </c:when>
+    </c:choose>
+
+    <c:choose>
+        <%-- Include JS files to provide project data selection functionality --%>
+        <c:when test="${not empty projectDataSel}">
+            <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-projdatasel.js"></script>
         </c:when>
     </c:choose>
 

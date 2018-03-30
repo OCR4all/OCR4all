@@ -2,7 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head>
+    <t:head projectDataSel="true">
         <title>OCR4All - Project Overview</title>
 
         <!-- jQuery DataTables -->
@@ -11,41 +11,8 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                // Adjust data selection based on project specific type
-                function handleProcessDataSelection() {
-                    var projectDataSelectionType = $('#projectDataSelectionType').val();
-                    if( projectDataSelectionType === 'fixedStructure' ) {
-                        $('#projectDir').parents('tr').hide();
-                        $('#projectSelection').parents('tr').show();
-
-                        // Load project data via controller AJAX request and create option elements
-                        $('#projectSelection').empty();
-                        $.get( "ajax/overview/listProjects")
-                        .done(function( data ) {
-                             $.each(data, function(key, value) {
-                                 $('#projectSelection')
-                                     .append($("<option></option>")
-                                         .attr("value", value)
-                                         .text(key));
-                             });
-                             $('#projectSelection').material_select();
-                        });
-                    }
-                    else {
-                        $('#projectDir').parents('tr').show();
-                        $('#projectSelection').parents('tr').hide();
-                    }
-                }
-                $('#projectDataSelectionType').on('change', function() {
-                    handleProcessDataSelection();
-                });
-                handleProcessDataSelection();
-
-                // Always use projectDir input as entry point
-                // Therefore update it when changing the project data via dropdown method
-                $('#projectSelection').on('change', function() {
-                    $('#projectDir').val($(this).val());
-                });
+                // Initialize project data selection
+                initializeProjectDataSelection('ajax/overview/listProjects');
 
                 var datatableReloadIntveral = null;
                 // Responsible for initializing and updating datatable contents
