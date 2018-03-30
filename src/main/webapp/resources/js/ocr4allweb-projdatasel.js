@@ -38,12 +38,16 @@ function loadProjDataOptions() {
         }
 
         // (Re)build the select element with new values
-        $('select[data-projdatasel]').empty();
-        $.each(data, function(key, value) {
-            $('select[data-projdatasel]')
-                .append($("<option></option>")
-                    .attr("value", value)
-                    .text(key));
+        // Keep current selected value after reloading the data
+        $.each($('select[data-projdatasel]'), function(idx, selEl) {
+            $(selEl).empty();
+            var currrentDirectoryPath = $('input[data-projdataselrefid="' + $(selEl).attr('id') + '"]').val();
+            $.each(data, function(key, value) {
+                var optionEl = $("<option></option>").attr("value", value).text(key);
+                if( value === currrentDirectoryPath )
+                    $(optionEl).attr("selected", "selected");
+                $(selEl).append(optionEl);
+            });
         });
         $('select[data-projdatasel]').change().material_select();
 

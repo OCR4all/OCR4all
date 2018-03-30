@@ -260,7 +260,7 @@ public class OverviewHelper {
 
         File[] projectsDirs = projDataDir.listFiles(File::isDirectory);
         for (File project: projectsDirs) {
-             projects.put(project.getName(), project.getAbsolutePath());
+             projects.put(project.getName(), project.getAbsolutePath() + File.separator);
         }
 
         return projects;
