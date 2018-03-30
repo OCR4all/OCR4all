@@ -219,6 +219,18 @@ public class OverviewHelper {
     }
 
     /**
+     * Validates the projectDir
+     *
+     * @return validation status of the projectDir
+     */
+    public boolean validateProjectDir() {
+        if(!new File(projConf.ORIG_IMG_DIR).exists())
+            return false;
+        return true;
+
+    }
+
+    /**
      * Checks if all filesnames are using the project file naming e.g (0001, 0002 ... XXXX)
      *
      * @return true = all files are using project naming, false = files are not using project naming
