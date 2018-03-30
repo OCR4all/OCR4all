@@ -113,6 +113,8 @@
                             $('#projectDir').addClass('invalid').focus();
                             // Prevent datatable from reloading an invalid directory
                             clearInterval(datatableReloadIntveral);
+
+                            $('#modal_checkDir_failed').modal('open');
                         }
                     })
                     .fail(function( data ) {
