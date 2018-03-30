@@ -209,7 +209,7 @@ public class OverviewController {
     }
 
     /**
-     * Response to rename the filenames according to the project standard
+     * Response to list the projects
      *
      * @param session Session of the user
      * @param response Response to the request

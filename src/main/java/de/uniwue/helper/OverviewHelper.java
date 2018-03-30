@@ -234,6 +234,10 @@ public class OverviewHelper {
         return status;
     }
 
+    /**
+     * Lists all projects
+     * @return Map of projects (key = projName | value = path)
+     */
     public static HashMap<String, String> listProjects(){
         ProjectConfiguration projectConf = new ProjectConfiguration();
         HashMap<String, String> projects = new HashMap<String, String>();
@@ -242,8 +246,8 @@ public class OverviewHelper {
         for(File project: projectsDirs)
              projects.put(project.getName(), project.getAbsolutePath());
         return projects;
-        
     }
+
     /**
      * Renames all files according to the project standard
      *
