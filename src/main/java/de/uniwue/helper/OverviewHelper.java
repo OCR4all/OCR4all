@@ -286,7 +286,7 @@ public class OverviewHelper {
         int name = 1;
 
         //File which contains the information about the renaming
-        File backupFilename = new File(projConf.PROJECT_DIR + new SimpleDateFormat("mmHHddMMyyyy'.txt'").format(new Date()));
+        File backupFilename = new File(projConf.PROJECT_DIR + new SimpleDateFormat("ssmmHHddMMyyyy'.txt'").format(new Date()));
 
         //name of files, which will be renamed
         TreeMap<File, File> hm = new TreeMap<File, File>();
