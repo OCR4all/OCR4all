@@ -15,15 +15,26 @@
                         </p>
                     </td>
                 </tr>
+                <%-- START Model selection (visibility of <tr> elements is done via JS) --%>
                 <tr>
                     <td><p>Line recognition model</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--model" type="text" />
+                            <select id="modelSelection" name="modelSelection" data-projdatasel></select>
+                            <label></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Line recognition model</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--model" type="text" data-projdataselrefid="modelSelection" />
                             <label for="--model" data-type="text">Path to the model</label>
                         </div>
                     </td>
                 </tr>
+                <%-- END Model selection (visibility of <tr> elements is done via JS) --%>
                 <tr>
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
