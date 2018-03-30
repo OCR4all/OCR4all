@@ -20,6 +20,7 @@
                     if( projectDataSelectionType === 'fixedStructure' ) {
                         $('#projectDir').parents('tr').hide();
                         $('#projectSelection').parents('tr').show();
+                        $('#projectSelection').empty();
                         $.get( "ajax/overview/listProjects?")
                         .done(function( data ) {
                              $.each(data, function(key, value) {   
