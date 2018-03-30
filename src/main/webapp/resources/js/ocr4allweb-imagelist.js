@@ -125,8 +125,18 @@ function loadVisiblePages() {
 
         // Load page images via Ajax
         $.get( "ajax/image/page", { "imageId" : globalImageType, "pageId" : $(aEl).attr('data-pageid'), "width" : 150 } )
+        .always(function( data ) {
+            // Remove broken image icon first
+            var nextEl = $(imgEl).next();
+            if( nextEl.length !== 0 ) {
+                $(nextEl).remove();
+            }
+        })
         .done(function( data ) {
             $(imgEl).attr('src', "data:image/jpeg;base64, " + data);
+        })
+        .fail(function( data ) {
+            $(imgEl).after('<i class="material-icons image-list-broken-image" data-info="broken-image">broken_image</i>');
         });
     });
 }

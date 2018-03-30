@@ -3,18 +3,18 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
-        <title>OCR4All - Result</title>
+        <title>OCR4All - Result Generation</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 // Load image list with fetched static page Ids (pages valid for result)
-                $.get( "ajax/result/getValidPageIds")
+                $.get( "ajax/resultGeneration/getValidPageIds")
                 .done(function( data ) {
                     initializeImageList("OCR", false, data);
                 });
 
                 // Initialize process update and set options
-                initializeProcessUpdate("result", [ 0 ], [ 1 ], false);
+                initializeProcessUpdate("resultGeneration", [ 0 ], [ 1 ], false);
 
                 $('button[data-id="execute"]').click(function() {
                     var selectedPages = getSelectedPages();
@@ -23,22 +23,16 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-                    if ($('#resultType').val() === "txt"){
-                        $.get( "ajax/result/exists?", { "pageIds[]" : selectedPages } )
-                        .done(function( data ){
-                            if(data === false){
-                                // Execute result process
-                                executeProcess(ajaxParams);
-                            }
-                            else{
-                                $('#modal_exists').modal('open');
-                            }
-                        });
-                    }
-                    else {
-                        // Execute result process
-                        executeProcess(ajaxParams);
-                    }
+                    $.get( "ajax/resultGeneration/exists?", { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() } )
+                    .done(function( data ){
+                        if(data === false){
+                            // Execute result process
+                            executeProcess(ajaxParams);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
+                    });
                 });
 
                 $('button[data-id="cancel"]').click(function() {
@@ -54,7 +48,7 @@
             });
         </script>
     </t:head>
-    <t:body heading="Result" imageList="true" processModals="true">
+    <t:body heading="Result Generation" imageList="true" processModals="true">
         <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
@@ -70,7 +64,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
                         <div class="collapsible-body">
-                            <s:result></s:result>
+                            <s:resultGeneration></s:resultGeneration>
                         </div>
                     </li>
                     <li>

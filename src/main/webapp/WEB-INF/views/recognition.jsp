@@ -2,11 +2,14 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" processHandler="true">
+    <t:head imageList="true" processHandler="true" projectDataSel="true">
         <title>OCR4All - Recognition</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
+                // Initialize project data selection
+                initializeProjectDataSelection('ajax/recognition/listModels');
+
                 // Load image list
                 $.get( "ajax/recognition/getValidPageIds")
                 .done(function( data ) {
@@ -85,6 +88,9 @@
                         else{
                             $('#modal_exists').modal('open');
                         }
+                    })
+                    .fail(function( data ) {
+                        $('#modal_exists_failed').modal('open');
                     });
                 });
 

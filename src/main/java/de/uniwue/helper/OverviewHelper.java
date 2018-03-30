@@ -219,6 +219,18 @@ public class OverviewHelper {
     }
 
     /**
+     * Validates the projectDir
+     *
+     * @return validation status of the projectDir
+     */
+    public boolean validateProjectDir() {
+        if(!new File(projConf.ORIG_IMG_DIR).exists())
+            return false;
+        return true;
+
+    }
+
+    /**
      * Checks if all filesnames are using the project file naming e.g (0001, 0002 ... XXXX)
      *
      * @return true = all files are using project naming, false = files are not using project naming
@@ -232,6 +244,26 @@ public class OverviewHelper {
         if (filesFilterd.length == files.length) 
             status = true;
         return status;
+    }
+
+    /**
+     * Lists all available projects from the data directory
+     *
+     * @return Map of projects (key = projName | value = path)
+     */
+    public static HashMap<String, String> listProjects(){
+        HashMap<String, String> projects = new HashMap<String, String>();
+
+        File projDataDir = new File(ProjectConfiguration.PROJ_DATA_DIR);
+        if (!projDataDir.exists())
+            return projects;
+
+        File[] projectsDirs = projDataDir.listFiles(File::isDirectory);
+        for (File project: projectsDirs) {
+             projects.put(project.getName(), project.getAbsolutePath() + File.separator);
+        }
+
+        return projects;
     }
 
     /**
@@ -254,7 +286,7 @@ public class OverviewHelper {
         int name = 1;
 
         //File which contains the information about the renaming
-        File backupFilename = new File(projConf.PROJECT_DIR + new SimpleDateFormat("mmHHddMMyyyy'.txt'").format(new Date()));
+        File backupFilename = new File(projConf.PROJECT_DIR + new SimpleDateFormat("ssmmHHddMMyyyy'.txt'").format(new Date()));
 
         //name of files, which will be renamed
         TreeMap<File, File> hm = new TreeMap<File, File>();

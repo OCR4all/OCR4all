@@ -74,6 +74,7 @@ public class RegionExtractionController {
      * @param avgbackground
      * @param session Session of the user
      * @param response Response to the request
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      */
     @RequestMapping(value = "/ajax/regionExtraction/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
@@ -81,13 +82,14 @@ public class RegionExtractionController {
                 @RequestParam("spacing") int spacing,
                 @RequestParam("avgbackground") boolean avgbackground,
                 @RequestParam("parallel") int parallel,
-                HttpSession session, HttpServletResponse response
+                HttpSession session, HttpServletResponse response,
+                @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
             ) {
         RegionExtractionHelper regionExtractionHelper = provideHelper(session, response);
         if (regionExtractionHelper == null)
             return;
 
-        int conflictType = regionExtractionHelper.getConflictType(GenericController.getProcessList(session));
+        int conflictType = regionExtractionHelper.getConflictType(GenericController.getProcessList(session), inProcessFlow);
         if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
 

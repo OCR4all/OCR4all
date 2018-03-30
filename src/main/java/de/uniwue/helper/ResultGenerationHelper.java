@@ -19,7 +19,7 @@ import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
 
-public class ResultHelper {
+public class ResultGenerationHelper {
     /**
      * Object to access project configuration
      */
@@ -41,12 +41,12 @@ public class ResultHelper {
     private ProcessHandler processHandler;
 
     /**
-     * Progress of the result process
+     * Progress of the result generation process
      */
     private int progress = -1;
 
     /**
-     * Indicates if the result process should be stopped
+     * Indicates if the result generation process should be stopped
      */
     private boolean stopProcess = false;
 
@@ -76,7 +76,7 @@ public class ResultHelper {
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
      */
-    public ResultHelper(String projectDir, String projectImageType) {
+    public ResultGenerationHelper(String projectDir, String projectImageType) {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
         procStateCol = new ProcessStateCollector(projConf, projectImageType);
@@ -139,26 +139,25 @@ public class ResultHelper {
         File resultPagesDir = new File(projConf.RESULT_PAGES_DIR);
         if (!resultPagesDir.exists())
             resultPagesDir.mkdir();
-
     }
 
     /**
-     * Executes result process on all specified pages
+     * Executes result generation process on all specified pages
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @param ResultType specified resultType (txt, xml)
+     * @param resultType specified resultType (txt, xml)
      * @throws IOException
      */
-    public void executeProcess(List<String> pageIds, String ResultType) throws IOException {
+    public void executeProcess(List<String> pageIds, String resultType) throws IOException {
         stopProcess = false;
         progress = 0;
 
         initializeResultDirectories();
 
-        if (ResultType.equals("txt")) {
+        if (resultType.equals("txt")) {
             executeTextProcess(pageIds);
         }
-        else if (ResultType.equals("xml")) {
+        else if (resultType.equals("xml")) {
             executeXmlProcess(pageIds);
         }
 
@@ -173,6 +172,7 @@ public class ResultHelper {
      */
     public void executeXmlProcess(List<String> pageIds) throws IOException {
         File dir = new File(projConf.OCR_DIR);
+        deleteOldFiles(pageIds,"xml");
         if(!dir.exists())
             return;
 
@@ -184,9 +184,12 @@ public class ResultHelper {
         for (File xmlFile : xmlFiles) {
             if (stopProcess == true)
                 return;
-
+            if(!pageIds.contains(FilenameUtils.removeExtension(xmlFile.getName())))
+                continue;
             List<String> command = new ArrayList<String>();
             command.add(xmlFile.getAbsolutePath());
+            command.add("--output");
+            command.add(projConf.RESULT_PAGES_DIR + xmlFile.getName());
             processHandler.startProcess("pagedir2pagexml.py", command, false);
 
             progress = (int) ((double) processedPages / xmlFiles.length * 100);
@@ -201,8 +204,8 @@ public class ResultHelper {
      * @throws IOException
      */
     public void executeTextProcess(List<String> pageIds) throws IOException {
-        deleteOldFiles(pageIds);
         initialize(pageIds);
+        deleteOldFiles(pageIds,"txt");
 
         TreeMap<String, String> pageResult = new TreeMap<String, String>();
         int lineSegmentsCount = 0;
@@ -271,7 +274,7 @@ public class ResultHelper {
      * @return List of valid page Ids
      * @throws IOException 
      */
-    public ArrayList<String> getValidPageIdsforResult() throws IOException {
+    public ArrayList<String> getValidPageIdsforResultGeneration() throws IOException {
         // Get all pages and check which ones are already region extracted
         ArrayList<String> validPageIds = new ArrayList<String>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");
@@ -298,27 +301,37 @@ public class ResultHelper {
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      */
-    public void deleteOldFiles(List<String> pageIds) {
+    public void deleteOldFiles(List<String> pageIds, String type) {
         // Delete result of each page
         for(String pageId : pageIds) {
-            File pageResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
-            if (pageResult.exists())
-                pageResult.delete();
+            if(type.equals("txt")) {
+                File pageTxtResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
+                if (pageTxtResult.exists())
+                    pageTxtResult.delete();
+            }
+            if(type.equals("xml")) {
+                File pageXmlResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.CONF_EXT);
+                if (pageXmlResult.exists())
+                    pageXmlResult.delete();
+            }
         }
-       // delete the concatenated result of the pages
-       File completeResult = new File(projConf.RESULT_DIR + "complete"+ projConf.REC_EXT);
-       if (completeResult.exists())
-           completeResult.delete();
+        if(type.equals("txt")) {
+           // delete the concatenated result of the pages
+           File completeResult = new File(projConf.RESULT_DIR + "complete"+ projConf.REC_EXT);
+           if (completeResult.exists())
+               completeResult.delete();
+        }
     }
     /**
      * Checks if process depending files already exist
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param resultType Type of the result (xml, txt)
      * @return Information if files exist
      */
-    public boolean doOldFilesExist(String[] pageIds) {
+    public boolean doOldFilesExist(String[] pageIds, String resultType) {
         for (String pageId : pageIds) {
-            if (procStateCol.resultState(pageId) == true)
+            if (procStateCol.resultGenerationState(pageId, resultType) == true)
                 return true;
         }
         return false;

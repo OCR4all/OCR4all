@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -203,6 +204,12 @@ public class RecognitionHelper {
     public void RecognizeImages(List<String> pageIds, List<String> cmdArgs) throws IOException {
         RecognitionRunning = true;
         progress = 0;
+        int index;
+        if (cmdArgs.contains("--model")) {
+            index = cmdArgs.indexOf("--model");
+            if(new File(cmdArgs.get(index + 1)).exists() == false)
+                throw new IOException("Model does not exist under the specified path");
+        }
 
         // Reset recognition data
         deleteOldFiles(pageIds);
@@ -271,6 +278,11 @@ public class RecognitionHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      */
     public void deleteOldFiles(List<String> pageIds) {
+        // Delete all files created by subsequent processes to preserve data integrity
+        ResultGenerationHelper resultGenerationHelper = new ResultGenerationHelper(projConf.PROJECT_DIR, projectImageType);
+        resultGenerationHelper.deleteOldFiles(pageIds, "txt");
+        resultGenerationHelper.deleteOldFiles(pageIds, "xml");
+
         for(String pageId : pageIds) {
             File pageDirectory = new File(projConf.PAGE_DIR + pageId);
             if (!pageDirectory.exists())
@@ -290,8 +302,6 @@ public class RecognitionHelper {
                 }
             }
         }
-        ResultHelper resultHelper = new ResultHelper(projConf.PROJECT_DIR, projectImageType);
-        resultHelper.deleteOldFiles(pageIds);
     }
 
     /**
@@ -328,12 +338,58 @@ public class RecognitionHelper {
     }
 
     /**
+     * Lists all available Models from the model directory
+     *
+     * @return Map of models (key = modelName | value = path)
+     * @throws IOException 
+     */
+    public static HashMap<String, String> listModels() throws IOException{
+        HashMap<String, String> models = new HashMap<String, String>();
+
+        File modelsDir = new File(ProjectConfiguration.PROJ_MODEL_DIR);
+        if (!modelsDir.exists())
+            return models;
+
+        File modelsDefaultDir = new File(ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR);
+        if (!modelsDefaultDir.exists())
+            return models;
+
+        // Add default models to map
+        File[] modelFiles = modelsDefaultDir.listFiles((d, name) -> name.endsWith(ProjectConfiguration.MODEL_EXT));
+        for (File model : modelFiles) {
+             String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(model.getName()));
+             models.put(modelName, model.getAbsolutePath());
+        }
+
+        File modelsCustomDir = new File(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR);
+        if (!modelsCustomDir.exists())
+            return models;
+
+        // Add custom models to map
+        Files.walk(Paths.get(modelsCustomDir.getAbsolutePath()))
+        .map(Path::toFile)
+        .filter(fileEntry -> fileEntry.getName().endsWith(ProjectConfiguration.MODEL_EXT))
+        .forEach(
+            fileEntry->{
+                String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName()));
+                // In case the model is located in a sub-directory, add the sub-directory as identifier to its name
+                if (!fileEntry.getParentFile().getName().equals("custom"))
+                    modelName = fileEntry.getParentFile().getName() + File.separator + modelName;
+
+                models.put(modelName, fileEntry.getAbsolutePath());
+        });
+
+        return models;
+    }
+
+    /**
      * Determines conflicts with the process
      *
      * @param currentProcesses Processes that are currently running
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      * @return Type of process conflict
      */
-    public int getConflictType(List<String> currentProcesses) {
-        return ProcessConflictDetector.recognitionConflict(currentProcesses);
+    public int getConflictType(List<String> currentProcesses, boolean inProcessFlow) {
+        return ProcessConflictDetector.recognitionConflict(currentProcesses, inProcessFlow);
     }
 }

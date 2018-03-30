@@ -35,6 +35,25 @@ public final class ProjectConfiguration {
      */
     public ProjectConfiguration() { }
 
+    /**** Project related directories (default paths in Docker container) ****/
+
+    /**
+     * Data directory of the project
+     */
+    public static final String PROJ_DATA_DIR = "/var/ocr4all/data/";
+    /**
+     * Model directory of the project
+     */
+    public static final String PROJ_MODEL_DIR = "/var/ocr4all/models/";
+    /**
+     * Model directory of the project containing the default models
+     */
+    public static final String PROJ_MODEL_DEFAULT_DIR = PROJ_MODEL_DIR + "default/";
+    /**
+     * Model directory of the project containing custom models
+     */
+    public static final String PROJ_MODEL_CUSTOM_DIR = PROJ_MODEL_DIR + "custom/";
+
     /**** Extensions ****/
 
     /**
@@ -65,6 +84,10 @@ public final class ProjectConfiguration {
      * Default ground truth extension of the project
      */
     public final String GT_EXT = ".gt.txt";
+    /**
+     * Default Model extension
+     */
+    public static final String MODEL_EXT = ".pyrnn.gz";
     /**
      * Returns the file extension of the given image type
      *
@@ -110,17 +133,6 @@ public final class ProjectConfiguration {
      * Absolute path to preprocessed despeckled images (is made absolute in Constructor)
      */
     public String DESP_IMG_DIR = PREPROC_DIR + "Despeckled" + File.separator;
-
-    /**** Result related directories ****/
-
-    /**
-     * Absolute path to Result directory (is made absolute in Constructor)
-     */
-    public String RESULT_DIR = "Results" + File.separator;
-    /**
-     * Absolute path to Result pages directory (is made absolute in Constructor)
-     */
-    public String RESULT_PAGES_DIR = RESULT_DIR + "Pages" + File.separator;
     /**
      * Returns the filesystem path of the given image type
      *
@@ -158,4 +170,15 @@ public final class ProjectConfiguration {
      * Absolute path to OCR line directory (is made absolute in Constructor)
      */
     public String LINE_DIR  = OCR_DIR + "Lines" + File.separator;
+
+    /**** Result related directories ****/
+
+    /**
+     * Absolute path to Result directory (is made absolute in Constructor)
+     */
+    public String RESULT_DIR = "Results" + File.separator;
+    /**
+     * Absolute path to Result pages directory (is made absolute in Constructor)
+     */
+    public String RESULT_PAGES_DIR = RESULT_DIR + "Pages" + File.separator;
 }

@@ -46,7 +46,7 @@
             <li><a href="Recognition">Recognition</a></li>
             <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Correction</a></li>
             <li><a href="Evaluation">Evaluation</a></li>
-            <li><a href="Result">Result</a></li>
+            <li><a href="ResultGeneration">Result Generation</a></li>
             <li class="nav-separator"></li>
         </ul>
     </header>
@@ -205,7 +205,7 @@
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
-                        <!-- Note that old process files exist -->
+                        <!-- Note that old process related files exist -->
                         <div id="modal_exists" class="modal">
                             <div class="modal-content">
                                 <h4 class="red-text">Attention</h4>
@@ -219,7 +219,20 @@
                                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                          </div>
-                    </c:when>
+                        <!-- Check for process related files failed-->
+                        <div id="modal_exists_failed" class="modal">
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
+                                <p>
+                                    It could not be verified if old process related files exist.<br/>
+                                    Due to this error, the process cannot be started to ensure data integrity.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                         </div>
+                     </c:when>
                 </c:choose>
             </c:otherwise>
         </c:choose>

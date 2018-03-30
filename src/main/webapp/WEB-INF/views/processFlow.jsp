@@ -2,11 +2,14 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" processHandler="true">
+    <t:head imageList="true" processHandler="true" projectDataSel="true">
         <title>OCR4All - Centralized Process Flow</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
+                // Initialize project data selection (for recognition modles)
+                initializeProjectDataSelection('ajax/recognition/listModels');
+
                 // Load image list
                 initializeImageList("Original");
 
@@ -91,7 +94,7 @@
                     $.get( "ajax/processFlow/current" )
                     .done(function( process ) {
                         // Update all processes on initial page load or execution
-                        if( lastExecutedProcess === "" ) {
+                        if( lastExecutedProcess === "" && process !== "" ) {
                             $.each($('#processSelection input[type="checkbox"]'), function() {
                                 updateProcessFlowStatus($(this).attr('data-id'));
                             });
@@ -164,10 +167,10 @@
                     })
                     .fail(function( jqXHR, data ) {
                         switch(jqXHR.status) {
-                            case 530: $('#modal_dupexecsubproc').modal('open'); break;
+                            case 530: $('#modal_inprogress').modal('open'); break;
                             case 531: $('#modal_misssubprocdata').modal('open'); break;
-                            case 532: $('#modal_inprogress').modal('open'); break;
                             case 533: $('#modal_nosettings').modal('open'); break;
+                            case 536: $('#modal_dupexecsubproc').modal('open'); break;
                             default:  $('#modal_executefailed').modal('open'); break;
                         }
                     });

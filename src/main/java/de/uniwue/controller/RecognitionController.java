@@ -3,6 +3,7 @@ package de.uniwue.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -71,12 +72,14 @@ public class RecognitionController {
      * @param cmdArgs[] Command line arguments for the line segmentation process
      * @param session Session of the user
      * @param response Response to the request
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
      */
     @RequestMapping(value = "/ajax/recognition/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
                @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
-               HttpSession session, HttpServletResponse response
+               HttpSession session, HttpServletResponse response,
+               @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
            ) {
         RecognitionHelper recognitionHelper = provideHelper(session, response);
         if (recognitionHelper == null)
@@ -86,7 +89,7 @@ public class RecognitionController {
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 
-        int conflictType = recognitionHelper.getConflictType(GenericController.getProcessList(session));
+        int conflictType = recognitionHelper.getConflictType(GenericController.getProcessList(session), inProcessFlow);
         if (GenericController.hasProcessConflict(session, response, conflictType))
             return;
 
@@ -197,5 +200,21 @@ public class RecognitionController {
             return false;
 
         return recognitionHelper.doOldFilesExist(pageIds);
+    }
+
+    /**
+     * Response to list the models
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="/ajax/recognition/listModels" , method = RequestMethod.GET)
+    public @ResponseBody HashMap<String, String> listModels(HttpSession session, HttpServletResponse response) {
+        try {
+            return RecognitionHelper.listModels();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return null;
+        }
     }
 }
