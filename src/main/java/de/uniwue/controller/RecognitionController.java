@@ -3,6 +3,7 @@ package de.uniwue.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.uniwue.helper.OverviewHelper;
 import de.uniwue.helper.RecognitionHelper;
 
 /**
@@ -199,5 +201,22 @@ public class RecognitionController {
             return false;
 
         return recognitionHelper.doOldFilesExist(pageIds);
+    }
+
+    /**
+     * Response to list the models
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="/ajax/recognition/listModels" , method = RequestMethod.GET)
+    public @ResponseBody HashMap<String, String> listModels(HttpSession session, HttpServletResponse response) {
+
+        try {
+            return RecognitionHelper.listModels();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return null;
+        }
     }
 }

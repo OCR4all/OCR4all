@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -334,6 +335,35 @@ public class RecognitionHelper {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Lists all Models
+     * @return Map of models (key = modelName | value = path)
+     * @throws IOException 
+     */
+    public static HashMap<String, String> listModels() throws IOException{
+        ProjectConfiguration projectConf = new ProjectConfiguration();
+        HashMap<String, String> models = new HashMap<String, String>();
+        // Add default models to map
+        File modelsDefaultDir = new File(projectConf.MODEL_DEFAULT_DIR);
+
+        File[] modelFiles = modelsDefaultDir.listFiles((d, name) -> name.endsWith(projectConf.MODEL_EXT));
+        for(File model : modelFiles) {
+             String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(model.getName()));
+             models.put(modelName , model.getAbsolutePath());
+        }
+        // Add custom models to map
+        Files.walk(Paths.get(projectConf.MODEL_CUSTOM_DIR))
+        .map(Path::toFile)
+        .filter(fileEntry -> fileEntry.getName().endsWith(projectConf.MODEL_EXT))
+        .forEach((f)->{
+            String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(f.getName()));
+            if(!f.getParentFile().getName().equals("Custom"))
+                modelName = f.getParentFile().getName() + File.separator + modelName;
+            models.put(modelName, f.getAbsolutePath());
+        });
+        return models;
     }
 
     /**

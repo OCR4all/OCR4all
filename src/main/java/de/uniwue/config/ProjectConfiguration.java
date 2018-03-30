@@ -37,7 +37,19 @@ public final class ProjectConfiguration {
 
     /**** ProjectDataDirectories ****/
 
-    public final String PROJ_PARENT_DIR = File.separator +"var" + File.separator + "ocr4all" + File.separator +"data" + File.separator;
+    public final String PROJ_PARENT_DIR = File.separator + "var" + File.separator + "ocr4all" + File.separator +"data" + File.separator;
+    
+    /**** ModelDirectories ****/
+
+    /**
+     * Directory of the default models
+     */
+    public final String MODEL_DEFAULT_DIR = File.separator + "var" + File.separator + "ocr4all" + File.separator + "models" + File.separator + "default" + File.separator;
+    /**
+     * Directory of the custom models
+     */
+    public final String MODEL_CUSTOM_DIR = File.separator + "var" + File.separator + "ocr4all" + File.separator + "models" + File.separator + "custom" + File.separator;
+
     /**** Extensions ****/
 
     /**
@@ -68,6 +80,10 @@ public final class ProjectConfiguration {
      * Default ground truth extension of the project
      */
     public final String GT_EXT = ".gt.txt";
+    /**
+     * Default Model extension
+     */
+    public final String MODEL_EXT = ".pyrnn.gz";
     /**
      * Returns the file extension of the given image type
      *
