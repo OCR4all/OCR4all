@@ -90,7 +90,7 @@ public class PreprocessingHelper {
             File grayImage = new File(projConf.PREPROC_DIR + pageId + projConf.GRAY_IMG_EXT);
             if (binImage.exists() && grayImage.exists()) {
                 binImage.renameTo(new File(projConf.BINR_IMG_DIR + FilenameUtils.removeExtension(FilenameUtils.removeExtension(binImage.getName())) + projConf.IMG_EXT));
-                grayImage.renameTo(new File(projConf.BINR_IMG_DIR + FilenameUtils.removeExtension(FilenameUtils.removeExtension(grayImage.getName())) + projConf.IMG_EXT));
+                grayImage.renameTo(new File(projConf.GRAY_IMG_DIR + FilenameUtils.removeExtension(FilenameUtils.removeExtension(grayImage.getName())) + projConf.IMG_EXT));
                 processState.put(pageId, true);
             }
         }
