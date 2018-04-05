@@ -35,11 +35,11 @@
                             params['cmdArgs'].push($(this).attr('id'));
                     });
                     $.each($(settingsEl).find('input[type="number"]'), function() {
-                        if( $(this).val() !== "" )
+                        if( $(this).val() !== "" && $(this).attr('id'))
                             params['cmdArgs'].push($(this).attr('id'), $(this).val());
                     });
                     $.each($(settingsEl).find('input[type="text"]'), function() {
-                        if( $(this).val() !== "")
+                        if( $(this).val() !== "" && $(this).attr('id'))
                             params['cmdArgs'].push($(this).attr('id'), $(this).val());
                     });
                     return params;
