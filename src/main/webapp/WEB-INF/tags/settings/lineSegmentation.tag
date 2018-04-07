@@ -25,11 +25,18 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><p>Minimum column height (units=scale)</p></td>
+                    <td>
+                        <p>
+                            Maximum # whitespace column separators 
+                            <br />
+                            <span style="color:red;font-size:9pt" >The value of this option should be set to '-1' when LAREX was used as the segmentation process</span>
+                        </p>
+                        
+                    </td>
                     <td>
                         <div class="input-field">
-                            <input id="--csminheight" type="number" step="1" value="100000"/>
-                            <label for=--csminheight data-type="int" data-error="Has to be integer">Default: 100000</label>
+                            <input id="--maxcolseps" type="number" step="0.1" value="3" />
+                            <label for="--maxcolseps" data-type="float" data-error="Has to be float">Default: 3</label>
                         </div>
                     </td>
                 </tr>
@@ -199,13 +206,13 @@
                     <table class="compact">
                         <tbody>
                             <tr>
-                                <td><p>maximum # whitespace column separators </p></td>
+                                <td><p>Minimum column height (units=scale)</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--maxcolseps" type="number" step="0.1" />
-                                        <label for="--maxcolseps" data-type="float" data-error="Has to be float">Default: 2</label>
+                                        <input id="--csminheight" type="number" step="1"/>
+                                        <label for=--csminheight data-type="int" data-error="Has to be integer">Default: 10</label>
                                     </div>
-                                </td>
+                               </td>
                             </tr>
                             <tr>
                                 <td><p>Minimum aspect ratio for column separators</p></td>
