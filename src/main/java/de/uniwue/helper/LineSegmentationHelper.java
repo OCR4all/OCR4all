@@ -166,7 +166,9 @@ public class LineSegmentationHelper {
                     continue;
                 }
 
-                if (new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.PSEG_EXT).exists()) {
+                if (new File(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.PSEG_EXT).exists() 
+                        && new File(projConf.PAGE_DIR + pageId + File.separator + segmentId).exists()
+                        && new File(projConf.PAGE_DIR + pageId + File.separator + segmentId).listFiles().length != 0) {
                     processState.get(pageId).put(segmentId, true);
                 }
             }
@@ -196,11 +198,11 @@ public class LineSegmentationHelper {
                 switch(projectImageType) {
                     case "Gray":
                         Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.GRAY_IMG_EXT),
-                            Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.GRAY_IMG_EXT),
+                            Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + "__000" + projConf.GRAY_IMG_EXT),
                             StandardCopyOption.valueOf("REPLACE_EXISTING"));
                     case "Binary":
                         Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.BINR_IMG_EXT),
-                            Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + projConf.BINR_IMG_EXT),
+                            Paths.get(segmentDir.getAbsolutePath() + File.separator + segmentId + "__000" + projConf.BINR_IMG_EXT),
                             StandardCopyOption.valueOf("REPLACE_EXISTING"));
 
                         Files.copy(Paths.get(projConf.PAGE_DIR + pageId + File.separator + segmentId + projConf.IMG_EXT),
