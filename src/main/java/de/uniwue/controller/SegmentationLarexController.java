@@ -92,7 +92,7 @@ public class SegmentationLarexController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationLarexHelper.resetProgress();
         }
-        GenericController.addToProcessList(session, "segmentationLarex");
+        GenericController.removeFromProcessList(session, "segmentationLarex");
     }
 
     /**
