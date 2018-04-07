@@ -13,6 +13,15 @@
                     initializeImageList("OCR", false, data);
                 });
 
+                // Set available threads as default 
+                $.get( "ajax/generic/threads" )
+                .done(function( data ) {
+                    if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
+                        return;
+
+                    $('#--parallel').val(data).change();
+                })
+
                 // Initialize process update and set options
                 initializeProcessUpdate("lineSegmentation", [ 0 ], [ 2 ], true);
 

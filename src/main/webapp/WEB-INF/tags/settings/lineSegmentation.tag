@@ -50,6 +50,15 @@
                              </p>
                     </td>
                 </tr>
+                <tr>
+                    <td><p>Number of CPUs to use</p></td>
+                    <td>
+                         <div class="input-field">
+                             <input id="--parallel" type="number" step="1" />
+                             <label for=--parallel data-type="int" data-error="Has to be integer">Default: 0</label>
+                        </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </c:when>
@@ -266,15 +275,6 @@
                                             <input type="checkbox" class="filled-in" id="--quit"/>
                                             <label for="--quit"></label>
                                         </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><p>Number of CPUs to use</p></td>
-                                <td>
-                                    <div class="input-field">
-                                        <input id="--parallel" type="number" step="1" />
-                                        <label for=--parallel data-type="int" data-error="Has to be integer">Default: 0</label>
-                                    </div>
                                 </td>
                             </tr>
                             <tr>
