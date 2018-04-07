@@ -116,6 +116,11 @@ public class OverviewHelper {
         File origImgFolder = new File(projConf.ORIG_IMG_DIR);
         if (origImgFolder.exists()) {
             for (final File fileEntry : origImgFolder.listFiles()) {
+                String fileName = fileEntry.getName();
+                // Only load files with appropriate image extension
+                if (!("." + FilenameUtils.getExtension(fileName)).equals(projConf.IMG_EXT))
+                    continue;
+
                 String pageId = FilenameUtils.removeExtension(fileEntry.getName());
                 initialize(pageId);
             }
