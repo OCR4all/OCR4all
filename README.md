@@ -53,7 +53,7 @@ Afterwards you can follow the installation guide above as it is a new clean inst
 In case you want shell access on your Docker container for development or testing purposes the container needs to be created with the following command (including the `--entrypoint` option):
 ```
 docker run -p 8080:8080 \
-    --entrypoint /bin/bash
+    --entrypoint /bin/bash \
     -v <OCR_DATA_DIR>:/var/ocr4all/data \
     -v <OCR_MODEL_DIR>:/var/ocr4all/models/custom \
     -it <IMAGE_NAME>
