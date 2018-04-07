@@ -137,6 +137,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">image</i>Image Preview</div>
                         <div class="collapsible-body">
+                            <p class="center">For a preview of Noise Removal output with the current settings, click on a page in the image list on the right</p>
                             <div class="row center">
                                 <div class="col s1"></div>
                                 <div class="col s4">
