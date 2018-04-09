@@ -7,8 +7,6 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initializeImageList("Binary", true);
-
                 initializeProcessUpdate("segmentationDummy", [ 0 ], [ 1 ], false);
 
                 $('#imageType').on('change', function() {
@@ -16,6 +14,7 @@
                     // Change ImageList depending on the imageType selected
                     reloadImageList($('#imageType').val(), true);
                 });
+                // Initialize image list
                 $('#imageType').change();
 
                 // Process handling (execute for all pages with current settings)

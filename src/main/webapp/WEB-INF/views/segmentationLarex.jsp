@@ -7,8 +7,6 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initializeImageList("Binary", true);
-
                 initializeProcessUpdate("segmentationLarex", [ 0 ], [ 1 ], false);
 
                 // Prevent redirecting to Larex if image folder does not exist
@@ -32,6 +30,7 @@
                     // Change ImageList depending on the imageType selected
                     reloadImageList($('#imageType').val(), true);
                 });
+                // Initialize image list
                 $('#imageType').change();
 
                 // Process handling (execute for all pages with current settings)
