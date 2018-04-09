@@ -138,7 +138,7 @@ public class EvaluationController {
      * @param response Response to the request
      * @return Console output
      */
-    @RequestMapping(value = "/ajax/evaluation/console" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/evaluation/console" , produces = "text/plain;charset=UTF-8" , method = RequestMethod.GET)
     public @ResponseBody String console(
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
