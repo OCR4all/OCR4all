@@ -76,16 +76,21 @@
                     return processSettings;
                 }
 
+                // Handle all parallel settings at once
+                $('#parallelGlobal').on('change', function() {
+                    var parallelSetting = $('#parallelGlobal').val();
+                    $('.collapsible[data-id="settings"] li[data-id="preprocessing"]').find('#--parallel').val(parallelSetting).change();
+                    $('.collapsible[data-id="settings"] li[data-id="recognition"]').find('#--parallel').val(parallelSetting).change();
+                    $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find('#--parallel').val(parallelSetting).change();
+                    $('.collapsible[data-id="settings"] li[data-id="lineSegmentation"]').find('#--parallel').val(parallelSetting).change();
+                });
                 // Set available threads as default 
                 $.get( "ajax/generic/threads" )
                 .done(function( data ) {
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;
 
-                    $('.collapsible[data-id="settings"] li[data-id="preprocessing"]').find('#--parallel').val(data).change();
-                    $('.collapsible[data-id="settings"] li[data-id="recognition"]').find('#--parallel').val(data).change();
-                    $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find('#--parallel').val(data).change();
-                    $('.collapsible[data-id="settings"] li[data-id="lineSegmentation"]').find('#--parallel').val(data).change();
+                    $('#parallelGlobal').val(data).change();
                 });
 
                 var currentProcessInterval = null;
@@ -292,6 +297,20 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
                         <div class="collapsible-body">
+                            <table class="compact">
+                                <tbody>
+                                    <tr>
+                                        <td><p>Number of parallel threads for program execution</p></td>
+                                        <td>
+                                            <div class="input-field">
+                                                <input id="parallelGlobal" type="number" step="1" />
+                                                <label for="parallelGlobal" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
                             <ul class="collapsible" data-collapsible="expandable" data-id="settings">
                                 <li data-id="preprocessing">
                                     <div class="collapsible-header"><i class="material-icons">settings</i>Preprocessing</div>
