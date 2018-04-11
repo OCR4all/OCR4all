@@ -96,6 +96,10 @@ i.material-icons.tooltipped {
   position: absolute;
   padding-left: 10px;
 }
+span.userWarning {
+  color:red;
+  font-size:9pt;
+}
 
 /* Progress bar adjustments */
 .progress {

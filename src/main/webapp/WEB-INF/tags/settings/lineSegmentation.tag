@@ -29,7 +29,7 @@
                         <p>
                             Maximum # whitespace column separators 
                             <br />
-                            <span style="color:red;font-size:9pt" >The value of this option should be set to '-1' when LAREX was used as the segmentation process</span>
+                            <span class="userWarning">Should be set to '-1' if LAREX was used as Segmentation process</span>
                         </p>
                         
                     </td>
@@ -55,7 +55,7 @@
                     <td>
                          <div class="input-field">
                              <input id="--parallel" type="number" step="1" />
-                             <label for=--parallel data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                             <label for="--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
                         </div>
                     </td>
                 </tr>
