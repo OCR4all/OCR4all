@@ -11,6 +11,7 @@
                 <div class="nav-wrapper">
                     <a class="page-title">${heading}</a>
                     <a class="page-title right">| OCR 4 All</a>
+                    <a class="project-name right">${projectName}</a>
                 </div>
             </div>
         </nav>

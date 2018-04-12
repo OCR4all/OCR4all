@@ -165,6 +165,9 @@ public class OverviewController {
         newSession.setAttribute("projectDir", projectDir);
         newSession.setAttribute("imageType", imageType);
         newSession.setAttribute("projectDataSelectionType", projectDataSelectionType);
+        // Determine and add the name of the project to the session as well (to display on each page)
+        String[] projectDirParts = projectDir.substring(0, projectDir.length() - 1).split(File.separator);
+        newSession.setAttribute("projectName", projectDirParts[projectDirParts.length -1]);
 
         OverviewHelper overviewHelper = provideHelper(newSession, response);
         if (overviewHelper == null)

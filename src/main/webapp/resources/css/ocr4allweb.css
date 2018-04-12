@@ -65,6 +65,12 @@ nav.top-nav a.page-title {
   line-height: 122px;
   font-size: 48px;
 }
+nav.top-nav a.project-name {
+  line-height: 111px;
+  padding-top: 19px;
+  padding-right: 10px;
+  font-size: 24px;
+}
 
 /* Image helper */
 img.centered {
