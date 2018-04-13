@@ -3,8 +3,8 @@ package de.uniwue.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -209,7 +209,7 @@ public class RecognitionController {
      * @param response Response to the request
      */
     @RequestMapping(value ="/ajax/recognition/listModels" , method = RequestMethod.GET)
-    public @ResponseBody HashMap<String, String> listModels(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody TreeMap<String, String> listModels(HttpSession session, HttpServletResponse response) {
         try {
             return RecognitionHelper.listModels();
         } catch (IOException e) {

@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -343,8 +342,8 @@ public class RecognitionHelper {
      * @return Map of models (key = modelName | value = path)
      * @throws IOException 
      */
-    public static HashMap<String, String> listModels() throws IOException{
-        HashMap<String, String> models = new HashMap<String, String>();
+    public static TreeMap<String, String> listModels() throws IOException{
+        TreeMap<String, String> models = new TreeMap<String, String>();
 
         File modelsDir = new File(ProjectConfiguration.PROJ_MODEL_DIR);
         if (!modelsDir.exists())

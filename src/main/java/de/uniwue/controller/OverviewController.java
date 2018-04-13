@@ -3,7 +3,7 @@ package de.uniwue.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -235,7 +235,7 @@ public class OverviewController {
      * @param response Response to the request
      */
     @RequestMapping(value ="/ajax/overview/listProjects" , method = RequestMethod.GET)
-    public @ResponseBody HashMap<String, String> listProjects(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody TreeMap<String, String> listProjects(HttpSession session, HttpServletResponse response) {
         return OverviewHelper.listProjects();
     }
 }

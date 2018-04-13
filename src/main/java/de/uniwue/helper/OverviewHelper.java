@@ -256,8 +256,8 @@ public class OverviewHelper {
      *
      * @return Map of projects (key = projName | value = path)
      */
-    public static HashMap<String, String> listProjects(){
-        HashMap<String, String> projects = new HashMap<String, String>();
+    public static TreeMap<String, String> listProjects(){
+        TreeMap<String, String> projects = new TreeMap<String, String>();
 
         File projDataDir = new File(ProjectConfiguration.PROJ_DATA_DIR);
         if (!projDataDir.exists())
