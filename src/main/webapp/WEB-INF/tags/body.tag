@@ -1,6 +1,7 @@
 <%@ tag description="Page Body Tag" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ attribute name="heading" required="true" %>
 <%@ attribute name="imageList" required="false" %>
 <%@ attribute name="processModals" required="false" %>
@@ -238,4 +239,7 @@
             </c:otherwise>
         </c:choose>
     </main>
+
+    <%-- Hide footer on page load for image list pages (position will be calculated dynamically) --%>
+    <t:footer hideOnPageLoad="${imageList}"></t:footer>
 </body>

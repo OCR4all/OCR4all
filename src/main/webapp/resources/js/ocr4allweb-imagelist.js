@@ -149,6 +149,10 @@ function resizeImageList() {
     if( mainHeight > $('#imageList').height() ) {
         $('#imageList').height(mainHeight);
     }
+
+    // Move footer below image list
+    var footerPos = mainHeight + $('header').height();
+    $('footer').attr('style', 'display:block;position:absolute;width:100%;top:' + footerPos + 'px;');
 }
 
 // Call this function to reload an existing image list
