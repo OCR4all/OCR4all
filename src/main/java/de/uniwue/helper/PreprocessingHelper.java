@@ -26,6 +26,7 @@ public class PreprocessingHelper {
      * Image Type of the Project
      */
     private String projectImageType;
+
     /**
      * Object to determine process states
      */
@@ -214,7 +215,9 @@ public class PreprocessingHelper {
             if(grayImg.exists())
                 grayImg.delete();
         }
-        DespecklingHelper despecklingHelper = new DespecklingHelper(projConf.PROJECT_DIR, projectImageType );
+
+        // Delete Despeckled images as well (they are generated from Binary images)
+        DespecklingHelper despecklingHelper = new DespecklingHelper(projConf.PROJECT_DIR, projectImageType);
         despecklingHelper.deleteOldFiles(pageIds);
     }
 
