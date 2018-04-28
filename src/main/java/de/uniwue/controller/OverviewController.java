@@ -227,6 +227,17 @@ public class OverviewController {
     }
 
     /**
+     * Response to invalidate the session of the user
+     * 
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="/ajax/overview/invalidateSession" , method = RequestMethod.GET)
+    public @ResponseBody void invalidateSession(HttpSession session, HttpServletResponse response) {
+        session.invalidate();
+    }
+
+    /**
      * Response to list the projects
      *
      * @param session Session of the user

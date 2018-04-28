@@ -97,7 +97,10 @@
                                              }
                                          }
                                          else{
-                                            $('#modal_filerename').modal('open');
+                                             $('#modal_filerename').modal({
+                                                 dismissible: false
+                                             });
+                                             $('#modal_filerename').modal('open');
                                          }
                                     });
                                 }
@@ -128,6 +131,11 @@
                     else {
                         projectInitialization(false);
                     }
+                });
+
+                // invalidates Session
+                $('#disagree').click(function() {
+                    $.get( "ajax/overview/invalidateSession" )
                 });
 
                 // Execute file rename only after the user agreed
