@@ -32,10 +32,8 @@ import de.uniwue.helper.GenericHelper;
     public static boolean isSessionValid(HttpSession session, HttpServletResponse response) {
         String projectDir = (String) session.getAttribute("projectDir");
         String projectImageType = (String) session.getAttribute("imageType");
-        String projectDataSelectionType = (String) session.getAttribute("projectDataSelectionType");
         if (projectDir == null || projectDir.isEmpty()
-                || projectImageType == null || projectImageType.isEmpty()
-                || projectDataSelectionType == null || projectDataSelectionType.isEmpty()) {
+                || projectImageType == null || projectImageType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }

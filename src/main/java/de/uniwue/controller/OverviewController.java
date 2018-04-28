@@ -138,7 +138,6 @@ public class OverviewController {
      *
      * @param projectDir Absolute path to the project
      * @param imageType Project type (Binary or Gray)
-     * @param projectDataSelectionType Determines how the user selects project data (dropdown|free text)
      * @param resetSession Triggers the creation and usage of a new session
      * @param session Session of the user
      * @param response Response to the request
@@ -148,7 +147,6 @@ public class OverviewController {
     public @ResponseBody boolean checkDir(
                 @RequestParam("projectDir") String projectDir,
                 @RequestParam("imageType") String imageType,
-                @RequestParam("projectDataSelectionType") String projectDataSelectionType,
                 @RequestParam("resetSession") Boolean resetSession,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
             ) {
@@ -164,7 +162,6 @@ public class OverviewController {
         HttpSession newSession = request.getSession();
         newSession.setAttribute("projectDir", projectDir);
         newSession.setAttribute("imageType", imageType);
-        newSession.setAttribute("projectDataSelectionType", projectDataSelectionType);
         // Determine and add the name of the project to the session as well (to display on each page)
         String[] projectDirParts = projectDir.substring(0, projectDir.length() - 1).split(File.separator);
         newSession.setAttribute("projectName", projectDirParts[projectDirParts.length -1]);
