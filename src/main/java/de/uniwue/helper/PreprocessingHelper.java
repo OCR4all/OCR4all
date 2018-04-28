@@ -23,6 +23,10 @@ public class PreprocessingHelper {
     private ProjectConfiguration projConf;
 
     /**
+     * Image Type of the Project
+     */
+    private String projectImageType;
+    /**
      * Object to determine process states
      */
     private ProcessStateCollector procStateCol;
@@ -65,6 +69,7 @@ public class PreprocessingHelper {
         projConf = new ProjectConfiguration(projectDir);
         procStateCol = new ProcessStateCollector(projConf, projectImageType);
         processHandler = new ProcessHandler();
+        this.projectImageType = projectImageType;
     }
 
     /**
@@ -209,6 +214,8 @@ public class PreprocessingHelper {
             if(grayImg.exists())
                 grayImg.delete();
         }
+        DespecklingHelper despecklingHelper = new DespecklingHelper(projConf.PROJECT_DIR, projectImageType );
+        despecklingHelper.deleteOldFiles(pageIds);
     }
 
     /**
