@@ -96,6 +96,7 @@ public class EvaluationController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             evaluationHelper.resetProgress();
+            e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "evaluation");
     }
@@ -169,6 +170,7 @@ public class EvaluationController {
             return evaluationHelper.getValidPageIdsforEvaluation();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
             return null;
         }
     }

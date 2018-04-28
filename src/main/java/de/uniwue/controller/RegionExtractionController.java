@@ -99,6 +99,7 @@ public class RegionExtractionController {
         } catch (ParserConfigurationException | SAXException | IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             regionExtractionHelper.resetProgress();
+            e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "regionExtraction");
     }
@@ -173,6 +174,7 @@ public class RegionExtractionController {
             return regionExtractionHelper.getValidPageIdsforRegionExtraction();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
             return null;
         }
     }

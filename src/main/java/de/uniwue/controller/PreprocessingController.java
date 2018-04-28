@@ -98,6 +98,7 @@ public class PreprocessingController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             preprocessingHelper.resetProgress();
+            e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "preprocessing");
     }

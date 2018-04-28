@@ -93,6 +93,7 @@ public class OverviewController {
         } catch (IOException e) {
             mv.addObject("error", "The page with Id " + pageId + " could not be accessed on the filesystem.\n"
                                 + "Please return to the Project Overview page.");
+            e.printStackTrace();
             return mv;
         }
 
@@ -102,6 +103,7 @@ public class OverviewController {
             mv.addObject("segments", overviewHelper.pageContent(pageId));
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
         }
 
         return mv;
@@ -126,6 +128,7 @@ public class OverviewController {
             overviewHelper.initialize();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
         }
 
         // @RequestMapping automatically transforms object to json format
@@ -223,6 +226,7 @@ public class OverviewController {
             overviewHelper.renameFiles();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
         }
     }
 

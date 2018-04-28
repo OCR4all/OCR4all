@@ -91,6 +91,7 @@ public class SegmentationLarexController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationLarexHelper.resetProgress();
+            e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "segmentationLarex");
     }

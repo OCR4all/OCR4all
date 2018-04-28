@@ -91,6 +91,7 @@ public class ResultGenerationController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resultGenerationHelper.resetProgress();
+            e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "result");
     }
@@ -143,6 +144,7 @@ public class ResultGenerationController {
             return resultGenerationHelper.getValidPageIdsforResultGeneration();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
             return null;
         }
     }

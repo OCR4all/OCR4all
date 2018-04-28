@@ -96,6 +96,7 @@ public class SegmentationDummyController {
         } catch (IOException | ParserConfigurationException | TransformerException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationDummyHelper.resetProgress();
+            e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "segmentationDummy");
     }

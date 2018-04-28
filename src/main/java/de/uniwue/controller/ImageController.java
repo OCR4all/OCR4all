@@ -54,6 +54,7 @@ public class ImageController {
             base64Image = imageHelper.getPageImage(pageId, imageId);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            e.printStackTrace();
         }
 
         if (base64Image == null)
@@ -93,6 +94,7 @@ public class ImageController {
             base64Image = imageHelper.getSegmentImage(pageId, imageId, imageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            e.printStackTrace();
         }
 
         if (base64Image == null)
@@ -135,6 +137,7 @@ public class ImageController {
             base64Image = imageHelper.getLineImage(pageId, segmentId, imageId, imageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            e.printStackTrace();
         }
 
         if (base64Image == null)
@@ -174,6 +177,7 @@ public class ImageController {
             base64Image = imageHelper.getPreviewDespeckleAsBase64(pageId, maxContourRemovalSize, illustrationType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            e.printStackTrace();
         }
 
         return base64Image;

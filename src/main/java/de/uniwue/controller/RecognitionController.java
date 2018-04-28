@@ -99,6 +99,7 @@ public class RecognitionController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             recognitionHelper.resetProgress();
+            e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "recognition");
     }
@@ -157,6 +158,7 @@ public class RecognitionController {
             return recognitionHelper.getProgress();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
             return -1;
         }
     }
@@ -178,6 +180,7 @@ public class RecognitionController {
             return recognitionHelper.getValidPageIdsforRecognition();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
             return null;
         }
     }
@@ -214,6 +217,7 @@ public class RecognitionController {
             return RecognitionHelper.listModels();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
             return null;
         }
     }

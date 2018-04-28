@@ -98,6 +98,7 @@ public class LineSegmentationController {
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             lineSegmentationHelper.resetProgress();
+            e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "lineSegmentation");
     }
@@ -156,6 +157,7 @@ public class LineSegmentationController {
             return lineSegmentationHelper.getProgress();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
             return -1;
         }
     }
@@ -177,6 +179,7 @@ public class LineSegmentationController {
             return lineSegmentationHelper.getValidPageIdsforLineSegmentation();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
             return null;
         }
     }

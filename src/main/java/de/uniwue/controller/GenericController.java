@@ -158,6 +158,7 @@ import de.uniwue.helper.GenericHelper;
         }
         catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
         }
         return pageIds;
     }
