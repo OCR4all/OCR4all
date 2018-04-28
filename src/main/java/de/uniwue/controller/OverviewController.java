@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -163,8 +164,8 @@ public class OverviewController {
         newSession.setAttribute("projectDir", projectDir);
         newSession.setAttribute("imageType", imageType);
         // Determine and add the name of the project to the session as well (to display on each page)
-        String[] projectDirParts = projectDir.substring(0, projectDir.length() - 1).split(File.separator);
-        newSession.setAttribute("projectName", projectDirParts[projectDirParts.length -1]);
+        String[] projectDirParts = projectDir.substring(0, projectDir.length() - 1).split(Pattern.quote(File.separator));
+        newSession.setAttribute("projectName", projectDirParts[projectDirParts.length - 1]);
 
         OverviewHelper overviewHelper = provideHelper(newSession, response);
         if (overviewHelper == null)
