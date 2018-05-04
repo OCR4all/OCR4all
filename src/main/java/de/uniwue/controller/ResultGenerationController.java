@@ -135,13 +135,13 @@ public class ResultGenerationController {
      * @return List of valid pageIds
      */
     @RequestMapping(value = "/ajax/resultGeneration/getValidPageIds" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<String> getValidPageIdsforResultGeneration(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody ArrayList<String> getValidPageIds(HttpSession session, HttpServletResponse response) {
         ResultGenerationHelper resultGenerationHelper = provideHelper(session, response);
         if (resultGenerationHelper == null)
             return null;
 
         try {
-            return resultGenerationHelper.getValidPageIdsforResultGeneration();
+            return resultGenerationHelper.getValidPageIds();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();

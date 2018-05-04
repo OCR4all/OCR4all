@@ -1,6 +1,7 @@
 <%@ tag description="Page Head Tag" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ attribute name="imageList" required="false" %>
+<%@ attribute name="inputParams" required="false" %>
 <%@ attribute name="processHandler" required="false" %>
 <%@ attribute name="projectDataSel" required="false" %>
 <head>
@@ -28,6 +29,13 @@
             <script src="${pageContext.servletContext.contextPath}/resources/js/withinviewport.js"></script>
             <script src="${pageContext.servletContext.contextPath}/resources/js/jquery.withinviewport.js"></script>
             <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-imagelist.js"></script>
+        </c:when>
+    </c:choose>
+
+    <c:choose>
+        <%-- Include JS files to provide module input parameter functionality --%>
+        <c:when test="${not empty inputParams}">
+            <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-inputparams.js"></script>
         </c:when>
     </c:choose>
 

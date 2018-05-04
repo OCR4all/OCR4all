@@ -2,7 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" processHandler="true" projectDataSel="true">
+    <t:head imageList="true" inputParams="true" processHandler="true" projectDataSel="true">
         <title>OCR4All - Centralized Process Flow</title>
 
         <script type="text/javascript">
@@ -23,26 +23,6 @@
                             processesToExecute.push($(this).attr('data-id'));
                     });
                     return processesToExecute;
-                }
-
-                // Fetch all modified parameters and return them appropriately
-                function getInputParams(process) {
-                    var params = { 'cmdArgs': [] };
-                    // Only fetch process specific settings
-                    var settingsEl = $('ul.collapsible[data-id="settings"] li[data-id="' + process + '"]');
-                    $.each($(settingsEl).find('input[type="checkbox"]'), function() {
-                        if( $(this).prop('checked') === true )
-                            params['cmdArgs'].push($(this).attr('id'));
-                    });
-                    $.each($(settingsEl).find('input[type="number"]'), function() {
-                        if( $(this).val() !== "" && $(this).attr('id'))
-                            params['cmdArgs'].push($(this).attr('id'), $(this).val());
-                    });
-                    $.each($(settingsEl).find('input[type="text"]'), function() {
-                        if( $(this).val() !== "" && $(this).attr('id'))
-                            params['cmdArgs'].push($(this).attr('id'), $(this).val());
-                    });
-                    return params;
                 }
 
                 function getProcessSettings(processesToExecute) {
@@ -396,7 +376,7 @@
                                     </div>
                                 </li>
                                 <li data-id="recognition">
-                                    <div class="collapsible-header"><i class="material-icons">settings</i>Recogntion</div>
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Recognition</div>
                                     <div class="collapsible-body">
                                         <ul class="collapsible" data-collapsible="expandable">
                                             <li>
