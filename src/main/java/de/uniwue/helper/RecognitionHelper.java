@@ -258,7 +258,7 @@ public class RecognitionHelper {
      * @return List with page ids
      * @throws IOException 
      */
-    public ArrayList<String> getValidPageIdsforRecognition() throws IOException {
+    public ArrayList<String> getValidPageIds() throws IOException {
         // Get all pages and check which ones are already line segmented
         ArrayList<String> validPageIds = new ArrayList<String>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");

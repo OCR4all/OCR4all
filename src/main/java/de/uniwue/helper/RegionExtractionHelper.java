@@ -157,7 +157,7 @@ public class RegionExtractionHelper {
      * @return List of valid page Ids
      * @throws IOException 
      */
-    public ArrayList<String> getValidPageIdsforRegionExtraction() throws IOException {
+    public ArrayList<String> getValidPageIds() throws IOException {
         // Get all pages and check which ones are already segmented
         ArrayList<String> validPageIds = new ArrayList<String>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");

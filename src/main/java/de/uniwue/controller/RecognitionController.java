@@ -177,7 +177,7 @@ public class RecognitionController {
             return null;
 
         try {
-            return recognitionHelper.getValidPageIdsforRecognition();
+            return recognitionHelper.getValidPageIds();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();

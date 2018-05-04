@@ -136,7 +136,7 @@ public class EvaluationHelper {
      * @return List of valid page Ids
      * @throws IOException 
      */
-    public ArrayList<String> getValidPageIdsforEvaluation() throws IOException {
+    public ArrayList<String> getValidPageIds() throws IOException {
         // Get all pages and check which one were already recognized
         ArrayList<String> validPageIds = new ArrayList<String>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");

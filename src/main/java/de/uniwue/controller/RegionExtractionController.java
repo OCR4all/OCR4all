@@ -165,13 +165,13 @@ public class RegionExtractionController {
      * @return List of valid pageIds
      */
     @RequestMapping(value = "/ajax/regionExtraction/getValidPageIds" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<String> getValidPageIdsforRegionExtractinon(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody ArrayList<String> getValidPageIds(HttpSession session, HttpServletResponse response) {
         RegionExtractionHelper regionExtractionHelper = provideHelper(session, response);
         if (regionExtractionHelper == null)
             return null;
 
         try {
-            return regionExtractionHelper.getValidPageIdsforRegionExtraction();
+            return regionExtractionHelper.getValidPageIds();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();

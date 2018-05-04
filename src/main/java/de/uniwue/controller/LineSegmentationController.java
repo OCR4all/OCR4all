@@ -170,13 +170,13 @@ public class LineSegmentationController {
      * @return List of valid pageIds
      */
     @RequestMapping(value = "/ajax/lineSegmentation/getValidPageIds" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<String> getValidPageIdsforLineSegmentation(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody ArrayList<String> getValidPageIds(HttpSession session, HttpServletResponse response) {
         LineSegmentationHelper lineSegmentationHelper = provideHelper(session, response);
         if (lineSegmentationHelper == null)
             return null;
 
         try {
-            return lineSegmentationHelper.getValidPageIdsforLineSegmentation();
+            return lineSegmentationHelper.getValidPageIds();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();

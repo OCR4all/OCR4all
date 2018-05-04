@@ -274,7 +274,7 @@ public class ResultGenerationHelper {
      * @return List of valid page Ids
      * @throws IOException 
      */
-    public ArrayList<String> getValidPageIdsforResultGeneration() throws IOException {
+    public ArrayList<String> getValidPageIds() throws IOException {
         // Get all pages and check which ones are already region extracted
         ArrayList<String> validPageIds = new ArrayList<String>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");

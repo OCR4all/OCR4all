@@ -161,13 +161,13 @@ public class EvaluationController {
      * @return List of valid pageIds
      */
     @RequestMapping(value = "/ajax/evaluation/getValidPageIds" , method = RequestMethod.GET)
-    public @ResponseBody ArrayList<String> getValidPageIdsforEvaluation(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody ArrayList<String> getValidPageIds(HttpSession session, HttpServletResponse response) {
         EvaluationHelper evaluationHelper = provideHelper(session, response);
         if (evaluationHelper == null)
             return null;
 
         try {
-            return evaluationHelper.getValidPageIdsforEvaluation();
+            return evaluationHelper.getValidPageIds();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
