@@ -369,7 +369,7 @@
                                     </div>
                                 </li>
                                 <li data-id="recognition">
-                                    <div class="collapsible-header"><i class="material-icons">settings</i>Recogntion</div>
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Recognition</div>
                                     <div class="collapsible-body">
                                         <ul class="collapsible" data-collapsible="expandable">
                                             <li>
