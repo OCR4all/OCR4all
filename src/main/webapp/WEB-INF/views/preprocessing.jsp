@@ -2,7 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" processHandler="true">
+    <t:head imageList="true" inputParams="true" processHandler="true">
         <title>OCR4All - Preprocessing</title>
 
         <script type="text/javascript">
@@ -21,41 +21,6 @@
 
                     $('#--parallel').val(data).change();
                 })
-
-                // Error handling for parameter input fields
-                $('input[type="number"]').on('change', function() {
-                    var num = $(this).val();
-                    if( !$.isNumeric(num) ) {
-                        if( num !== "" ) {
-                            $(this).addClass('invalid').focus();
-                        }
-                        else {
-                            $(this).removeClass('invalid');
-                        }
-                    }
-                    else if( Math.floor(num) != num ) {
-                        if( $(this).attr('data-type') === "int" ) 
-                            $(this).addClass('invalid').focus();
-                    }
-                    else {
-                        $(this).removeClass('invalid');
-                    }
-                });
-
-                // Fetch all modified parameters and return them appropriately
-                function getInputParams() {
-                    var params = { 'cmdArgs': [] };
-                    // Exclude checkboxes in pagelist (will be passed separately)
-                    $.each($('input[type="checkbox"]').not('[data-pageid]').not('#selectAll'), function() {
-                        if( $(this).prop('checked') === true )
-                            params['cmdArgs'].push($(this).attr('id'));
-                    });
-                    $.each($('input[type="number"]'), function() {
-                        if( $(this).val() !== "" )
-                            params['cmdArgs'].push($(this).attr('id'), $(this).val());
-                    });
-                    return params;
-                }
 
                 $('button[data-id="execute"]').click(function() {
                     if( $('input[type="number"]').hasClass('invalid') ) {
