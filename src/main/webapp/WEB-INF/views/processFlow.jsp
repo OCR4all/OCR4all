@@ -163,6 +163,7 @@
                         $('#modal_noprocsel').modal('open');
                         return;
                     }
+
                     $.get( "ajax/processFlow/exists?", { "pageIds[]" : selectedPages, "processes[]" : processesToExecute } )
                     .done(function( data ){
                         if(data === false){
@@ -175,7 +176,6 @@
                     .fail(function( data ) {
                         $('#modal_exists_failed').modal('open');
                     });
-
                 });
 
                 // Cancel/finalize processflow execution

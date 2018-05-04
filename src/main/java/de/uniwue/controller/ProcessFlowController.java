@@ -404,7 +404,8 @@ public class ProcessFlowController {
         if (processes == null)
             return false;
 
-        // Returns true if files exist 
+        // If files for a single process exist, the process flow will delete these files
+        // Therefore inform the user about this action
         for (String process : processes) {
             switch(process) {
                 case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response) == true) return true; break;
