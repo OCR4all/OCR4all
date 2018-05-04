@@ -137,21 +137,7 @@
                         lastExecutedProcess = process;
                     });
                 }
-
-                // Start processflow execution
-                $('button[data-id="execute"]').click(function() {
-                    var selectedPages = getSelectedPages();
-                    if( selectedPages.length === 0 ) {
-                        $('#modal_errorhandling').modal('open');
-                        return;
-                    }
-
-                    var processesToExecute = getProcessesToExecute();
-                    if( processesToExecute.length === 0 ) {
-                        $('#modal_noprocsel').modal('open');
-                        return;
-                    }
-
+                function executeProcessFlow(selectedPages, processesToExecute) {
                     // Execute processflow with explicit JSON content setting
                     // Otherwise the request cannot map the transferred data correctly
                     $.ajax({
@@ -182,7 +168,34 @@
                     });
 
                     // Trigger progress handling of processflow processes
-                    setTimeout(initiateProgressHandling, 1000);
+                    setTimeout(initiateProgressHandling, 1000);	
+                }
+                // Start processflow execution
+                $('button[data-id="execute"]').click(function() {
+                    var selectedPages = getSelectedPages();
+                    if( selectedPages.length === 0 ) {
+                        $('#modal_errorhandling').modal('open');
+                        return;
+                    }
+
+                    var processesToExecute = getProcessesToExecute();
+                    if( processesToExecute.length === 0 ) {
+                        $('#modal_noprocsel').modal('open');
+                        return;
+                    }
+                    $.get( "ajax/processFlow/exists?", { "pageIds[]" : selectedPages, "processes[]" : processesToExecute } )
+                    .done(function( data ){
+                        if(data === false){
+                            executeProcessFlow(selectedPages, processesToExecute);
+                        }
+                        else{
+                            $('#modal_exists').modal('open');
+                        }
+                    })
+                    .fail(function( data ) {
+                        $('#modal_exists_failed').modal('open');
+                    });
+
                 });
 
                 // Cancel/finalize processflow execution
@@ -209,6 +222,20 @@
                     });
                 });
 
+                $('#agree').click(function() {
+                    var selectedPages = getSelectedPages();
+                    if( selectedPages.length === 0 ) {
+                        $('#modal_errorhandling').modal('open');
+                        return;
+                    }
+
+                    var processesToExecute = getProcessesToExecute();
+                    if( processesToExecute.length === 0 ) {
+                        $('#modal_noprocsel').modal('open');
+                        return;
+                    }
+                    executeProcessFlow(selectedPages, processesToExecute);
+                });
                 // Check if processflow execution is running
                 initiateProgressHandling();
             });

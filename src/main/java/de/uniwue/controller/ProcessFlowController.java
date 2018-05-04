@@ -385,4 +385,39 @@ public class ProcessFlowController {
             }
         }
     }
+
+    /**
+     * Response to the request to check if old process related files exist
+     *
+     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Information if files exist
+     */
+    @RequestMapping(value = "/ajax/processFlow/exists" , method = RequestMethod.GET)
+    public @ResponseBody boolean filesExists(
+                //@RequestBody ProcessFlowData processFlowData,
+                @RequestParam("pageIds[]") String[] pageIds,
+                @RequestParam("processes[]") String[] processes,
+                HttpSession session, HttpServletResponse response
+            ) {
+        ProcessFlowHelper processFlowHelper = provideHelper(session, response);
+        if (processFlowHelper == null)
+            return false;
+        // Check that all variables were passed in request
+        //String[] pageIds = processFlowData.getPageIds();
+        //List<String> processes = processFlowData.getProcessesToExecute();
+        for(String process : processes) {
+            switch(process) {
+            case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response) == true) {return true;}; break;
+            case "despeckling":       if(new DespecklingController().filesExists(pageIds, session, response) == true) {return true;}; break;
+            case "segmentationDummy": if(new SegmentationController().filesExists(pageIds, session, response)== true) {return true;}; break;
+            case "regionExtraction":  if(new RegionExtractionController().filesExists(pageIds, session, response)== true) {return true;}; break;
+            case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response)== true) {return true;}; break;
+            case "recognition":       if(new RecognitionController().filesExists(pageIds, session, response)== true) {return true;}; break;
+            default: break;
+            }
+        }
+        return false;
+    }
 }
