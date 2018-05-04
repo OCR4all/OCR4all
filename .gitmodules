@@ -7,3 +7,6 @@
 [submodule "src/main/resources/GTC_Web"]
 	path = src/main/resources/GTC_Web
 	url = https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/GTC_Web_NeuUndGscheid.git
+[submodule "src/main/resources/calamari"]
+	path = src/main/resources/calamari
+	url = https://github.com/ChWick/calamari.git
