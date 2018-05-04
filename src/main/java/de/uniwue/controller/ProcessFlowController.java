@@ -396,7 +396,6 @@ public class ProcessFlowController {
      */
     @RequestMapping(value = "/ajax/processFlow/exists" , method = RequestMethod.GET)
     public @ResponseBody boolean filesExists(
-                //@RequestBody ProcessFlowData processFlowData,
                 @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam("processes[]") String[] processes,
                 HttpSession session, HttpServletResponse response
@@ -404,9 +403,7 @@ public class ProcessFlowController {
         ProcessFlowHelper processFlowHelper = provideHelper(session, response);
         if (processFlowHelper == null)
             return false;
-        // Check that all variables were passed in request
-        //String[] pageIds = processFlowData.getPageIds();
-        //List<String> processes = processFlowData.getProcessesToExecute();
+
         for(String process : processes) {
             switch(process) {
             case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response) == true) {return true;}; break;
