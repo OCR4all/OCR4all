@@ -390,6 +390,7 @@ public class ProcessFlowController {
      * Response to the request to check if old process related files exist
      *
      * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param processes[] Names of the processes that should be executed
      * @param session Session of the user
      * @param response Response to the request
      * @return Information if files exist
@@ -400,19 +401,19 @@ public class ProcessFlowController {
                 @RequestParam("processes[]") String[] processes,
                 HttpSession session, HttpServletResponse response
             ) {
-        ProcessFlowHelper processFlowHelper = provideHelper(session, response);
-        if (processFlowHelper == null)
+        if (processes == null)
             return false;
 
-        for(String process : processes) {
+        // Returns true if files exist 
+        for (String process : processes) {
             switch(process) {
-            case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response) == true) {return true;}; break;
-            case "despeckling":       if(new DespecklingController().filesExists(pageIds, session, response) == true) {return true;}; break;
-            case "segmentationDummy": if(new SegmentationController().filesExists(pageIds, session, response)== true) {return true;}; break;
-            case "regionExtraction":  if(new RegionExtractionController().filesExists(pageIds, session, response)== true) {return true;}; break;
-            case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response)== true) {return true;}; break;
-            case "recognition":       if(new RecognitionController().filesExists(pageIds, session, response)== true) {return true;}; break;
-            default: break;
+                case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response) == true) return true; break;
+                case "despeckling":       if(new DespecklingController().filesExists(pageIds, session, response) == true) return true; break;
+                case "segmentationDummy": if(new SegmentationController().filesExists(pageIds, session, response)== true) return true; break;
+                case "regionExtraction":  if(new RegionExtractionController().filesExists(pageIds, session, response)== true) return true; break;
+                case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response)== true) return true; break;
+                case "recognition":       if(new RecognitionController().filesExists(pageIds, session, response)== true) return true; break;
+                default: break;
             }
         }
         return false;
