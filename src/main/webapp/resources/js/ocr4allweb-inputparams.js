@@ -4,6 +4,7 @@
  * Things that need to be done to use this:
  * 1. Include this file in the head of the target page (see head.tag)
  *    In this project it can be included by passing inputParams="true" to the head.tag include
+ * 2. Use getInputParams function to fetch all required parameters for the current module
  */
 
 // Fetch all modified parameters and return them appropriately
