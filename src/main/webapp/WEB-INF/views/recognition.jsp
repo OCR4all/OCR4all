@@ -2,13 +2,13 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" inputParams="true" processHandler="true" projectDataSel="true">
+    <t:head imageList="true" inputParams="true" recModelSelect="true" processHandler="true">
         <title>OCR4All - Recognition</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                // Initialize project data selection
-                initializeProjectDataSelection('ajax/recognition/listModels');
+                // Initialize recognition model selection
+                initializeRecModelSelect('#recModels');
 
                 // Load image list
                 $.get( "ajax/recognition/getValidPageIds")

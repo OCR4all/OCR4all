@@ -214,3 +214,20 @@ overflow-x: hidden;
 .tabs .indicator {
   background-color: #5c6bc0;
 }
+
+/* Multi-Select adjustments */
+.ms-container {
+  min-width: 370px;
+  width: auto !important;
+}
+.ms-container .ms-selectable li.ms-hover,
+.ms-container .ms-selection li.ms-hover {
+  background-color: #5c6bc0 !important;
+}
+.ms-container .ms-selectable li.ms-elem-selectable,
+.ms-container .ms-selection li.ms-elem-selection {
+  font-size: 1rem !important;
+}
+div.custom-header {
+  margin-left: 0 !important;
+}
