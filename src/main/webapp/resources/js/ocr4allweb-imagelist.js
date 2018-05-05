@@ -179,6 +179,7 @@ $(document).ready(function() {
     // Most pages are built with collapsible in this project, so this is the most used case
     // Other change/click/... events need to be set in the target JSP
     $('.collapsible-header').on('click change', function() {
+        $('footer').hide(); // Prevent short overlapping of elements
         setTimeout(resizeImageList, 500);
     });
 
@@ -239,5 +240,6 @@ $(document).ready(function() {
     });
 
     // Initial resizing if page changes shorty after loading
+    $('footer').hide(); // Prevent short overlapping of elements
     setTimeout(function() { resizeImageList(); }, 500);
 });
