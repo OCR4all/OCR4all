@@ -36,8 +36,9 @@
                         <a class="collapsible-header">Segmentation</a>
                         <div class="collapsible-body">
                             <ul>
-                                <li><a href="SegmentationLarex">Segmentation (LAREX)</a></li>
-                                <li><a href="SegmentationDummy">Segmentation (Dummy)</a></li>
+                                <li><a href="SegmentationLarex">LAREX</a></li>
+                                <li><a href="SegmentationDummy">Dummy</a></li>
+                            <%--<li><a href="SegmentationPixelClassifier">Pixel Classifier</a></li>--%>
                             </ul>
                         </div>
                     </li>
