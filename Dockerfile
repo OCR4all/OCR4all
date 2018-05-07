@@ -20,8 +20,8 @@ RUN apt-get update&& apt-get install -y \
     python3 \
     python3-lxml \
     python3-pil \
-    python-setuptools \
-    python-pip \
+    python3-setuptools \
+    python3-pip \
 && rm -rf /var/lib/apt/lists/*
 
 # Repository
@@ -64,11 +64,11 @@ RUN for OCR_MODEL in `cd /opt/OCR4all_Web/src/main/resources/ocropy/pretraining/
 RUN for OCR_SCRIPT in `cd /usr/local/bin && ls ocropus-*`; do ln -s /usr/local/bin/$OCR_SCRIPT /bin/$OCR_SCRIPT; done
 
 # Install tensorflow
-RUN pip install --upgrade tensorflow
+RUN pip3 install --upgrade tensorflow
 
 # Install calamari
 RUN cd /opt/OCR4all_Web/src/main/resources/calamari && \
-    python setup.py install
+  python3 setup.py install
 
 # Make all calamari scripts available to JAVA environment
 RUN for CALAMARI_SCRIPT in `cd /usr/local/bin && ls calamari-*`; do ln -s /usr/local/bin/$CALAMARI_SCRIPT /bin/$CALAMARI_SCRIPT; done
