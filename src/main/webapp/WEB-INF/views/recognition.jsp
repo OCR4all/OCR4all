@@ -121,5 +121,35 @@
                 </button>
             </div>
         </div>
+
+        <div id="modal_recaddmodel" class="modal">
+            <div class="modal-content">
+                <h4>Add new model</h4>
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td>
+                            <div class="input-field">
+                                <input type="text" id="recModelName" name="recModelName" class="validate" />
+                                <label for="recModelName" data-error="Model name is empty or already exists"></label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Absolute file system path:</td>
+                        <td>
+                            <div class="input-field">
+                                <input type="text" id="recModelPath" name="recModelPath" class="validate" />
+                                <label for="recModelPath" data-error="Model path is empty or already exists"></label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+                <a href="#!" id="addRecModel" class="modal-action waves-effect waves-green btn-flat">Add</a>
+            </div>
+        </div>
     </t:body>
 </t:html>

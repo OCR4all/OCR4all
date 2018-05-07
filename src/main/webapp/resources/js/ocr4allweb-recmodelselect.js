@@ -8,10 +8,16 @@
  */
 
 var recModelSelectOptions = {
-    selectableFooter: "<div class='custom-header'><button data-id='msSelectAll' class='btn'>Add all</button></div>",
-    selectionFooter: "<div class='custom-header'><button data-id='msDeSelectAll' class='btn'>Remove all</button></div>",
+    // Layout (header + footer)
+    selectableFooter: "<div class='custom-header'>" +
+            "<button data-id='msRecModelSelectAll' class='btn'>Select all</button>" +
+            "<button data-id='msRecModelAddOption' class='btn' style='margin-left: 5px;'>Add model</button>" +
+        "</div>",
+    selectionFooter: "<div class='custom-header'><button data-id='msRecModelDeSelectAll' class='btn'>Remove all</button></div>",
     selectableHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Search'>",
     selectionHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Search'>",
+
+    // Search functionality
     afterInit: function(ms){
       var that = this,
           $selectableSearch = that.$selectableUl.prev(),
@@ -26,7 +32,6 @@ var recModelSelectOptions = {
           return false;
         }
       });
-
       that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
       .on('keydown', function(e){
         if (e.which == 40){
@@ -35,6 +40,7 @@ var recModelSelectOptions = {
         }
       });
     },
+
     afterSelect: function(){
       this.qs1.cache();
       this.qs2.cache();
@@ -57,13 +63,62 @@ function initializeRecModelSelect(multiSelectId) {
 };
 
 $(document).ready(function() {
-    $('body').on('click', 'button[data-id="msSelectAll"]', function() {
+    // Functions to add/remove all models at once
+    $('body').on('click', 'button[data-id="msRecModelSelectAll"]', function() {
         $(this).parents('.ms-container').prev().multiSelect('select_all');
         return false;
     });
-
-    $('body').on('click', 'button[data-id="msDeSelectAll"]', function() {
+    $('body').on('click', 'button[data-id="msRecModelDeSelectAll"]', function() {
         $(this).parents('.ms-container').prev().multiSelect('deselect_all');
+        return false;
+    });
+
+    // Add new models to list
+    $('body').on('click', 'button[data-id="msRecModelAddOption"]', function() {
+        $('#modal_recaddmodel').modal('open');
+        return false;
+    });
+    $('body').on('click', '#addRecModel', function() {
+        var modelName = $('#recModelName').val();
+        var modelPath = $('#recModelPath').val();
+        var multiSelect = $('button[data-id="msRecModelAddOption"]').parents('.ms-container').prev();
+
+        // No empty input allowed
+        if (modelName == "" || modelPath == "") {
+            if (modelName == "") {
+                $('#recModelName').addClass('invalid').focus();
+                if (modelPath == "")
+                    $('#recModelPath').addClass('invalid');
+            }
+            else if (modelPath == "") {
+                $('#recModelPath').addClass('invalid').focus();
+            }
+
+            return false;
+        }
+
+        // No duplicate input allowed
+        var duplicates = false;
+        $.each($('#--checkpoints option'), function(key, el) {
+            if (escape($(el).text()) === escape(modelName) || escape($(el).val()) === escape(modelPath)) {
+                if (escape($(el).text()) === escape(modelName)) {
+                    $('#recModelName').addClass('invalid').focus();
+                    if (escape($(el).val()) === escape(modelPath))
+                        $('#recModelPath').addClass('invalid');
+                }
+                else if (escape($(el).val()) === escape(modelPath)) {
+                    $('#recModelPath').addClass('invalid').focus();
+                }
+
+                duplicates = true;
+                return false;
+            }
+        });
+        if (duplicates) return false;
+
+        // All checks passed, add new model
+        $(multiSelect).multiSelect('addOption', { value: modelPath, text: modelName, index: 0 });
+        $('#modal_recaddmodel').modal('close');
         return false;
     });
 });
