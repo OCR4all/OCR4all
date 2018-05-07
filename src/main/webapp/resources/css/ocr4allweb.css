@@ -93,6 +93,9 @@ table.compact td, table.compact div {
   padding: 0px;
   margin:  5px;
 }
+table.compact td {
+  vertical-align: top;
+}
 table.compact p > label {
   margin-bottom: 20px;
 }
