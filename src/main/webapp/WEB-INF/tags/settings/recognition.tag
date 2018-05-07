@@ -27,7 +27,7 @@
                 <tr>
                     <td><p>Line recognition models</p></td>
                     <td>
-                        <select multiple="multiple" id="recModels" name="recModels[]"></select>
+                        <select multiple="multiple" id="--checkpoints" name="--checkpoints[]"></select>
                     </td>
                 </tr>
             </tbody>

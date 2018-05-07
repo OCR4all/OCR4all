@@ -8,7 +8,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 // Initialize recognition model selection
-                initializeRecModelSelect('#recModels');
+                initializeRecModelSelect('#--checkpoints');
 
                 // Load image list
                 $.get( "ajax/recognition/getValidPageIds")
