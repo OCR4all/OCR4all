@@ -26,6 +26,10 @@ function getInputParams(settingsEl) {
         if( $(this).val() !== "" && $(this).attr('id'))
             params['cmdArgs'].push($(this).attr('id'), $(this).val());
     });
+    $.each($(settingsEl).find('select[multiselect]'), function() {
+        if( $(this).val() && $(this).val().length > 0 && $(this).attr('id'))
+            params['cmdArgs'].push($(this).attr('id'), $(this).val().join(" "));
+    });
     return params;
 }
 
