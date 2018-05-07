@@ -6,7 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -194,20 +196,23 @@ public class RecognitionHelper {
 
     /**
      * Executes OCR on a list of pages
-     * Achieved with the help of the external python program "ocropus-rpred"
+     * Achieved with the help of the external python program "calamary-predict"
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs Command line arguments for "ocropus-rpred"
+     * @param cmdArgs Command line arguments for "calamary-predict"
      * @throws IOException
      */
     public void RecognizeImages(List<String> pageIds, List<String> cmdArgs) throws IOException {
         RecognitionRunning = true;
         progress = 0;
         int index;
-        if (cmdArgs.contains("--model")) {
-            index = cmdArgs.indexOf("--model");
-            if(new File(cmdArgs.get(index + 1)).exists() == false)
-                throw new IOException("Model does not exist under the specified path");
+        if (cmdArgs.contains("--checkpoint")) {
+            index = cmdArgs.indexOf("--checkpoint");
+            String [] checkpoints = cmdArgs.get(index + 1).split(" ");
+            for(String checkpoint : checkpoints) {
+                if(new File(checkpoint).exists() == false)
+                    throw new IOException("Model does not exist under the specified path");
+            }
         }
 
         // Reset recognition data
@@ -216,15 +221,21 @@ public class RecognitionHelper {
 
         List<String> command = new ArrayList<String>();
         List<String> lineSegmentImages = getLineSegmentImagesForCurrentProcess(pageIds);
+        command.add("--files");;
         for (String lineSegmentImage : lineSegmentImages) {
             // Add affected line segment images with their absolute path to the command list
             command.add(lineSegmentImage);
         }
-        command.addAll(cmdArgs);
-
+        Iterator<String> cmdArgsIterator = cmdArgs.iterator();
+        while (cmdArgsIterator.hasNext()) {
+            String arg = cmdArgsIterator.next();
+            command.add(arg);
+            if (arg.equals("--checkpoint") && cmdArgsIterator.hasNext())
+                command.addAll(Arrays.asList(cmdArgsIterator.next().split(" ")));
+        }
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        processHandler.startProcess("ocropus-rpred", command, false);
+        processHandler.startProcess("calamari-predict", command, false);
 
         // Execute progress update to fill processState data structure with correct values
         getProgress();

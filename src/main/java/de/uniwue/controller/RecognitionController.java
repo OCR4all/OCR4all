@@ -84,7 +84,6 @@ public class RecognitionController {
         RecognitionHelper recognitionHelper = provideHelper(session, response);
         if (recognitionHelper == null)
             return;
-
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);

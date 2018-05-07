@@ -87,7 +87,7 @@ public final class ProjectConfiguration {
     /**
      * Default Model extension
      */
-    public static final String MODEL_EXT = ".pyrnn.gz";
+    public static final String MODEL_EXT = ".ckpt.json";
     /**
      * Returns the file extension of the given image type
      *

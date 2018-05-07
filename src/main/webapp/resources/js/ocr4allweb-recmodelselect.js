@@ -99,7 +99,7 @@ $(document).ready(function() {
 
         // No duplicate input allowed
         var duplicates = false;
-        $.each($('#--checkpoints option'), function(key, el) {
+        $.each($('#--checkpoint option'), function(key, el) {
             if (escape($(el).text()) === escape(modelName) || escape($(el).val()) === escape(modelPath)) {
                 if (escape($(el).text()) === escape(modelName)) {
                     $('#recModelName').addClass('invalid').focus();
