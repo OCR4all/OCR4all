@@ -139,6 +139,8 @@
                     })
                     .fail(function( jqXHR, data ) {
                         switch(jqXHR.status) {
+                            case 400: $('#modal_settings_failed').modal('open'); break;
+                            case 500: $('#modal_execution_failed').modal('open'); break;
                             case 530: $('#modal_inprogress').modal('open'); break;
                             case 531: $('#modal_misssubprocdata').modal('open'); break;
                             case 533: $('#modal_nosettings').modal('open'); break;
