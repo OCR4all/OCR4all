@@ -235,6 +235,32 @@
                                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                          </div>
+                        <!-- Error in parameter passing (Error Code 400)-->
+                        <div id="modal_settings_failed" class="modal">
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
+                                <p>
+                                    Parameter were not passed correctly<br/>
+                                    Due to this error, the process cannot be started to ensure data integrity.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                         </div>
+                        <!-- Error in the execution (Error Code 500)-->
+                        <div id="modal_execution_failed" class="modal">
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
+                                <p>
+                                    Error in the execution<br/>
+                                    Due to this error, the process cannot be started to ensure data integrity.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                         </div>
                      </c:when>
                 </c:choose>
             </c:otherwise>
