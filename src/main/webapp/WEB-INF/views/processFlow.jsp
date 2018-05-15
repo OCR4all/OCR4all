@@ -2,13 +2,13 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" inputParams="true" processHandler="true" projectDataSel="true">
+    <t:head imageList="true" inputParams="true" processHandler="true" recModelSelect="true">
         <title>OCR4All - Centralized Process Flow</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                // Initialize project data selection (for recognition modles)
-                initializeProjectDataSelection('ajax/recognition/listModels');
+                // Initialize recognition model selection
+                initializeRecModelSelect('#--checkpoint');
 
                 // Load image list
                 initializeImageList("Original");
