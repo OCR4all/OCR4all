@@ -52,26 +52,22 @@ RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
     mv en-default.pyrnn.gz models/ && \
     python2.7 setup.py install
 
-# Make ocropus standard model available to OS environment
-RUN mkdir /usr/local/share/ocropus
-RUN ln -s /opt/OCR4all_Web/src/main/resources/ocropy/models/en-default.pyrnn.gz /usr/local/share/ocropus/en-default.pyrnn.gz
-# Make pretrained ocropus models available to project environment
-RUN for OCR_MODEL in `cd /opt/OCR4all_Web/src/main/resources/ocropy/pretraining/models && ls`; \
-        do ln -s /opt/OCR4all_Web/src/main/resources/ocropy/pretraining/models/$OCR_MODEL /var/ocr4all/models/default/$OCR_MODEL; \
-    done
-
 # Make all ocropus scripts available to JAVA environment
-RUN for OCR_SCRIPT in `cd /usr/local/bin && ls ocropus-*`; do ln -s /usr/local/bin/$OCR_SCRIPT /bin/$OCR_SCRIPT; done
+RUN for OCR_SCRIPT in `cd /usr/local/bin && ls ocropus-*`; \
+        do ln -s /usr/local/bin/$OCR_SCRIPT /bin/$OCR_SCRIPT; \
+    done
 
 # Install tensorflow
 RUN pip3 install --upgrade tensorflow
 
 # Install calamari
 RUN cd /opt/OCR4all_Web/src/main/resources/calamari && \
-  python3 setup.py install
+    python3 setup.py install
 
 # Make all calamari scripts available to JAVA environment
-RUN for CALAMARI_SCRIPT in `cd /usr/local/bin && ls calamari-*`; do ln -s /usr/local/bin/$CALAMARI_SCRIPT /bin/$CALAMARI_SCRIPT; done
+RUN for CALAMARI_SCRIPT in `cd /usr/local/bin && ls calamari-*`; \
+        do ln -s /usr/local/bin/$CALAMARI_SCRIPT /bin/$CALAMARI_SCRIPT; \
+    done
 
 # Make pagedir2pagexml.py available to JAVA environment
 RUN ln -s /opt/OCR4all_Web/src/main/resources/pagedir2pagexml.py /bin/pagedir2pagexml.py
