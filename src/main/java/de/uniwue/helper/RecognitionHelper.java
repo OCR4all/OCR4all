@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -195,6 +194,24 @@ public class RecognitionHelper {
     }
 
     /**
+     * Extracts checkpoints of a String joined by a whitespace
+     *
+     * @return List of checkpoints
+     * @throws IOException 
+     */
+    public List<String> extractModelsOfJoinedString(String joinedckptString){ 
+        String [] checkpoints = joinedckptString.split(ProjectConfiguration.MODEL_EXT + " ");
+        List<String> ckptList = new ArrayList<String>();
+        Iterator <String> ckptIterator= Arrays.asList(checkpoints).iterator();
+        while (ckptIterator.hasNext()) {
+            String ckpt = ckptIterator.next();
+            if (ckptIterator.hasNext())
+                ckpt = ckpt + ProjectConfiguration.MODEL_EXT;
+            ckptList.add(ckpt);
+        }
+        return ckptList;	
+    }
+    /**
      * Executes OCR on a list of pages
      * Achieved with the help of the external python program "calamary-predict"
      *
@@ -208,9 +225,8 @@ public class RecognitionHelper {
         int index;
         if (cmdArgs.contains("--checkpoint")) {
             index = cmdArgs.indexOf("--checkpoint");
-            String [] checkpoints = cmdArgs.get(index + 1).split(" ");
-            for(String checkpoint : checkpoints) {
-                if(new File(checkpoint).exists() == false)
+            for(String ckpt : extractModelsOfJoinedString(cmdArgs.get(index + 1))) {
+                if (new File(ckpt).exists() == false)
                     throw new IOException("Model does not exist under the specified path");
             }
         }
@@ -230,8 +246,9 @@ public class RecognitionHelper {
         while (cmdArgsIterator.hasNext()) {
             String arg = cmdArgsIterator.next();
             command.add(arg);
-            if (arg.equals("--checkpoint") && cmdArgsIterator.hasNext())
-                command.addAll(Arrays.asList(cmdArgsIterator.next().split(" ")));
+            if (arg.equals("--checkpoint") && cmdArgsIterator.hasNext()) {
+                command.addAll(extractModelsOfJoinedString(cmdArgsIterator.next()));
+            }
         }
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
