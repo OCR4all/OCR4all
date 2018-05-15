@@ -1,5 +1,5 @@
 # Base Image
-FROM ubuntu
+FROM ubuntu:16.04
 
 # Necessary to build this image on Mac
 ENV DEBIAN_FRONTEND=noninteractive
