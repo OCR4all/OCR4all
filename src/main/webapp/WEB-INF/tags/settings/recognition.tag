@@ -32,13 +32,13 @@
                     <td><p>Print additional information</p></td>
                     <td>
                         <p>
-                            <input type="checkbox" class="filled-in" id="--verbose"/>
+                            <input type="checkbox" class="filled-in" id="--verbose" checked="checked"/>
                             <label for="--verbose"></label>
                         </p>
                     </td>
                  </tr>
                  <tr>
-                    <td><p>The batch size during the prediction (Number of lines to process in parallel)</p></td>
+                    <td><p>Number of lines to process in parallel (Batch size)</p></td>
                     <td>
                         <div class="input-field">
                             <input id="--batch_size" type="number" step="1" />
@@ -50,7 +50,6 @@
                     <td><p>The voting algorithm to use</p></td>
                     <td>
                         <div class="input-field">
-                            <i class="material-icons prefix">image</i>
                             <select id="--voter" name="voter" class="suffix">
                                 <option value="confidence_voter_default_ctc">confidence_voter_default_ctc</option>
                                 <option value="confidence_voter_fuzzy_ctc">confidence_voter_fuzzy_ctc</option>

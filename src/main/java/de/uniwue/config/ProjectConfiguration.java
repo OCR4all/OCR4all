@@ -79,7 +79,7 @@ public final class ProjectConfiguration {
     /**
      * Default recognition extension of the project
      */
-    public final String REC_EXT = ".txt";
+    public final String REC_EXT = ".pred.txt";
     /**
      * Default ground truth extension of the project
      */

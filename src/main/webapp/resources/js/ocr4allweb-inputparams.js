@@ -27,15 +27,14 @@ function getInputParams(settingsEl) {
             params['cmdArgs'].push($(this).attr('id'), $(this).val());
     });
     $.each($(settingsEl).find('select'), function() {
-        if( $(this).val() && $(this).val().length > 0 && $(this).attr('id'))
-            if($(this).attr('id') === "--checkpoint")
+        if( $(this).val() && $(this).val().length > 0 && $(this).attr('id')) {
+            if($(this).attr('multiple')) {
                 params['cmdArgs'].push($(this).attr('id'), $(this).val().join(" "));
-            else
+            }
+            else {
                 params['cmdArgs'].push($(this).attr('id'), $(this).val());
-    });
-    $.each($(settingsEl).find('select[multiselect]'), function() {
-        if( $(this).val() && $(this).val().length > 0 && $(this).attr('id'))
-            params['cmdArgs'].push($(this).attr('id'), $(this).val().join(" "));
+            }
+        }
     });
     return params;
 }
