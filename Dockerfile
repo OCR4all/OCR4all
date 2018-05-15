@@ -1,6 +1,9 @@
 # Base Image
 FROM ubuntu
 
+# Necessary to build this image on Mac
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Enable Networking on port 8080
 EXPOSE 8080
 
