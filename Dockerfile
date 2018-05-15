@@ -50,9 +50,6 @@ RUN mkdir -p /var/ocr4all/data && \
 
 # Install ocropy
 RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
-    wget -nd http://www.tmbdev.net/en-default.pyrnn.gz && \
-    mkdir models && \
-    mv en-default.pyrnn.gz models/ && \
     python2.7 setup.py install
 
 # Make all ocropus scripts available to JAVA environment
