@@ -75,6 +75,8 @@ public class RegionExtractor {
 
                 outputFileName += id + SEPARATOR + region.getType().toString()
                         + OUTPUT_FORMAT;
+            }  else {
+            	continue;
             }
 
             String outputPath = outputFolder + outputFileName;
