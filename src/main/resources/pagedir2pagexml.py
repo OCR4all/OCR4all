@@ -157,14 +157,14 @@ def pagexmlcombine(ocrindex, gtindex, xmlfile, output):
                     unicodexml = etree.SubElement(textequivxml, "Unicode")
                 unicodexml.text = coordmap[rid]["lines"][lid]["gt"]
             
-            # region text collect
-            for lid in coordmap[rid]["lines"]:
-                if "gt" in coordmap[rid]["lines"][lid]:
-                    regiontext.append(coordmap[rid]["lines"][lid]["gt"])
-                elif "ocr" in coordmap[rid]["lines"][lid]:
-                    regiontext.append(coordmap[rid]["lines"][lid]["ocr"])
-                else:
-                    regiontext.append("")
+        # region text collect
+        for lid in coordmap[rid]["lines"]:
+            if "gt" in coordmap[rid]["lines"][lid]:
+                regiontext.append(coordmap[rid]["lines"][lid]["gt"])
+            elif "ocr" in coordmap[rid]["lines"][lid]:
+                regiontext.append(coordmap[rid]["lines"][lid]["ocr"])
+            else:
+                regiontext.append("")
                     
         # region text insert
         textequivxml = textregion.find('./ns:TextEquiv', namespaces=ns)
