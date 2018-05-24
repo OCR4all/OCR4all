@@ -22,7 +22,7 @@
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;
 
-                    $('#--parallel').val(data).change();
+                    $('#--num_threads').val(data).change();
                 })
 
                 $('button[data-id="execute"]').click(function() {

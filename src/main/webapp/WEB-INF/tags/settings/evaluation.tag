@@ -10,8 +10,8 @@
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--parallel" type="number" />
-                            <label for="--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                            <input id="--num_threads" type="number" />
+                            <label for="--num_threads" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
                         </div>
                     </td>
                 </tr>
@@ -19,8 +19,8 @@
                     <td><p>Output this many top confusion</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--confusion" type="number" step="1" value = "10"/>
-                            <label for="--confusion" data-type="int" data-error="Has to be int">Default: 10</label>
+                            <input id="--n_confusions" type="number" step="1"/>
+                            <label for="--n_confusions" data-type="int" data-error="Has to be int">Default: 1</label>
                         </div>
                     </td>
                 </tr>

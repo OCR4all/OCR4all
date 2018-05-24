@@ -93,6 +93,7 @@ public class EvaluationHelper {
 
         List<String> command = new ArrayList<String>();
         List<String> gtFiles = getGtFilesOfPages(pageIds);
+        command.add("--gt");
         for (String gtFile : gtFiles) {
             // Add affected line segment images with their absolute path to the command list
             command.add(gtFile);
@@ -101,7 +102,7 @@ public class EvaluationHelper {
         command.addAll(cmdArgs);
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        processHandler.startProcess("ocropus-econf", command, false);
+        processHandler.startProcess("calamari-eval", command, false);
 
         progress = 100;
     }
