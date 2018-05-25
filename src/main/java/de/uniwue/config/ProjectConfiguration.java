@@ -61,10 +61,6 @@ public final class ProjectConfiguration {
      */
     public final String IMG_EXT = ".png";
     /**
-     * Possible image extensions at the start of the project
-     */
-    public final String[] IMG_EXTS = new String[] {".png", ".jpg"};
-    /**
      * Binary image extension of the project
      */
     public final String BINR_IMG_EXT  = ".bin" + IMG_EXT;
@@ -107,12 +103,6 @@ public final class ProjectConfiguration {
         }
         return imageExtension;
     }
-    /**** Filename ****/
-
-    /**
-     * Minimum name length of the file
-     */
-    public final int minimumNameLength = 4;
 
     /**** Project directory ****/
 

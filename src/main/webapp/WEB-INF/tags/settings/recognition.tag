@@ -50,7 +50,7 @@
                     <td><p>The voting algorithm to use</p></td>
                     <td>
                         <div class="input-field">
-                            <select id="--voter" name="voter" class="suffix">
+                            <select id="--voter" name="voter">
                                 <option value="confidence_voter_default_ctc">confidence_voter_default_ctc</option>
                                 <option value="confidence_voter_fuzzy_ctc">confidence_voter_fuzzy_ctc</option>
                                 <option value="sequence_voter">sequence_voter</option>

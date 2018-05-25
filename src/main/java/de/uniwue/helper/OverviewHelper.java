@@ -9,18 +9,16 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessStateCollector;
@@ -274,71 +272,37 @@ public class OverviewHelper {
     }
 
     /**
-     * Converts all images to PNG Extension
+     * Renames all files according to the project standard
      *
      * @throws IOException 
      */
-    public void convertImagesToPNG() throws IOException {
-        ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
-        for (String ext : projConf.IMG_EXTS) 
-            allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
-
-        // File depth of 1 -> no recursive (file)listing
-        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
-        .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.isFile())
-        .filter(allPredicates.stream().reduce(w -> true, Predicate::or))
-        .sorted()
-        .forEach(
-            fileEntry -> { 
-                if ( FilenameUtils.getExtension(fileEntry.getAbsolutePath()) != projConf.IMG_EXT) {
-                    Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
-                    Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
-                }
-            }
-        );
-    }
-
-    /**
-     * Renames all files in the 'original' folder to names that consists of an ascending number of digits (e.g 0001, 0002 ...)
-     * Changes to Filenames is backuped by a file in the project directory
-     * @throws IOException 
-     */
     public void renameFiles() throws IOException {
-        ArrayList<File> ListofFiles = new ArrayList<File>();
-        // File depth of 1 -> no recursive (file)listing
-        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
-        .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.isFile())
-        .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
-        .sorted()
-        .forEach(
-            fileEntry -> { ListofFiles.add(fileEntry);
-            }
-        );
-
-        int minimumFormatLength = String.valueOf(ListofFiles.size()).length();
-        // File names must consist of at least four digits
-        if(minimumFormatLength < projConf.minimumNameLength)
-            minimumFormatLength = projConf.minimumNameLength;
+        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
+        int len = new Integer(files.length).toString().length();
+        Arrays.sort(files);
+        //Filenames are atleast 4 digits long
+        if(len < 4)
+            len = 4;
         String Format = "";
-        for (int i = 1; i <= minimumFormatLength; i++)
+        for (int i = 1; i <= len; i++)
             Format = Format + 0;
         DecimalFormat df = new DecimalFormat(Format);
 
+        int name = 1;
+
         //File which contains the information about the renaming
         File backupFilename = new File(projConf.PROJECT_DIR + new SimpleDateFormat("ssmmHHddMMyyyy'.txt'").format(new Date()));
+
         //name of files, which will be renamed
         TreeMap<File, File> hm = new TreeMap<File, File>();
-        int i = 1;
         String writeFilenamesToFile = "";
-        for (File file : ListofFiles) {
-            File newname = new File(projConf.ORIG_IMG_DIR + df.format(i) + projConf.IMG_EXT);
+        for (File file : files) {
+            File newname = new File(projConf.ORIG_IMG_DIR + df.format(name) + projConf.IMG_EXT);
             if (!newname.getName().equals(file.getName())) {
                 hm.put(file, newname);
                 writeFilenamesToFile = writeFilenamesToFile + file.getName() + " renamed to " + newname.getName() + "\n";
             }
-            i++;
+            name++;
         }
         // writing backup filenames to file
         FileUtils.writeStringToFile(backupFilename,writeFilenamesToFile,"UTF-8", true);

@@ -1,7 +1,5 @@
-# Base Image
+# Base Image (versions > 16.04 are currently not supported)
 FROM ubuntu:16.04
-
-# Necessary to build this image on Mac
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Enable Networking on port 8080
