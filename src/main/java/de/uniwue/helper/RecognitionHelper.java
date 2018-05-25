@@ -377,32 +377,15 @@ public class RecognitionHelper {
         if (!modelsDir.exists())
             return models;
 
-        File modelsDefaultDir = new File(ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR);
-        if (!modelsDefaultDir.exists())
-            return models;
-
-        // Add default models to map
-        File[] modelFiles = modelsDefaultDir.listFiles((d, name) -> name.endsWith(ProjectConfiguration.MODEL_EXT));
-        for (File model : modelFiles) {
-             String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(model.getName()));
-             models.put(modelName, model.getAbsolutePath());
-        }
-
-        File modelsCustomDir = new File(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR);
-        if (!modelsCustomDir.exists())
-            return models;
-
         // Add custom models to map
-        Files.walk(Paths.get(modelsCustomDir.getAbsolutePath()))
+        Files.walk(Paths.get(modelsDir.getAbsolutePath()))
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.getName().endsWith(ProjectConfiguration.MODEL_EXT))
         .forEach(
             fileEntry->{
-                String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName()));
-                // In case the model is located in a sub-directory, add the sub-directory as identifier to its name
-                if (!fileEntry.getParentFile().getName().equals("custom"))
-                    modelName = fileEntry.getParentFile().getName() + File.separator + modelName;
-
+                String modelName = fileEntry.getParentFile().getName();
+                modelName.replace(ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR, "");
+                modelName.replace(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR, "");
                 models.put(modelName, fileEntry.getAbsolutePath());
         });
 
