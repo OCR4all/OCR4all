@@ -28,7 +28,7 @@ RUN apt-get update&& apt-get install -y \
 && rm -rf /var/lib/apt/lists/*
 
 # Repository
-RUN cd /opt && git clone --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
+RUN cd /opt && git clone -b development --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
 
 # Enabling direct request in Larex submodule
 RUN sed -i 's/#directrequest:<value>/directrequest:enable/' /opt/OCR4all_Web/src/main/resources/LAREX/Larex/src/main/webapp/WEB-INF/larex.config
@@ -52,7 +52,7 @@ RUN mkdir -p /var/ocr4all/data && \
 RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
     python2.7 setup.py install
 
-# Make all ocropus scripts available to JAVA environment
+# Make all ocropy scripts available to JAVA environment
 RUN for OCR_SCRIPT in `cd /usr/local/bin && ls ocropus-*`; \
         do ln -s /usr/local/bin/$OCR_SCRIPT /bin/$OCR_SCRIPT; \
     done
@@ -71,6 +71,11 @@ RUN for CALAMARI_SCRIPT in `cd /usr/local/bin && ls calamari-*`; \
 
 # Make pagedir2pagexml.py available to JAVA environment
 RUN ln -s /opt/OCR4all_Web/src/main/resources/pagedir2pagexml.py /bin/pagedir2pagexml.py
+
+# Make pretrained CALAMARI models available to the project environment
+RUN for CALAMARI_MODEL in `cd /opt/OCR4all_Web/src/main/resources/calamari_models && ls -d */ | cut -d'/' -f1`; \
+        do ln -s /opt/OCR4all_Web/src/main/resources/calamari_models/$CALAMARY_MODEL /var/ocr4all/models/default/$CALAMARI_MODEL; \
+    done
 
 # Start server when container is started
 # Enviroment variable
