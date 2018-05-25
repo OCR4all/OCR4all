@@ -10,3 +10,6 @@
 [submodule "src/main/resources/calamari"]
 	path = src/main/resources/calamari
 	url = https://github.com/ChWick/calamari.git
+[submodule "src/main/resources/calamari_models"]
+	path = src/main/resources/calamari_models
+	url = https://github.com/ChWick/calamari_models.git
