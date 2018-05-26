@@ -290,6 +290,24 @@ public class ProcessConflictDetector {
     }
 
     /**
+     * Determines conflicts with the Training process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+	public static int trainingConflict(List<String> currentProcesses, boolean inProcessFlow) {
+        if (currentProcesses.size() == 0)
+            return NO_CONFLICT;
+
+        if (currentProcesses.contains("training"))
+            return SAME_PROCESS;
+
+        if (currentProcesses.contains("processFlow"))
+            return PROCESS_FLOW;
+        return NO_CONFLICT;
+    }
+
+    /**
      * Determines conflicts with the ProcessFlow process
      *
      * @param currentProcesses Processes that are currently running
@@ -305,5 +323,4 @@ public class ProcessConflictDetector {
         // No other process should be executed
         return PREV_PROCESS;
     }
-
 }
