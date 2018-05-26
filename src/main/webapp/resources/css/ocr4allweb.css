@@ -115,9 +115,12 @@ i.material-icons.tooltipped {
   position: absolute;
   padding-left: 10px;
 }
+span.userInfo {
+  font-size: 9pt;
+}
 span.userWarning {
-  color:red;
-  font-size:9pt;
+  color: red;
+  font-size: 9pt;
 }
 
 /* Progress bar adjustments */
