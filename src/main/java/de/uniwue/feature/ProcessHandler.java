@@ -208,8 +208,13 @@ public class ProcessHandler {
         command.add(programPath);
         command.addAll(cmdArguments);
         ProcessBuilder processBuilder = new ProcessBuilder(command);
+
+        // Set PYTHONUNBUFFERED environment variable to ensure constant console output
+        // Could be enabled by function parameter as well, but most of the used scripts are written in Python
+        // Therefore and due to the fact that this environment variable has no side effects, use it for each process
         Map<String, String> env = processBuilder.environment();
         env.put("PYTHONUNBUFFERED", "1");
+
         process = processBuilder.start();
 
         if (fetchProcessConsole == true) {
