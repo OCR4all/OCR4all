@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -206,8 +207,9 @@ public class ProcessHandler {
         List<String> command = new ArrayList<String>();
         command.add(programPath);
         command.addAll(cmdArguments);
-
         ProcessBuilder processBuilder = new ProcessBuilder(command);
+        Map<String, String> env = processBuilder.environment();
+        env.put("PYTHONUNBUFFERED", "1");
         process = processBuilder.start();
 
         if (fetchProcessConsole == true) {
