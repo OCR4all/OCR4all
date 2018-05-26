@@ -2,6 +2,7 @@ package de.uniwue.helper;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -366,6 +367,14 @@ public class RecognitionHelper {
 
     /**
      * Lists all available Models from the model directory
+     * Consider the subsequent information to load models correctly
+     *
+     * Possible model location directories:
+     * - ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR
+     * - ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR
+     * 
+     * The models need to be in the following structure:
+     * ANY_PATH/{MODEL_NAME}/ANY_NAME.ckpt.json
      *
      * @return Map of models (key = modelName | value = path)
      * @throws IOException 
@@ -377,15 +386,17 @@ public class RecognitionHelper {
         if (!modelsDir.exists())
             return models;
 
-        // Add custom models to map
-        Files.walk(Paths.get(modelsDir.getAbsolutePath()))
+        // Add all models to map (follow symbolic links on the filesystem due to Docker container)
+        Files.walk(Paths.get(ProjectConfiguration.PROJ_MODEL_DIR), FileVisitOption.FOLLOW_LINKS)
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.getName().endsWith(ProjectConfiguration.MODEL_EXT))
         .forEach(
-            fileEntry->{
-                String modelName = fileEntry.getParentFile().getName();
-                modelName.replace(ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR, "");
-                modelName.replace(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR, "");
+            fileEntry -> {
+                // Replace model path to only show the relative path of each model (significant information)
+                String modelName = fileEntry.getParentFile().getAbsolutePath();
+                modelName = modelName.replace(ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR, "");
+                modelName = modelName.replace(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR, "");
+
                 models.put(modelName, fileEntry.getAbsolutePath());
         });
 
