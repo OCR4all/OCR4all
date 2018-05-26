@@ -95,7 +95,7 @@ public class RegionExtractionController {
 
         GenericController.addToProcessList(session, "regionExtraction");
         try {
-            regionExtractionHelper.executeRegionExtraction(Arrays.asList(pageIds), spacing, avgbackground, parallel);
+            regionExtractionHelper.execute(Arrays.asList(pageIds), spacing, avgbackground, parallel);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             regionExtractionHelper.resetProgress();

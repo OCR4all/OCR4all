@@ -54,7 +54,7 @@ public class DespecklingHelper {
      * @param maxContourRemovalSize Maximum size of the contours to be removed
      * @throws IOException 
      */
-    public void despeckleGivenPages(List<String> pageIds, double maxContourRemovalSize) throws IOException {
+    public void execute(List<String> pageIds, double maxContourRemovalSize) throws IOException {
         stop = false;
 
         progress = 0;

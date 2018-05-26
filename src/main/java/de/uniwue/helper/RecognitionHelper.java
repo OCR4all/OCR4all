@@ -220,7 +220,7 @@ public class RecognitionHelper {
      * @param cmdArgs Command line arguments for "calamary-predict"
      * @throws IOException
      */
-    public void RecognizeImages(List<String> pageIds, List<String> cmdArgs) throws IOException {
+    public void execute(List<String> pageIds, List<String> cmdArgs) throws IOException {
         RecognitionRunning = true;
         progress = 0;
         int index;

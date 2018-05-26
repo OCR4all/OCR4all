@@ -94,7 +94,7 @@ public class PreprocessingController {
 
         GenericController.addToProcessList(session, "preprocessing");
         try {
-            preprocessingHelper.preprocessPages(Arrays.asList(pageIds), cmdArgList);
+            preprocessingHelper.execute(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             preprocessingHelper.resetProgress();

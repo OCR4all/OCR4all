@@ -88,7 +88,7 @@ public class EvaluationHelper {
      * @param cmdArgs Command line arguments for "ocropus-econf"
      * @throws IOException
      */
-    public void evaluatePages(List<String> pageIds, List<String> cmdArgs) throws IOException {
+    public void execute(List<String> pageIds, List<String> cmdArgs) throws IOException {
         progress = 0;
 
         List<String> command = new ArrayList<String>();
