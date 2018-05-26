@@ -12,7 +12,7 @@ import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 
 /**
- * Helper class for training pages, which also calls the calamari-cross-fold-train program 
+ * Helper class for training, which also calls the calamari-cross-fold-train program 
  */
 public class TrainingHelper {
     /**
@@ -73,6 +73,12 @@ public class TrainingHelper {
         return processHandler;
     }
 
+    /** Lists all images that have an corresponding gt file
+     * 
+     * @param projectImageType
+     * @return
+     * @throws IOException
+     */
     public List<String> getImagesWithGt(String projectImageType) throws IOException {
         ArrayList<String> imagesWithGt = new ArrayList<String>();
         // Add custom models to map
@@ -88,7 +94,7 @@ public class TrainingHelper {
     }
 
     /**
-     * Executes image Training of all pages
+     * Executes image training
      * Achieved with the help of the external python program  calamari-cross-fold-train"
      *
      * @param cmdArgs Command line arguments for "calamari-cross-fold-train"
