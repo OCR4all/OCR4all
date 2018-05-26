@@ -14,19 +14,19 @@ function getInputParams(settingsEl) {
     // If no specific settings element is passed search in all collapsible elements
     settingsEl = settingsEl || $('.collapsible-body');
     // Exclude checkboxes in pagelist (will be passed separately)
-    $.each($(settingsEl).find('input[type="checkbox"]').not('[data-pageid]').not('#selectAll'), function() {
+    $.each($(settingsEl).find('input[type="checkbox"]').not('[data-pageid]').not('#selectAll').not(".ignoreParam"), function() {
         if( $(this).prop('checked') === true )
             params['cmdArgs'].push($(this).attr('id'));
     });
-    $.each($(settingsEl).find('input[type="number"]'), function() {
+    $.each($(settingsEl).find('input[type="number"]').not(".ignoreParam"), function() {
         if( $(this).val() !== "" && $(this).attr('id'))
             params['cmdArgs'].push($(this).attr('id'), $(this).val());
     });
-    $.each($(settingsEl).find('input[type="text"]'), function() {
+    $.each($(settingsEl).find('input[type="text"]').not(".ignoreParam"), function() {
         if( $(this).val() !== "" && $(this).attr('id'))
             params['cmdArgs'].push($(this).attr('id'), $(this).val());
     });
-    $.each($(settingsEl).find('select'), function() {
+    $.each($(settingsEl).find('select').not(".ignoreParam"), function() {
         if( $(this).val() && $(this).val().length > 0 && $(this).attr('id')) {
             if($(this).attr('multiple')) {
                 params['cmdArgs'].push($(this).attr('id'), $(this).val().join(" "));
