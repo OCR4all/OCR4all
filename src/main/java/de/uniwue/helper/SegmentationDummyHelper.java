@@ -61,7 +61,7 @@ public class SegmentationDummyHelper {
      * @throws TransformerException 
      * @throws ParserConfigurationException 
      */
-    public void extractXmlFiles(List<String> pageIds, String segmentationImageType) throws IOException, ParserConfigurationException, TransformerException {
+    public void execute(List<String> pageIds, String segmentationImageType) throws IOException, ParserConfigurationException, TransformerException {
         stop = false;
         progress = 0;
 

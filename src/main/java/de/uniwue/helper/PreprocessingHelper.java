@@ -152,7 +152,7 @@ public class PreprocessingHelper {
      * @param cmdArgs Command line arguments for "ocropus-nlbin"
      * @throws IOException
      */
-    public void preprocessPages(List<String> pageIds, List<String> cmdArgs) throws IOException {
+    public void execute(List<String> pageIds, List<String> cmdArgs) throws IOException {
         preprocessingRunning = true;
 
         progress = 0;

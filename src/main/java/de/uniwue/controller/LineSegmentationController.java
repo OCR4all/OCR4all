@@ -94,7 +94,7 @@ public class LineSegmentationController {
             if (cmdArgs != null)
                 cmdArgList = Arrays.asList(cmdArgs);
 
-            lineSegmentationHelper.lineSegmentPages(Arrays.asList(pageIds), cmdArgList);
+            lineSegmentationHelper.execute(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             lineSegmentationHelper.resetProgress();

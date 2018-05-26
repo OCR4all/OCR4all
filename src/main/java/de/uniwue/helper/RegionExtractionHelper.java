@@ -83,7 +83,7 @@ public class RegionExtractionHelper {
      * @throws SAXException
      * @throws IOException
      */
-    public void executeRegionExtraction(List<String> pageIds, int spacing, boolean useAvgBgd, int parallel)
+    public void execute(List<String> pageIds, int spacing, boolean useAvgBgd, int parallel)
             throws ParserConfigurationException, SAXException, IOException {
         stop = false;
         progress = 0;

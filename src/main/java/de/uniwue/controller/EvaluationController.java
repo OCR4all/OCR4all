@@ -92,7 +92,7 @@ public class EvaluationController {
 
         GenericController.addToProcessList(session, "evaluation");
         try {
-            evaluationHelper.evaluatePages(Arrays.asList(pageIds), cmdArgList);
+            evaluationHelper.execute(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             evaluationHelper.resetProgress();

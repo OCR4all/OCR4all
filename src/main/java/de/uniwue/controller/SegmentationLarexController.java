@@ -87,7 +87,7 @@ public class SegmentationLarexController {
 
         GenericController.addToProcessList(session, "segmentationLarex");
         try {
-            segmentationLarexHelper.moveExtractedSegments(Arrays.asList(pageIds), segmentationImageType);
+            segmentationLarexHelper.execute(Arrays.asList(pageIds), segmentationImageType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationLarexHelper.resetProgress();

@@ -55,7 +55,7 @@ public class SegmentationLarexHelper {
      * @param segmentationImageType Image type of the segmentation (binary, despeckled)
      * @throws IOException
      */
-    public void moveExtractedSegments(List<String> pageIds, String segmentationImageType) throws IOException {
+    public void execute(List<String> pageIds, String segmentationImageType) throws IOException {
         stop = false;
         progress = 0;
 
