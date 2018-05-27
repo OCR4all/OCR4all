@@ -193,21 +193,26 @@ public class OverviewController {
         return overviewHelper.validateProjectDir();
     }
 
-
     /**
-     * Response to the request to check the filenames
+     * Response to the request to validate the files
      *
      * @param session Session of the user
      * @param response Response to the request
      * @return Returns the status of the filename check
      */
-    @RequestMapping(value ="/ajax/overview/checkFileNames" , method = RequestMethod.GET)
+    @RequestMapping(value ="/ajax/overview/validateProject" , method = RequestMethod.GET)
     public @ResponseBody boolean checkFiles(HttpSession session, HttpServletResponse response) {
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null)
             return false;
 
-        return overviewHelper.checkFiles();
+        try {
+           return overviewHelper.isProjectValid();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**

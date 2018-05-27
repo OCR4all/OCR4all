@@ -238,14 +238,33 @@ public class OverviewHelper {
     }
 
     /**
-     * Checks if all filesnames are using the project file naming e.g (0001, 0002 ... XXXX)
+     * Checks if all filenames are using the project file naming e.g (0001, 0002 ... XXXX) and file Extension is IMG_EXT
      *
      * @return true = all files are using project naming, false = files are not using project naming
      * @throws IOException 
      */
-    public boolean checkFiles() {
+    public boolean isProjectValid() throws IOException {
         boolean status = false;
-        //Todo png is checked only
+        ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
+        for (String ext : projConf.ALLOWED_IMG_EXTS) {
+            if (!ext.equals(projConf.IMG_EXT))
+                allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
+        }
+        ArrayList<File> filesWithAllowedImgExts = new ArrayList<File>();
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+        .map(Path::toFile)
+        .filter(fileEntry -> fileEntry.isFile())
+        .filter(allPredicates.stream().reduce(w -> true, Predicate::or))
+        .sorted()
+        .forEach(
+            fileEntry -> { 
+                filesWithAllowedImgExts.add(fileEntry);
+            }
+        );
+        if (filesWithAllowedImgExts.size() > 0)
+            return false;
+
         File[] filesFilterd = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}" + projConf.IMG_EXT);
         File[] files = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
         if (filesFilterd.length == files.length) 
