@@ -68,6 +68,7 @@ public class TrainingController {
      * Response to the request to return the training status and output information
      *
      * @param cmdArgs[] Command line arguments for training process
+     * @param trainingId Custom identifier to name the training directory
      * @param session Session of the user
      * @param response Response to the request
      * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
@@ -75,6 +76,7 @@ public class TrainingController {
     @RequestMapping(value = "/ajax/training/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
                @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
+               @RequestParam(value = "trainingId") String trainingId,
                HttpSession session, HttpServletResponse response,
                @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
            ) {
@@ -92,7 +94,7 @@ public class TrainingController {
 
         GenericController.addToProcessList(session, "training");
         try {
-            trainingHelper.execute(cmdArgList);
+            trainingHelper.execute(cmdArgList, session.getAttribute("projectName").toString(), trainingId);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             trainingHelper.resetProgress();

@@ -115,6 +115,10 @@
                     // Fetch basic input parameters
                     var ajaxParams = getInputParams();
 
+                    // Add the specific training identifier
+                    ajaxParams = $.extend(ajaxParams, { "trainingId" : $('#trainingId').val() });
+
+                    // Check if pretraining arguments need to be added
                     var pretrainingType = $('#pretrainingType').val();
                     if( pretrainingType == "from_scratch" )
                         return ajaxParams;
@@ -130,6 +134,7 @@
 
                     // Add new parameter to existing ones
                     ajaxParams["cmdArgs"] = $.merge(ajaxParams["cmdArgs"], params);
+
                     return ajaxParams;
                 }
 

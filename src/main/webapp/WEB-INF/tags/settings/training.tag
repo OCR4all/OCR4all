@@ -7,11 +7,17 @@
         <table class="compact">
             <tbody>
                 <tr>
-                    <td><p>Name of the model</p></td>
+                    <td>
+                        <p>
+                            Training identifier
+                            <br />
+                            <span class="userInfo">A custom name can be used as identifier as well</span>
+                        </p>
+                    </td>
                     <td>
                         <div class="input-field">
-                            <input id="--best_model_label" type="text" />
-                            <label for="--best_model_label"></label>
+                            <input id="trainingId" type="text" class="ignoreParam" />
+                            <label for="trainingId">Default: Next free incremented Integer (0,1,2,...)</label>
                         </div>
                     </td>
                 </tr>
