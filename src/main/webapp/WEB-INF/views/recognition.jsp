@@ -9,7 +9,6 @@
             $(document).ready(function() {
                 // Initialize recognition model selection
                 initializeRecModelSelect('#--checkpoint');
-
                 // Load image list
                 $.get( "ajax/recognition/getValidPageIds")
                 .done(function( data ) {
@@ -29,7 +28,8 @@
                 });
 
                 $('button[data-id="execute"]').click(function() {
-                    if( $('input[type="number"]').hasClass('invalid') ) {
+                    validateCheckpoints();
+                    if( $('input[type="number"]').hasClass('invalid') || $('.ms-list').hasClass('invalid')) {
                         $('#modal_inputerror').modal('open');
                         return;
                     }

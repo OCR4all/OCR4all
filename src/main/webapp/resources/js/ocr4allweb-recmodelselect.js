@@ -61,7 +61,15 @@ function initializeRecModelSelect(multiSelectId) {
         $(multiSelectId).multiSelect(recModelSelectOptions);
     });
 };
-
+function validateCheckpoints() {
+    var multiSelectContainer = $('button[data-id="msRecModelAddOption"]').parents('.ms-container');
+    var multiSelectSelectionList = multiSelectContainer.find('.ms-selection').find('.ms-list');
+    var multiSelect = multiSelectContainer.prev();
+    if(multiSelect.val() && multiSelect.val().join(" ").length > 0 )
+        multiSelectSelectionList.removeClass('invalid');
+    else
+        multiSelectSelectionList.addClass('invalid');
+};
 $(document).ready(function() {
     // Functions to add/remove all models at once
     $('body').on('click', 'button[data-id="msRecModelSelectAll"]', function() {
@@ -121,4 +129,10 @@ $(document).ready(function() {
         $('#modal_recaddmodel').modal('close');
         return false;
     });
+
+    // Error handling
+     $('button[data-id="msRecModelAddOption"]').parents('.ms-container').prev().on('change', function(){
+         validateCheckpoints();
+       });
+
 });
