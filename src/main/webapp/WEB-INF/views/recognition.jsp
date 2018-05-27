@@ -28,7 +28,7 @@
                 });
 
                 $('button[data-id="execute"]').click(function() {
-                    validateCheckpoints();
+                    validateCheckpoints(); // Trigger --checkpoint validation
                     if( $('input[type="number"]').hasClass('invalid') || $('.ms-list').hasClass('invalid')) {
                         $('#modal_inputerror').modal('open');
                         return;

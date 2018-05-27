@@ -239,6 +239,6 @@ div.custom-header {
   margin-right: 0 !important;
 }
 ul.invalid {
-  border: 1px solid red;
+  border: 1px solid red !important;
   background-color: #ffe6e6;
 }
