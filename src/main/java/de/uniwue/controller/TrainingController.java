@@ -140,7 +140,7 @@ public class TrainingController {
      * @param response Response to the request
      * @return Console output
      */
-    @RequestMapping(value = "/ajax/training/console" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/training/console" , produces = "text/plain;charset=UTF-8", method = RequestMethod.GET)
     public @ResponseBody String console(
                 @RequestParam("streamType") String streamType,
                 HttpSession session, HttpServletResponse response
