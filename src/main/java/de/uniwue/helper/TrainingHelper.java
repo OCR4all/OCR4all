@@ -61,7 +61,7 @@ public class TrainingHelper {
         if (trainingRunning == false)
             return progress;
         // TODO
-        return -1;
+        return 0;
      }
 
     /**
@@ -104,17 +104,20 @@ public class TrainingHelper {
         trainingRunning = true;
 
         List<String> command = new ArrayList<String>();
+        command.add("--files");
         for (String gtImagePath : getImagesWithGt(projectImageType)) {
             command.add(gtImagePath);
         }
         command.addAll(cmdArgs);
-
+        command.add("--best_models_dir");
+        command.add(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR);
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("calamari-cross-fold-train", command, false);
 
         getProgress();
         trainingRunning = false;
+        progress = 100;
     }
 
     /**
