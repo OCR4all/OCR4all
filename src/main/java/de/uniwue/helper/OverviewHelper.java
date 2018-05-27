@@ -280,7 +280,7 @@ public class OverviewHelper {
      */
     public void convertImagesToPNG() throws IOException {
         ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
-        for (String ext : projConf.IMG_EXTS) 
+        for (String ext : projConf.ALLOWED_IMG_EXTS) 
             allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
 
         // File depth of 1 -> no recursive (file)listing
@@ -291,7 +291,7 @@ public class OverviewHelper {
         .sorted()
         .forEach(
             fileEntry -> { 
-                if ( FilenameUtils.getExtension(fileEntry.getAbsolutePath()) != projConf.IMG_EXT) {
+                if (FilenameUtils.getExtension(fileEntry.getAbsolutePath()) != projConf.IMG_EXT) {
                     Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
                     Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
                 }
@@ -301,7 +301,8 @@ public class OverviewHelper {
 
     /**
      * Renames all files in the 'original' folder to names that consists of an ascending number of digits (e.g 0001, 0002 ...)
-     * Changes to Filenames is backuped by a file in the project directory
+     * Changes to Filenames is backuped to a file in the project directory
+     *
      * @throws IOException 
      */
     public void renameFiles() throws IOException {
