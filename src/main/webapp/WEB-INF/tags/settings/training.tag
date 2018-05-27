@@ -112,6 +112,90 @@
     <c:when test="${settingsType == 'advanced'}">
         <table class="compact">
             <tbody>
+                <tr>
+                    <td><p>The frequency how often to write checkpoints during training</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--checkpoint_frequency" type="number" />
+                            <label for="--checkpoint_frequency" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Average this many iterations for computing an average loss, label error rate and</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--stats_size" type="number" />
+                            <label for="--stats_size" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
+                        </div>
+                    </td>
+                </tr>
+                 <tr>
+                    <td><p>The default direction of text</p></td>
+                    <td>
+                        <div class="input-field">
+                            <select id="--bidi_dir" name="voter">
+                                <option value="ltr">left to right</option>
+                                <option value="rtl">right to left</option>
+                            </select>
+                            <label></label>
+                        </div>
+                    </td>
+                 </tr>
+                <tr>
+                    <td><p>The batch size to use for training</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--batch_size" type="number" />
+                            <label for="--batch_size" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Padding (left right) of the line</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--pad" type="number" />
+                            <label for="--pad" data-type="int" data-error="Has to be integer">Default: 16 (Integer value)</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>The line height</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--line" type="number" />
+                            <label for="--line" data-type="int" data-error="Has to be integer">Default: 48 (Integer value)</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>The network structure</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--network" type="text" />
+                            <label for="--network" >Default: cnn=40:3x3,pool=2x2,cnn=60:3x3,pool=2x2,lstm=200,dropout=0.5</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Seed for random operations. If negative or zero a 'random' seed is used</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="--seed" type="number" />
+                            <label for="--seed" data-type="int" data-error="Has to be integer">Default: 0</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Do no skip invalid gt, instead raise an exception</p></td>
+                    <td>
+                        <p>
+                            <input type="checkbox" class="filled-in" id="--no_skip_invalid_gt" />
+                            <label for="--no_skip_invalid_gt"></label>
+                        </p>
+                    </td>
+                 </tr>
             </tbody>
         </table>
     </c:when>
