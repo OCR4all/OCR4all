@@ -1,11 +1,13 @@
 package de.uniwue.helper;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
@@ -86,11 +88,46 @@ public class TrainingHelper {
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.getName().endsWith(projConf.GT_EXT))
         .forEach(
-            fileEntry->{
-                if(new File(fileEntry.getAbsolutePath().replace(projConf.GT_EXT, projConf.getImageExtensionByType(projectImageType))).exists())
+            fileEntry -> {
+                if (new File(fileEntry.getAbsolutePath().replace(projConf.GT_EXT, projConf.getImageExtensionByType(projectImageType))).exists())
                     imagesWithGt.add(fileEntry.getAbsolutePath().replace(projConf.GT_EXT, projConf.getImageExtensionByType(projectImageType)));
         });
         return imagesWithGt;
+    }
+
+    /**
+     * Finds next free training identifier
+     * Only necessary if no identifier is specified by the user
+     *
+     * The directory structure is defined by following structure:
+     * PROJ_MODEL_CUSTOM_DIR/PROJECT_NAME/TRAINING_ID
+     *
+     * The identifier is an incremented Integer starting at 0
+     * This function finds the next highest Integer value through directories
+     *
+     * @param projectModelDir Directory that holds the project specific models
+     * @return Next training identifier to use
+     */
+    public String getNextTrainingId(File projectModelDir) {
+        File[] trainingDirectories = projectModelDir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        });
+
+        // Find all values of directories with Integer naming
+        List<Integer> trainingIds = new ArrayList<Integer>();
+        trainingIds.add(-1);
+        for (File trainingDir : trainingDirectories) {
+            try {
+                trainingIds.add(Integer.parseInt(trainingDir.getName()));
+            } catch (NumberFormatException e) {
+                // Ignore directories that have no Integer naming (irrelevant)
+            }
+        }
+
+        return Integer.toString(Collections.max(trainingIds) + 1);
     }
 
     /**
@@ -98,10 +135,26 @@ public class TrainingHelper {
      * Achieved with the help of the external python program  calamari-cross-fold-train"
      *
      * @param cmdArgs Command line arguments for "calamari-cross-fold-train"
+     * @param projectName Name of the project that is currently loaded
+     * @param trainingId Custom identifier to name the training directory
      * @throws IOException
      */
-    public void execute(List<String> cmdArgs) throws IOException {
+    public void execute(List<String> cmdArgs, String projectName, String trainingId) throws IOException {
         trainingRunning = true;
+        progress = 0;
+
+        // Create project specific model directory if not exists
+        File projectModelDir = new File(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR + File.separator + projectName);
+        if (!projectModelDir.exists())
+            projectModelDir.mkdir();
+
+        if (trainingId.isEmpty())
+            trainingId = getNextTrainingId(projectModelDir);
+
+        // Create training specific directory if not exists
+        File trainingDir = new File(projectModelDir.getAbsolutePath() +  File.separator + trainingId);
+        if (!trainingDir.exists())
+            trainingDir.mkdir();
 
         List<String> command = new ArrayList<String>();
         command.add("--files");
@@ -110,12 +163,12 @@ public class TrainingHelper {
         }
         command.addAll(cmdArgs);
         command.add("--best_models_dir");
-        command.add(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR);
+        command.add(trainingDir.getAbsolutePath());
+
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("calamari-cross-fold-train", command, false);
 
-        getProgress();
         trainingRunning = false;
         progress = 100;
     }
