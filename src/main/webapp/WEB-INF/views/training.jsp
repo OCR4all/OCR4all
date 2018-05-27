@@ -10,15 +10,6 @@
                 // Initialize process update and set options
                 initializeProcessUpdate("training", [ 0 ], [ 2 ], true);
 
-                // Set available threads as default 
-                $.get( "ajax/generic/threads" )
-                .done(function( data ) {
-                    if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
-                        return;
-
-                    $('#--parallel').val(data).change();
-                })
-
                 // Fill model dummy select with already existing models
                 $.get( 'ajax/recognition/listModels' )
                 .done(function( data ) {
@@ -30,12 +21,34 @@
                     $("#pretrainingDummySelect").material_select();
                 });
 
+
+                var currentHardwareType = "";
+                // Handle hardware type dropdown menu including default settings
+                $('#hardwareType').on('change', function() {
+                    var type = $(this).val();
+                    // Prevent further actions if the type did not change
+                    if( type == currentHardwareType )
+                        return;
+
+                    if( type == "GPU" ) {
+                        // In case of GPU usage the parallel setting should always be "1"
+                        $('#--max_parallel_models').val(1).change().prop('disabled', true);
+                    }
+                    else {
+                        // Restore default setting
+                        $('#--max_parallel_models').val("").prop('disabled', false).focusin().focusout();
+                    }
+                });
+
+
+                // Helper function to get current amount of folds (uses default value as fallback)
                 function getCurrentFolds() {
                     var folds = parseInt($('#--n_folds').val()) || 0;
                     if( folds <= 0 ) folds = parseInt($('#defaultFolds').val()) || 0;
                     return folds;
                 }
 
+                // Helper functions for dynamic generation of pretraining selection elements
                 function clonePretrainingElement(idSuffix, addAfterElement, spanText) {
                     var newElementId = 'pretrainingTr' + idSuffix;
                     var modelEl = $('#pretrainingDummyTr').clone().prop('id', newElementId);
@@ -56,8 +69,10 @@
                     if( type == currentPretrainingType )
                         return;
 
+                    // First remove all dynamic pretraining elements
                     $('tr[data-id="pretrainingTr"]').not('#pretrainingDummyTr').remove();
-                    if( type == "from_scratch" ) {
+                    // Then create them according to the selected type
+                    if( type == "single_model" ) {
                         clonePretrainingElement("", $('#pretrainingDummyTr'), "All");
                     }
                     else if( type == "multiple_models" ) {
