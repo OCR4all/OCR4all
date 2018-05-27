@@ -122,7 +122,14 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><p>Average this many iterations for computing an average loss, label error rate and</p></td>
+                    <td>
+                        <p>
+                            Average this many iterations for:
+                            <br />
+                            <span class="userInfo">computing an average loss, label error rate and training time</span>
+                            
+                        </p>
+                    </td>
                     <td>
                         <div class="input-field">
                             <input id="--stats_size" type="number" />
@@ -170,16 +177,28 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><p>The network structure</p></td>
+                    <td>
+                        <p>
+                            The network structure
+                            <br />
+                            <span class="userInfo">Example: cnn=40:3x3,pool=2x2,cnn=60:3x3,pool=2x2,lstm=200,dropout=0.5</span>
+                        </p>
+                    </td>
                     <td>
                         <div class="input-field">
                             <input id="--network" type="text" />
-                            <label for="--network" >Default: cnn=40:3x3,pool=2x2,cnn=60:3x3,pool=2x2,lstm=200,dropout=0.5</label>
+                            <label for="--network" >Default: See example in description</label>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td><p>Seed for random operations. If negative or zero a 'random' seed is used</p></td>
+                    <td>
+                        <p>
+                            Seed for random operations
+                            <br />
+                            <span class="userInfo">If negative or zero a 'random' seed is used</span>
+                        </p>
+                    </td>
                     <td>
                         <div class="input-field">
                             <input id="--seed" type="number" />
