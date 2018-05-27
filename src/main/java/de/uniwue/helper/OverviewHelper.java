@@ -319,6 +319,30 @@ public class OverviewHelper {
     }
 
     /**
+     * Adjustments to files so that they correspond to the project standard 
+     * 
+     * @param backup Setting to backup files
+     * @param convertImagesToPNG Setting to convertImages to png
+     * @param renameFiles Setting to rename Files 
+     * @throws IOException
+     */
+    public void adjustFiles(boolean backup, boolean convertImagesToPNG, boolean renameFiles ) throws IOException {
+
+        if (backup) {
+            File backupDir = new File(projConf.BACKUP_IMG_DIR);
+            if(!backupDir.exists()) 
+                backupDir.mkdir();
+            FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
+        }
+
+        if (convertImagesToPNG)
+            convertImagesToPNG();
+
+        if (renameFiles)
+            renameFiles();
+    }
+
+    /**
      * Renames all files in the 'original' folder to names that consists of an ascending number of digits (e.g 0001, 0002 ...)
      * Changes to Filenames is backuped to a file in the project directory
      *

@@ -194,14 +194,14 @@ public class OverviewController {
     }
 
     /**
-     * Response to the request to validate the files
+     * Response to the request to validate the files of the Project
      *
      * @param session Session of the user
      * @param response Response to the request
      * @return Returns the status of the filename check
      */
     @RequestMapping(value ="/ajax/overview/validateProject" , method = RequestMethod.GET)
-    public @ResponseBody boolean checkFiles(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody boolean validateProject(HttpSession session, HttpServletResponse response) {
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null)
             return false;
@@ -216,19 +216,19 @@ public class OverviewController {
     }
 
     /**
-     * Response to rename the filenames according to the project standard
+     * Response to adjust the files according to the project standard
      *
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value ="/ajax/overview/renameFiles" , method = RequestMethod.GET)
-    public @ResponseBody void renameFiles(HttpSession session, HttpServletResponse response) {
+    @RequestMapping(value ="/ajax/overview/adjustProjectFiles" , method = RequestMethod.GET)
+    public @ResponseBody void adjustFiles(HttpSession session, HttpServletResponse response) {
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null)
             return;
 
         try {
-            overviewHelper.renameFiles();
+            overviewHelper.adjustFiles(true, true, true);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();

@@ -128,6 +128,10 @@ public final class ProjectConfiguration {
      */
     public String ORIG_IMG_DIR = "Original" + File.separator;
     /**
+     * Absolute path to original page images (is made absolute in Constructor)
+     */
+    public String BACKUP_IMG_DIR = "Backup" + File.separator;
+    /**
      * Absolute path to preprocessing directory (is made absolute in Constructor)
      */
     public String PREPROC_DIR = "PreProc" + File.separator;

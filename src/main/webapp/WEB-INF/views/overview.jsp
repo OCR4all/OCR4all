@@ -140,7 +140,7 @@
 
                 // Execute file rename only after the user agreed
                 $('#agree').click(function() {
-                    $.get( "ajax/overview/renameFiles" )
+                    $.get( "ajax/overview/adjustProjectFiles" )
                     .done(function( data ) {
                         datatable();
                     })
