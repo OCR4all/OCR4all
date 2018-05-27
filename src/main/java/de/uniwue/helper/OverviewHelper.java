@@ -370,26 +370,13 @@ public class OverviewHelper {
             Format = Format + 0;
         DecimalFormat df = new DecimalFormat(Format);
 
-        //File which contains the information about the renaming
-        File backupFilename = new File(projConf.PROJECT_DIR + new SimpleDateFormat("ssmmHHddMMyyyy'.txt'").format(new Date()));
-        //name of files, which will be renamed
-        TreeMap<File, File> hm = new TreeMap<File, File>();
         int i = 1;
-        String writeFilenamesToFile = "";
         for (File file : ListofFiles) {
-            File newname = new File(projConf.ORIG_IMG_DIR + df.format(i) + projConf.IMG_EXT);
-            if (!newname.getName().equals(file.getName())) {
-                hm.put(file, newname);
-                writeFilenamesToFile = writeFilenamesToFile + file.getName() + " renamed to " + newname.getName() + "\n";
+            if (!file.getName().equals(projConf.ORIG_IMG_DIR + df.format(i) + projConf.IMG_EXT)) {
+                file.renameTo(new File(projConf.ORIG_IMG_DIR + df.format(i) + projConf.IMG_EXT));
             }
             i++;
         }
-        // writing backup filenames to file
-        FileUtils.writeStringToFile(backupFilename,writeFilenamesToFile,"UTF-8", true);
 
-        // renaming files
-        for (File file : hm.keySet()) {
-            file.renameTo(hm.get(file));
-        }
     }
 }
