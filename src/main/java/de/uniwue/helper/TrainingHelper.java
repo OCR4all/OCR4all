@@ -9,6 +9,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
@@ -151,6 +154,8 @@ public class TrainingHelper {
         if (trainingId.isEmpty())
             trainingId = getNextTrainingId(projectModelDir);
 
+        deleteOldFiles(projectName, trainingId);
+
         // Create training specific directory if not exists
         File trainingDir = new File(projectModelDir.getAbsolutePath() +  File.separator + trainingId);
         if (!trainingDir.exists())
@@ -179,6 +184,32 @@ public class TrainingHelper {
     public void resetProgress() {
         trainingRunning = false;
         progress = -1;
+    }
+
+    /** Checks if process related files already exist
+     * 
+     * @param projectName
+     * @param trainingId
+     * @return
+     */
+    public boolean doOldFilesExist(String projectName, String trainingId) {
+        File projectModelDir = new File(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR + File.separator + projectName + File.separator + trainingId);
+        if (projectModelDir.exists())
+            return true;
+
+        return false;
+    }
+
+    /**
+     * Deletion of old process related files
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @throws IOException
+     */
+    public void deleteOldFiles(String projectName, String trainingId) throws IOException {
+        File projectModelDir = new File(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR + File.separator + projectName + File.separator + trainingId);
+        if (projectModelDir.exists())
+            FileUtils.deleteDirectory(projectModelDir);
     }
 
     /**

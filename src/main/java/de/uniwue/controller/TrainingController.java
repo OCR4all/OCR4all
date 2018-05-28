@@ -155,4 +155,24 @@ public class TrainingController {
             return trainingHelper.getProcessHandler().getConsoleErr();
         return trainingHelper.getProcessHandler().getConsoleOut();
     }
+
+    /**
+     * Response to the request to check if old process related files exist
+     *
+     * @param trainingId TrainingId of the model
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Information if files exist
+     */
+    @RequestMapping(value = "/ajax/training/exists" , method = RequestMethod.GET)
+    public @ResponseBody boolean filesExists(
+               @RequestParam(value = "trainingId") String trainingId,
+               HttpSession session, HttpServletResponse response
+            ) {
+        TrainingHelper trainingHelper = provideHelper(session, response);
+        if (trainingHelper == null)
+            return false;
+
+        return trainingHelper.doOldFilesExist(session.getAttribute("projectName").toString(), trainingId);
+    }
 }
