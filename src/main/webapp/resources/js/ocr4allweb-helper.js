@@ -17,10 +17,10 @@ function handleCollapsibleEntry(entryId, action, collapsibleEl) {
     var collapsibleEntry = $(collapsibleEl).children('li').children('.collapsible-header').eq(entryId);
     if( $(collapsibleEntry).hasClass('active') === activeCheck ) {
         $(collapsibleEl).collapsible('open', entryId);
-    }
 
-    // Trigger change event in case the current page uses an imageList (resizing functionality)
-    $(collapsibleEntry).change();
+        // Trigger change event in case the current page uses an imageList (resizing functionality)
+        $(collapsibleEntry).change();
+    }
 }
 
 // Open the given collapsible entries and close the remaining ones
