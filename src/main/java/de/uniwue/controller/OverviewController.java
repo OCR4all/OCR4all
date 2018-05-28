@@ -174,6 +174,7 @@ public class OverviewController {
         if (overviewHelper == null)
             return false;
 
+        overviewHelper.resetProgress();
         return overviewHelper.checkProjectDir();
     }
 

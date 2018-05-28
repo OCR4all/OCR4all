@@ -489,4 +489,12 @@ public class OverviewHelper {
     public void cancelProcess() {
         stopProcess = true;
     }
+
+    /**
+     * Resets the progress (use if an error occurs)
+     */
+    public void resetProgress() {
+        overviewRunning = false;
+        progress = -1;
+    }
 }

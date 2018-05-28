@@ -14,9 +14,6 @@
                 // Initialize project data selection
                 initializeProjectDataSelection('ajax/overview/listProjects');
 
-                // 
-                //initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
-
                 var datatableReloadIntveral = null;
                 // Responsible for initializing and updating datatable contents
                 function datatable(){
@@ -96,9 +93,7 @@
                                              }
                                              else {
                                                  // Load datatable after the last process update is surely finished
-                                                 setTimeout(function() {
                                                      datatable();
-                                                 }, 2000);
                                              }
                                          }
                                          else{
