@@ -9,6 +9,8 @@
             $(document).ready(function() {
                 // Initialize process update and set options
                 initializeProcessUpdate("training", [ 0 ], [ 2 ], true);
+                // No progress calculation possible, so hide the progress-bar
+                $('.progress').hide();
 
                 // Fill model dummy select with already existing models
                 $.get( 'ajax/recognition/listModels' )

@@ -15,6 +15,8 @@
 
                 // Initialize process update and set options
                 initializeProcessUpdate("evaluation", [ 0 ], [ 2 ], true)
+                // No progress calculation possible, so hide the progress-bar
+                $('.progress').hide();
 
                 // Set available threads as default 
                 $.get( "ajax/generic/threads" )
