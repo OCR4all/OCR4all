@@ -63,7 +63,7 @@ public final class ProjectConfiguration {
     /**
      * Allowed image extensions of the project
      */
-    public final String[] ALLOWED_IMG_EXTS = new String[] {".png", ".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".tiff", ".TIFF", ".bmp", ".BMP"};
+    public final String[] CONVERT_IMG_EXTS = new String[] {".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".tiff", ".TIFF", ".bmp", ".BMP"};
     /**
      * Binary image extension of the project
      */

@@ -7,9 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -238,38 +236,40 @@ public class OverviewHelper {
     }
 
     /**
-     * Checks if all filenames are using the project file naming e.g (0001, 0002 ... XXXX) and file Extension is IMG_EXT
+     * Checks if all filenames have the correct IMG_EXT and the project file naming e.g (0001, 0002 ... XXXX)
      *
-     * @return true = all files are using project naming, false = files are not using project naming
+     * @return Project validation status
      * @throws IOException 
      */
     public boolean isProjectValid() throws IOException {
-        boolean status = false;
         ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
-        for (String ext : projConf.ALLOWED_IMG_EXTS) {
-            if (!ext.equals(projConf.IMG_EXT))
-                allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
-        }
-        ArrayList<File> filesWithAllowedImgExts = new ArrayList<File>();
+        for (String ext : projConf.CONVERT_IMG_EXTS)
+            allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
+
+        ArrayList<File> imagesToConvert = new ArrayList<File>();
         // File depth of 1 -> no recursive (file)listing
         Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.isFile())
-        .filter(allPredicates.stream().reduce(w -> true, Predicate::or))
+        .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
         .sorted()
         .forEach(
             fileEntry -> { 
-                filesWithAllowedImgExts.add(fileEntry);
+                imagesToConvert.add(fileEntry);
             }
         );
-        if (filesWithAllowedImgExts.size() > 0)
+
+        // Check for images with incorrect format
+        if (imagesToConvert.size() > 0)
             return false;
 
-        File[] filesFilterd = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}" + projConf.IMG_EXT);
-        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
-        if (filesFilterd.length == files.length) 
-            status = true;
-        return status;
+        File[] imagesWithCorrectNaming = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}" + projConf.IMG_EXT);
+        File[] imagesAll = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
+        // Check for images with incorrect naming
+        if (imagesWithCorrectNaming.length != imagesAll.length) 
+            return false;
+
+        return true;
     }
 
     /**
@@ -299,21 +299,19 @@ public class OverviewHelper {
      */
     public void convertImagesToPNG() throws IOException {
         ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
-        for (String ext : projConf.ALLOWED_IMG_EXTS) 
+        for (String ext : projConf.CONVERT_IMG_EXTS) 
             allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
 
         // File depth of 1 -> no recursive (file)listing
         Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.isFile())
-        .filter(allPredicates.stream().reduce(w -> true, Predicate::or))
+        .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
         .sorted()
         .forEach(
             fileEntry -> { 
-                if (FilenameUtils.getExtension(fileEntry.getAbsolutePath()) != projConf.IMG_EXT) {
-                    Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
-                    Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
-                }
+                Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
+                Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
             }
         );
     }
@@ -322,16 +320,16 @@ public class OverviewHelper {
      * Adjustments to files so that they correspond to the project standard 
      * 
      * @param backup Setting to backup files
-     * @param convertImagesToPNG Setting to convertImages to png
+     * @param convertImagesToPNG Setting to convertImages to IMG_EXT
      * @param renameFiles Setting to rename Files 
      * @throws IOException
      */
-    public void adjustFiles(boolean backup, boolean convertImagesToPNG, boolean renameFiles ) throws IOException {
-
+    public void adjustFiles(boolean backup, boolean convertImagesToPNG, boolean renameFiles) throws IOException {
         if (backup) {
             File backupDir = new File(projConf.BACKUP_IMG_DIR);
             if(!backupDir.exists()) 
                 backupDir.mkdir();
+
             FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
         }
 
@@ -344,12 +342,11 @@ public class OverviewHelper {
 
     /**
      * Renames all files in the 'original' folder to names that consists of an ascending number of digits (e.g 0001, 0002 ...)
-     * Changes to Filenames is backuped to a file in the project directory
      *
      * @throws IOException 
      */
     public void renameFiles() throws IOException {
-        ArrayList<File> ListofFiles = new ArrayList<File>();
+        ArrayList<File> imageFiles = new ArrayList<File>();
         // File depth of 1 -> no recursive (file)listing
         Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
         .map(Path::toFile)
@@ -357,26 +354,26 @@ public class OverviewHelper {
         .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
         .sorted()
         .forEach(
-            fileEntry -> { ListofFiles.add(fileEntry);
-            }
+            fileEntry -> { imageFiles.add(fileEntry); }
         );
 
-        int minimumFormatLength = String.valueOf(ListofFiles.size()).length();
+        int minimumFormatLength = String.valueOf(imageFiles.size()).length();
         // File names must consist of at least four digits
-        if(minimumFormatLength < projConf.minimumNameLength)
+        if (minimumFormatLength < projConf.minimumNameLength)
             minimumFormatLength = projConf.minimumNameLength;
-        String Format = "";
+
+        // Build formatting possibility
+        String format = "";
         for (int i = 1; i <= minimumFormatLength; i++)
-            Format = Format + 0;
-        DecimalFormat df = new DecimalFormat(Format);
+            format = format + 0;
+        DecimalFormat df = new DecimalFormat(format);
 
-        int i = 1;
-        for (File file : ListofFiles) {
-            if (!file.getName().equals(projConf.ORIG_IMG_DIR + df.format(i) + projConf.IMG_EXT)) {
-                file.renameTo(new File(projConf.ORIG_IMG_DIR + df.format(i) + projConf.IMG_EXT));
+        int formattingCounter = 1;
+        for (File file : imageFiles) {
+            if (!file.getName().equals(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.IMG_EXT)) {
+                file.renameTo(new File(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.IMG_EXT));
             }
-            i++;
+            formattingCounter++;
         }
-
     }
 }

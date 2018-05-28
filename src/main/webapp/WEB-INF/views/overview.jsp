@@ -83,7 +83,7 @@
                                 if( data === true ) {
 
                                     // Check if filenames match project specific naming convention
-                                    $.get( "ajax/overview/validateSelect?", ajaxParams )
+                                    $.get( "ajax/overview/validateProject?", ajaxParams )
                                     .done(function( data ) {
                                          if( data === true ) {
                                              // Two scenarios for loading overview page:
