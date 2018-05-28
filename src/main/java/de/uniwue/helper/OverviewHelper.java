@@ -60,6 +60,30 @@ public class OverviewHelper {
     private ProcessStateCollector procStateCol;
 
     /**
+     * Structure to monitor the progress of the process
+     * pageId : processedState
+     *
+     * Structure example:
+     * {
+     *     "0002.png": true,
+     *         "backup" : true,
+     *         "pngConversion" : false,
+     *     ...
+     * }
+     */
+    private TreeMap<String, TreeMap<String, Boolean>> processState;
+
+    /**
+     * Progress of the Line Segmentation process
+     */
+    private int progress = -1;
+
+    /**
+     * Indicates if a Line Segmentation process is already running
+     */
+    private boolean overviewRunning = false;
+
+    /**
      * Constructor
      *
      * @param pathToProject  Absolute path of the project on the filesystem
@@ -367,11 +391,84 @@ public class OverviewHelper {
      * @throws IOException
      */
     public void execute(boolean backupImages) throws IOException {
+        overviewRunning = true;
+        progress = 0;
+        initializeProcessState();
         if (backupImages)
             FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
 
         convertImagesToPNG();
         renameFiles();
+        getProgress();
+        overviewRunning = false;
+        progress = 100;
+    }
+
+    /**
+     * Initializes the structure with which the progress of the process can be monitored
+     *
+     * @param pageIds Identifiers of the pages 
+     * @throws IOException
+     */
+    public void initializeProcessState() throws IOException {
+        // Initialize the status structure
+        processState = new TreeMap<String, TreeMap<String, Boolean>>();
+        ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
+        for (String ext : projConf.CONVERT_IMG_EXTS) 
+            allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
+        allPredicates.add(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT));
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+        .map(Path::toFile)
+        .filter(fileEntry -> fileEntry.isFile())
+        .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
+        .sorted()
+        .forEach(
+            fileEntry -> { 
+                TreeMap<String, Boolean> status = new TreeMap<String, Boolean>();
+                status.put("backup", false);
+                status.put("pngConversion", false);
+                processState.put(fileEntry.getName(),status);
+            }
+        );
+    }
+
+    /**
+     * Returns the progress of the process
+     *
+     * @return Progress percentage
+     */
+    public int getProgress() {
+        // Prevent function from calculation progress if process is not running
+        if (overviewRunning == false)
+            return progress;
+
+        int files = 0;
+        int processedFiles = 0;
+
+        for (String fileName : processState.keySet()) {
+            for (String processType : processState.get(fileName).keySet()) {
+                files += 1;
+
+                if (processState.get(fileName).get(processType) == true) {
+                    processedFiles += 1;
+                    continue;
+                }
+
+                if (processType == "backup") {
+                    if ( new File(projConf.BACKUP_IMG_DIR + fileName).exists())
+                        processState.get(fileName).put(processType, true);
+                }
+
+                if (processType == "pngConversion") {
+                    if (new File(projConf.ORIG_IMG_DIR + FilenameUtils.removeExtension(fileName) + projConf.IMG_EXT).exists())
+                        processState.get(fileName).put(processType, true);
+                }
+            }
+        }
+
+        // Safe check, in case Files were not adjusted
+        return (progress != 100) ? (int) ((double) processedFiles / files * 100) : 100;
     }
 
 }
