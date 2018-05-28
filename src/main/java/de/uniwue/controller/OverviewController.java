@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import de.uniwue.helper.DespecklingHelper;
 import de.uniwue.helper.OverviewHelper;
 import de.uniwue.model.PageOverview;
 
