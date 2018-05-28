@@ -370,9 +370,20 @@ public class RecognitionHelper {
      * Consider the subsequent information to load models correctly
      *
      * Possible model location directories:
-     * - ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR
-     * - ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR
-     * 
+     * ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR
+     * ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR
+     *
+     * Model path structures on the filesystem:
+     * Default: OS_PATH/{TRAINING_IDENTIFIER}/{ID}.ckpt.json
+     * Custom:  OS_PATH/{PROJECT_NAME}/{TRAINING_IDENTIFIER}/{ID}.ckpt.json
+     *
+     * Example: /var/ocr4all/models/default/Baiter_000/Baiter.ckpt.json
+     * Display: Baiter_000/Baiter
+     * Example: /var/ocr4all/models/custom/Bibel/0/0.ckpt.json
+     * Display: Bibel/0/0
+     * Example: /var/ocr4all/models/custom/Bibel/heading/0.ckpt.json
+     * Display: Bibel/heading/0
+     *
      * The models need to be in the following structure:
      * ANY_PATH/{MODEL_NAME}/ANY_NAME.ckpt.json
      *
@@ -392,10 +403,11 @@ public class RecognitionHelper {
         .filter(fileEntry -> fileEntry.getName().endsWith(ProjectConfiguration.MODEL_EXT))
         .forEach(
             fileEntry -> {
-                // Replace model path to only show the relative path of each model (significant information)
-                String modelName = fileEntry.getParentFile().getAbsolutePath();
+                // Remove OS path and model extension from display string (only display significant information)
+                String modelName = fileEntry.getAbsolutePath();
                 modelName = modelName.replace(ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR, "");
                 modelName = modelName.replace(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR, "");
+                modelName = modelName.replace(ProjectConfiguration.MODEL_EXT, "");
 
                 models.put(modelName, fileEntry.getAbsolutePath());
         });
