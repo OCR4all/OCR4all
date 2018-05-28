@@ -145,30 +145,31 @@
                         $('#modal_inputerror').modal('open');
                         return;
                     }
-
-                    //TODO: Implement exists modal if necessary or remove this code part
-                    //$.get( "ajax/training/exists?" )
-                    //.done(function( data ) {
-                    //    if( data === false ) {
-                            // Execute Training process
-                            executeProcess(getExtendedInputParams());
-                    //    }
-                    //    else {
-                    //        $('#modal_exists').modal('open');
-                    //    }
-                    //})
-                    //.fail(function( data ) {
-                    //    $('#modal_exists_failed').modal('open');
-                    //});
+                    if ($('#trainingId').val() !== "") {
+                        $.get( "ajax/training/exists?" , { "trainingId" : $('#trainingId').val() })
+                        .done(function( data ) {
+                            if( data === false ) {
+                                // Execute Training process
+                                executeProcess(getExtendedInputParams());
+                            }
+                            else {
+                                $('#modal_exists_training').modal('open');
+                            }
+                        })
+                        .fail(function( data ) {
+                            $('#modal_exists_failed').modal('open');
+                        });
+                    }
+                    else
+                        executeProcess(getExtendedInputParams());
                 });
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
                 });
-                //TODO: Implement exists modal if necessary or remove this code part
-                //$('#agree').click(function() {
+                $('#agree').click(function() {
                     // Execute Training process
-                //    executeProcess(getExtendedInputParams());
-                //});
+                    executeProcess(getExtendedInputParams());
+                });
             });
         </script>
     </t:head>
@@ -224,6 +225,20 @@
                     Cancel
                     <i class="material-icons right">cancel</i>
                 </button>
+            </div>
+        </div>
+        <!-- Execute failed -->
+        <div id="modal_exists_training" class="modal">
+            <div class="modal-content red-text">
+                <h4 class="red-text">Attention</h4>
+                <p>
+                    There already exists related files for the selected training identifier<br/>
+                    If you agree these old process related files will be removed before the execution.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Disagree</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
     </t:body>
