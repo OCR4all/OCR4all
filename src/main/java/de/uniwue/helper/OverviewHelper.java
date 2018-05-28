@@ -74,14 +74,19 @@ public class OverviewHelper {
     private TreeMap<String, TreeMap<String, Boolean>> processState;
 
     /**
-     * Progress of the Line Segmentation process
+     * Progress of the overview process
      */
     private int progress = -1;
 
     /**
-     * Indicates if a Line Segmentation process is already running
+     * Indicates if an overview process is already running
      */
     private boolean overviewRunning = false;
+
+    /**
+     * Indicates if the process should be cancelled
+     */
+    private boolean stopProcess = false;
 
     /**
      * Constructor
@@ -322,6 +327,8 @@ public class OverviewHelper {
      * @throws IOException 
      */
     public void convertImagesToPNG() throws IOException {
+        if (stopProcess == true)
+            return;
         ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
         for (String ext : projConf.CONVERT_IMG_EXTS) 
             allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
@@ -334,6 +341,8 @@ public class OverviewHelper {
         .sorted()
         .forEach(
             fileEntry -> { 
+                if (stopProcess == true)
+                    return;
                 Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
                 // Convert and save as new image file
                 Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
@@ -353,6 +362,8 @@ public class OverviewHelper {
      * @throws IOException 
      */
     public void renameFiles() throws IOException {
+        if (stopProcess == true)
+            return;
         ArrayList<File> imageFiles = new ArrayList<File>();
         // File depth of 1 -> no recursive (file)listing
         Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
@@ -377,6 +388,8 @@ public class OverviewHelper {
 
         int formattingCounter = 1;
         for (File file : imageFiles) {
+            if (stopProcess == true)
+                return;
             if (!file.getName().equals(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.IMG_EXT)) {
                 file.renameTo(new File(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.IMG_EXT));
             }
@@ -396,7 +409,6 @@ public class OverviewHelper {
         initializeProcessState();
         if (backupImages)
             FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
-
         convertImagesToPNG();
         renameFiles();
         getProgress();
@@ -471,4 +483,10 @@ public class OverviewHelper {
         return (progress != 100) ? (int) ((double) processedFiles / files * 100) : 100;
     }
 
+    /**
+     * Cancels the process
+     */
+    public void cancelProcess() {
+        stopProcess = true;
+    }
 }

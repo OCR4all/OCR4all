@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.uniwue.helper.DespecklingHelper;
 import de.uniwue.helper.OverviewHelper;
-import de.uniwue.helper.SegmentationPixelClassifierHelper;
 import de.uniwue.model.PageOverview;
 
 /**
@@ -261,6 +261,7 @@ public class OverviewController {
     public @ResponseBody TreeMap<String, String> listProjects(HttpSession session, HttpServletResponse response) {
         return OverviewHelper.listProjects();
     }
+
     /**
      * Response to the request to return the progress status of the adjust files service
      *
@@ -273,6 +274,21 @@ public class OverviewController {
         if (overviewHelper == null)
             return -1;
 
-        return 0; //overviewHelper.getProgress();
+        return overviewHelper.getProgress();
+    }
+
+    /**
+     * Response to the request to cancel the overview process
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value = "/ajax/overview/cancel", method = RequestMethod.POST)
+    public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null)
+            return;
+
+        overviewHelper.cancelProcess();
     }
 }
