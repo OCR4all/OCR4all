@@ -145,11 +145,13 @@
                         $('#modal_inputerror').modal('open');
                         return;
                     }
+
+                    // In case of a custom training identifier, check for existance first
                     if ($('#trainingId').val() !== "") {
                         $.get( "ajax/training/exists?" , { "trainingId" : $('#trainingId').val() })
                         .done(function( data ) {
                             if( data === false ) {
-                                // Execute Training process
+                                // Execute Training process (training identifier does not exist)
                                 executeProcess(getExtendedInputParams());
                             }
                             else {
@@ -160,8 +162,10 @@
                             $('#modal_exists_failed').modal('open');
                         });
                     }
-                    else
+                    else {
+                        // Execute Training process directly
                         executeProcess(getExtendedInputParams());
+                    }
                 });
                 $('button[data-id="cancel"]').click(function() {
                     cancelProcess();
@@ -227,13 +231,14 @@
                 </button>
             </div>
         </div>
-        <!-- Execute failed -->
+
+        <!-- A directory with the given training identifier already exists -->
         <div id="modal_exists_training" class="modal">
             <div class="modal-content red-text">
                 <h4 class="red-text">Attention</h4>
                 <p>
-                    There already exists related files for the selected training identifier<br/>
-                    If you agree these old process related files will be removed before the execution.
+                    There already exist related files for the given training identifier.<br/>
+                    If you agree, these old process related files will be removed before the execution.
                 </p>
             </div>
             <div class="modal-footer">
