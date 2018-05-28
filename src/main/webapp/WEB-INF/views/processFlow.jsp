@@ -32,7 +32,8 @@
                             case "preprocessing":
                             case "lineSegmentation":
                             case "recognition":
-                                processSettings[process] = getInputParams(process);
+                                // Pass appropriate settings element to select parameters from
+                                processSettings[process] = getInputParams($('[data-id="settings"]').find('[data-id="' + process + '"]'));
                                 break;
                             case "despeckling":
                                 processSettings[process] =
