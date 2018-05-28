@@ -71,9 +71,7 @@ RUN for CALAMARI_SCRIPT in `cd /usr/local/bin && ls calamari-*`; \
 RUN ln -s /opt/OCR4all_Web/src/main/resources/pagedir2pagexml.py /bin/pagedir2pagexml.py
 
 # Make pretrained CALAMARI models available to the project environment
-RUN for CALAMARI_MODEL in `cd /opt/OCR4all_Web/src/main/resources/calamari_models && ls -d */ | cut -d'/' -f1`; \
-        do ln -s /opt/OCR4all_Web/src/main/resources/calamari_models/$CALAMARY_MODEL /var/ocr4all/models/default/$CALAMARI_MODEL; \
-    done
+RUN ln -s /opt/OCR4all_Web/src/main/resources/calamari_models/default /var/ocr4all/models/default/default; 
 
 # Start server when container is started
 # Enviroment variable
