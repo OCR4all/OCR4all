@@ -34,11 +34,11 @@
 
                     if( type == "GPU" ) {
                         // In case of GPU usage the parallel setting should always be "1"
-                        $('#--max_parallel_models').val(1).change().prop('disabled', true);
+                        $('#training--max_parallel_models').val(1).change().prop('disabled', true);
                     }
                     else {
                         // Restore default setting
-                        $('#--max_parallel_models').val("").prop('disabled', false).focusin().focusout();
+                        $('#training--max_parallel_models').val("").prop('disabled', false).focusin().focusout();
                     }
                 });
 

@@ -28,7 +28,7 @@
                     .done(function( data ){
                         if(data === false){
                             var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
-                                    "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages,  "parallel" : $('input[id="--parallel"]').val() };
+                                    "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages,  "parallel" : $('input[data-setting="--parallel"]').val() };
                             // Execute regionExtraction process
                             executeProcess(ajaxParams);
                         }
@@ -58,7 +58,7 @@
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;
 
-                    $('#--parallel').val(data).change();
+                    $('#regionExtraction--parallel').val(data).change();
                 })
             });
         </script>

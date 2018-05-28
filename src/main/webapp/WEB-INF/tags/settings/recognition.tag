@@ -10,15 +10,15 @@
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--processes" type="number" />
-                            <label for="--processes" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                            <input id="recognition--processes" data-setting="--processes" type="number" />
+                            <label for="recognition--processes" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td><p>Line recognition models</p></td>
                     <td>
-                        <select multiple="multiple" id="--checkpoint" name="--checkpoint[]"></select>
+                        <select multiple="multiple" data-setting="--checkpoint" id="recognition--checkpoint" name="--checkpoint[]"></select>
                     </td>
                 </tr>
             </tbody>
@@ -32,8 +32,8 @@
                     <td><p>Print additional information</p></td>
                     <td>
                         <p>
-                            <input type="checkbox" class="filled-in" id="--verbose" checked="checked"/>
-                            <label for="--verbose"></label>
+                            <input type="checkbox" class="filled-in" data-setting="--verbose" id="recognition--verbose" checked="checked"/>
+                            <label for="recognition--verbose"></label>
                         </p>
                     </td>
                  </tr>
@@ -41,8 +41,8 @@
                     <td><p>Number of lines to process in parallel (Batch size)</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--batch_size" type="number" step="1" />
-                            <label for="--batch_size" data-type="int" data-error="Has to be Int">Default: 1</label>
+                            <input id="recognition--batch_size" data-setting="--batch_size" type="number" step="1" />
+                            <label for="recognition--batch_size" data-type="int" data-error="Has to be Int">Default: 1</label>
                         </div>
                     </td>
                 </tr>
@@ -50,7 +50,7 @@
                     <td><p>The voting algorithm to use</p></td>
                     <td>
                         <div class="input-field">
-                            <select id="--voter" name="voter">
+                            <select id="recognition--voter" data-setting="--voter" name="voter">
                                 <option value="confidence_voter_default_ctc">confidence_voter_default_ctc</option>
                                 <option value="confidence_voter_fuzzy_ctc">confidence_voter_fuzzy_ctc</option>
                                 <option value="sequence_voter">sequence_voter</option>

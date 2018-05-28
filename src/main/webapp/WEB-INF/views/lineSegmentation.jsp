@@ -19,7 +19,7 @@
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;
 
-                    $('#--parallel').val(data).change();
+                    $('#lineSegmentation--parallel').val(data).change();
                 })
 
                 // Initialize process update and set options

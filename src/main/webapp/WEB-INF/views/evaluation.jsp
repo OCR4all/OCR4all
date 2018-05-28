@@ -24,7 +24,7 @@
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;
 
-                    $('#--num_threads').val(data).change();
+                    $('#evaluation--num_threads').val(data).change();
                 })
 
                 $('button[data-id="execute"]').click(function() {

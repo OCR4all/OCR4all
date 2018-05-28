@@ -8,7 +8,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 // Initialize recognition model selection
-                initializeRecModelSelect('#--checkpoint');
+                initializeRecModelSelect('#recognition--checkpoint');
 
                 // Load image list
                 initializeImageList("Original");
@@ -48,7 +48,7 @@
                                     "spacing" : $('input[id="spacing"]').val(),
                                     "usespacing" : $('input[id=usespacing]').prop('checked'),
                                     "avgbackground" : $('input[id=avgbackground]').prop('checked'),
-                                    "parallel" : $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find('#--parallel').val()
+                                    "parallel" : $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find($('[data-setting="--parallel"]')).val()
                                 };
                                 break;
                             default: break;
@@ -60,10 +60,7 @@
                 // Handle all parallel settings at once
                 $('#parallelGlobal').on('change', function() {
                     var parallelSetting = $('#parallelGlobal').val();
-                    $('.collapsible[data-id="settings"] li[data-id="preprocessing"]').find('#--parallel').val(parallelSetting).change();
-                    $('.collapsible[data-id="settings"] li[data-id="recognition"]').find('#--parallel').val(parallelSetting).change();
-                    $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find('#--parallel').val(parallelSetting).change();
-                    $('.collapsible[data-id="settings"] li[data-id="lineSegmentation"]').find('#--parallel').val(parallelSetting).change();
+                    $('[data-setting="--parallel"]').val(parallelSetting).change();
                 });
                 // Set available threads as default 
                 $.get( "ajax/generic/threads" )

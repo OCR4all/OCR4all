@@ -10,8 +10,8 @@
                     <td><p>Disable error checking on inputs</p></td>
                     <td>
                             <p>
-                               <input type="checkbox" class="filled-in" id="--nocheck" checked="checked"/>
-                               <label for="--nocheck"></label>
+                               <input type="checkbox" class="filled-in" id="lineSegmentation--nocheck" data-setting="--nocheck" checked="checked"/>
+                               <label for="lineSegmentation--nocheck"></label>
                             </p>
                     </td>
                 </tr>
@@ -19,8 +19,8 @@
                     <td><p>Use gaussian instead of uniform</p></td>
                     <td>
                              <p>
-                                <input type="checkbox" class="filled-in" id="--usegauss" checked="checked"/>
-                                <label for="--usegauss"></label>
+                                <input type="checkbox" class="filled-in" id="lineSegmentation--usegauss" data-setting="--usegauss" checked="checked"/>
+                                <label for="lineSegmentation--usegauss"></label>
                              </p>
                     </td>
                 </tr>
@@ -35,8 +35,8 @@
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="--maxcolseps" type="number" step="0.1" value="3" />
-                            <label for="--maxcolseps" data-type="float" data-error="Has to be float">Default: 3</label>
+                            <input id="lineSegmentation--maxcolseps" data-setting="--maxcolseps" type="number" step="0.1" value="3" />
+                            <label for="lineSegmentation--maxcolseps" data-type="float" data-error="Has to be float">Default: 3</label>
                         </div>
                     </td>
                 </tr>
@@ -45,8 +45,8 @@
                     <td>
                              <c:if test='${imageType == "Gray"}'><c:set value='checked="checked"' var="setCheckboxImageType"></c:set></c:if>
                              <p>
-                                 <input type="checkbox" class="filled-in" id="--gray" ${setCheckboxImageType}/>
-                                 <label for="--gray"></label>
+                                 <input type="checkbox" class="filled-in" data-setting="--gray" id="lineSegmentation--gray" ${setCheckboxImageType}/>
+                                 <label for="lineSegmentation--gray"></label>
                              </p>
                     </td>
                 </tr>
@@ -54,8 +54,8 @@
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
                          <div class="input-field">
-                             <input id="--parallel" type="number" step="1" />
-                             <label for="--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                             <input id="lineSegmentation--parallel" data-setting="--parallel" type="number" step="1" />
+                             <label for="lineSegmentation--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
                         </div>
                     </td>
                 </tr>
@@ -74,8 +74,8 @@
                                 <td><p>Zoom for page background estimation, smaller=faster</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--zoom" type="number" step="0.1" />
-                                        <label for="--zoom" data-type="float" data-error="Has to be float">Default: 0.5</label>
+                                        <input id="lineSegmentation--zoom" data-setting="--zoom" type="number" step="0.1" />
+                                        <label for="lineSegmentation--zoom" data-type="float" data-error="Has to be float">Default: 0.5</label>
                                     </div>
                                 </td>
                             </tr>
@@ -92,8 +92,8 @@
                                 <td><p>Minimum scale permitted</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--minscale" type="number" step="1" />
-                                        <label for="--minscale" data-type="int" data-error="Has to be integer">Default: 12</label>
+                                        <input id="lineSegmentation--minscale" data-setting="--minscale" type="number" step="1" />
+                                        <label for="lineSegmentation--minscale" data-type="int" data-error="Has to be integer">Default: 12</label>
                                     </div>
                                 </td>
                             </tr>
@@ -101,8 +101,8 @@
                                 <td><p>Maximum # lines permitted</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--maxlines" type="number" step="10" />
-                                        <label for="--maxlines" data-type="int" data-error="Has to be integer">Default: 300</label>
+                                        <input id="lineSegmentation--maxlines" data-setting="--maxlines" type="number" step="10" />
+                                        <label for="lineSegmentation--maxlines" data-type="int" data-error="Has to be integer">Default: 300</label>
                                     </div>
                                 </td>
                             </tr>
@@ -119,8 +119,8 @@
                                 <td><p>The basic scale of the document (roughly, xheight) </p></td>
                                 <td>
                                     <div class="input-field">
-                                    <input id="--scale" type="number" step="0.1" />
-                                    <label for="--scale" data-type="float" data-error="Has to be float">Default: 0</label>
+                                    <input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.1" />
+                                    <label for="lineSegmentation--scale" data-type="float" data-error="Has to be float">Default: 0</label>
                                     </div>
                                 </td>
                             </tr>
@@ -128,7 +128,7 @@
                                 <td><p>Non-standard scaling of horizontal parameters</p></td>
                                 <td>
                                     <div class="input-field">
-                                    <input id="--hscale" type="number" step="0.1" />
+                                    <input id="--hscale" data-setting="--hscale" type="number" step="0.1" />
                                     <label for="--hscale" data-type="float" data-error="Has to be float">Default: 1</label>
                                     </div>
                                 </td>
@@ -137,8 +137,8 @@
                                 <td><p>Non-standard scaling of vertical parameters</p></td>
                                 <td>
                                     <div class="input-field">
-                                    <input id="--vscale" type="number" step="0.1" />
-                                    <label for="--vscale" data-type="float" data-error="Has to be float">Default: 1</label>
+                                    <input id="lineSegmentation--vscale" data-setting="--vscale" type="number" step="0.1" />
+                                    <label for="lineSegmentation--vscale" data-type="float" data-error="Has to be float">Default: 1</label>
                                     </div>
                                 </td>
                             </tr>
@@ -155,8 +155,8 @@
                                 <td><p>Baseline threshold </p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--threshold" type="number" step="0.1" />
-                                        <label for="--threshold" data-type="float" data-error="Has to be float">Default: 0.2</label>
+                                        <input id="lineSegmentation--threshold" data-setting="--threshold" type="number" step="0.1" />
+                                        <label for="lineSegmentation--threshold" data-type="float" data-error="Has to be float">Default: 0.2</label>
                                     </div>
                                 </td>
                             </tr>
@@ -164,8 +164,8 @@
                                 <td><p>Noise threshold for removing small components from lines</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--noise" type="number" step="1" />
-                                        <label for="--noise" data-type="int" data-error="Has to be integer">Default: 8</label>
+                                        <input id="lineSegmentation--noise" data-setting="--noise" type="number" step="1" />
+                                        <label for="lineSegmentation--noise" data-type="int" data-error="Has to be integer">Default: 8</label>
                                     </div>
                                 </td>
                             </tr>
@@ -182,8 +182,8 @@
                                 <td><p>Maximum black column separators </p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--maxseps" type="number" step="0.1" />
-                                        <label for="--maxseps" data-type="float" data-error="Has to be float">Default: 2</label>
+                                        <input id="lineSegmentation--maxseps" data-setting="--maxseps" type="number" step="0.1" />
+                                        <label for="lineSegmentation--maxseps" data-type="float" data-error="Has to be float">Default: 2</label>
                                     </div>
                                 </td>
                             </tr>
@@ -191,8 +191,8 @@
                                 <td><p>Widen black separators (to account for warping)</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--sepwiden" type="number" step="10" />
-                                        <label for="--sepwiden" data-type="int" data-error="Has to be integer">Default: 10</label>
+                                        <input id="lineSegmentation--sepwiden" data-setting="--sepwiden" type="number" step="10" />
+                                        <label for="lineSegmentation--sepwiden" data-type="int" data-error="Has to be integer">Default: 10</label>
                                     </div>
                                 </td>
                             </tr>
@@ -200,8 +200,8 @@
                                 <td><p>Also check for black column separators</p></td>
                                 <td>
                                         <p>
-                                            <input type="checkbox" class="filled-in" id="--blackseps"/>
-                                            <label for="--blackseps"></label>
+                                            <input type="checkbox" data-setting="--blackseps" class="filled-in" id="lineSegmentation--blackseps"/>
+                                            <label for="lineSegmentation--blackseps"></label>
                                         </p>
                                 </td>
                             </tr>
@@ -218,8 +218,8 @@
                                 <td><p>Minimum column height (units=scale)</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--csminheight" type="number" step="1"/>
-                                        <label for=--csminheight data-type="int" data-error="Has to be integer">Default: 10</label>
+                                        <input id="lineSegmentation--csminheight" data-setting="--csminheight" type="number" step="1"/>
+                                        <label for=lineSegmentation--csminheight data-type="int" data-error="Has to be integer">Default: 10</label>
                                     </div>
                                </td>
                             </tr>
@@ -227,8 +227,8 @@
                                 <td><p>Minimum aspect ratio for column separators</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--csminaspect" type="number" step="0.1" />
-                                        <label for=--csminaspect data-type="float" data-error="Has to be float">Default: 1.1</label>
+                                        <input id="lineSegmentation--csminaspect" data-setting="--csminaspect" type="number" step="0.1" />
+                                        <label for=lineSegmentation--csminaspect data-type="float" data-error="Has to be float">Default: 1.1</label>
                                     </div>
                                 </td>
                             </tr>
@@ -245,8 +245,8 @@
                                 <td><p>Padding for extracted lines </p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--pad" type="number" step="0.1" />
-                                        <label for="--pad" data-type="float" data-error="Has to be float">Default: 3</label>
+                                        <input id="lineSegmentation--pad" data-setting="--pad" type="number" step="0.1" />
+                                        <label for="lineSegmentation--pad" data-type="float" data-error="Has to be float">Default: 3</label>
                                     </div>
                                 </td>
                              </tr>
@@ -254,8 +254,8 @@
                                 <td><p>Expand mask for grayscale extraction</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="--expand" type="number" step="0.1" />
-                                        <label for=--expand data-type="float" data-error="Has to be float">Default: 3</label>
+                                        <input id="lineSegmentation--expand" data-setting="--expand" type="number" step="0.1" />
+                                        <label for="lineSegmentation--expand" data-type="float" data-error="Has to be float">Default: 3</label>
                                     </div>
                                 </td>
                             </tr>
@@ -272,8 +272,8 @@
                                 <td><p>Be less verbose</p></td>
                                 <td>
                                         <p>
-                                            <input type="checkbox" class="filled-in" id="--quit"/>
-                                            <label for="--quit"></label>
+                                            <input type="checkbox" data-setting="--quit" class="filled-in" id="lineSegmentation--quit"/>
+                                            <label for="lineSegmentation--quit"></label>
                                         </p>
                                 </td>
                             </tr>
@@ -281,8 +281,8 @@
                                 <td><p>Enable debug mode</p></td>
                                 <td>
                                         <p>
-                                            <input type="checkbox" class="filled-in" id="--debug"/>
-                                            <label for="--debug"></label>
+                                            <input type="checkbox" data-setting="--debug" class="filled-in" id="lineSegmentation--debug"/>
+                                            <label for="lineSegmentation--debug"></label>
                                         </p>
                                 </td>
                             </tr>

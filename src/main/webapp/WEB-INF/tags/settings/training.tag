@@ -25,8 +25,8 @@
                     <td><p>The number of fold, that is the number of models to train</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--n_folds" type="number" />
-                            <label for="--n_folds" data-type="int" data-error="Has to be integer">Default: 5 (Integer value)</label>
+                            <input id="training--n_folds" data-setting="--n_folds" type="number" />
+                            <label for="training--n_folds" data-type="int" data-error="Has to be integer">Default: 5 (Integer value)</label>
                             <%-- Required information as fallback in JS code (!!!IMPORTANT!!! change this value if the default changes !!!IMPORTANT!!!) --%>
                             <input id="defaultFolds" type="hidden" value="5" />
                         </div>
@@ -49,8 +49,8 @@
                     <td><p>Number of models to train in parallel</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--max_parallel_models" type="number" />
-                            <label for="--max_parallel_models" data-type="int" data-error="Has to be integer">Default: -1 (Integer value) | Train all models in parallel</label>
+                            <input id="training--max_parallel_models" data-setting="--max_parallel_models" type="number" />
+                            <label for="training--max_parallel_models" data-type="int" data-error="Has to be integer">Default: -1 (Integer value) | Train all models in parallel</label>
                         </div>
                     </td>
                 </tr>
@@ -64,8 +64,8 @@
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="--early_stopping_nbest" type="number" />
-                            <label for="--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
+                            <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" />
+                            <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
@@ -79,8 +79,8 @@
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="--max_iters" type="number" />
-                            <label for="--max_iters" data-type="int" data-error="Has to be integer">Default: 1000000 (Integer value)</label>
+                            <input id="training--max_iters" data-setting="--max_iters" type="number" />
+                            <label for="training--max_iters" data-type="int" data-error="Has to be integer">Default: 1000000 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
@@ -122,8 +122,8 @@
                     <td><p>The frequency how often to write checkpoints during training</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--checkpoint_frequency" type="number" />
-                            <label for="--checkpoint_frequency" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
+                            <input id="training--checkpoint_frequency" data-setting="--checkpoint_frequency" type="number" />
+                            <label for="training--checkpoint_frequency" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
@@ -138,8 +138,8 @@
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="--stats_size" type="number" />
-                            <label for="--stats_size" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
+                            <input id="training--stats_size" data-setting="--stats_size" type="number" />
+                            <label for="training--stats_size" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
@@ -147,7 +147,7 @@
                     <td><p>The default direction of text</p></td>
                     <td>
                         <div class="input-field">
-                            <select id="--bidi_dir" name="voter">
+                            <select id="training--bidi_dir" data-setting="--bidi_dir" name="voter">
                                 <option value="ltr">left to right</option>
                                 <option value="rtl">right to left</option>
                             </select>
@@ -159,8 +159,8 @@
                     <td><p>The batch size to use for training</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--batch_size" type="number" />
-                            <label for="--batch_size" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
+                            <input id="training--batch_size" data-setting="--batch_size" type="number" />
+                            <label for="training--batch_size" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
@@ -168,8 +168,8 @@
                     <td><p>Padding (left right) of the line</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--pad" type="number" />
-                            <label for="--pad" data-type="int" data-error="Has to be integer">Default: 16 (Integer value)</label>
+                            <input id="training--pad" data-setting="--pad" type="number" />
+                            <label for="training--pad" data-type="int" data-error="Has to be integer">Default: 16 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
@@ -177,8 +177,8 @@
                     <td><p>The line height</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--line" type="number" />
-                            <label for="--line" data-type="int" data-error="Has to be integer">Default: 48 (Integer value)</label>
+                            <input id="training--line" data-setting="--line" type="number" />
+                            <label for="training--line" data-type="int" data-error="Has to be integer">Default: 48 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
@@ -192,8 +192,8 @@
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="--network" type="text" />
-                            <label for="--network" >Default: See example in description</label>
+                            <input id="training--network" data-setting="--network" type="text" />
+                            <label for="training--network" >Default: See example in description</label>
                         </div>
                     </td>
                 </tr>
@@ -207,8 +207,8 @@
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="--seed" type="number" />
-                            <label for="--seed" data-type="int" data-error="Has to be integer">Default: 0</label>
+                            <input id="training--seed" data-setting="--seed" type="number" />
+                            <label for="training--seed" data-type="int" data-error="Has to be integer">Default: 0</label>
                         </div>
                     </td>
                 </tr>
@@ -216,8 +216,8 @@
                     <td><p>Do no skip invalid gt, instead raise an exception</p></td>
                     <td>
                         <p>
-                            <input type="checkbox" class="filled-in" id="--no_skip_invalid_gt" />
-                            <label for="--no_skip_invalid_gt"></label>
+                            <input type="checkbox" class="filled-in" data-setting="--no_skip_invalid_gt" id="training--no_skip_invalid_gt" />
+                            <label for="training--no_skip_invalid_gt"></label>
                         </p>
                     </td>
                  </tr>

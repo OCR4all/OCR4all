@@ -8,7 +8,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 // Initialize recognition model selection
-                initializeRecModelSelect('#--checkpoint');
+                initializeRecModelSelect('#recognition--checkpoint');
                 // Load image list
                 $.get( "ajax/recognition/getValidPageIds")
                 .done(function( data ) {
@@ -24,7 +24,7 @@
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;
 
-                    $('#--processes').val(data).change();
+                    $('#recognition--processes').val(data).change();
                 });
 
                 $('button[data-id="execute"]').click(function() {
