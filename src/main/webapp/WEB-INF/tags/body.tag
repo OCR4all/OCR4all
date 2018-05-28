@@ -57,6 +57,13 @@
 
     <main>
         <c:choose>
+            <%-- Prevent visiting module pages if a project adjustment is currently in progress --%>
+            <c:when test="${not empty projectAdjustment && heading != 'Project Overview'}">
+                <div class="container red-text">
+                    <h4>Error</h4>
+                    <p>${projectAdjustment}</p>
+                </div>
+            </c:when>
             <%-- In case of an error in the controller, show its message and hide site content --%>
             <c:when test="${not empty error}">
                 <div class="container red-text">

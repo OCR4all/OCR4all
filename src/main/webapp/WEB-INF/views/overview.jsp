@@ -2,7 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head projectDataSel="true">
+    <t:head projectDataSel="true" processHandler="true">
         <title>OCR4All - Project Overview</title>
 
         <!-- jQuery DataTables -->
@@ -13,6 +13,9 @@
             $(document).ready(function() {
                 // Initialize project data selection
                 initializeProjectDataSelection('ajax/overview/listProjects');
+
+                // 
+                //initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
 
                 var datatableReloadIntveral = null;
                 // Responsible for initializing and updating datatable contents
@@ -55,7 +58,7 @@
                             });
                         },
                         initComplete: function() {
-                            openCollapsibleEntriesExclusively([1]);
+                            openCollapsibleEntriesExclusively([2]);
 
                             // Initialize select input
                             $('select').material_select();
@@ -73,15 +76,14 @@
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
                     // Check if directory exists
                     $.get( "ajax/overview/checkDir?",
-                           // Only force new session if project loading is triggered by user
-                           $.extend(ajaxParams, {"resetSession" : !newPageVisit})
+                        // Only force new session if project loading is triggered by user
+                        $.extend(ajaxParams, {"resetSession" : !newPageVisit})
                     )
                     .done(function( data ) {
                         if( data === true ) {
                             $.get( "ajax/overview/validate?" )
                             .done(function( data ) {
                                 if( data === true ) {
-
                                     // Check if filenames match project specific naming convention
                                     $.get( "ajax/overview/validateProject?", ajaxParams )
                                     .done(function( data ) {
@@ -93,10 +95,14 @@
                                                  location.reload();
                                              }
                                              else {
-                                                 datatable();
+                                                 // Load datatable after the last process update is surely finished
+                                                 setTimeout(function() {
+                                                     datatable();
+                                                 }, 2000);
                                              }
                                          }
                                          else{
+                                             openCollapsibleEntriesExclusively([0]);
                                              $('#modal_imageAdjust').modal({
                                                  dismissible: false
                                              });
@@ -105,11 +111,18 @@
                                     });
                                 }
                                 else{
+                                    // Unload project if directory structure is not valid
+                                    $.get( "ajax/overview/invalidateSession" );
+
+                                    openCollapsibleEntriesExclusively([0]);
                                     $('#modal_validateDir').modal('open');
                                 }
                             });
                         }
                         else {
+                            // Unload project if directory does not exist
+                            $.get( "ajax/overview/invalidateSession" );
+
                             openCollapsibleEntriesExclusively([0]);
                             $('#projectDir').addClass('invalid').focus();
                             // Prevent datatable from reloading an invalid directory
@@ -123,43 +136,87 @@
                     });
                 }
 
-                $("button").click(function() {
+                $('button[data-id="loadProject"]').click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         openCollapsibleEntriesExclusively([0]);
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
-                        projectInitialization(false);
+                        // Only load project if no conversion process is running
+                        setTimeout(function() {
+                            if( !isProcessRunning() ) {
+                                projectInitialization(false);
+                            }
+                            else {
+                                $('#modal_inprogress').modal('open');
+                            }
+                        }, 500);
                     }
                 });
 
                 // Execute file rename only after the user agreed
                 $('#directConvert, #backupAndConvert').click(function() {
+                    // Initialize process handler (wait time, due to delayed AJAX process start)
+                    setTimeout(function() {
+                        initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
+                    }, 500);
+
+                    // Start process
                     var ajaxParams = {"backupImages" : ( $(this).attr('id') == 'backupAndConvert' )};
                     $.post( "ajax/overview/adjustProjectFiles", ajaxParams )
                     .done(function( data ) {
-                        datatable();
+                        // Load datatable after the last process update is surely finished
+                        setTimeout(function() {
+                            datatable();
+                        }, 2000);
                     })
                     .fail(function( data ) {
                         $('#modal_adjustImages_failed').modal('open');
                     });
                 });
+                $('#cancelConvert').click(function() {
+                    setTimeout(function() {
+                        // Unload project if user refuses the mandatory adjustments
+                        if( !isProcessRunning() ) {
+                            $.get( "ajax/overview/invalidateSession" );
+                        }
+                    }, 500);
+                });
+
+                $('button[data-id="cancelProjectAdjustment"]').click(function() {
+                    cancelProcess();
+
+                    // Unload project if user cancels the mandatory adjustments
+                    setTimeout(function() {
+                        $.get( "ajax/overview/invalidateSession" );
+                    }, 500);
+                });
 
                 // Trigger overview table fetching on pageload
                 if( $.trim($('#projectDir').val()).length !== 0 ) {
-                    projectInitialization(true);
+                    initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
+                    setTimeout(function() {
+                        // Load project only if no conversion process is currently running
+                        if( !isProcessRunning() ) {
+                            projectInitialization(true);
+                        }
+                    }, 500);
                 } else {
                     openCollapsibleEntriesExclusively([0]);
                 }
             });
         </script>
     </t:head>
-    <t:body heading="Project Overview">
+    <t:body heading="Project Overview" processModals="true">
         <div class="container">
             <div class="section">
-                <button class="btn waves-effect waves-light" type="submit" name="action">
+                <button data-id="loadProject" class="btn waves-effect waves-light" type="submit" name="action">
                     Load Project
                     <i class="material-icons right">send</i>
+                </button>
+                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light" type="submit" name="action">
+                    Cancel Project Adjustment
+                    <i class="material-icons right">cancel</i>
                 </button>
 
                 <ul class="collapsible" data-collapsible="accordion">
@@ -167,6 +224,15 @@
                         <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
                         <div class="collapsible-body">
                             <s:overview></s:overview>
+                        </div>
+                    </li>
+                    <li style="display: block;">
+                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
+                        <div class="collapsible-body">
+                            <div class="status"><p>Status: <span>No Project Overview process running</span></p></div>
+                            <div class="progress">
+                                <div class="determinate"></div>
+                            </div>
                         </div>
                     </li>
                     <li>
@@ -177,9 +243,13 @@
                     </li>
                 </ul>
 
-                <button class="btn waves-effect waves-light" type="submit" name="action">
+                <button data-id="loadProject" class="btn waves-effect waves-light" type="submit" name="action">
                     Load Project
                     <i class="material-icons right">send</i>
+                </button>
+                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light" type="submit" name="action">
+                    Cancel Project Adjustment
+                    <i class="material-icons right">cancel</i>
                 </button>
             </div>
         </div>
@@ -207,7 +277,7 @@
                     </p>
             </div>
             <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                <a href="#!" id="cancelConvert" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
                 <a href="#!" id="directConvert" class="modal-action modal-close waves-effect waves-green btn-flat">Convert files directly</a>
                 <a href="#!" id="backupAndConvert" class="modal-action modal-close waves-effect waves-green btn-flat">Backup and convert files</a>
             </div>

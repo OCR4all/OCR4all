@@ -19,6 +19,10 @@ var globalCollapsibleOpenStandard = [];
 var globalCollapsibleOpenOnAction = [];
 var globalUpdateConsole = false;
 
+function isProcessRunning() {
+    return globalInProgress;
+}
+
 // Function to stop a running process update
 function stopProcessUpdate(message, messageClass) {
     message = message || false;

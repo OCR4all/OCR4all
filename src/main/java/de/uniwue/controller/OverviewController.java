@@ -232,8 +232,13 @@ public class OverviewController {
             return;
 
         try {
+            session.setAttribute("projectAdjustment", "Please wait unitil the project adjustment is finished.");
             overviewHelper.execute(backupImages);
+            session.setAttribute("projectAdjustment", "");
         } catch (IOException e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
         }
