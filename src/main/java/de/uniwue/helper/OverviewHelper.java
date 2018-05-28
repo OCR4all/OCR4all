@@ -311,33 +311,16 @@ public class OverviewHelper {
         .forEach(
             fileEntry -> { 
                 Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
+                // Convert and save as new image file
                 Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
+                // Remove old image file (project needs to be valid for the loading process)
+                try {
+                    Files.delete(Paths.get(fileEntry.getAbsolutePath()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         );
-    }
-
-    /**
-     * Adjustments to files so that they correspond to the project standard 
-     * 
-     * @param backup Setting to backup files
-     * @param convertImagesToPNG Setting to convertImages to IMG_EXT
-     * @param renameFiles Setting to rename Files 
-     * @throws IOException
-     */
-    public void adjustFiles(boolean backup, boolean convertImagesToPNG, boolean renameFiles) throws IOException {
-        if (backup) {
-            File backupDir = new File(projConf.BACKUP_IMG_DIR);
-            if(!backupDir.exists()) 
-                backupDir.mkdir();
-
-            FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
-        }
-
-        if (convertImagesToPNG)
-            convertImagesToPNG();
-
-        if (renameFiles)
-            renameFiles();
     }
 
     /**
@@ -375,5 +358,19 @@ public class OverviewHelper {
             }
             formattingCounter++;
         }
+    }
+
+    /**
+     * Adjustments to files so that they correspond to the project standard 
+     * 
+     * @param backupImages Determines if a backup of the image folder is required 
+     * @throws IOException
+     */
+    public void adjustFiles(boolean backupImages) throws IOException {
+        if (backupImages)
+            FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
+
+        convertImagesToPNG();
+        renameFiles();
     }
 }

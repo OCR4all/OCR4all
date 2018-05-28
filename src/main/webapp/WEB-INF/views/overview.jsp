@@ -97,10 +97,10 @@
                                              }
                                          }
                                          else{
-                                             $('#modal_filerename').modal({
+                                             $('#modal_imageAdjust').modal({
                                                  dismissible: false
                                              });
-                                             $('#modal_filerename').modal('open');
+                                             $('#modal_imageAdjust').modal('open');
                                          }
                                     });
                                 }
@@ -133,19 +133,15 @@
                     }
                 });
 
-                // invalidates Session
-                $('#disagree').click(function() {
-                    $.get( "ajax/overview/invalidateSession" )
-                });
-
                 // Execute file rename only after the user agreed
-                $('#agree').click(function() {
-                    $.get( "ajax/overview/adjustProjectFiles" )
+                $('#directConvert, #backupAndConvert').click(function() {
+                    var ajaxParams = {"backupImages" : ( $(this).attr('id') == 'backupAndConvert' )};
+                    $.post( "ajax/overview/adjustProjectFiles", ajaxParams )
                     .done(function( data ) {
                         datatable();
                     })
                     .fail(function( data ) {
-                        $('#modal_exists_failed').modal('open');
+                        $('#modal_adjustImages_failed').modal('open');
                     });
                 });
 
@@ -188,24 +184,39 @@
             </div>
         </div>
 
-        <div id="modal_filerename" class="modal">
+        <div id="modal_imageAdjust" class="modal">
             <div class="modal-content">
                 <h4 class="red-text">Attention</h4>
                     <p>
-                        Some or all files do not match the required naming convention for this tool.<br />
-                        If you agree the affected files will be renamed automatically.
+                        Some or all files do not match the required format of this software.<br />
+                        <br />
+                        The requirements are:<br />
+                        1. All image files need to be in PNG format and have a ".png" file ending<br />
+                        2. All image files need to be named accordingly: "0001.png, 0002.png, 0003.png, ..."<br />
+                        <br />
+                        To be able to load your project successfully the affected files need to be adjusted.<br />
+                        Please choose one of the offered possibilities to continue.<br />
+                        <br />
+                        Short explanation of the different possibilities:<br />
+                        1. <i>Convert files directly</i><br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All image files are adjusted automatically. The existing files will be replaced!<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use at your own risk, e.g. if you already have a backup of your files or do not need one.<br />
+                        2. <i>Backup and convert files</i><br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A backup of all image files will be done automatically before the adjustment.<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is the safe option because a backup is create before any changes are made.
                     </p>
             </div>
             <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
-                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                <a href="#!" id="directConvert" class="modal-action modal-close waves-effect waves-green btn-flat">Convert files directly</a>
+                <a href="#!" id="backupAndConvert" class="modal-action modal-close waves-effect waves-green btn-flat">Backup and convert files</a>
             </div>
          </div>
-        <div id="modal_filerename_failed" class="modal">
+        <div id="modal_adjustImages_failed" class="modal">
             <div class="modal-content red-text">
                 <h4>Error</h4>
                     <p>
-                        Renaming of the image files failed.<br />
+                        Adjustment of image files to the required format failed.<br />
                         Due to this error the project could not be loaded.
                     </p>
             </div>

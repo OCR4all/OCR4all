@@ -218,17 +218,21 @@ public class OverviewController {
     /**
      * Response to adjust the files according to the project standard
      *
+     * @param backupImages Determines if a backup of the image folder is required 
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value ="/ajax/overview/adjustProjectFiles" , method = RequestMethod.GET)
-    public @ResponseBody void adjustFiles(HttpSession session, HttpServletResponse response) {
+    @RequestMapping(value ="/ajax/overview/adjustProjectFiles" , method = RequestMethod.POST)
+    public @ResponseBody void adjustFiles(
+                @RequestParam("backupImages") Boolean backupImages,
+                HttpSession session, HttpServletResponse response
+            ) {
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null)
             return;
 
         try {
-            overviewHelper.adjustFiles(true, true, true);
+            overviewHelper.adjustFiles(backupImages);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
