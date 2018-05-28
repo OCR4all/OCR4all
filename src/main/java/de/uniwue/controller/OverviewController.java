@@ -174,7 +174,10 @@ public class OverviewController {
         if (overviewHelper == null)
             return false;
 
+        // Always reset progress before loading a new project
+        // This simplifies the loading process in the Frontend
         overviewHelper.resetProgress();
+
         return overviewHelper.checkProjectDir();
     }
 

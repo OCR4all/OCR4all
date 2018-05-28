@@ -343,6 +343,7 @@ public class OverviewHelper {
             fileEntry -> { 
                 if (stopProcess == true)
                     return;
+
                 Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
                 // Convert and save as new image file
                 Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
@@ -390,6 +391,7 @@ public class OverviewHelper {
         for (File file : imageFiles) {
             if (stopProcess == true)
                 return;
+
             if (!file.getName().equals(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.IMG_EXT)) {
                 file.renameTo(new File(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.IMG_EXT));
             }
@@ -407,10 +409,13 @@ public class OverviewHelper {
         overviewRunning = true;
         progress = 0;
         initializeProcessState();
+
         if (backupImages)
             FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
+
         convertImagesToPNG();
         renameFiles();
+
         getProgress();
         overviewRunning = false;
         progress = 100;
