@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.OverviewHelper;
+import de.uniwue.helper.SegmentationPixelClassifierHelper;
 import de.uniwue.model.PageOverview;
 
 /**
@@ -232,7 +233,7 @@ public class OverviewController {
             return;
 
         try {
-            overviewHelper.adjustFiles(backupImages);
+            overviewHelper.execute(backupImages);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
@@ -259,5 +260,19 @@ public class OverviewController {
     @RequestMapping(value ="/ajax/overview/listProjects" , method = RequestMethod.GET)
     public @ResponseBody TreeMap<String, String> listProjects(HttpSession session, HttpServletResponse response) {
         return OverviewHelper.listProjects();
+    }
+    /**
+     * Response to the request to return the progress status of the adjust files service
+     *
+     * @param session Session of the user
+     * @return Current progress (range: 0 - 100)
+     */
+    @RequestMapping(value = "/ajax/overview/progress" , method = RequestMethod.GET)
+    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null)
+            return -1;
+
+        return 0; //overviewHelper.getProgress();
     }
 }

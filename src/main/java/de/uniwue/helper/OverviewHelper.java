@@ -366,11 +366,12 @@ public class OverviewHelper {
      * @param backupImages Determines if a backup of the image folder is required 
      * @throws IOException
      */
-    public void adjustFiles(boolean backupImages) throws IOException {
+    public void execute(boolean backupImages) throws IOException {
         if (backupImages)
             FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
 
         convertImagesToPNG();
         renameFiles();
     }
+
 }
