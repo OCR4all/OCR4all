@@ -181,7 +181,7 @@
         <div class="container">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
-                    Execute for selected pages
+                    Execute
                     <i class="material-icons right">chevron_right</i>
                 </button>
                 <button data-id="cancel" class="btn waves-effect waves-light">
@@ -222,7 +222,7 @@
                 </ul>
 
                 <button data-id="execute" class="btn waves-effect waves-light">
-                    Execute for selected pages
+                    Execute
                     <i class="material-icons right">chevron_right</i>
                 </button>
                 <button data-id="cancel" class="btn waves-effect waves-light">
