@@ -164,6 +164,12 @@
                         return;
                     }
 
+                    validateCheckpoints();
+                    if( $('.ms-list').hasClass('invalid')) {
+                        $('#modal_checkpointerror').modal('open');
+                        return;
+                    }
+
                     $.get( "ajax/processFlow/exists?", { "pageIds[]" : selectedPages, "processes[]" : processesToExecute } )
                     .done(function( data ){
                         if(data === false){
@@ -507,6 +513,20 @@
                 <p>
                     No processes were selected.<br/>
                     Please select some processes to start the Process Flow.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+        <!-- Error in checkpoint (model) selection -->
+        <div id="modal_checkpointerror" class="modal">
+            <div class="modal-content red-text">
+                <h4>Error</h4>
+                <p>
+                    No models were selected in the Recognition settings.<br/>
+                    Open "Settings" and then "Recognition" to see and change the list of models.<br/>
+                    Please select at least one model and execute the Process Flow again.
                 </p>
             </div>
             <div class="modal-footer">
