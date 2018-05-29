@@ -11,7 +11,7 @@ var recModelSelectOptions = {
     // Layout (header + footer)
     selectableFooter: "<div class='custom-header'>" +
             "<button data-id='msRecModelSelectAll' class='btn'>Select all</button>" +
-            "<button data-id='msRecModelAddOption' class='btn' style='margin-left: 5px;'>Add model</button>" +
+            "<button data-id='msRecModelAddOption' class='btn'>Add model</button>" +
         "</div>",
     selectionFooter: "<div class='custom-header'><button data-id='msRecModelDeSelectAll' class='btn'>Remove all</button></div>",
     selectableHeader: "<span class='msHeading'>Available</span><input type='text' class='search-input' autocomplete='off' placeholder='Search'>",

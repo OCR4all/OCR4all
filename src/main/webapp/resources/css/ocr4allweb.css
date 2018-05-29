@@ -247,3 +247,13 @@ ul.invalid {
   text-align: center;
   font-weight: bold;
 }
+button[data-id="msRecModelAddOption"] {
+  margin-left: 5px;
+}
+@media only screen and (max-width : 1700px) {
+  button[data-id="msRecModelAddOption"] {
+    margin-left: 0px;
+    margin-top: 5px;
+    display:block;
+  }
+}
