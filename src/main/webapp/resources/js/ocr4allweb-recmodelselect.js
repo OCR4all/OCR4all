@@ -81,13 +81,21 @@ function initializeRecModelSelect(multiSelectId) {
 };
 
 $(document).ready(function() {
-    // Functions to add/remove all models at once
+    // Functions to add/remove all current visible models at once (after applying the search filter)
     $('body').on('click', 'button[data-id="msRecModelSelectAll"]', function() {
-        $(this).parents('.ms-container').prev().multiSelect('select_all');
+        var multiSelectContainer = $('button[data-id="msRecModelAddOption"]').parents('.ms-container');
+        var multiSelect = $(multiSelectContainer).prev();
+        $.each($(multiSelectContainer).find('.ms-selectable').find('li:visible'), function() {
+            $(multiSelect).multiSelect('select', [ $(multiSelect).find('option:contains("' + $(this).text() + '")').val() ]);
+        });
         return false;
     });
     $('body').on('click', 'button[data-id="msRecModelDeSelectAll"]', function() {
-        $(this).parents('.ms-container').prev().multiSelect('deselect_all');
+        var multiSelectContainer = $('button[data-id="msRecModelDeSelectAll"]').parents('.ms-container');
+        var multiSelect = $(multiSelectContainer).prev();
+        $.each($(multiSelectContainer).find('.ms-selection').find('li:visible'), function() {
+            $(multiSelect).multiSelect('deselect', [ $(multiSelect).find('option:contains("' + $(this).text() + '")').val() ]);
+        });
         return false;
     });
 
