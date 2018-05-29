@@ -45,7 +45,7 @@
 
                 // Helper function to get current amount of folds (uses default value as fallback)
                 function getCurrentFolds() {
-                    var folds = parseInt($('#--n_folds').val()) || 0;
+                    var folds = parseInt($('#training--n_folds').val()) || 0;
                     if( folds <= 0 ) folds = parseInt($('#defaultFolds').val()) || 0;
                     return folds;
                 }
@@ -88,7 +88,7 @@
                 });
 
                 // Adjust pretraining dropdown menu count if folds change
-                $('#--n_folds').on('change', function() {
+                $('#training--n_folds').on('change', function() {
                     var pretrainingType = $('#pretrainingType').val();
                     if( pretrainingType != "multiple_models" )
                         return;
