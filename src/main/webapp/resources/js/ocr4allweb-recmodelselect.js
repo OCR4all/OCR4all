@@ -117,7 +117,7 @@ $(document).ready(function() {
 
         // No duplicate input allowed
         var duplicates = false;
-        $.each($('#--checkpoint option'), function(key, el) {
+        $.each($('[data-setting="--checkpoint"] option'), function(key, el) {
             if (escape($(el).text()) === escape(modelName) || escape($(el).val()) === escape(modelPath)) {
                 if (escape($(el).text()) === escape(modelName)) {
                     $('#recModelName').addClass('invalid').focus();
