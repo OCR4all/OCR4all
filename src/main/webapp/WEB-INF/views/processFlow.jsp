@@ -165,7 +165,8 @@
                     }
 
                     validateCheckpoints();
-                    if( $('.ms-list').hasClass('invalid')) {
+                    // If Recognition should be executed, verify that a model is selected
+                    if( $.inArray("recognition", processesToExecute) !== -1 && $('.ms-list').hasClass('invalid')) {
                         $('#modal_checkpointerror').modal('open');
                         return;
                     }
