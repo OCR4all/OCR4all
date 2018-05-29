@@ -131,7 +131,7 @@ public class DespecklingHelper {
      */
     public boolean doOldFilesExist(String[] pageIds) {
         for (String pageId : pageIds) {
-            if (procStateCol.despecklingState(pageId) == true);
+            if (procStateCol.despecklingState(pageId) == true)
                 return true;
         }
         return false;
