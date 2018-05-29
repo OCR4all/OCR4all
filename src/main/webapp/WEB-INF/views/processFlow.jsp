@@ -61,6 +61,7 @@
                 $('#parallelGlobal').on('change', function() {
                     var parallelSetting = $('#parallelGlobal').val();
                     $('[data-setting="--parallel"]').val(parallelSetting).change();
+                    $('li[data-id="recognition"]').find('[data-setting="--processes"]').val(parallelSetting).change();
                 });
                 // Set available threads as default 
                 $.get( "ajax/generic/threads" )
