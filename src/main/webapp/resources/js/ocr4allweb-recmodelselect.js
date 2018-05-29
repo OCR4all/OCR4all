@@ -14,8 +14,8 @@ var recModelSelectOptions = {
             "<button data-id='msRecModelAddOption' class='btn' style='margin-left: 5px;'>Add model</button>" +
         "</div>",
     selectionFooter: "<div class='custom-header'><button data-id='msRecModelDeSelectAll' class='btn'>Remove all</button></div>",
-    selectableHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Search'>",
-    selectionHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Search'>",
+    selectableHeader: "<span class='msHeading'>Available</span><input type='text' class='search-input' autocomplete='off' placeholder='Search'>",
+    selectionHeader: "<span class='msHeading'>Selected</span><input type='text' class='search-input' autocomplete='off' placeholder='Search'>",
 
     // Search functionality
     afterInit: function(ms){

@@ -242,3 +242,8 @@ ul.invalid {
   border: 1px solid red !important;
   background-color: #ffe6e6;
 }
+.msHeading {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+}
