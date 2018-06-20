@@ -82,6 +82,7 @@ For information on how to update the project take a look into the commands withi
 
 * [LAREX](https://github.com/chreul/LAREX) - Layout analysis on early printed books
 * [OCRopus](https://github.com/tmbdev/ocropy) - Collection of document analysis programs
+* [calamari](https://github.com/ChWick/calamari) - OCR Engine based on OCRopy and Kraken
 
 ## Authors
 

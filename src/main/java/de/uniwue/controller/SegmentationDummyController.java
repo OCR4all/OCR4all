@@ -92,7 +92,7 @@ public class SegmentationDummyController {
 
         GenericController.addToProcessList(session, "segmentationDummy");
         try {
-            segmentationDummyHelper.extractXmlFiles(Arrays.asList(pageIds), segmentationImageType);
+            segmentationDummyHelper.execute(Arrays.asList(pageIds), segmentationImageType);
         } catch (IOException | ParserConfigurationException | TransformerException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationDummyHelper.resetProgress();

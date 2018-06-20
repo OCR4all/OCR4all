@@ -23,8 +23,8 @@
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="--parallel" type="number" />
-                            <label for="--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                            <input id="regionExtraction--parallel" data-setting="--parallel" type="number" />
+                            <label for="regionExtraction--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
                         </div>
                     </td>
                 </tr>

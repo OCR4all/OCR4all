@@ -146,12 +146,13 @@ function loadVisiblePages() {
 function resizeImageList() {
     var mainHeight = $('main').height();
     $('#imageList').height('auto');
-    if( mainHeight > $('#imageList').height() ) {
-        $('#imageList').height(mainHeight);
+    if( mainHeight > $('#imageList').outerHeight(true) ) {
+        var newPosition = mainHeight - ($('#imageList').outerHeight(true) - $('#imageList').height());
+        $('#imageList').height(newPosition);
     }
 
     // Move footer below image list
-    var footerPos = mainHeight + $('header').height();
+    var footerPos = $('#imageList').outerHeight(true) + $('#imageList').position().top;
     $('footer').attr('style', 'display:block;position:absolute;width:100%;top:' + footerPos + 'px;');
 }
 

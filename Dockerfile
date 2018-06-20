@@ -1,7 +1,5 @@
-# Base Image
+# Base Image (versions > 16.04 are currently not supported)
 FROM ubuntu:16.04
-
-# Necessary to build this image on Mac
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Enable Networking on port 8080
@@ -13,6 +11,7 @@ RUN apt-get update&& apt-get install -y \
     maven \
     tomcat8 \
     openjdk-8-jdk\
+    python-skimage \
     python2.7 \
     python2.7-numpy \
     python-matplotlib \
@@ -22,6 +21,8 @@ RUN apt-get update&& apt-get install -y \
     python3 \
     python3-lxml \
     python3-pil \
+    python3-setuptools \
+    python3-pip \
 && rm -rf /var/lib/apt/lists/*
 
 # Repository
@@ -47,24 +48,30 @@ RUN mkdir -p /var/ocr4all/data && \
 
 # Install ocropy
 RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
-    wget -nd http://www.tmbdev.net/en-default.pyrnn.gz && \
-    mkdir models && \
-    mv en-default.pyrnn.gz models/ && \
     python2.7 setup.py install
 
-# Make ocropus standard model available to OS environment
-RUN mkdir /usr/local/share/ocropus
-RUN ln -s /opt/OCR4all_Web/src/main/resources/ocropy/models/en-default.pyrnn.gz /usr/local/share/ocropus/en-default.pyrnn.gz
-# Make pretrained ocropus models available to project environment
-RUN for OCR_MODEL in `cd /opt/OCR4all_Web/src/main/resources/ocropy/pretraining/models && ls`; \
-        do ln -s /opt/OCR4all_Web/src/main/resources/ocropy/pretraining/models/$OCR_MODEL /var/ocr4all/models/default/$OCR_MODEL; \
+# Make all ocropy scripts available to JAVA environment
+RUN for OCR_SCRIPT in `cd /usr/local/bin && ls ocropus-*`; \
+        do ln -s /usr/local/bin/$OCR_SCRIPT /bin/$OCR_SCRIPT; \
     done
 
-# Make all ocropus scripts available to JAVA environment
-RUN for OCR_SCRIPT in `cd /usr/local/bin && ls ocropus-*`; do ln -s /usr/local/bin/$OCR_SCRIPT /bin/$OCR_SCRIPT; done
+# Install tensorflow
+RUN pip3 install --upgrade tensorflow
+
+# Install calamari
+RUN cd /opt/OCR4all_Web/src/main/resources/calamari && \
+    python3 setup.py install
+
+# Make all calamari scripts available to JAVA environment
+RUN for CALAMARI_SCRIPT in `cd /usr/local/bin && ls calamari-*`; \
+        do ln -s /usr/local/bin/$CALAMARI_SCRIPT /bin/$CALAMARI_SCRIPT; \
+    done
 
 # Make pagedir2pagexml.py available to JAVA environment
 RUN ln -s /opt/OCR4all_Web/src/main/resources/pagedir2pagexml.py /bin/pagedir2pagexml.py
+
+# Make pretrained CALAMARI models available to the project environment
+RUN ln -s /opt/OCR4all_Web/src/main/resources/calamari_models/default /var/ocr4all/models/default/default; 
 
 # Start server when container is started
 # Enviroment variable

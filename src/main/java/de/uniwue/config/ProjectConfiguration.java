@@ -61,6 +61,10 @@ public final class ProjectConfiguration {
      */
     public final String IMG_EXT = ".png";
     /**
+     * Allowed image extensions of the project
+     */
+    public final String[] CONVERT_IMG_EXTS = new String[] {".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".tif", ".TIF", ".bmp", ".BMP", ".ppm", ".PPM"};
+    /**
      * Binary image extension of the project
      */
     public final String BINR_IMG_EXT  = ".bin" + IMG_EXT;
@@ -79,7 +83,7 @@ public final class ProjectConfiguration {
     /**
      * Default recognition extension of the project
      */
-    public final String REC_EXT = ".txt";
+    public final String REC_EXT = ".pred.txt";
     /**
      * Default ground truth extension of the project
      */
@@ -87,7 +91,7 @@ public final class ProjectConfiguration {
     /**
      * Default Model extension
      */
-    public static final String MODEL_EXT = ".pyrnn.gz";
+    public static final String MODEL_EXT = ".ckpt.json";
     /**
      * Returns the file extension of the given image type
      *
@@ -103,6 +107,12 @@ public final class ProjectConfiguration {
         }
         return imageExtension;
     }
+    /**** Filename ****/
+
+    /**
+     * Minimum name length of the file
+     */
+    public final int minimumNameLength = 4;
 
     /**** Project directory ****/
 
@@ -117,6 +127,10 @@ public final class ProjectConfiguration {
      * Absolute path to original page images (is made absolute in Constructor)
      */
     public String ORIG_IMG_DIR = "Original" + File.separator;
+    /**
+     * Absolute path to original page images (is made absolute in Constructor)
+     */
+    public String BACKUP_IMG_DIR = "Backup" + File.separator;
     /**
      * Absolute path to preprocessing directory (is made absolute in Constructor)
      */

@@ -84,7 +84,6 @@ public class RecognitionController {
         RecognitionHelper recognitionHelper = provideHelper(session, response);
         if (recognitionHelper == null)
             return;
-
         List<String> cmdArgList = new ArrayList<String>();
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
@@ -95,7 +94,7 @@ public class RecognitionController {
 
         GenericController.addToProcessList(session, "recognition");
         try {
-            recognitionHelper.RecognizeImages(Arrays.asList(pageIds), cmdArgList);
+            recognitionHelper.execute(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             recognitionHelper.resetProgress();

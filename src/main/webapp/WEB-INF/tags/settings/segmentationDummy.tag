@@ -1,4 +1,4 @@
-<%@ tag description="SegmentationLarex settings" pageEncoding="UTF-8" %>
+<%@ tag description="SegmentationDummy settings" pageEncoding="UTF-8" %>
 <table class="compact">
     <tbody>
         <tr>

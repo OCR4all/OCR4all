@@ -7,18 +7,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessStateCollector;
@@ -58,6 +58,35 @@ public class OverviewHelper {
      * Object to determine process states
      */
     private ProcessStateCollector procStateCol;
+
+    /**
+     * Structure to monitor the progress of the process
+     * pageId : processedState
+     *
+     * Structure example:
+     * {
+     *     "0002.png": true,
+     *         "backup" : true,
+     *         "pngConversion" : false,
+     *     ...
+     * }
+     */
+    private TreeMap<String, TreeMap<String, Boolean>> processState;
+
+    /**
+     * Progress of the overview process
+     */
+    private int progress = -1;
+
+    /**
+     * Indicates if an overview process is already running
+     */
+    private boolean overviewRunning = false;
+
+    /**
+     * Indicates if the process should be cancelled
+     */
+    private boolean stopProcess = false;
 
     /**
      * Constructor
@@ -236,19 +265,40 @@ public class OverviewHelper {
     }
 
     /**
-     * Checks if all filesnames are using the project file naming e.g (0001, 0002 ... XXXX)
+     * Checks if all filenames have the correct IMG_EXT and the project file naming e.g (0001, 0002 ... XXXX)
      *
-     * @return true = all files are using project naming, false = files are not using project naming
+     * @return Project validation status
      * @throws IOException 
      */
-    public boolean checkFiles() {
-        boolean status = false;
-        //Todo png is checked only
-        File[] filesFilterd = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}" + projConf.IMG_EXT);
-        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
-        if (filesFilterd.length == files.length) 
-            status = true;
-        return status;
+    public boolean isProjectValid() throws IOException {
+        ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
+        for (String ext : projConf.CONVERT_IMG_EXTS)
+            allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
+
+        ArrayList<File> imagesToConvert = new ArrayList<File>();
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+        .map(Path::toFile)
+        .filter(fileEntry -> fileEntry.isFile())
+        .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
+        .sorted()
+        .forEach(
+            fileEntry -> { 
+                imagesToConvert.add(fileEntry);
+            }
+        );
+
+        // Check for images with incorrect format
+        if (imagesToConvert.size() > 0)
+            return false;
+
+        File[] imagesWithCorrectNaming = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}" + projConf.IMG_EXT);
+        File[] imagesAll = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
+        // Check for images with incorrect naming
+        if (imagesWithCorrectNaming.length != imagesAll.length) 
+            return false;
+
+        return true;
     }
 
     /**
@@ -272,44 +322,184 @@ public class OverviewHelper {
     }
 
     /**
-     * Renames all files according to the project standard
+     * Converts all images to PNG Extension
+     *
+     * @throws IOException 
+     */
+    public void convertImagesToPNG() throws IOException {
+        if (stopProcess == true)
+            return;
+        ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
+        for (String ext : projConf.CONVERT_IMG_EXTS) 
+            allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
+
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+        .map(Path::toFile)
+        .filter(fileEntry -> fileEntry.isFile())
+        .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
+        .sorted()
+        .forEach(
+            fileEntry -> { 
+                if (stopProcess == true)
+                    return;
+
+                Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
+                // Convert and save as new image file
+                Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
+                // Remove old image file (project needs to be valid for the loading process)
+                try {
+                    Files.delete(Paths.get(fileEntry.getAbsolutePath()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        );
+    }
+
+    /**
+     * Renames all files in the 'original' folder to names that consists of an ascending number of digits (e.g 0001, 0002 ...)
      *
      * @throws IOException 
      */
     public void renameFiles() throws IOException {
-        File[] files = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
-        int len = new Integer(files.length).toString().length();
-        Arrays.sort(files);
-        //Filenames are atleast 4 digits long
-        if(len < 4)
-            len = 4;
-        String Format = "";
-        for (int i = 1; i <= len; i++)
-            Format = Format + 0;
-        DecimalFormat df = new DecimalFormat(Format);
+        if (stopProcess == true)
+            return;
+        ArrayList<File> imageFiles = new ArrayList<File>();
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+        .map(Path::toFile)
+        .filter(fileEntry -> fileEntry.isFile())
+        .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
+        .sorted()
+        .forEach(
+            fileEntry -> { imageFiles.add(fileEntry); }
+        );
 
-        int name = 1;
+        int minimumFormatLength = String.valueOf(imageFiles.size()).length();
+        // File names must consist of at least four digits
+        if (minimumFormatLength < projConf.minimumNameLength)
+            minimumFormatLength = projConf.minimumNameLength;
 
-        //File which contains the information about the renaming
-        File backupFilename = new File(projConf.PROJECT_DIR + new SimpleDateFormat("ssmmHHddMMyyyy'.txt'").format(new Date()));
+        // Build formatting possibility
+        String format = "";
+        for (int i = 1; i <= minimumFormatLength; i++)
+            format = format + 0;
+        DecimalFormat df = new DecimalFormat(format);
 
-        //name of files, which will be renamed
-        TreeMap<File, File> hm = new TreeMap<File, File>();
-        String writeFilenamesToFile = "";
-        for (File file : files) {
-            File newname = new File(projConf.ORIG_IMG_DIR + df.format(name) + projConf.IMG_EXT);
-            if (!newname.getName().equals(file.getName())) {
-                hm.put(file, newname);
-                writeFilenamesToFile = writeFilenamesToFile + file.getName() + " renamed to " + newname.getName() + "\n";
+        int formattingCounter = 1;
+        for (File file : imageFiles) {
+            if (stopProcess == true)
+                return;
+
+            if (!file.getName().equals(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.IMG_EXT)) {
+                file.renameTo(new File(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.IMG_EXT));
             }
-            name++;
+            formattingCounter++;
         }
-        // writing backup filenames to file
-        FileUtils.writeStringToFile(backupFilename,writeFilenamesToFile,"UTF-8", true);
+    }
 
-        // renaming files
-        for (File file : hm.keySet()) {
-            file.renameTo(hm.get(file));
+    /**
+     * Adjustments to files so that they correspond to the project standard 
+     * 
+     * @param backupImages Determines if a backup of the image folder is required 
+     * @throws IOException
+     */
+    public void execute(boolean backupImages) throws IOException {
+        overviewRunning = true;
+        progress = 0;
+        initializeProcessState();
+
+        if (backupImages)
+            FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
+
+        convertImagesToPNG();
+        renameFiles();
+
+        getProgress();
+        overviewRunning = false;
+        progress = 100;
+    }
+
+    /**
+     * Initializes the structure with which the progress of the process can be monitored
+     *
+     * @param pageIds Identifiers of the pages 
+     * @throws IOException
+     */
+    public void initializeProcessState() throws IOException {
+        // Initialize the status structure
+        processState = new TreeMap<String, TreeMap<String, Boolean>>();
+        ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
+        for (String ext : projConf.CONVERT_IMG_EXTS) 
+            allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
+        allPredicates.add(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT));
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+        .map(Path::toFile)
+        .filter(fileEntry -> fileEntry.isFile())
+        .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
+        .sorted()
+        .forEach(
+            fileEntry -> { 
+                TreeMap<String, Boolean> status = new TreeMap<String, Boolean>();
+                status.put("backup", false);
+                status.put("pngConversion", false);
+                processState.put(fileEntry.getName(),status);
+            }
+        );
+    }
+
+    /**
+     * Returns the progress of the process
+     *
+     * @return Progress percentage
+     */
+    public int getProgress() {
+        // Prevent function from calculation progress if process is not running
+        if (overviewRunning == false)
+            return progress;
+
+        int files = 0;
+        int processedFiles = 0;
+
+        for (String fileName : processState.keySet()) {
+            for (String processType : processState.get(fileName).keySet()) {
+                files += 1;
+
+                if (processState.get(fileName).get(processType) == true) {
+                    processedFiles += 1;
+                    continue;
+                }
+
+                if (processType == "backup") {
+                    if ( new File(projConf.BACKUP_IMG_DIR + fileName).exists())
+                        processState.get(fileName).put(processType, true);
+                }
+
+                if (processType == "pngConversion") {
+                    if (new File(projConf.ORIG_IMG_DIR + FilenameUtils.removeExtension(fileName) + projConf.IMG_EXT).exists())
+                        processState.get(fileName).put(processType, true);
+                }
+            }
         }
+
+        // Safe check, in case Files were not adjusted
+        return (progress != 100) ? (int) ((double) processedFiles / files * 100) : 100;
+    }
+
+    /**
+     * Cancels the process
+     */
+    public void cancelProcess() {
+        stopProcess = true;
+    }
+
+    /**
+     * Resets the progress (use if an error occurs)
+     */
+    public void resetProgress() {
+        overviewRunning = false;
+        progress = -1;
     }
 }

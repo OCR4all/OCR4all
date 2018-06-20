@@ -222,7 +222,7 @@ public class LineSegmentationHelper {
      * @param cmdArgs Command line arguments for "ocropus-gpageseg"
      * @throws IOException
      */
-    public void lineSegmentPages(List<String> pageIds, List<String> cmdArgs) throws IOException {
+    public void execute(List<String> pageIds, List<String> cmdArgs) throws IOException {
         lineSegmentationRunning = true;
 
         progress = 0;

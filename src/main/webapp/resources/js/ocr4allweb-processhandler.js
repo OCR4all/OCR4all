@@ -19,6 +19,10 @@ var globalCollapsibleOpenStandard = [];
 var globalCollapsibleOpenOnAction = [];
 var globalUpdateConsole = false;
 
+function isProcessRunning() {
+    return globalInProgress;
+}
+
 // Function to stop a running process update
 function stopProcessUpdate(message, messageClass) {
     message = message || false;
@@ -214,6 +218,14 @@ function executeProcess(ajaxParams) {
         $.post( "ajax/" + globalController + "/execute", ajaxParams )
         .fail(function( jqXHR, data ) {
             switch(jqXHR.status) {
+            case 400:
+                $('#modal_settings_failed').modal('open');
+                stopProcessUpdate("ERROR: Error during process execution", "red-text");
+                break;
+            case 500:
+                $('#modal_execution_failed').modal('open');
+                stopProcessUpdate("ERROR: Error during process execution", "red-text");
+                break;
             case 530:
                 $('#modal_inprogress').modal('open');
                 stopProcessUpdate("ERROR: The process is still running", "red-text");

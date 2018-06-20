@@ -15,6 +15,8 @@
 
                 // Initialize process update and set options
                 initializeProcessUpdate("evaluation", [ 0 ], [ 2 ], true)
+                // No progress calculation possible, so hide the progress-bar
+                $('.progress').hide();
 
                 // Set available threads as default 
                 $.get( "ajax/generic/threads" )
@@ -22,7 +24,7 @@
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;
 
-                    $('#--parallel').val(data).change();
+                    $('#evaluation--num_threads').val(data).change();
                 })
 
                 $('button[data-id="execute"]').click(function() {

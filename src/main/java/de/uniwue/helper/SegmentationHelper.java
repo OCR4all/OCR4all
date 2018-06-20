@@ -37,7 +37,7 @@ public class SegmentationHelper {
     }
 
     /**
-     * Checks if process depending files already exist
+     * Checks if process related files already exist
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @return Information if files exist

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -206,8 +207,17 @@ public class ProcessHandler {
         List<String> command = new ArrayList<String>();
         command.add(programPath);
         command.addAll(cmdArguments);
-
         ProcessBuilder processBuilder = new ProcessBuilder(command);
+
+        // Set Python specific environment variables
+        // Could be done by function parameters as well, but most of the used scripts are written in Python
+        // Therefore and due to the fact that these environment variables have no side effects, use it all processes
+        Map<String, String> env = processBuilder.environment();
+        // Set PYTHONUNBUFFERED environment variable to ensure continuous console output
+        env.put("PYTHONUNBUFFERED", "1");
+        // Set PYTHONIOENCODING environment variable to ensure successful execution of calamari scripts
+        env.put("PYTHONIOENCODING", "utf-8");
+
         process = processBuilder.start();
 
         if (fetchProcessConsole == true) {

@@ -2,7 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head projectDataSel="true">
+    <t:head projectDataSel="true" processHandler="true">
         <title>OCR4All - Project Overview</title>
 
         <!-- jQuery DataTables -->
@@ -55,7 +55,7 @@
                             });
                         },
                         initComplete: function() {
-                            openCollapsibleEntriesExclusively([1]);
+                            openCollapsibleEntriesExclusively([2]);
 
                             // Initialize select input
                             $('select').material_select();
@@ -73,17 +73,16 @@
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
                     // Check if directory exists
                     $.get( "ajax/overview/checkDir?",
-                           // Only force new session if project loading is triggered by user
-                           $.extend(ajaxParams, {"resetSession" : !newPageVisit})
+                        // Only force new session if project loading is triggered by user
+                        $.extend(ajaxParams, {"resetSession" : !newPageVisit})
                     )
                     .done(function( data ) {
                         if( data === true ) {
                             $.get( "ajax/overview/validate?" )
                             .done(function( data ) {
                                 if( data === true ) {
-
                                     // Check if filenames match project specific naming convention
-                                    $.get( "ajax/overview/checkFileNames?", ajaxParams )
+                                    $.get( "ajax/overview/validateProject?", ajaxParams )
                                     .done(function( data ) {
                                          if( data === true ) {
                                              // Two scenarios for loading overview page:
@@ -93,23 +92,32 @@
                                                  location.reload();
                                              }
                                              else {
-                                                 datatable();
+                                                 // Load datatable after the last process update is surely finished
+                                                     datatable();
                                              }
                                          }
                                          else{
-                                             $('#modal_filerename').modal({
+                                             openCollapsibleEntriesExclusively([0]);
+                                             $('#modal_imageAdjust').modal({
                                                  dismissible: false
                                              });
-                                             $('#modal_filerename').modal('open');
+                                             $('#modal_imageAdjust').modal('open');
                                          }
                                     });
                                 }
                                 else{
+                                    // Unload project if directory structure is not valid
+                                    $.get( "ajax/overview/invalidateSession" );
+
+                                    openCollapsibleEntriesExclusively([0]);
                                     $('#modal_validateDir').modal('open');
                                 }
                             });
                         }
                         else {
+                            // Unload project if directory does not exist
+                            $.get( "ajax/overview/invalidateSession" );
+
                             openCollapsibleEntriesExclusively([0]);
                             $('#projectDir').addClass('invalid').focus();
                             // Prevent datatable from reloading an invalid directory
@@ -123,47 +131,87 @@
                     });
                 }
 
-                $("button").click(function() {
+                $('button[data-id="loadProject"]').click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         openCollapsibleEntriesExclusively([0]);
                         $('#projectDir').addClass('invalid').focus();
                     }
                     else {
-                        projectInitialization(false);
+                        // Only load project if no conversion process is running
+                        setTimeout(function() {
+                            if( !isProcessRunning() ) {
+                                projectInitialization(false);
+                            }
+                            else {
+                                $('#modal_inprogress').modal('open');
+                            }
+                        }, 500);
                     }
                 });
 
-                // invalidates Session
-                $('#disagree').click(function() {
-                    $.get( "ajax/overview/invalidateSession" )
-                });
-
                 // Execute file rename only after the user agreed
-                $('#agree').click(function() {
-                    $.get( "ajax/overview/renameFiles" )
+                $('#directConvert, #backupAndConvert').click(function() {
+                    // Initialize process handler (wait time, due to delayed AJAX process start)
+                    setTimeout(function() {
+                        initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
+                    }, 500);
+
+                    // Start process
+                    var ajaxParams = {"backupImages" : ( $(this).attr('id') == 'backupAndConvert' )};
+                    $.post( "ajax/overview/adjustProjectFiles", ajaxParams )
                     .done(function( data ) {
-                        datatable();
+                        // Load datatable after the last process update is surely finished
+                        setTimeout(function() {
+                            datatable();
+                        }, 2000);
                     })
                     .fail(function( data ) {
-                        $('#modal_exists_failed').modal('open');
+                        $('#modal_adjustImages_failed').modal('open');
                     });
+                });
+                $('#cancelConvert').click(function() {
+                    setTimeout(function() {
+                        // Unload project if user refuses the mandatory adjustments
+                        if( !isProcessRunning() ) {
+                            $.get( "ajax/overview/invalidateSession" );
+                        }
+                    }, 500);
+                });
+
+                $('button[data-id="cancelProjectAdjustment"]').click(function() {
+                    cancelProcess();
+
+                    // Unload project if user cancels the mandatory adjustments
+                    setTimeout(function() {
+                        $.get( "ajax/overview/invalidateSession" );
+                    }, 500);
                 });
 
                 // Trigger overview table fetching on pageload
                 if( $.trim($('#projectDir').val()).length !== 0 ) {
-                    projectInitialization(true);
+                    initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
+                    setTimeout(function() {
+                        // Load project only if no conversion process is currently running
+                        if( !isProcessRunning() ) {
+                            projectInitialization(true);
+                        }
+                    }, 500);
                 } else {
                     openCollapsibleEntriesExclusively([0]);
                 }
             });
         </script>
     </t:head>
-    <t:body heading="Project Overview">
+    <t:body heading="Project Overview" processModals="true">
         <div class="container">
             <div class="section">
-                <button class="btn waves-effect waves-light" type="submit" name="action">
+                <button data-id="loadProject" class="btn waves-effect waves-light" type="submit" name="action">
                     Load Project
                     <i class="material-icons right">send</i>
+                </button>
+                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light" type="submit" name="action">
+                    Cancel Project Adjustment
+                    <i class="material-icons right">cancel</i>
                 </button>
 
                 <ul class="collapsible" data-collapsible="accordion">
@@ -171,6 +219,15 @@
                         <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
                         <div class="collapsible-body">
                             <s:overview></s:overview>
+                        </div>
+                    </li>
+                    <li style="display: block;">
+                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
+                        <div class="collapsible-body">
+                            <div class="status"><p>Status: <span>No Project Overview process running</span></p></div>
+                            <div class="progress">
+                                <div class="determinate"></div>
+                            </div>
                         </div>
                     </li>
                     <li>
@@ -181,31 +238,50 @@
                     </li>
                 </ul>
 
-                <button class="btn waves-effect waves-light" type="submit" name="action">
+                <button data-id="loadProject" class="btn waves-effect waves-light" type="submit" name="action">
                     Load Project
                     <i class="material-icons right">send</i>
+                </button>
+                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light" type="submit" name="action">
+                    Cancel Project Adjustment
+                    <i class="material-icons right">cancel</i>
                 </button>
             </div>
         </div>
 
-        <div id="modal_filerename" class="modal">
+        <div id="modal_imageAdjust" class="modal">
             <div class="modal-content">
                 <h4 class="red-text">Attention</h4>
                     <p>
-                        Some or all files do not match the required naming convention for this tool.<br />
-                        If you agree the affected files will be renamed automatically.
+                        Some or all files do not match the required format of this software.<br />
+                        <br />
+                        The requirements are:<br />
+                        1. All image files need to be in PNG format and have a ".png" file ending<br />
+                        2. All image files need to be named accordingly: "0001.png, 0002.png, 0003.png, ..."<br />
+                        <br />
+                        To be able to load your project successfully the affected files need to be adjusted.<br />
+                        Please choose one of the offered possibilities to continue.<br />
+                        <br />
+                        Short explanation of the different possibilities:<br />
+                        1. <i>Convert files directly</i><br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All image files are adjusted automatically. The existing files will be replaced!<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use at your own risk, e.g. if you already have a backup of your files or do not need one.<br />
+                        2. <i>Backup and convert files</i><br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A backup of all image files will be done automatically before the adjustment.<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is the safe option because a backup is create before any changes are made.
                     </p>
             </div>
             <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Disagree</a>
-                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                <a href="#!" id="cancelConvert" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                <a href="#!" id="directConvert" class="modal-action modal-close waves-effect waves-green btn-flat">Convert files directly</a>
+                <a href="#!" id="backupAndConvert" class="modal-action modal-close waves-effect waves-green btn-flat">Backup and convert files</a>
             </div>
          </div>
-        <div id="modal_filerename_failed" class="modal">
+        <div id="modal_adjustImages_failed" class="modal">
             <div class="modal-content red-text">
                 <h4>Error</h4>
                     <p>
-                        Renaming of the image files failed.<br />
+                        Adjustment of image files to the required format failed.<br />
                         Due to this error the project could not be loaded.
                     </p>
             </div>

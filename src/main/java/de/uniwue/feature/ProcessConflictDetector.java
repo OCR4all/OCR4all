@@ -146,6 +146,37 @@ public class ProcessConflictDetector {
     }
 
     /**
+     * Determines conflicts with the SegmentationPixelClassifier process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
+     * @return Type of process conflict
+     */
+    public static int segmentationPixelClassifierConflict(List<String> currentProcesses, boolean inProcessFlow) {
+        if (currentProcesses.size() == 0)
+            return NO_CONFLICT;
+
+        if (currentProcesses.contains("segmentationPixelClassifier"))
+            return SAME_PROCESS;
+
+        if (currentProcesses.contains("processFlow") && !inProcessFlow)
+            return PROCESS_FLOW;
+
+        int segmentationConflictType = segmentationConflict(currentProcesses, true);
+        if (segmentationConflictType != NO_CONFLICT)
+            return segmentationConflictType;
+
+        if (currentProcesses.contains("regionExtraction")
+                || currentProcesses.contains("lineSegmentation")
+                || currentProcesses.contains("recognition")
+                || currentProcesses.contains("evaluation")
+                || currentProcesses.contains("result"))
+            return PREV_PROCESS;
+
+        return NO_CONFLICT;
+    }
+
+    /**
      * Determines conflicts with the RegionExtraction process
      *
      * @param currentProcesses Processes that are currently running
@@ -255,6 +286,24 @@ public class ProcessConflictDetector {
         if (currentProcesses.contains("processFlow"))
             return PROCESS_FLOW;
 
+        return NO_CONFLICT;
+    }
+
+    /**
+     * Determines conflicts with the Training process
+     *
+     * @param currentProcesses Processes that are currently running
+     * @return Type of process conflict
+     */
+	public static int trainingConflict(List<String> currentProcesses, boolean inProcessFlow) {
+        if (currentProcesses.size() == 0)
+            return NO_CONFLICT;
+
+        if (currentProcesses.contains("training"))
+            return SAME_PROCESS;
+
+        if (currentProcesses.contains("processFlow"))
+            return PROCESS_FLOW;
         return NO_CONFLICT;
     }
 

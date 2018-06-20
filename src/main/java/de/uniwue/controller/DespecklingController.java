@@ -88,7 +88,7 @@ public class DespecklingController {
 
         GenericController.addToProcessList(session, "despeckling");
         try {
-            despecklingHelper.despeckleGivenPages(Arrays.asList(pageIds), maxContourRemovalSize);
+            despecklingHelper.execute(Arrays.asList(pageIds), maxContourRemovalSize);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();

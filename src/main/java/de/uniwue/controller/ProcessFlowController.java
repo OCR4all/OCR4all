@@ -410,10 +410,10 @@ public class ProcessFlowController {
             switch(process) {
                 case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response) == true) return true; break;
                 case "despeckling":       if(new DespecklingController().filesExists(pageIds, session, response) == true) return true; break;
-                case "segmentationDummy": if(new SegmentationController().filesExists(pageIds, session, response)== true) return true; break;
-                case "regionExtraction":  if(new RegionExtractionController().filesExists(pageIds, session, response)== true) return true; break;
-                case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response)== true) return true; break;
-                case "recognition":       if(new RecognitionController().filesExists(pageIds, session, response)== true) return true; break;
+                case "segmentationDummy": if(new SegmentationController().filesExists(pageIds, session, response) == true) return true; break;
+                case "regionExtraction":  if(new RegionExtractionController().filesExists(pageIds, session, response) == true) return true; break;
+                case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response) == true) return true; break;
+                case "recognition":       if(new RecognitionController().filesExists(pageIds, session, response) == true) return true; break;
                 default: break;
             }
         }

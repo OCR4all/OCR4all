@@ -2,14 +2,16 @@ package de.uniwue.helper;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -193,21 +195,41 @@ public class RecognitionHelper {
     }
 
     /**
+     * Extracts checkpoints of a String joined by a whitespace
+     *
+     * @return List of checkpoints
+     * @throws IOException 
+     */
+    public List<String> extractModelsOfJoinedString(String joinedckptString){ 
+        String [] checkpoints = joinedckptString.split(ProjectConfiguration.MODEL_EXT + " ");
+        List<String> ckptList = new ArrayList<String>();
+        Iterator <String> ckptIterator= Arrays.asList(checkpoints).iterator();
+        while (ckptIterator.hasNext()) {
+            String ckpt = ckptIterator.next();
+            if (ckptIterator.hasNext())
+                ckpt = ckpt + ProjectConfiguration.MODEL_EXT;
+            ckptList.add(ckpt);
+        }
+        return ckptList;	
+    }
+    /**
      * Executes OCR on a list of pages
-     * Achieved with the help of the external python program "ocropus-rpred"
+     * Achieved with the help of the external python program "calamary-predict"
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs Command line arguments for "ocropus-rpred"
+     * @param cmdArgs Command line arguments for "calamary-predict"
      * @throws IOException
      */
-    public void RecognizeImages(List<String> pageIds, List<String> cmdArgs) throws IOException {
+    public void execute(List<String> pageIds, List<String> cmdArgs) throws IOException {
         RecognitionRunning = true;
         progress = 0;
         int index;
-        if (cmdArgs.contains("--model")) {
-            index = cmdArgs.indexOf("--model");
-            if(new File(cmdArgs.get(index + 1)).exists() == false)
-                throw new IOException("Model does not exist under the specified path");
+        if (cmdArgs.contains("--checkpoint")) {
+            index = cmdArgs.indexOf("--checkpoint");
+            for(String ckpt : extractModelsOfJoinedString(cmdArgs.get(index + 1))) {
+                if (new File(ckpt).exists() == false)
+                    throw new IOException("Model does not exist under the specified path");
+            }
         }
 
         // Reset recognition data
@@ -216,15 +238,22 @@ public class RecognitionHelper {
 
         List<String> command = new ArrayList<String>();
         List<String> lineSegmentImages = getLineSegmentImagesForCurrentProcess(pageIds);
+        command.add("--files");;
         for (String lineSegmentImage : lineSegmentImages) {
             // Add affected line segment images with their absolute path to the command list
             command.add(lineSegmentImage);
         }
-        command.addAll(cmdArgs);
-
+        Iterator<String> cmdArgsIterator = cmdArgs.iterator();
+        while (cmdArgsIterator.hasNext()) {
+            String arg = cmdArgsIterator.next();
+            command.add(arg);
+            if (arg.equals("--checkpoint") && cmdArgsIterator.hasNext()) {
+                command.addAll(extractModelsOfJoinedString(cmdArgsIterator.next()));
+            }
+        }
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        processHandler.startProcess("ocropus-rpred", command, false);
+        processHandler.startProcess("calamari-predict", command, false);
 
         // Execute progress update to fill processState data structure with correct values
         getProgress();
@@ -338,6 +367,25 @@ public class RecognitionHelper {
 
     /**
      * Lists all available Models from the model directory
+     * Consider the subsequent information to load models correctly
+     *
+     * Possible model location directories:
+     * ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR
+     * ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR
+     *
+     * Model path structures on the filesystem:
+     * Default: OS_PATH/{TRAINING_IDENTIFIER}/{ID}.ckpt.json
+     * Custom:  OS_PATH/{PROJECT_NAME}/{TRAINING_IDENTIFIER}/{ID}.ckpt.json
+     *
+     * Example: /var/ocr4all/models/default/Baiter_000/Baiter.ckpt.json
+     * Display: Baiter_000/Baiter
+     * Example: /var/ocr4all/models/custom/Bibel/0/0.ckpt.json
+     * Display: Bibel/0/0
+     * Example: /var/ocr4all/models/custom/Bibel/heading/0.ckpt.json
+     * Display: Bibel/heading/0
+     *
+     * The models need to be in the following structure:
+     * ANY_PATH/{MODEL_NAME}/ANY_NAME.ckpt.json
      *
      * @return Map of models (key = modelName | value = path)
      * @throws IOException 
@@ -349,31 +397,17 @@ public class RecognitionHelper {
         if (!modelsDir.exists())
             return models;
 
-        File modelsDefaultDir = new File(ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR);
-        if (!modelsDefaultDir.exists())
-            return models;
-
-        // Add default models to map
-        File[] modelFiles = modelsDefaultDir.listFiles((d, name) -> name.endsWith(ProjectConfiguration.MODEL_EXT));
-        for (File model : modelFiles) {
-             String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(model.getName()));
-             models.put(modelName, model.getAbsolutePath());
-        }
-
-        File modelsCustomDir = new File(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR);
-        if (!modelsCustomDir.exists())
-            return models;
-
-        // Add custom models to map
-        Files.walk(Paths.get(modelsCustomDir.getAbsolutePath()))
+        // Add all models to map (follow symbolic links on the filesystem due to Docker container)
+        Files.walk(Paths.get(ProjectConfiguration.PROJ_MODEL_DIR), FileVisitOption.FOLLOW_LINKS)
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.getName().endsWith(ProjectConfiguration.MODEL_EXT))
         .forEach(
-            fileEntry->{
-                String modelName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName()));
-                // In case the model is located in a sub-directory, add the sub-directory as identifier to its name
-                if (!fileEntry.getParentFile().getName().equals("custom"))
-                    modelName = fileEntry.getParentFile().getName() + File.separator + modelName;
+            fileEntry -> {
+                // Remove OS path and model extension from display string (only display significant information)
+                String modelName = fileEntry.getAbsolutePath();
+                modelName = modelName.replace(ProjectConfiguration.PROJ_MODEL_DEFAULT_DIR, "");
+                modelName = modelName.replace(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR, "");
+                modelName = modelName.replace(ProjectConfiguration.MODEL_EXT, "");
 
                 models.put(modelName, fileEntry.getAbsolutePath());
         });

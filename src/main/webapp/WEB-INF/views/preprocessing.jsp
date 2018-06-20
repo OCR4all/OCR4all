@@ -19,7 +19,7 @@
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;
 
-                    $('#--parallel').val(data).change();
+                    $('#preprocessing--parallel').val(data).change();
                 })
 
                 $('button[data-id="execute"]').click(function() {

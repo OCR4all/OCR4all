@@ -4,6 +4,7 @@
 <%@ attribute name="inputParams" required="false" %>
 <%@ attribute name="processHandler" required="false" %>
 <%@ attribute name="projectDataSel" required="false" %>
+<%@ attribute name="recModelSelect" required="false" %>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -53,6 +54,16 @@
         </c:when>
     </c:choose>
 
+    <c:choose>
+        <%-- Include JS files to provide recognition model selection functionality --%>
+        <c:when test="${not empty recModelSelect}">
+            <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/jquery.quicksearch.min.js"></script>
+            <link type="text/css" rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/multi-select.css">
+            <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/jquery.multi-select.min.js"></script>
+            <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-recmodelselect.js"></script>
+        </c:when>
+    </c:choose>
+
     <!--Collapsible elements (e.g. side navigation)-->
     <script type="text/javascript">
         $(document).ready(function() {
@@ -66,8 +77,8 @@
                     $(this).parent().addClass("selected");
             });
 
-            // Initialize select form elements
-            $('select').material_select();
+            // Initialize select form elements (multi-select elements will be loaded seperately)
+            $('select').not('select[multiple]').material_select();
 
             // Initialize modals
             $('.modal').modal();

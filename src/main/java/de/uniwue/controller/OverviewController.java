@@ -174,6 +174,10 @@ public class OverviewController {
         if (overviewHelper == null)
             return false;
 
+        // Always reset progress before loading a new project
+        // This simplifies the loading process in the Frontend
+        overviewHelper.resetProgress();
+
         return overviewHelper.checkProjectDir();
     }
 
@@ -193,38 +197,52 @@ public class OverviewController {
         return overviewHelper.validateProjectDir();
     }
 
-
     /**
-     * Response to the request to check the filenames
+     * Response to the request to validate the files of the Project
      *
      * @param session Session of the user
      * @param response Response to the request
      * @return Returns the status of the filename check
      */
-    @RequestMapping(value ="/ajax/overview/checkFileNames" , method = RequestMethod.GET)
-    public @ResponseBody boolean checkFiles(HttpSession session, HttpServletResponse response) {
+    @RequestMapping(value ="/ajax/overview/validateProject" , method = RequestMethod.GET)
+    public @ResponseBody boolean validateProject(HttpSession session, HttpServletResponse response) {
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null)
             return false;
 
-        return overviewHelper.checkFiles();
+        try {
+           return overviewHelper.isProjectValid();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**
-     * Response to rename the filenames according to the project standard
+     * Response to adjust the files according to the project standard
      *
+     * @param backupImages Determines if a backup of the image folder is required 
      * @param session Session of the user
      * @param response Response to the request
      */
-    @RequestMapping(value ="/ajax/overview/renameFiles" , method = RequestMethod.GET)
-    public @ResponseBody void renameFiles(HttpSession session, HttpServletResponse response) {
+    @RequestMapping(value ="/ajax/overview/adjustProjectFiles" , method = RequestMethod.POST)
+    public @ResponseBody void adjustFiles(
+                @RequestParam("backupImages") Boolean backupImages,
+                HttpSession session, HttpServletResponse response
+            ) {
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null)
             return;
 
         try {
-            overviewHelper.renameFiles();
+            session.setAttribute("projectAdjustment", "Please wait unitil the project adjustment is finished.");
+            overviewHelper.execute(backupImages);
+            session.setAttribute("projectAdjustment", "");
         } catch (IOException e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
         }
@@ -250,5 +268,35 @@ public class OverviewController {
     @RequestMapping(value ="/ajax/overview/listProjects" , method = RequestMethod.GET)
     public @ResponseBody TreeMap<String, String> listProjects(HttpSession session, HttpServletResponse response) {
         return OverviewHelper.listProjects();
+    }
+
+    /**
+     * Response to the request to return the progress status of the adjust files service
+     *
+     * @param session Session of the user
+     * @return Current progress (range: 0 - 100)
+     */
+    @RequestMapping(value = "/ajax/overview/progress" , method = RequestMethod.GET)
+    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null)
+            return -1;
+
+        return overviewHelper.getProgress();
+    }
+
+    /**
+     * Response to the request to cancel the overview process
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value = "/ajax/overview/cancel", method = RequestMethod.POST)
+    public @ResponseBody void cancel(HttpSession session, HttpServletResponse response) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null)
+            return;
+
+        overviewHelper.cancelProcess();
     }
 }

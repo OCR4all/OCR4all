@@ -2,14 +2,13 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" inputParams="true" processHandler="true" projectDataSel="true">
+    <t:head imageList="true" inputParams="true" recModelSelect="true" processHandler="true">
         <title>OCR4All - Recognition</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                // Initialize project data selection
-                initializeProjectDataSelection('ajax/recognition/listModels');
-
+                // Initialize recognition model selection
+                initializeRecModelSelect('#recognition--checkpoint');
                 // Load image list
                 $.get( "ajax/recognition/getValidPageIds")
                 .done(function( data ) {
@@ -25,11 +24,12 @@
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
                         return;
 
-                    $('#--parallel').val(data).change();
+                    $('#recognition--processes').val(data).change();
                 });
 
                 $('button[data-id="execute"]').click(function() {
-                    if( $('input[type="number"]').hasClass('invalid') ) {
+                    validateCheckpoints(); // Trigger --checkpoint validation
+                    if( $('input[type="number"]').hasClass('invalid') || $('.ms-list').hasClass('invalid')) {
                         $('#modal_inputerror').modal('open');
                         return;
                     }
@@ -119,6 +119,36 @@
                     Cancel
                     <i class="material-icons right">cancel</i>
                 </button>
+            </div>
+        </div>
+
+        <div id="modal_recaddmodel" class="modal">
+            <div class="modal-content">
+                <h4>Add new model</h4>
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td>
+                            <div class="input-field">
+                                <input type="text" id="recModelName" name="recModelName" class="validate" />
+                                <label for="recModelName" data-error="Model name is empty or already exists"></label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Absolute file system path:</td>
+                        <td>
+                            <div class="input-field">
+                                <input type="text" id="recModelPath" name="recModelPath" class="validate" />
+                                <label for="recModelPath" data-error="Model path is empty or already exists"></label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+                <a href="#!" id="addRecModel" class="modal-action waves-effect waves-green btn-flat">Add</a>
             </div>
         </div>
     </t:body>

@@ -93,6 +93,9 @@ table.compact td, table.compact div {
   padding: 0px;
   margin:  5px;
 }
+table.compact td {
+  vertical-align: top;
+}
 table.compact p > label {
   margin-bottom: 20px;
 }
@@ -112,9 +115,12 @@ i.material-icons.tooltipped {
   position: absolute;
   padding-left: 10px;
 }
+span.userInfo {
+  font-size: 9pt;
+}
 span.userWarning {
-  color:red;
-  font-size:9pt;
+  color: red;
+  font-size: 9pt;
 }
 
 /* Progress bar adjustments */
@@ -213,4 +219,41 @@ overflow-x: hidden;
 }
 .tabs .indicator {
   background-color: #5c6bc0;
+}
+
+/* Multi-Select adjustments */
+.ms-container {
+  min-width: 370px;
+  width: auto !important;
+}
+.ms-container .ms-selectable li.ms-hover,
+.ms-container .ms-selection li.ms-hover {
+  background-color: #5c6bc0 !important;
+}
+.ms-container .ms-selectable li.ms-elem-selectable,
+.ms-container .ms-selection li.ms-elem-selection {
+  font-size: 1rem !important;
+}
+div.custom-header {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+ul.invalid {
+  border: 1px solid red !important;
+  background-color: #ffe6e6;
+}
+.msHeading {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+}
+button[data-id="msRecModelAddOption"] {
+  margin-left: 5px;
+}
+@media only screen and (max-width : 1700px) {
+  button[data-id="msRecModelAddOption"] {
+    margin-left: 0px;
+    margin-top: 5px;
+    display:block;
+  }
 }

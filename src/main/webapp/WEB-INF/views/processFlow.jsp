@@ -2,13 +2,13 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" inputParams="true" processHandler="true" projectDataSel="true">
+    <t:head imageList="true" inputParams="true" processHandler="true" recModelSelect="true">
         <title>OCR4All - Centralized Process Flow</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                // Initialize project data selection (for recognition modles)
-                initializeProjectDataSelection('ajax/recognition/listModels');
+                // Initialize recognition model selection
+                initializeRecModelSelect('#recognition--checkpoint');
 
                 // Load image list
                 initializeImageList("Original");
@@ -48,7 +48,7 @@
                                     "spacing" : $('input[id="spacing"]').val(),
                                     "usespacing" : $('input[id=usespacing]').prop('checked'),
                                     "avgbackground" : $('input[id=avgbackground]').prop('checked'),
-                                    "parallel" : $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find('#--parallel').val()
+                                    "parallel" : $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find($('[data-setting="--parallel"]')).val()
                                 };
                                 break;
                             default: break;
@@ -60,10 +60,8 @@
                 // Handle all parallel settings at once
                 $('#parallelGlobal').on('change', function() {
                     var parallelSetting = $('#parallelGlobal').val();
-                    $('.collapsible[data-id="settings"] li[data-id="preprocessing"]').find('#--parallel').val(parallelSetting).change();
-                    $('.collapsible[data-id="settings"] li[data-id="recognition"]').find('#--parallel').val(parallelSetting).change();
-                    $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find('#--parallel').val(parallelSetting).change();
-                    $('.collapsible[data-id="settings"] li[data-id="lineSegmentation"]').find('#--parallel').val(parallelSetting).change();
+                    $('[data-setting="--parallel"]').val(parallelSetting).change();
+                    $('li[data-id="recognition"]').find('[data-setting="--processes"]').val(parallelSetting).change();
                 });
                 // Set available threads as default 
                 $.get( "ajax/generic/threads" )
@@ -140,6 +138,8 @@
                     })
                     .fail(function( jqXHR, data ) {
                         switch(jqXHR.status) {
+                            case 400: $('#modal_settings_failed').modal('open'); break;
+                            case 500: $('#modal_execution_failed').modal('open'); break;
                             case 530: $('#modal_inprogress').modal('open'); break;
                             case 531: $('#modal_misssubprocdata').modal('open'); break;
                             case 533: $('#modal_nosettings').modal('open'); break;
@@ -162,6 +162,13 @@
                     var processesToExecute = getProcessesToExecute();
                     if( processesToExecute.length === 0 ) {
                         $('#modal_noprocsel').modal('open');
+                        return;
+                    }
+
+                    validateCheckpoints();
+                    // If Recognition should be executed, verify that a model is selected
+                    if( $.inArray("recognition", processesToExecute) !== -1 && $('.ms-list').hasClass('invalid')) {
+                        $('#modal_checkpointerror').modal('open');
                         return;
                     }
 
@@ -508,6 +515,20 @@
                 <p>
                     No processes were selected.<br/>
                     Please select some processes to start the Process Flow.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+        <!-- Error in checkpoint (model) selection -->
+        <div id="modal_checkpointerror" class="modal">
+            <div class="modal-content red-text">
+                <h4>Error</h4>
+                <p>
+                    No models were selected in the Recognition settings.<br/>
+                    Open "Settings" and then "Recognition" to see and change the list of models.<br/>
+                    Please select at least one model and execute the Process Flow again.
                 </p>
             </div>
             <div class="modal-footer">

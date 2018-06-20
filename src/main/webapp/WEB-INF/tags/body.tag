@@ -36,8 +36,9 @@
                         <a class="collapsible-header">Segmentation</a>
                         <div class="collapsible-body">
                             <ul>
-                                <li><a href="SegmentationLarex">Segmentation (LAREX)</a></li>
-                                <li><a href="SegmentationDummy">Segmentation (Dummy)</a></li>
+                                <li><a href="SegmentationLarex">LAREX</a></li>
+                                <li><a href="SegmentationDummy">Dummy</a></li>
+                            <%--<li><a href="SegmentationPixelClassifier">Pixel Classifier</a></li>--%>
                             </ul>
                         </div>
                     </li>
@@ -47,6 +48,7 @@
             <li><a href="LineSegmentation">Line Segmentation</a></li>
             <li><a href="Recognition">Recognition</a></li>
             <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Correction</a></li>
+            <li><a href="Training">Training</a></li>
             <li><a href="Evaluation">Evaluation</a></li>
             <li><a href="ResultGeneration">Result Generation</a></li>
             <li class="nav-separator"></li>
@@ -55,6 +57,13 @@
 
     <main>
         <c:choose>
+            <%-- Prevent visiting module pages if a project adjustment is currently in progress --%>
+            <c:when test="${not empty projectAdjustment && heading != 'Project Overview'}">
+                <div class="container red-text">
+                    <h4>Error</h4>
+                    <p>${projectAdjustment}</p>
+                </div>
+            </c:when>
             <%-- In case of an error in the controller, show its message and hide site content --%>
             <c:when test="${not empty error}">
                 <div class="container red-text">
@@ -227,6 +236,32 @@
                                 <h4>Error</h4>
                                 <p>
                                     It could not be verified if old process related files exist.<br/>
+                                    Due to this error, the process cannot be started to ensure data integrity.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                         </div>
+                        <!-- Error in parameter passing (Error Code 400)-->
+                        <div id="modal_settings_failed" class="modal">
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
+                                <p>
+                                    Parameter were not passed correctly<br/>
+                                    Due to this error, the process cannot be started to ensure data integrity.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                         </div>
+                        <!-- Error in the execution (Error Code 500)-->
+                        <div id="modal_execution_failed" class="modal">
+                            <div class="modal-content red-text">
+                                <h4>Error</h4>
+                                <p>
+                                    Error in the execution<br/>
                                     Due to this error, the process cannot be started to ensure data integrity.
                                 </p>
                             </div>
