@@ -11,7 +11,7 @@
                     <td>
                         <div class="input-field">
                             <input id="preprocessing--maxskew" data-setting="--maxskew" type="number" step="0.1" />
-                            <label for="preprocessing--maxskew" data-type="float" data-error="Has to be float">Default: 2 (Float value)</label>
+                            <label for="preprocessing--maxskew" data-type="float" data-error="Has to be float">Default: 0 (Float value)</label>
                         </div>
                     </td>
                 </tr>

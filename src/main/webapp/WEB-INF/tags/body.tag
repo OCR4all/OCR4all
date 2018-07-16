@@ -26,7 +26,7 @@
             <li class="nav-separator"></li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
             <li class="nav-separator"></li>
-            <li><a href="ProcessFlow">Centralized Process Flow</a></li>
+            <li><a href="ProcessFlow">Process Flow</a></li>
             <li class="nav-separator"></li>
             <li><a href="Preprocessing">Preprocessing</a></li>
             <li><a href="Despeckling">Noise Removal</a></li>
@@ -47,7 +47,7 @@
             <li><a href="RegionExtraction">Region Extraction</a></li>
             <li><a href="LineSegmentation">Line Segmentation</a></li>
             <li><a href="Recognition">Recognition</a></li>
-            <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Correction</a></li>
+            <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Production</a></li>
             <li><a href="Training">Training</a></li>
             <li><a href="Evaluation">Evaluation</a></li>
             <li><a href="ResultGeneration">Result Generation</a></li>

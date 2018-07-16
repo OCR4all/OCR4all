@@ -7,36 +7,18 @@
         <table class="compact">
             <tbody>
                 <tr>
-                    <td><p>Disable error checking on inputs</p></td>
-                    <td>
-                            <p>
-                               <input type="checkbox" class="filled-in" id="lineSegmentation--nocheck" data-setting="--nocheck" checked="checked"/>
-                               <label for="lineSegmentation--nocheck"></label>
-                            </p>
-                    </td>
-                </tr>
-                <tr>
-                    <td><p>Use gaussian instead of uniform</p></td>
-                    <td>
-                             <p>
-                                <input type="checkbox" class="filled-in" id="lineSegmentation--usegauss" data-setting="--usegauss" checked="checked"/>
-                                <label for="lineSegmentation--usegauss"></label>
-                             </p>
-                    </td>
-                </tr>
-                <tr>
                     <td>
                         <p>
                             Maximum # whitespace column separators 
                             <br />
-                            <span class="userWarning">Should be set to '-1' if LAREX was used as Segmentation process</span>
+                            <span class="userWarning">Should be set to '-1' if no column separation is desired/required.</span>
                         </p>
                         
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="lineSegmentation--maxcolseps" data-setting="--maxcolseps" type="number" step="0.1" value="3" />
-                            <label for="lineSegmentation--maxcolseps" data-type="float" data-error="Has to be float">Default: 3</label>
+                            <input id="lineSegmentation--maxcolseps" data-setting="--maxcolseps" type="number" step="1" value="-1" />
+                            <label for="lineSegmentation--maxcolseps" data-type="int" data-error="Has to be int">Default: -1</label>
                         </div>
                     </td>
                 </tr>
@@ -70,6 +52,17 @@
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
+                        <tr>
+                            <td>
+                                <p>Disable error checking on inputs</p>
+                            </td>
+                            <td>
+                                <p>
+                                    <input type="checkbox" class="filled-in" id="lineSegmentation--nocheck" data-setting="--nocheck" checked="checked"/>
+                                    <label for="lineSegmentation--nocheck"></label>
+                                </p>
+                            </td>
+                        </tr>
                             <tr>
                                 <td><p>Zoom for page background estimation, smaller=faster</p></td>
                                 <td>
@@ -241,6 +234,15 @@
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
+                        <tr>
+                            <td><p>Use gaussian instead of uniform</p></td>
+                            <td>
+                                <p>
+                                    <input type="checkbox" class="filled-in" id="lineSegmentation--usegauss" data-setting="--usegauss"/>
+                                    <label for="lineSegmentation--usegauss"></label>
+                                </p>
+                            </td>
+                        </tr>
                             <tr>
                                 <td><p>Padding for extracted lines </p></td>
                                 <td>
