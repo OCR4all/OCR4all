@@ -17,12 +17,12 @@
                     <td>
                         <div class="input-field">
                             <input id="trainingId" type="text" class="ignoreParam" />
-                            <label for="trainingId">Default: Next free incremented Integer (0,1,2,...)</label>
+                            <label for="trainingId">Default: Next free incremented integer (0,1,2,...)</label>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td><p>The number of fold, that is the number of models to train</p></td>
+                    <td><p>The number of folds (= the number of models) to train</p></td>
                     <td>
                         <div class="input-field">
                             <input id="training--n_folds" data-setting="--n_folds" type="number" />
@@ -64,8 +64,21 @@
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" />
+                            <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" value="5"/>
                             <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>
+                        Early stopping frequency
+                        <br />
+                        <span class="userInfo">The frequency of early stopping</span>
+                    </p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="training--early_stopping_frequency" data-setting="--early_stopping_frequency" type="number" value="200"/>
+                            <label for="training--early_stopping_frequency" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
@@ -107,6 +120,15 @@
                                 <option value="None">Train model from scratch</option>
                             </select>
                             <label></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Console output frequency</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="training--display" data-setting="--max_parallel_models" type="number" value="50"/>
+                            <label for="training--display" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
