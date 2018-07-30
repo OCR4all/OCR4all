@@ -127,7 +127,7 @@
                     <td><p>Console output frequency</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="training--display" data-setting="--max_parallel_models" type="number" value="50"/>
+                            <input id="training--display" data-setting="--display" type="number" value="50"/>
                             <label for="training--display" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
                         </div>
                     </td>
