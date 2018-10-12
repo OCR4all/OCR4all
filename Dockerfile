@@ -1,5 +1,5 @@
 # Base Image (versions > 16.04 are currently not supported)
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Enable Networking on port 8080
@@ -71,7 +71,12 @@ RUN for CALAMARI_SCRIPT in `cd /usr/local/bin && ls calamari-*`; \
 RUN ln -s /opt/OCR4all_Web/src/main/resources/pagedir2pagexml.py /bin/pagedir2pagexml.py
 
 # Make pretrained CALAMARI models available to the project environment
-RUN ln -s /opt/OCR4all_Web/src/main/resources/calamari_models/default /var/ocr4all/models/default/default; 
+RUN ln -s /opt/OCR4all_Web/src/main/resources/ocr4all_models/default /var/ocr4all/models/default/default; 
+
+# Force tomcat to use java 8
+RUN rm /usr/lib/jvm/default-java && \
+    ln -s /usr/lib/jvm/java-1.8.0-openjdk-amd64 /usr/lib/jvm/default-java && \
+    update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
 
 # Start server when container is started
 # Enviroment variable

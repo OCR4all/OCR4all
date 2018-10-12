@@ -10,6 +10,6 @@
 [submodule "src/main/resources/calamari"]
 	path = src/main/resources/calamari
 	url = https://github.com/ChWick/calamari.git
-[submodule "src/main/resources/calamari_models"]
-	path = src/main/resources/calamari_models
-	url = https://github.com/ChWick/calamari_models.git
+[submodule "src/main/resources/ocr4all_models"]
+	path = src/main/resources/ocr4all_models
+	url = https://github.com/Calamari-OCR/ocr4all_models.git
