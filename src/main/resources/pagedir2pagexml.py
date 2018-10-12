@@ -110,7 +110,7 @@ def pagexmlcombine(ocrindex, gtindex, xmlfile, output):
             coordmap[rid]["lines"][lid]["coords"] = coords
             
             # ocr text
-            for fpath in glob(lpath + ".txt"):
+            for fpath in glob(lpath + ".pred.txt"):
                 with open(fpath, encoding='utf-8') as f:
                     coordmap[rid]["lines"][lid]["ocr"] =  f.read().strip()
                 
