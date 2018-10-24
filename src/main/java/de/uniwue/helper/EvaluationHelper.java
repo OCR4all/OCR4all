@@ -100,6 +100,8 @@ public class EvaluationHelper {
         }
         progress = 20;
         command.addAll(cmdArgs);
+        command.add("--no_progress_bars");
+
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("calamari-eval", command, false);
