@@ -27,8 +27,15 @@
                         <div class="input-field">
                             <input id="training--n_folds" data-setting="--n_folds" type="number" />
                             <label for="training--n_folds" data-type="int" data-error="Has to be integer">Default: 5 (Integer value)</label>
-                            <%-- Required information as fallback in JS code (!!!IMPORTANT!!! change this value if the default changes !!!IMPORTANT!!!) --%>
-                            <input id="defaultFolds" type="hidden" value="5" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Only train a single fold (= a single model)</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="training--single_fold" data-setting="--single_fold" type="number" value="-1"/>
+                            <label for="training--single_fold" data-type="int" data-error="Has to be integer">Default: -1 (train all folds)</label>
                         </div>
                     </td>
                 </tr>
