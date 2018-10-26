@@ -22,6 +22,8 @@ docker build -t <IMAGE_NAME> .
 With the help of the image a container can now be created with the following command:
 ```
 docker run -p 8080:8080 \
+    -u `id -u root`:`id -g $USER` \
+    --name ocr4all \
     -v <OCR_DATA_DIR>:/var/ocr4all/data \
     -v <OCR_MODEL_DIR>:/var/ocr4all/models/custom \
     -it <IMAGE_NAME>
@@ -34,7 +36,7 @@ Explanation of variables used above:
 
 The container will be started by default after executing the `docker run` command.
 
-If you want to start the container again later use `docker ps -a` to list all available containers with their Container IDs and then use `docker start <CONTAINER_ID>` to start the desired container.
+If you want to start the container again later use `docker ps -a` to list all available containers with their Container IDs and then use `docker start -ia ocr4all` to start the desired container.
 
 You can now access the project via following URL: http://localhost:8080/OCR4all_Web/
 
