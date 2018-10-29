@@ -1,9 +1,8 @@
 package de.uniwue.helper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -243,14 +242,20 @@ public class ResultGenerationHelper {
                     processedLineSegments++;
                 }
             }
-            Files.write(Paths.get(projConf.RESULT_PAGES_DIR + pageId + ".txt"), pageResult.get(pageId).getBytes());
+            try (OutputStreamWriter writer =
+                         new OutputStreamWriter(new FileOutputStream(projConf.RESULT_PAGES_DIR + pageId + ".txt"), StandardCharsets.UTF_8)) {
+                writer.write(pageResult.get(pageId));
+            }
         }
         // The recognition/gt output of the the specified pages is concatenated
         String completeResult = new String();
         for (String pageId : pageResult.keySet()) {
             completeResult += pageResult.get(pageId) + "\n";
         }
-        Files.write(Paths.get(projConf.RESULT_DIR + "complete" + ".txt"), completeResult.getBytes());
+        try (OutputStreamWriter writer =
+                     new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + "complete" + ".txt"), StandardCharsets.UTF_8)) {
+            writer.write(completeResult);
+        }
     }
 
     /**
