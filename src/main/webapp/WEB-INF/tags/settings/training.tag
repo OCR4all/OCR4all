@@ -34,8 +34,8 @@
                     <td><p>Only train a single fold (= a single model)</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="training--single_fold" data-setting="--single_fold" type="number" value="-1"/>
-                            <label for="training--single_fold" data-type="int" data-error="Has to be integer">Default: -1 (train all folds)</label>
+                            <input id="training--single_fold" data-setting="--single_fold" type="number" value=""/>
+                            <label for="training--single_fold" data-type="int" data-error="Has to be integer">Default: - (train all folds)</label>
                         </div>
                     </td>
                 </tr>
