@@ -1,4 +1,4 @@
-# Base Image (versions > 16.04 are currently not supported)
+# Base Image
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 
