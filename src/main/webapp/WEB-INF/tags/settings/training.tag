@@ -25,7 +25,7 @@
                     <td><p>The number of folds (= the number of models) to train</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="training--n_folds" data-setting="--n_folds" type="number" />
+                            <input id="training--n_folds" data-setting="--n_folds" type="number" value="5">
                             <label for="training--n_folds" data-type="int" data-error="Has to be integer">Default: 5 (Integer value)</label>
                         </div>
                     </td>
@@ -80,7 +80,7 @@
                     <td><p>
                         Early stopping frequency
                         <br />
-                        <span class="userInfo">The frequency of early stopping</span>
+                        <span class="userInfo">Number of training steps between the evaluation of the current model</span>
                     </p></td>
                     <td>
                         <div class="input-field">
