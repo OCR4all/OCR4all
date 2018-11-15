@@ -80,6 +80,10 @@ RUN ln -s /opt/OCR4all_Web/src/main/resources/pagedir2pagexml.py /bin/pagedir2pa
 # Make pretrained CALAMARI models available to the project environment
 RUN ln -s /opt/OCR4all_Web/src/main/resources/ocr4all_models/default /var/ocr4all/models/default/default; 
 
+# Install nashi
+RUN cd /opt/OCR4all_Web/src/main/resources/nashi/server && \
+    python3 setup.py install
+
 # Force tomcat to use java 8
 RUN rm /usr/lib/jvm/default-java && \
     ln -s /usr/lib/jvm/java-1.8.0-openjdk-amd64 /usr/lib/jvm/default-java && \
