@@ -7,6 +7,7 @@ EXPOSE 8080
 
 # Installing dependencies and deleting cache
 RUN apt-get update&& apt-get install -y \
+    locales \
     git \
     maven \
     tomcat8 \
@@ -24,6 +25,12 @@ RUN apt-get update&& apt-get install -y \
     python3-setuptools \
     python3-pip \
 && rm -rf /var/lib/apt/lists/*
+
+# Set the locale
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 # Repository
 RUN cd /opt && git clone -b development --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
