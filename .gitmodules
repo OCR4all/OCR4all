@@ -13,3 +13,6 @@
 [submodule "src/main/resources/ocr4all_models"]
 	path = src/main/resources/ocr4all_models
 	url = https://github.com/Calamari-OCR/ocr4all_models.git
+[submodule "src/main/resources/nashi"]
+	path = src/main/resources/nashi
+	url = https://github.com/andbue/nashi.git
