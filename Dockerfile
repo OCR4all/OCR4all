@@ -85,8 +85,10 @@ RUN ln -s /opt/OCR4all_Web/src/main/resources/ocr4all_models/default /var/ocr4al
 # Install nashi
 RUN cd /opt/OCR4all_Web/src/main/resources/nashi/server && \
     python3 setup.py install && \
-    python3 -c "from nashi.database import db_session,init_db; init_db(); db_session.commit()"
+    python3 -c "from nashi.database import db_session,init_db; init_db(); db_session.commit()" && \
+    echo -e 'BOOKS_DIR="/var/ocr4all/data/"\nIMAGE_SUBDIR="/PreProc/Gray/"' > nashi-config.py
 ENV FLASK_APP nashi
+ENV NASHI_SETTINGS=/opt/OCR4all_Web/src/main/resources/nashi/server/nashi-config.py
 
 # Force tomcat to use java 8
 RUN rm /usr/lib/jvm/default-java && \
