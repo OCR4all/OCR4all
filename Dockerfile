@@ -2,8 +2,10 @@
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Enable Networking on port 8080
+# Enable Networking on port 8080 (Tomcat)
 EXPOSE 8080
+# Enable Networking on port 5000 (Flask)
+EXPOSE 5000
 
 # Installing dependencies and deleting cache
 RUN apt-get update&& apt-get install -y \
@@ -82,15 +84,16 @@ RUN ln -s /opt/OCR4all_Web/src/main/resources/ocr4all_models/default /var/ocr4al
 
 # Install nashi
 RUN cd /opt/OCR4all_Web/src/main/resources/nashi/server && \
-    python3 setup.py install
+    python3 setup.py install && \
+    python3 -c "from nashi.database import db_session,init_db; init_db(); db_session.commit()"
+ENV FLASK_APP nashi
 
 # Force tomcat to use java 8
 RUN rm /usr/lib/jvm/default-java && \
     ln -s /usr/lib/jvm/java-1.8.0-openjdk-amd64 /usr/lib/jvm/default-java && \
     update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
 
-# Start server when container is started
-# Enviroment variable
+# Solve Tomcat issues with Ubuntu
 ENV CATALINA_HOME /usr/share/tomcat8
 RUN ln -s /var/lib/tomcat8/common $CATALINA_HOME/common && \
     ln -s /var/lib/tomcat8/server $CATALINA_HOME/server && \
@@ -102,4 +105,6 @@ RUN ln -s /var/lib/tomcat8/common $CATALINA_HOME/common && \
     ln -s /var/lib/tomcat8/webapps/OCR4all_Web.war $CATALINA_HOME/webapps && \
     ln -s /var/lib/tomcat8/webapps/GTC_Web.war $CATALINA_HOME/webapps && \
     ln -s /var/lib/tomcat8/webapps/Larex.war $CATALINA_HOME/webapps
+
+# Start server when container is started
 ENTRYPOINT [ "/usr/share/tomcat8/bin/catalina.sh", "run" ]
