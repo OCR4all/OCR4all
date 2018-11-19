@@ -8,7 +8,7 @@ EXPOSE 8080
 EXPOSE 5000
 
 # Installing dependencies and deleting cache
-RUN apt-get update&& apt-get install -y \
+RUN apt-get update && apt-get install -y \
     locales \
     git \
     maven \
@@ -26,6 +26,7 @@ RUN apt-get update&& apt-get install -y \
     python3-pil \
     python3-setuptools \
     python3-pip \
+    supervisor \
 && rm -rf /var/lib/apt/lists/*
 
 # Set the locale
@@ -33,6 +34,9 @@ RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
+
+# Put supervisor process manager configuration to container
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Repository
 RUN cd /opt && git clone -b development --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
@@ -86,7 +90,7 @@ RUN ln -s /opt/OCR4all_Web/src/main/resources/ocr4all_models/default /var/ocr4al
 RUN cd /opt/OCR4all_Web/src/main/resources/nashi/server && \
     python3 setup.py install && \
     python3 -c "from nashi.database import db_session,init_db; init_db(); db_session.commit()" && \
-    echo -e 'BOOKS_DIR="/var/ocr4all/data/"\nIMAGE_SUBDIR="/PreProc/Gray/"' > nashi-config.py
+    echo 'BOOKS_DIR="/var/ocr4all/data/"\nIMAGE_SUBDIR="/PreProc/Gray/"' > nashi-config.py
 ENV FLASK_APP nashi
 ENV NASHI_SETTINGS=/opt/OCR4all_Web/src/main/resources/nashi/server/nashi-config.py
 
@@ -108,5 +112,5 @@ RUN ln -s /var/lib/tomcat8/common $CATALINA_HOME/common && \
     ln -s /var/lib/tomcat8/webapps/GTC_Web.war $CATALINA_HOME/webapps && \
     ln -s /var/lib/tomcat8/webapps/Larex.war $CATALINA_HOME/webapps
 
-# Start server when container is started
-ENTRYPOINT [ "/usr/share/tomcat8/bin/catalina.sh", "run" ]
+# Start processes when container is started
+ENTRYPOINT [ "/usr/bin/supervisord" ]
