@@ -21,7 +21,9 @@ docker build -t <IMAGE_NAME> .
 
 With the help of the image a container can now be created with the following command:
 ```
-docker run -p 8080:8080 \
+docker run \
+    -p 5000:5000 \
+    -p 8080:8080 \
     -u `id -u root`:`id -g $USER` \
     --name ocr4all \
     -v <OCR_DATA_DIR>:/var/ocr4all/data \
@@ -54,7 +56,9 @@ Afterwards you can follow the installation guide above as it is a new clean inst
 
 In case you want shell access on your Docker container for development or testing purposes the container needs to be created with the following command (including the `--entrypoint` option):
 ```
-docker run -p 8080:8080 \
+docker run \
+    -p 5000:5000 \
+    -p 8080:8080 \
     --entrypoint /bin/bash \
     -v <OCR_DATA_DIR>:/var/ocr4all/data \
     -v <OCR_MODEL_DIR>:/var/ocr4all/models/custom \
@@ -65,9 +69,9 @@ The container will be started by default after executing the `docker run` comman
 
 If you want to start the container again later use `docker ps -a` to list all available containers with their Container IDs and then use `docker start <CONTAINER_ID>` to start the desired container. To gain shell access again use `docker attach <CONTAINER_ID>`.
 
-Because the entrypoint has changed, Tomcat will not start automatically and the following command needs to be executed after the container startup:
+Because the entrypoint has changed, processes will not start automatically and the following command needs to be executed after the container startup:
 ```
-/etc/init.d/tomcat8 start
+/usr/bin/supervisord
 ```
 
 For information on how to update the project take a look into the commands within the [Dockerfile](Dockerfile).
@@ -85,6 +89,7 @@ For information on how to update the project take a look into the commands withi
 * [LAREX](https://github.com/chreul/LAREX) - Layout analysis on early printed books
 * [OCRopus](https://github.com/tmbdev/ocropy) - Collection of document analysis programs
 * [calamari](https://github.com/ChWick/calamari) - OCR Engine based on OCRopy and Kraken
+* [nashi](https://github.com/andbue/nashi) - Some bits of javascript to transcribe scanned pages using PageXML
 
 ## Authors
 
