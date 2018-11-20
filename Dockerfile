@@ -36,7 +36,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 # Put supervisor process manager configuration to container
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN wget -P /etc/supervisor/conf.d https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web/raw/development/supervisord.conf
 
 # Repository
 RUN cd /opt && git clone -b development --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
