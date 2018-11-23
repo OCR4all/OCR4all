@@ -26,10 +26,12 @@
                     Import OCR Results
                     <i class="material-icons right">chevron_right</i>
                 </button>
-                <button data-id="openNashi" class="btn waves-effect waves-light">
-                    Open Nashi
-                    <i class="material-icons right">chevron_right</i>
-                </button>
+                <form action="${pageContext.request.scheme}://${pageContext.request.serverName}:5000/books/${projectName}/edit.html" target="_blank" class="inline">
+                    <button data-id="openNashi" class="btn waves-effect waves-light" type="submit">
+                        Open Nashi
+                        <i class="material-icons right">chevron_right</i>
+                    </button>
+                </form>
                 <button data-id="cancel" class="btn waves-effect waves-light">
                     Cancel
                     <i class="material-icons right">cancel</i>
@@ -59,10 +61,12 @@
                     Import OCR Results
                     <i class="material-icons right">chevron_right</i>
                 </button>
-                <button data-id="openNashi" class="btn waves-effect waves-light">
-                    Open Nashi
-                    <i class="material-icons right">chevron_right</i>
-                </button>
+                <form action="${pageContext.request.scheme}://${pageContext.request.serverName}:5000/books/${projectName}/edit.html" target="_blank" class="inline">
+                    <button data-id="openNashi" class="btn waves-effect waves-light" type="submit">
+                        Open Nashi
+                        <i class="material-icons right">chevron_right</i>
+                    </button>
+                </form>
                 <button data-id="cancel" class="btn waves-effect waves-light">
                     Cancel
                     <i class="material-icons right">cancel</i>
