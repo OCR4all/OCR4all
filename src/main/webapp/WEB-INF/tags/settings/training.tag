@@ -17,18 +17,25 @@
                     <td>
                         <div class="input-field">
                             <input id="trainingId" type="text" class="ignoreParam" />
-                            <label for="trainingId">Default: Next free incremented Integer (0,1,2,...)</label>
+                            <label for="trainingId">Default: Next free incremented integer (0,1,2,...)</label>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td><p>The number of fold, that is the number of models to train</p></td>
+                    <td><p>The number of folds (= the number of models) to train</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="training--n_folds" data-setting="--n_folds" type="number" />
+                            <input id="training--n_folds" data-setting="--n_folds" type="number" value="5">
                             <label for="training--n_folds" data-type="int" data-error="Has to be integer">Default: 5 (Integer value)</label>
-                            <%-- Required information as fallback in JS code (!!!IMPORTANT!!! change this value if the default changes !!!IMPORTANT!!!) --%>
-                            <input id="defaultFolds" type="hidden" value="5" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Only train a single fold (= a single model)</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="training--single_fold" data-setting="--single_fold" type="number" value=""/>
+                            <label for="training--single_fold" data-type="int" data-error="Has to be integer">Default: - (train all folds)</label>
                         </div>
                     </td>
                 </tr>
@@ -64,8 +71,21 @@
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" />
+                            <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" value="5"/>
                             <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>
+                        Early stopping frequency
+                        <br />
+                        <span class="userInfo">Number of training steps between the evaluation of the current model</span>
+                    </p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="training--early_stopping_frequency" data-setting="--early_stopping_frequency" type="number" value="200"/>
+                            <label for="training--early_stopping_frequency" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
                         </div>
                     </td>
                 </tr>
@@ -107,6 +127,15 @@
                                 <option value="None">Train model from scratch</option>
                             </select>
                             <label></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Console output frequency</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="training--display" data-setting="--display" type="number" value="50"/>
+                            <label for="training--display" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
                         </div>
                     </td>
                 </tr>

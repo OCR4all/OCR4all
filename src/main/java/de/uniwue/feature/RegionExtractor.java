@@ -123,8 +123,8 @@ public class RegionExtractor {
 
         image.copyTo(bgd, mask);
 
-        if (!(rect.x >= 0 && rect.y >= 0 && rect.br().x <= image.width() - 1 && rect
-                .br().y <= image.height() - 1)) {
+        if (rect.x < 0 || rect.y < 0 || rect.br().x > image.width() - 1 || rect
+                .br().y > image.height() - 1) {
             System.out.println("Rect out of range! Skipping region! "
                     + outputPath);
             return false;

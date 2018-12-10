@@ -251,6 +251,9 @@ public class RecognitionHelper {
                 command.addAll(extractModelsOfJoinedString(cmdArgsIterator.next()));
             }
         }
+
+        command.add("--no_progress_bars");
+
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("calamari-predict", command, false);

@@ -50,18 +50,21 @@
                     onOpen: function(el) { loadImage(el); },
                 });
 
-                <c:choose>
-                    <%-- Open Gray image if it is set in session --%>
-                    <c:when test='${imageType == "Gray"}'>
-                        loadImage($('.collapsible[data-type="page"]').find('li').eq(2));
-                        $('.collapsible[data-type="page"]').collapsible('open', 2);
-                    </c:when>
-                    <%-- Else open Binary image as default --%>
-                    <c:otherwise>
-                        loadImage($('.collapsible[data-type="page"]').find('li').eq(1));
-                        $('.collapsible[data-type="page"]').collapsible('open', 1);
-                    </c:otherwise>
-                </c:choose>
+                loadImage($('.collapsible[data-type="page"]').find('li').eq(0));
+                $('.collapsible[data-type="page"]').collapsible('open', 0);
+
+                <%--<c:choose>--%>
+                    <%--&lt;%&ndash; Open Gray image if it is set in session &ndash;%&gt;--%>
+                    <%--<c:when test='${imageType == "Gray"}'>--%>
+                        <%--loadImage($('.collapsible[data-type="page"]').find('li').eq(2));--%>
+                        <%--$('.collapsible[data-type="page"]').collapsible('open', 2);--%>
+                    <%--</c:when>--%>
+                    <%--&lt;%&ndash; Else open Binary image as default &ndash;%&gt;--%>
+                    <%--<c:otherwise>--%>
+                        <%--loadImage($('.collapsible[data-type="page"]').find('li').eq(1));--%>
+                        <%--$('.collapsible[data-type="page"]').collapsible('open', 1);--%>
+                    <%--</c:otherwise>--%>
+                <%--</c:choose>--%>
             });
         </script>
     </t:head>

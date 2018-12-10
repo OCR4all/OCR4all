@@ -170,6 +170,8 @@ public class TrainingHelper {
         command.add("--best_models_dir");
         command.add(trainingDir.getAbsolutePath());
 
+        command.add("--no_progress_bars");
+
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("calamari-cross-fold-train", command, false);

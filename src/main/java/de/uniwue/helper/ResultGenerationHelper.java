@@ -1,9 +1,8 @@
 package de.uniwue.helper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,27 +52,27 @@ public class ResultGenerationHelper {
     /**
      * Structure to monitor the progress of the process
      * pageId : segmentId : lineSegmentId : processedState
-     *
+     * <p>
      * Structure example:
      * {
-     *     "0002": {
-     *         "0002__000__paragraph" : {
-     *             "0002__000__paragraph__000" : true,
-     *             "0002__000__paragraph__001" : false,
-     *             ...
-     *         },
-     *         ...
-     *     },
-     *     ...
+     * "0002": {
+     * "0002__000__paragraph" : {
+     * "0002__000__paragraph__000" : true,
+     * "0002__000__paragraph__001" : false,
+     * ...
+     * },
+     * ...
+     * },
+     * ...
      * }
      */
-    private TreeMap<String,TreeMap<String, TreeMap<String, Boolean>>> processState =
-        new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
+    private TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>> processState =
+            new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
 
     /**
      * Constructor
      *
-     * @param projectDir Path to the project directory
+     * @param projectDir       Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
      */
     public ResultGenerationHelper(String projectDir, String projectImageType) {
@@ -110,17 +109,19 @@ public class ResultGenerationHelper {
                 for (File dir : lineSegmentDirectories) {
                     TreeMap<String, Boolean> lineSegments = new TreeMap<String, Boolean>();
                     Files.walk(Paths.get(dir.getAbsolutePath()), 1)
-                    .map(Path::toFile)
-                    .filter(fileEntry -> fileEntry.isFile())
-                    .filter(fileEntry -> fileEntry.getName().endsWith(projConf.REC_EXT))
-                    .filter(fileEntry -> !fileEntry.getName().endsWith(projConf.GT_EXT))
-                    .forEach(
-                        fileEntry -> {
-                            // .txt is removed to get the id of the linesegment
-                            String lineSegmentId = FilenameUtils.removeExtension(fileEntry.getName());
-                            lineSegments.put(lineSegmentId, false);
-                        }
-                    );
+                            .map(Path::toFile)
+                            .filter(fileEntry -> fileEntry.isFile())
+                            .filter(fileEntry -> fileEntry.getName().endsWith(projConf.REC_EXT))
+                            .filter(fileEntry -> !fileEntry.getName().endsWith(projConf.GT_EXT))
+                            .forEach(
+                                    fileEntry -> {
+                                        //.pred.txt is removed to get the id of the line segment
+                                        if (fileEntry.getName().contains(projConf.REC_EXT)) {
+                                            String lineSegmentId = fileEntry.getName().substring(0, fileEntry.getName().indexOf(projConf.REC_EXT));
+                                            lineSegments.put(lineSegmentId, false);
+                                        }
+                                    }
+                            );
                     segments.put(dir.getName(), lineSegments);
                 }
             }
@@ -144,7 +145,7 @@ public class ResultGenerationHelper {
     /**
      * Executes result generation process on all specified pages
      *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds    Identifiers of the pages (e.g 0002,0003)
      * @param resultType specified resultType (txt, xml)
      * @throws IOException
      */
@@ -156,8 +157,7 @@ public class ResultGenerationHelper {
 
         if (resultType.equals("txt")) {
             executeTextProcess(pageIds);
-        }
-        else if (resultType.equals("xml")) {
+        } else if (resultType.equals("xml")) {
             executeXmlProcess(pageIds);
         }
 
@@ -172,8 +172,8 @@ public class ResultGenerationHelper {
      */
     public void executeXmlProcess(List<String> pageIds) throws IOException {
         File dir = new File(projConf.OCR_DIR);
-        deleteOldFiles(pageIds,"xml");
-        if(!dir.exists())
+        deleteOldFiles(pageIds, "xml");
+        if (!dir.exists())
             return;
 
         File[] xmlFiles = dir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
@@ -184,7 +184,7 @@ public class ResultGenerationHelper {
         for (File xmlFile : xmlFiles) {
             if (stopProcess == true)
                 return;
-            if(!pageIds.contains(FilenameUtils.removeExtension(xmlFile.getName())))
+            if (!pageIds.contains(FilenameUtils.removeExtension(xmlFile.getName())))
                 continue;
             List<String> command = new ArrayList<String>();
             command.add(xmlFile.getAbsolutePath());
@@ -205,7 +205,7 @@ public class ResultGenerationHelper {
      */
     public void executeTextProcess(List<String> pageIds) throws IOException {
         initialize(pageIds);
-        deleteOldFiles(pageIds,"txt");
+        deleteOldFiles(pageIds, "txt");
 
         TreeMap<String, String> pageResult = new TreeMap<String, String>();
         int lineSegmentsCount = 0;
@@ -234,7 +234,7 @@ public class ResultGenerationHelper {
 
                     BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"));
                     String currentLine = new String();
-                    while ((currentLine = reader.readLine()) != null){
+                    while ((currentLine = reader.readLine()) != null) {
                         pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
                     }
 
@@ -242,14 +242,20 @@ public class ResultGenerationHelper {
                     processedLineSegments++;
                 }
             }
-            Files.write(Paths.get(projConf.RESULT_PAGES_DIR + pageId + ".txt"), pageResult.get(pageId).getBytes());
+            try (OutputStreamWriter writer =
+                         new OutputStreamWriter(new FileOutputStream(projConf.RESULT_PAGES_DIR + pageId + ".txt"), StandardCharsets.UTF_8)) {
+                writer.write(pageResult.get(pageId));
+            }
         }
         // The recognition/gt output of the the specified pages is concatenated
         String completeResult = new String();
-        for (String pageId: pageResult.keySet()) {
+        for (String pageId : pageResult.keySet()) {
             completeResult += pageResult.get(pageId) + "\n";
         }
-        Files.write(Paths.get(projConf.RESULT_DIR + "complete" + ".txt"), completeResult.getBytes());
+        try (OutputStreamWriter writer =
+                     new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + "complete" + ".txt"), StandardCharsets.UTF_8)) {
+            writer.write(completeResult);
+        }
     }
 
     /**
@@ -272,7 +278,7 @@ public class ResultGenerationHelper {
      * Returns the Ids of the pages, for which recognition process was already executed
      *
      * @return List of valid page Ids
-     * @throws IOException 
+     * @throws IOException
      */
     public ArrayList<String> getValidPageIds() throws IOException {
         // Get all pages and check which ones are already region extracted
@@ -303,29 +309,30 @@ public class ResultGenerationHelper {
      */
     public void deleteOldFiles(List<String> pageIds, String type) {
         // Delete result of each page
-        for(String pageId : pageIds) {
-            if(type.equals("txt")) {
+        for (String pageId : pageIds) {
+            if (type.equals("txt")) {
                 File pageTxtResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
                 if (pageTxtResult.exists())
                     pageTxtResult.delete();
             }
-            if(type.equals("xml")) {
+            if (type.equals("xml")) {
                 File pageXmlResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.CONF_EXT);
                 if (pageXmlResult.exists())
                     pageXmlResult.delete();
             }
         }
-        if(type.equals("txt")) {
-           // delete the concatenated result of the pages
-           File completeResult = new File(projConf.RESULT_DIR + "complete"+ projConf.REC_EXT);
-           if (completeResult.exists())
-               completeResult.delete();
+        if (type.equals("txt")) {
+            // delete the concatenated result of the pages
+            File completeResult = new File(projConf.RESULT_DIR + "complete" + projConf.REC_EXT);
+            if (completeResult.exists())
+                completeResult.delete();
         }
     }
+
     /**
      * Checks if process depending files already exist
      *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds    Identifiers of the pages (e.g 0002,0003)
      * @param resultType Type of the result (xml, txt)
      * @return Information if files exist
      */
@@ -336,6 +343,7 @@ public class ResultGenerationHelper {
         }
         return false;
     }
+
     /**
      * Determines conflicts with the process
      *
