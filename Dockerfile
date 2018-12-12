@@ -93,6 +93,7 @@ RUN cd /opt/OCR4all_Web/src/main/resources/nashi/server && \
     echo 'BOOKS_DIR="/var/ocr4all/data/"\nIMAGE_SUBDIR="/PreProc/Gray/"' > nashi-config.py
 ENV FLASK_APP nashi
 ENV NASHI_SETTINGS /opt/OCR4all_Web/src/main/resources/nashi/server/nashi-config.py
+ENV DATABASE_URL sqlite:////opt/OCR4all_Web/src/main/resources/nashi/server/test.db
 
 # Force tomcat to use java 8
 RUN rm /usr/lib/jvm/default-java && \
