@@ -35,7 +35,7 @@
                     <td><p>Disable error checking on inputs</p></td>
                     <td>
                         <p>
-                            <input type="checkbox" data-setting="--nocheck" class="filled-in" id="preprocessing--nocheck" />
+                            <input type="checkbox" data-setting="--nocheck" class="filled-in" id="preprocessing--nocheck" checked/>
                             <label for="preprocessing--nocheck"></label>
                         </p>
                     </td>
