@@ -10,7 +10,7 @@
                 <td><p>The number of folds (= the number of models) to train</p></td>
                 <td>
                     <div class="input-field">
-                        <input id="training--n_folds" data-setting="--n_folds" type="number"/>
+                        <input id="training--n_folds" data-setting="--n_folds" type="number" value="5"/>
                         <label for="training--n_folds" data-type="int" data-error="Has to be integer">Default: 5 (Integer value)</label>
                     </div>
                 </td>
