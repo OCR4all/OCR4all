@@ -4,6 +4,8 @@
 .settings/
 .tern-project
 
+built_wars
+
 # Intellij
 .idea/
 *.iml

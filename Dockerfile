@@ -81,10 +81,13 @@ RUN rm /usr/lib/jvm/default-java && \
     ln -s /usr/lib/jvm/java-1.8.0-openjdk-amd64 /usr/lib/jvm/default-java && \
     update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
 
+# Copy maven projects
+COPY built_wars/*.war /var/lib/tomcat8/webapps/
+
 # Download maven project
-RUN wget $ARTIFACTORY_URL/OCR4all_Web/0.0.1-SNAPSHOT/OCR4all_Web-0.0.1-20190108.133743-1.war -P /var/lib/tomcat8/webapps/ && \
-    wget $ARTIFACTORY_URL/GTC_Web/0.0.1-SNAPSHOT/GTC_Web-0.0.1-20190108.130742-1.war -P /var/lib/tomcat8/webapps/ && \
-    wget $ARTIFACTORY_URL/Larex/0.0.2-SNAPSHOT/Larex-0.0.2-20190108.140302-1.war -P /var/lib/tomcat8/webapps/
+#RUN wget $ARTIFACTORY_URL/OCR4all_Web/0.0.1-SNAPSHOT/OCR4all_Web-0.0.1-20190108.133743-1.war -P /var/lib/tomcat8/webapps/OCR4all_Web.war && \
+#    wget $ARTIFACTORY_URL/GTC_Web/0.0.1-SNAPSHOT/GTC_Web-0.0.1-20190108.130742-1.war -P /var/lib/tomcat8/webapps/GTC_Web.war && \
+#    wget $ARTIFACTORY_URL/Larex/0.0.2-SNAPSHOT/Larex-0.0.2-20190108.140302-1.war -P /var/lib/tomcat8/webapps/Larex.war
     # TODO: direct request is not enabled in this version of Larex!
 
 # Create ocr4all directories and grant tomcat permissions
@@ -107,6 +110,9 @@ RUN ln -s /var/lib/tomcat8/common $CATALINA_HOME/common && \
     ln -s /var/lib/tomcat8/webapps/OCR4all_Web.war $CATALINA_HOME/webapps && \
     ln -s /var/lib/tomcat8/webapps/GTC_Web.war $CATALINA_HOME/webapps && \
     ln -s /var/lib/tomcat8/webapps/Larex.war $CATALINA_HOME/webapps
+
+# Create index.html for calling url without tool!
+COPY built_wars/index.html /usr/share/tomcat8/webapps/ROOT/index.html
 
 # Start processes when container is started
 ENTRYPOINT [ "/usr/bin/supervisord" ]
