@@ -112,7 +112,7 @@ RUN ln -s /var/lib/tomcat8/common $CATALINA_HOME/common && \
     ln -s /var/lib/tomcat8/webapps/Larex.war $CATALINA_HOME/webapps
 
 # Create index.html for calling url without tool!
-COPY built_wars/index.html /usr/share/tomcat8/webapps/ROOT/index.html
+COPY index.html /usr/share/tomcat8/webapps/ROOT/index.html
 
 # Start processes when container is started
 ENTRYPOINT [ "/usr/bin/supervisord" ]
