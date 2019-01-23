@@ -41,13 +41,13 @@ RUN pip3 install --upgrade tensorflow
 RUN wget -P /etc/supervisor/conf.d https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web/raw/master/supervisord.conf
 
 # Repository
-RUN cd /opt && git clone --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git
+RUN cd /opt && git clone --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git --branch update-dockerfile
 
 # Enabling direct request in Larex submodule
-#RUN sed -i 's/#directrequest:<value>/directrequest:enable/' /opt/OCR4all_Web/src/main/resources/LAREX/Larex/src/main/webapp/WEB-INF/larex.config
+#RUN sed -i 's/#directrequest:<value>/directrequest:enable/' /opt/OCR4all_Web/submodules/LAREX/Larex/src/main/webapp/WEB-INF/larex.config
 
 # Install ocropy
-RUN cd /opt/OCR4all_Web/src/main/resources/ocropy && \
+RUN cd /opt/OCR4all_Web/submodules/ocropy && \
     python2.7 setup.py install
 
 # Make all ocropy scripts available to JAVA environment
@@ -56,7 +56,7 @@ RUN for OCR_SCRIPT in `cd /usr/local/bin && ls ocropus-*`; \
     done
 
 # Install calamari
-RUN cd /opt/OCR4all_Web/src/main/resources/calamari && \
+RUN cd /opt/OCR4all_Web/submodules/calamari && \
     python3 setup.py install
 
 # Make all calamari scripts available to JAVA environment
@@ -65,16 +65,16 @@ RUN for CALAMARI_SCRIPT in `cd /usr/local/bin && ls calamari-*`; \
     done
 
 # Make pagedir2pagexml.py available to JAVA environment
-RUN ln -s /opt/OCR4all_Web/src/main/resources/pagedir2pagexml.py /bin/pagedir2pagexml.py
+RUN ln -s /opt/OCR4all_Web/submodules/pagedir2pagexml.py /bin/pagedir2pagexml.py
 
 # Install nashi
-#RUN cd /opt/OCR4all_Web/src/main/resources/nashi/server && \
+#RUN cd /opt/OCR4all_Web/submodules/nashi/server && \
 #    python3 setup.py install && \
 #    python3 -c "from nashi.database import db_session,init_db; init_db(); db_session.commit()" && \
 #    echo 'BOOKS_DIR="/var/ocr4all/data/"\nIMAGE_SUBDIR="/PreProc/Gray/"' > nashi-config.py
 #ENV FLASK_APP nashi
-#ENV NASHI_SETTINGS /opt/OCR4all_Web/src/main/resources/nashi/server/nashi-config.py
-#ENV DATABASE_URL sqlite:////opt/OCR4all_Web/src/main/resources/nashi/server/test.db
+#ENV NASHI_SETTINGS /opt/OCR4all_Web/submodules/nashi/server/nashi-config.py
+#ENV DATABASE_URL sqlite:////opt/OCR4all_Web/submodules/nashi/server/test.db
 
 # Force tomcat to use java 8
 RUN rm /usr/lib/jvm/default-java && \
@@ -98,7 +98,7 @@ RUN mkdir -p /var/ocr4all/data && \
     chgrp -R tomcat8 /var/ocr4all
 
 # Make pretrained CALAMARI models available to the project environment
-RUN ln -s /opt/OCR4all_Web/src/main/resources/ocr4all_models/default /var/ocr4all/models/default/default;
+RUN ln -s /opt/OCR4all_Web/submodules/ocr4all_models/default /var/ocr4all/models/default/default;
 
 RUN ln -s /var/lib/tomcat8/common $CATALINA_HOME/common && \
     ln -s /var/lib/tomcat8/server $CATALINA_HOME/server && \
