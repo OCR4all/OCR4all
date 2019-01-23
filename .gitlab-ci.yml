@@ -7,11 +7,7 @@ build:
   stage: build
   script:
     - mvn clean package
-    - cd -
-    - git clone https://github.com/chreul/LAREX.git
-    - cd LAREX/Larex
-    - mvn clean package
-    - cd -
-    - git clone https:/itlab2.informatik.uni-wuerzburg.de/chr58bk/GTC_Web_NeuUndGscheid.git
-    - cd GTC_Web_NeuUndGscheid
-    - mvn clan package
+
+  artifacts:
+    paths:
+      - target/OCR4all_Web.war
