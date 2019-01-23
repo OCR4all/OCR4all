@@ -41,7 +41,7 @@ RUN pip3 install --upgrade tensorflow
 RUN wget -P /etc/supervisor/conf.d https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web/raw/master/supervisord.conf
 
 # Repository
-RUN cd /opt && git clone --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git --branch update-dockerfile
+RUN cd /opt && git clone --recurse-submodules https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/OCR4all_Web.git -b update-dockerfile
 
 # Enabling direct request in Larex submodule
 #RUN sed -i 's/#directrequest:<value>/directrequest:enable/' /opt/OCR4all_Web/submodules/LAREX/Larex/src/main/webapp/WEB-INF/larex.config

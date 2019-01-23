@@ -1,0 +1,21 @@
+image: maven:3-jdk-11
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - apk add maven
+
+    - mvn clean package
+    - cd -
+
+    - git clone https://github.com/chreul/LAREX.git
+    - cd LAREX/Larex
+    - mvn clean package
+    - cd -
+
+    - git clone https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/GTC_Web_NeuUndGscheid.git
+    - cd GTC_Web_NeuUndGscheid
+    - mvn clean package
