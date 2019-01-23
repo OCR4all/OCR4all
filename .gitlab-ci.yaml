@@ -6,16 +6,12 @@ stages:
 build:
   stage: build
   script:
-    - apk add maven
-
     - mvn clean package
     - cd -
-
     - git clone https://github.com/chreul/LAREX.git
     - cd LAREX/Larex
     - mvn clean package
     - cd -
-
-    - git clone https://gitlab2.informatik.uni-wuerzburg.de/chr58bk/GTC_Web_NeuUndGscheid.git
+    - git clone https:/itlab2.informatik.uni-wuerzburg.de/chr58bk/GTC_Web_NeuUndGscheid.git
     - cd GTC_Web_NeuUndGscheid
-    - mvn clean package
+    - mvn clan package
