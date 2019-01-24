@@ -98,6 +98,20 @@
         </dependency>
     </dependencies>
 
+
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>artifactory-releases</name>
+            <url>http://artifactory-ls6.informatik.uni-wuerzburg.de/artifactory/libs-snapshot</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>artifactory-snapshots</name>
+            <url>http://artifactory-ls6.informatik.uni-wuerzburg.de/artifactory/libs-snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <finalName>OCR4all_Web</finalName>
     </build>

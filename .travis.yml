@@ -1,0 +1,18 @@
+language: java
+
+jdk:
+  - openjdk8
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.gradle
+
+deploy:
+  provider: script
+  script: "mvn deploy --settings .travis.settings.xml"
+  skip_cleanup: true
+  on:
+    branch: master
