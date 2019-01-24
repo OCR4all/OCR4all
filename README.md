@@ -1,5 +1,7 @@
 # OCR4all_Web
 
+[![Build Status](https://travis-ci.org/OCR4all/OCR4all.svg?branch=master)](https://travis-ci.org/OCR4all/OCR4all)
+
 Provides OCR (optical character recognition) services through web applications
 
 ## Getting Started
