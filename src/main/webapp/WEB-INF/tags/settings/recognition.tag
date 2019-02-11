@@ -41,7 +41,7 @@
                     <td><p>Number of lines to process in parallel (Batch size)</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="recognition--batch_size" data-setting="--batch_size" type="number" step="1" />
+                            <input id="recognition--batch_size" data-setting="--batch_size" type="number" step="1" value="5"/>
                             <label for="recognition--batch_size" data-type="int" data-error="Has to be Int">Default: 1</label>
                         </div>
                     </td>
