@@ -2,7 +2,10 @@
 
 [![Build Status](https://travis-ci.org/OCR4all/OCR4all.svg?branch=master)](https://travis-ci.org/OCR4all/OCR4all)
 
-Provides OCR (optical character recognition) services through web applications
+As suggested by the name one of the main goals of OCR4all is to allow basically any given user to independently perform OCR on a wide variety of historical printings and obtain high quality results with reasonable time expenditure. Therefore, OCR4all is explicitly planned even for users with no technical background.
+
+If you are one of those users (or if you just want to use the tool and are not interested in the code), please go to the [getting started section](https://github.com/OCR4all/getting_started).
+
 
 ## Getting Started
 
@@ -101,8 +104,14 @@ To update them, you have to publish a new version to the artifactory and update 
 * [calamari](https://github.com/ChWick/calamari) - OCR Engine based on OCRopy and Kraken
 * [nashi](https://github.com/andbue/nashi) - Some bits of javascript to transcribe scanned pages using PageXML
 
-## Authors
+## Authors and Helping Hands
 
-* **Christian Reul** - *Responsible for OCR processes* - Email: christian.reul@uni-wuerzburg.de
-* **Dennis Christ** - *Developer* - Email: dennis.christ@stud-mail.uni-wuerzburg.de
-* **Alexander Hartelt** - *Developer* - Email: alexander.hartelt@stud-mail.uni-wuerzburg.de
+* **Christian Reul** (*Project Lead*) - Email: christian.reul@uni-wuerzburg.de
+* **Dennis Christ** and **Alexander Hartelt** (*OCR4all Web Development*) 
+* **Christoph Wick** (Calamari)
+* **Nico Balbach** (LAREX Web GUI)
+* **Andreas Büttner** (nashi)
+* **Björn Eyeselein** (distribution via Docker)
+* **Maximilan Wehner** (tireless testing, guides, and non-technical user support)
+* **Christine Grundig, Frank Puppe, and Uwe Springmann** (Ideas and Feedback)
+* ...
