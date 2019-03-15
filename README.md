@@ -1,10 +1,8 @@
-# OCR4all_Web
+# OCR4all
 
 [![Build Status](https://travis-ci.org/OCR4all/OCR4all.svg?branch=master)](https://travis-ci.org/OCR4all/OCR4all)
 
-As suggested by the name one of the main goals of OCR4all is to allow basically any given user to independently perform OCR on a wide variety of historical printings and obtain high quality results with reasonable time expenditure. Therefore, OCR4all is explicitly planned even for users with no technical background.
-
-If you are one of those users (or if you just want to use the tool and are not interested in the code), please go to the [getting started section](https://github.com/OCR4all/getting_started).
+As suggested by the name one of the main goals of OCR4all is to allow basically any given user to independently perform OCR on a wide variety of historical printings and obtain high quality results with reasonable time expenditure. Therefore, **OCR4all is explicitly geared towards users with no technical background. If you are one of those users (or if you just want to use the tool and are not interested in the code), please go to the** [getting started project where you will find guides and test data](https://github.com/OCR4all/getting_started).
 
 
 ## Getting Started
