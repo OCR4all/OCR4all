@@ -111,7 +111,7 @@ To update them, you have to publish a new version to the artifactory and update 
 * **Christoph Wick** (Calamari)
 * **Nico Balbach** (LAREX Web GUI)
 * **Andreas Büttner** (nashi)
-* **Björn Eyeselein** (distribution via Docker)
+* **Björn Eyselein** (distribution via Docker)
 * **Maximilan Wehner** (tireless testing, guides, and non-technical user support)
 * **Christine Grundig, Frank Puppe, and Uwe Springmann** (Ideas and Feedback)
 * ...
