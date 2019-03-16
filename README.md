@@ -97,19 +97,19 @@ To update them, you have to publish a new version to the artifactory and update 
 
 ## Included Projects
 
-* [LAREX](https://github.com/chreul/LAREX) - Layout analysis on early printed books
 * [OCRopus](https://github.com/tmbdev/ocropy) - Collection of document analysis programs
 * [calamari](https://github.com/ChWick/calamari) - OCR Engine based on OCRopy and Kraken
+* [LAREX](https://github.com/chreul/LAREX) - Layout analysis on early printed books
 * [nashi](https://github.com/andbue/nashi) - Some bits of javascript to transcribe scanned pages using PageXML
 
 ## Authors and Helping Hands
 
-* **Christian Reul** (*Project Lead*) - Email: christian.reul@uni-wuerzburg.de
-* **Dennis Christ** and **Alexander Hartelt** (*OCR4all Web Development*) 
-* **Christoph Wick** (Calamari)
-* **Nico Balbach** (LAREX Web GUI)
+* **Christian Reul** (*project lead*) - Email: christian.reul@uni-wuerzburg.de
+* **Dennis Christ** and **Alexander Hartelt** (*OCR4all web development*) 
+* **Christoph Wick** (calamari)
+* **Nico Balbach** (LAREX web GUI)
 * **Andreas Büttner** (nashi)
 * **Björn Eyselein** (distribution via Docker)
 * **Maximilan Wehner** (tireless testing, guides, and non-technical user support)
-* **Christine Grundig, Frank Puppe, and Uwe Springmann** (Ideas and Feedback)
+* **Christine Grundig, Frank Puppe, and Uwe Springmann** (ideas and feedback)
 * ...
