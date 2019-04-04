@@ -353,6 +353,7 @@ public class OverviewHelper {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                image.release();
             }
         );
     }

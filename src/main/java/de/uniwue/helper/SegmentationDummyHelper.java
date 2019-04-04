@@ -109,6 +109,7 @@ public class SegmentationDummyHelper {
             return;
         Document xml = PageXMLWriter.getPageXML(image, imageFilename, "2017-07-15");
         PageXMLWriter.saveDocument(xml, imageFilename, outputFolder);
+        image.release();
     }
     /**
      * Returns the progress of the job
