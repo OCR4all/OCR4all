@@ -40,7 +40,7 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-                    $.get( "ajax/segmentation/exists?", { "pageIds[]" : selectedPages } )
+                    $.post( "ajax/segmentation/exists", { "pageIds[]" : selectedPages } )
                     .done(function( data ) {
                         if(data === false) {
                             var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};

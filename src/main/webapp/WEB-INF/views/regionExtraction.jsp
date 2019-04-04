@@ -24,7 +24,7 @@
                         return;
                     }
 
-                    $.get( "ajax/regionExtraction/exists?", { "pageIds[]" : selectedPages } )
+                    $.post( "ajax/regionExtraction/exists", { "pageIds[]" : selectedPages } )
                     .done(function( data ){
                         if(data === false){
                             var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),

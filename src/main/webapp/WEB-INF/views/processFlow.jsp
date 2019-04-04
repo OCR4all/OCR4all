@@ -172,7 +172,7 @@
                         return;
                     }
 
-                    $.get( "ajax/processFlow/exists?", { "pageIds[]" : selectedPages, "processes[]" : processesToExecute } )
+                    $.post( "ajax/processFlow/exists", { "pageIds[]" : selectedPages, "processes[]" : processesToExecute } )
                     .done(function( data ){
                         if(data === false){
                             executeProcessFlow(selectedPages, processesToExecute);

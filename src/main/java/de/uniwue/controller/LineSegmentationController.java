@@ -192,7 +192,7 @@ public class LineSegmentationController {
      * @param response Response to the request
      * @return Information if files exist
      */
-    @RequestMapping(value = "/ajax/lineSegmentation/exists" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/lineSegmentation/exists" , method = RequestMethod.POST)
     public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response 
