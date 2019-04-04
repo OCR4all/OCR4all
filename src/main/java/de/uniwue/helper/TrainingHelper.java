@@ -123,14 +123,17 @@ public class TrainingHelper {
         List<Integer> trainingIds = new ArrayList<Integer>();
         trainingIds.add(-1);
         for (File trainingDir : trainingDirectories) {
-            try {
-                trainingIds.add(Integer.parseInt(trainingDir.getName()));
-            } catch (NumberFormatException e) {
-                // Ignore directories that have no Integer naming (irrelevant)
-            }
+			// Filter out empty directories
+			if(trainingDir.list().length > 0) {
+				try {
+					trainingIds.add(Integer.parseInt(trainingDir.getName()));
+				} catch (NumberFormatException e) {
+					// Ignore directories that have no Integer naming (irrelevant)
+				}
+			}
         }
 
-        return Integer.toString(Collections.max(trainingIds) + 1);
+		return Integer.toString(Collections.max(trainingIds) + 1);
     }
 
     /**
