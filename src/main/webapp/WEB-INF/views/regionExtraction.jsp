@@ -47,7 +47,9 @@
                 $('#agree').click(function() {
                     var selectedPages = getSelectedPages();
                     var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
-                            "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages, "parallel" : $('input[id="--parallel"]').val() };
+                            "pageIds[]" : selectedPages, "maxskew" : $('input[id="regionExtraction--maxskew"]').val(),
+                            "skewsteps" : $('input[id="regionExtraction--skewsteps"]').val(),
+                            "parallel" : $('input[id="regionExtraction--parallel"]').val() };
                     // Execute region extraction process
                     executeProcess(ajaxParams);
                 });

@@ -80,7 +80,8 @@ public class RegionExtractionController {
     public @ResponseBody void execute(
                 @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam("spacing") int spacing,
-                @RequestParam("avgbackground") boolean avgbackground,
+                @RequestParam("maxskew") int maxskew,
+                @RequestParam("skewsteps") int skewsteps,
                 @RequestParam("parallel") int parallel,
                 HttpSession session, HttpServletResponse response,
                 @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
@@ -95,7 +96,7 @@ public class RegionExtractionController {
 
         GenericController.addToProcessList(session, "regionExtraction");
         try {
-            regionExtractionHelper.execute(Arrays.asList(pageIds), spacing, avgbackground, parallel);
+            regionExtractionHelper.execute(Arrays.asList(pageIds), spacing, maxskew, skewsteps, parallel);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             regionExtractionHelper.resetProgress();
