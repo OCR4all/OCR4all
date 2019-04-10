@@ -16,7 +16,6 @@ import java.util.TreeMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -261,7 +260,6 @@ public class RecognitionHelper {
         ObjectWriter writer = mapper.writer();
         writer.writeValue(segmentListFile, segmentObj); 
         command.add(segmentListFile.toString());
-        System.out.println(segmentListFile);
         
         
         //Add checkpoints

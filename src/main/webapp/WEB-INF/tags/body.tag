@@ -51,7 +51,7 @@
             <li><a href="Training">Training</a></li>
             <li><a href="Evaluation">Evaluation</a></li>
             <li><a href="ResultGeneration">Result Generation</a></li>
-            <!--<li><a href="PostCorrection">Post Correction</a></li>-->
+            <li><a href="PostCorrection">Post Correction</a></li>
             <li class="nav-separator"></li>
         </ul>
     </header>
