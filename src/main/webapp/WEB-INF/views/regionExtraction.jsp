@@ -28,7 +28,9 @@
                     .done(function( data ){
                         if(data === false){
                             var ajaxParams = { "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
-                                    "avgbackground" : $('input[id=avgbackground]').prop('checked'), "pageIds[]" : selectedPages,  "parallel" : $('input[data-setting="--parallel"]').val() };
+                            "pageIds[]" : selectedPages, "maxskew" : $('input[id="regionExtraction--maxskew"]').val(),
+                            "skewsteps" : $('input[id="regionExtraction--skewsteps"]').val(),
+                            "parallel" : $('input[id="regionExtraction--parallel"]').val() };
                             // Execute regionExtraction process
                             executeProcess(ajaxParams);
                         }
