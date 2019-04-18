@@ -18,7 +18,7 @@
         <tr>
             <td>
                 <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
-                    <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}PreProc" />
+                    <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}processing" />
                     <input type="hidden" id="bookname" name="bookname" value="" />
                     <input type="hidden" id="websave" name="websave" value="false" />
                     <input type="hidden" id="localsave" name="localsave" value="bookpath" />

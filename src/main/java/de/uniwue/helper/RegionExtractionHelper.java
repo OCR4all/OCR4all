@@ -32,6 +32,12 @@ public class RegionExtractionHelper {
     private GenericHelper genericHelper;
 
     /**
+     * Image type of the project
+     * Possible values: { Binary, Gray }
+     */
+    private String projectImageType;
+
+    /**
      * Object to determine process states
      */
     private ProcessStateCollector procStateCol;
@@ -60,6 +66,7 @@ public class RegionExtractionHelper {
         projConf = new ProjectConfiguration(projectDir);
         genericHelper = new GenericHelper(projConf);
         procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        this.projectImageType = projectImageType;
         processHandler = new ProcessHandler();
     }
 
@@ -101,7 +108,7 @@ public class RegionExtractionHelper {
             if (stop == true) 
                 break;
 
-            String imagePath = projConf.OCR_DIR + pageId + projConf.IMG_EXT;
+            String imagePath = projConf.getImageDirectoryByType(projectImageType) + pageId + projConf.getImageExtensionByType(projectImageType);
             String xmlPath = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
             String outputFolder = projConf.PAGE_DIR;
             regions.addAll(RegionExtractor.extractSegments(xmlPath, imagePath, spacing, outputFolder));

@@ -294,7 +294,7 @@
                 <h4>Error</h4>
                     <p>
                         The selected project directory does not have the required structure.<br />
-                        Please put the project related image files in a sub-directory named "Original".<br />
+                        Please put the project related image files in a sub-directory named "input".<br />
                         Until then the project cannot be loaded successfully.
                     </p>
             </div>
