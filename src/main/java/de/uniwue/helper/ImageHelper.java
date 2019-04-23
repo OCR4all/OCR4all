@@ -98,7 +98,7 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getPageImage(String pageID, String imageType) throws IOException {
-        return getImageAsBase64(projConf.getImageDirectoryByType(imageType) + pageID + projConf.IMG_EXT);
+        return getImageAsBase64(projConf.getImageDirectoryByType(imageType) + pageID + projConf.getImageExtensionByType(imageType));
     }
 
     /**
