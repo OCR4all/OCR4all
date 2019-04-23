@@ -26,35 +26,19 @@
                 });
 
                 $('#imageType').on('change', function() {
-                    $('#bookname').val($('#imageType').val());
+                    let imageSubExt = ""; 
+                    switch($('#imageType').val()){
+                        case "Binary": imageSubExt = "bin"; break;
+                        case "Despeckled": imageSubExt = "desp"; break;
+                        default: imageSubExt = "";
+                    }
+                    $('#imagefilter').val(imageSubExt);
                     // Change ImageList depending on the imageType selected
                     reloadImageList($('#imageType').val(), true);
                 });
                 // Initialize image list
                 $('#imageType').change();
 
-                // Process handling (execute for all pages with current settings)
-                $('button[data-id="execute"]').click(function() {
-                    var selectedPages = getSelectedPages();
-                    if( selectedPages.length === 0 ) {
-                        $('#modal_errorhandling').modal('open');
-                        return;
-                    }
-                    $.post( "ajax/segmentation/exists", { "pageIds[]" : selectedPages } )
-                    .done(function( data ) {
-                        if(data === false) {
-                            var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};
-                            // Execute segmentation process
-                            executeProcess(ajaxParams);
-                        }
-                        else{
-                            $('#modal_exists').modal('open');
-                        }
-                    })
-                    .fail(function( data ) {
-                        $('#modal_exists_failed').modal('open');
-                    });
-                });
                 $('#agree').click(function() {
                     var selectedPages = getSelectedPages();
                     var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};
@@ -67,15 +51,6 @@
     <t:body heading="Segmentation (LAREX)" imageList="true" processModals="true">
         <div class="container includes-list">
             <div class="section">
-                <button data-id="execute" class="btn waves-effect waves-light">
-                    Apply Segmentation results
-                    <i class="material-icons right">chevron_right</i>
-                </button>
-                <button data-id="cancel" class="btn waves-effect waves-light">
-                    Cancel
-                    <i class="material-icons right">cancel</i>
-                </button>
-
                 <ul class="collapsible" data-collapsible="expandable">
                     <li>
                         <div class="collapsible-header"><i class="material-icons">line_style</i>Segmentation</div>
@@ -83,25 +58,7 @@
                             <s:segmentationLarex></s:segmentationLarex>
                         </div>
                     </li>
-                    <li>
-                        <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
-                        <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No Segmentation process running</span></p></div>
-                            <div class="progress">
-                                <div class="determinate"></div>
-                            </div>
-                        </div>
-                    </li>
                 </ul>
-
-                <button data-id="execute" class="btn waves-effect waves-light">
-                    Apply Segmentation results
-                    <i class="material-icons right">chevron_right</i>
-                </button>
-                <button data-id="cancel" class="btn waves-effect waves-light">
-                    Cancel
-                    <i class="material-icons right">cancel</i>
-                </button>
             </div>
         </div>
 
