@@ -226,6 +226,7 @@ overflow-x: hidden;
   background-color: #5c6bc0;
 }
 
+
 /* Multi-Select adjustments */
 .ms-container {
   min-width: 370px;
@@ -255,6 +256,41 @@ ul.invalid {
 button[data-id="msRecModelAddOption"] {
   margin-left: 5px;
 }
+.pn-button  {
+  border: none;
+  background-color: transparent;
+  display: inline-flex;
+  vertical-align: middle;
+  line-height: 3vh;
+  color: #8c9eff;
+  padding-top: 30px;
+
+}
+.prev-area{
+  text-align: left;
+}
+.next-area{
+  text-align: right;
+}
+.input-field .prefix.right{
+  right: 0;
+}
+.dropdown-button .right{
+  right: 0;
+  font-size: 1.5rem;
+  padding-top: 1.7vh;
+}
+
+.input-field > ul{
+  width: 100%;
+}
+.autocomplete-content {
+  position: absolute;
+}
+.pnicon{
+  font-size: 1.2rem;
+  line-height: 3vh;
+}
 @media only screen and (max-width : 1700px) {
   button[data-id="msRecModelAddOption"] {
     margin-left: 0px;
@@ -262,3 +298,4 @@ button[data-id="msRecModelAddOption"] {
     display:block;
   }
 }
+

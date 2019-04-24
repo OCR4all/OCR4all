@@ -53,6 +53,80 @@
                 loadImage($('.collapsible[data-type="page"]').find('li').eq(0));
                 $('.collapsible[data-type="page"]').collapsible('open', 0);
 
+
+                //Initialize dropdown and autocomplete menus
+                var searchParams = new URLSearchParams(window.location.search);
+                var picListL;
+                //Load progress from current project for pageIDs and length
+                $.get("ajax/overview/list")
+                    .done( ( data ) => {
+                        picListL = data;
+                        var data_autoc = {};
+                        let i;
+                        let liList = [];
+                        for (i = 0; i < picListL.length; i++) {
+                            let id = picListL[i].pageId;
+                            let newLocation = window.location.href.split("?")[0] + "?pageId=" + id;
+                            let li = document.createElement("li");
+                            let a = document.createElement("a");
+                            a.setAttribute("href", newLocation);
+                            li.appendChild(a);
+                            a.textContent = "Page" + " " + id;
+                            liList.push(li);
+                            data_autoc["Page" + " " + id] = null;
+                        }
+                        liList.sort(function (a, b) {
+                            return a.children[0].textContent.localeCompare(b.children[0].textContent);
+                        });
+                        liList.forEach((element)=>{
+                            $("#pages01").append(element);
+                        });
+                        $('input.autocomplete').autocomplete({
+                            data: data_autoc,
+                            limit: 20,
+                            onAutocomplete: function (val) {
+                                const regexPageId = /pageId=[0-9]+/;
+                                const regexNonDigit = /\D+/g;
+                                const newId = "pageId=" + val.replace(regexNonDigit, "")
+                                let newLocation = window.location.href.replace(
+                                    regexPageId , newId);
+                                window.location.href = newLocation;
+                            }
+                        });
+                        $('.dropdown-button').dropdown({
+                                inDuration: 300,
+                                outDuration: 225,
+                                constrainWidth: false, // Does not change width of dropdown to that of the activator
+                                hover: false, // Activate on hover
+                                gutter: 0, // Spacing from edge
+                                belowOrigin: true, // Displays dropdown below the button
+                                alignment: 'right', // Displays dropdown with edge aligned to the right of button
+                                stopPropagation: false // Stops event propagation
+                            }
+                        );
+                    });
+
+                $(".prev-page").click(() => {
+                    var searchParams = new URLSearchParams(window.location.search);
+                    var pageidcoerce = (+searchParams.get("pageId")) - 1;
+                    var pageid = ("0000" + pageidcoerce).slice(-4);
+                    if (pageid !== "0000") {
+                        var newLocation = window.location.href.split("?")[0] + "?len=" + picListL.length + "&pageId=" + pageid;
+                        window.location.href = newLocation;
+                    }
+                });
+
+                $(".next-page").click(() => {
+                    var searchParams = new URLSearchParams(window.location.search);
+                    var pageidcoerce = (+searchParams.get("pageId")) + 1;
+                    var pageid = ("0000" + pageidcoerce).slice(-4);
+                    var newLocation = window.location.href.split("?")[0] + "?len=" + picListL.length + "&pageId=" + pageid;
+                    if (pageidcoerce !== (+searchParams.get("len")+1)){
+                        window.location.href = newLocation;
+                    }
+                });
+
+
                 <%--<c:choose>--%>
                     <%--&lt;%&ndash; Open Gray image if it is set in session &ndash;%&gt;--%>
                     <%--<c:when test='${imageType == "Gray"}'>--%>
@@ -66,11 +140,32 @@
                     <%--</c:otherwise>--%>
                 <%--</c:choose>--%>
             });
+
         </script>
     </t:head>
     <t:body heading="Page Overview">
         <input id="pageId" name="pageId" type="hidden" value="${param.pageId}" />
         <div class="container">
+
+            <div class="section">
+                        <div class="row">
+                            <div class="prev-page col s4 prev-area">
+                                <button class="pn-button"><i class="material-icons pnicon">chevron_left</i> previous</button>
+                            </div>
+                            <div class="input-field col s4">
+                                <a class="dropdown-button right" href="#" data-activates="pages01"><i class="material-icons prefix right" >details</i></a>
+                                <input type="text" id="autocomplete_pages" class="autocomplete">
+                                <label for="autocomplete_pages">Go to Page</label>
+                                <ul id="pages01" class="dropdown-content">
+                                    <!-- Dynamical created by JS -->
+                                </ul>
+                            </div>
+                            <div class="next-page col s4 next-area">
+                                <button class="pn-button">next <i class="material-icons pnicon">chevron_right</i></button>
+                            </div>
+                        </div>
+            </div>
+
             <div class="section">
                 <table class="striped centered">
                     <thead>
