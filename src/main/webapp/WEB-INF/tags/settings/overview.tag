@@ -54,5 +54,22 @@
                 </div>
             </td>
         </tr>
+        <tr>
+            <td><p>Project processing mode</p></td>
+            <td>
+                <div class="input-field col s3">
+                    <i class="material-icons prefix">folder</i>
+                    <c:choose>
+                        <c:when test='${processingMode == "Directory"}'><c:set value='selected="selected"' var="directorySel"></c:set></c:when>
+                        <c:otherwise><c:set value='selected="selected"' var="pagexmlSel"></c:set></c:otherwise>
+                    </c:choose>
+                    <select id="processingMode" name="processingMode" class="suffix">
+                        <option value="directory" ${directorySel}>Directory</option>
+                        <option value="pagexml" ${pagexmlSel}>PageXML</option>
+                    </select>
+                    <label></label>
+                </div>
+            </td>
+        </tr>
     </tbody>
 </table>

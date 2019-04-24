@@ -70,7 +70,7 @@
 
                 // Responsible for verification and loading of the project
                 function projectInitialization(newPageVisit) {
-                    var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
+                    var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val(), "processingMode" : $('#processingMode').val() };
                     // Check if directory exists
                     $.get( "ajax/overview/checkDir?",
                         // Only force new session if project loading is triggered by user

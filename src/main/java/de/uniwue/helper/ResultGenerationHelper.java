@@ -190,7 +190,7 @@ public class ResultGenerationHelper {
             command.add(xmlFile.getAbsolutePath());
             command.add("--output");
             command.add(projConf.RESULT_PAGES_DIR + xmlFile.getName());
-            processHandler.startProcess("pagedir2pagexml.py", command, false);
+            processHandler.startProcess("pagedir2pagexml", command, false);
 
             progress = (int) ((double) processedPages / xmlFiles.length * 100);
             processedPages++;
