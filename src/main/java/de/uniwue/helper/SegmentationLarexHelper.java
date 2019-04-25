@@ -27,6 +27,12 @@ public class SegmentationLarexHelper {
      */
     private String projectImageType;
 
+    /**
+     * Processing structure of the project
+     * Possible values: { Directory, Pagexml }
+     */
+    private String processingMode;
+
      /**
      * Status of the SegmentationLarex progress
      */
@@ -43,7 +49,8 @@ public class SegmentationLarexHelper {
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary,gray)
      */
-    public SegmentationLarexHelper(String projDir, String projectImageType) {
+    public SegmentationLarexHelper(String projDir, String projectImageType, String processingMode) {
+    	this.processingMode = processingMode;
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projDir);
     }
@@ -63,7 +70,7 @@ public class SegmentationLarexHelper {
         if (!ocrDir.exists())
             ocrDir.mkdir();
 
-        SegmentationHelper segmentationHelper = new SegmentationHelper(projConf.PROJECT_DIR, this.projectImageType);
+        SegmentationHelper segmentationHelper = new SegmentationHelper(projConf.PROJECT_DIR, this.projectImageType, this.processingMode);
         segmentationHelper.deleteOldFiles(pageIds);
 
         // Copy process specific images (based on project image type)

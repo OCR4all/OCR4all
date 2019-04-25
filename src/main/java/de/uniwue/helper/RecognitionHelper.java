@@ -42,6 +42,12 @@ public class RecognitionHelper {
     private String projectImageType;
 
     /**
+     * Processing structure of the project
+     * Possible values: { Directory, Pagexml }
+     */
+    private String processingMode;
+
+    /**
      * Object to use generic functionalities
      */
     private GenericHelper genericHelper;
@@ -91,12 +97,15 @@ public class RecognitionHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
+     * @param processingMode Processing structure of the project (Directory, Pagexml)
+     * 
      */
-    public RecognitionHelper(String projectDir, String projectImageType) {
+    public RecognitionHelper(String projectDir, String projectImageType, String processingMode) {
         this.projectImageType = projectImageType;
+        this.processingMode = processingMode;
         projConf = new ProjectConfiguration(projectDir);
         genericHelper = new GenericHelper(projConf);
-        procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
         processHandler = new ProcessHandler();
     }
 
@@ -333,7 +342,7 @@ public class RecognitionHelper {
      */
     public void deleteOldFiles(List<String> pageIds) {
         // Delete all files created by subsequent processes to preserve data integrity
-        ResultGenerationHelper resultGenerationHelper = new ResultGenerationHelper(projConf.PROJECT_DIR, projectImageType);
+        ResultGenerationHelper resultGenerationHelper = new ResultGenerationHelper(projConf.PROJECT_DIR, projectImageType, processingMode);
         resultGenerationHelper.deleteOldFiles(pageIds, "txt");
         resultGenerationHelper.deleteOldFiles(pageIds, "xml");
 

@@ -39,7 +39,8 @@ public class PreprocessingController {
         if (preprocessingHelper == null) {
             preprocessingHelper = new PreprocessingHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
+                session.getAttribute("imageType").toString(),
+                session.getAttribute("processingMode").toString()
             );
             session.setAttribute("preprocessingHelper", preprocessingHelper);
         }

@@ -40,7 +40,8 @@ public class ProcessFlowController {
         if (processFlowHelper == null) {
             processFlowHelper = new ProcessFlowHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
+                session.getAttribute("imageType").toString(),
+                session.getAttribute("processingMode").toString()
             );
             session.setAttribute("processFlowHelper", processFlowHelper);
         }

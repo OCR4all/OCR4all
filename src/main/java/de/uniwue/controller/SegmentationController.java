@@ -33,7 +33,8 @@ public class SegmentationController {
         if (segmentationHelper == null) {
             segmentationHelper = new SegmentationHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
+                session.getAttribute("imageType").toString(),
+                session.getAttribute("processingMode").toString()
             );
             session.setAttribute("segmentationHelper", segmentationHelper);
         }

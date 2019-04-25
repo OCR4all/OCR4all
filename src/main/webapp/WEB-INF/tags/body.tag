@@ -50,9 +50,9 @@
 				</c:when>
 				<c:otherwise>
             <li><a href="RegionExtraction">Region Extraction</a></li>
-            <li><a href="LineSegmentation">Line Segmentation</a></li>
 				</c:otherwise>
 			</c:choose>
+            <li><a href="LineSegmentation">Line Segmentation</a></li>
             <li><a href="Recognition">Recognition</a></li>
 			<c:choose>
 				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>

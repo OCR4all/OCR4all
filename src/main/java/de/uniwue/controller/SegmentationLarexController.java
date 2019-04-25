@@ -37,7 +37,8 @@ public class SegmentationLarexController {
         if (segmentationLarexHelper == null) {
             segmentationLarexHelper = new SegmentationLarexHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
+                session.getAttribute("imageType").toString(),
+                session.getAttribute("processingMode").toString()
             );
             session.setAttribute("segmentationLarexHelper", segmentationLarexHelper);
         }

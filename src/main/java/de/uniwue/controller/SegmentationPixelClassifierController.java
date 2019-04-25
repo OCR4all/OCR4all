@@ -39,7 +39,8 @@ public class SegmentationPixelClassifierController {
         if (segmentationPixelClassifierHelper == null) {
             segmentationPixelClassifierHelper = new SegmentationPixelClassifierHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
+                session.getAttribute("imageType").toString(),
+                session.getAttribute("processingMode").toString()
             );
             session.setAttribute("segmentationPixelClassifier", segmentationPixelClassifierHelper);
         }

@@ -176,11 +176,11 @@ public final class ProjectConfiguration {
     /**
      * Absolute path to OCR directory (is made absolute in Constructor)
      */
-    public String OCR_DIR = PREPROC_DIR + File.separator;
+    public String OCR_DIR = PREPROC_DIR;
     /**
      * Absolute path to OCR pages directory (is made absolute in Constructor)
      */
-    public String PAGE_DIR  = PREPROC_DIR + File.separator;
+    public String PAGE_DIR  = PREPROC_DIR;
     /**
      * Absolute path to OCR model directory (is made absolute in Constructor)
      */

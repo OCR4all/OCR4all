@@ -39,7 +39,8 @@ public class EvaluationController {
         if (evaluationHelper == null) {
             evaluationHelper = new EvaluationHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
+                session.getAttribute("imageType").toString(),
+                session.getAttribute("processingMode").toString()
             );
             session.setAttribute("evaluationHelper", evaluationHelper);
         }

@@ -51,7 +51,7 @@ public class OverviewHelper {
 
     /**
      * Processing structure of the project
-     * Possible values: { Directory, PageXML }
+     * Possible values: { Directory, Pagexml }
      */
     private String processingMode;
 
@@ -99,12 +99,12 @@ public class OverviewHelper {
      *
      * @param pathToProject  Absolute path of the project on the filesystem
      * @param imageType  Image type of the project
-     * @param processingMode  Project processing structure either Directory or PageXML
+     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
     public OverviewHelper(String pathToProject, String imageType, String processingMode) {
         this.imageType = imageType;
         this.projConf = new ProjectConfiguration(pathToProject);
-        this.procStateCol = new ProcessStateCollector(this.projConf, imageType);
+        this.procStateCol = new ProcessStateCollector(this.projConf, imageType, processingMode);
         this.processingMode = processingMode;
     }
 

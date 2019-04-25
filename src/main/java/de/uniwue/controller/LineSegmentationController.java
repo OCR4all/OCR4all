@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.uniwue.helper.LineSegmentationDirectoryHelper;
 import de.uniwue.helper.LineSegmentationHelper;
+import de.uniwue.helper.LineSegmentationPageXMLHelper;
 
 /**
  * Controller class for line segmentation module
@@ -34,15 +36,34 @@ public class LineSegmentationController {
         if (GenericController.isSessionValid(session, response) == false)
             return null;
 
+        String processingMode = session.getAttribute("processingMode").toString();
+        
         // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
-        if (lineSegmentationHelper == null) {
-            lineSegmentationHelper = new LineSegmentationHelper(
-                session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
-            );
+        System.out.println((lineSegmentationHelper instanceof LineSegmentationPageXMLHelper)+", "+processingMode);
+        if (lineSegmentationHelper == null || 
+        		(processingMode.equals("Directory") && lineSegmentationHelper instanceof LineSegmentationPageXMLHelper) ||
+        		(processingMode.equals("Pagexml") && lineSegmentationHelper instanceof LineSegmentationDirectoryHelper)) {
+
+        	// Select correct lineSegmentHelper for processingMode
+        	if(processingMode.equals("Directory")){
+				lineSegmentationHelper = new LineSegmentationDirectoryHelper(
+					session.getAttribute("projectDir").toString(),
+					session.getAttribute("imageType").toString(),
+					processingMode
+				);
+        	} else if(processingMode.equals("Pagexml")) {
+				lineSegmentationHelper = new LineSegmentationPageXMLHelper(
+					session.getAttribute("projectDir").toString(),
+					session.getAttribute("imageType").toString(),
+					processingMode
+				);
+        	} else {
+        		throw new IllegalArgumentException(String.format("Unknown processingMode %s", processingMode));
+        	}
             session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
         }
+        System.out.println(">>"+(lineSegmentationHelper instanceof LineSegmentationPageXMLHelper)+", "+processingMode);
         return lineSegmentationHelper;
     }
 
@@ -80,6 +101,8 @@ public class LineSegmentationController {
                HttpSession session, HttpServletResponse response,
                @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
            ) {
+
+        System.out.println(">> Start execute");
         LineSegmentationHelper lineSegmentationHelper = provideHelper(session, response);
         if (lineSegmentationHelper == null)
             return;
@@ -94,6 +117,7 @@ public class LineSegmentationController {
             if (cmdArgs != null)
                 cmdArgList = Arrays.asList(cmdArgs);
 
+            System.out.println(String.join(" ", cmdArgList));
             lineSegmentationHelper.execute(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -101,6 +125,7 @@ public class LineSegmentationController {
             e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "lineSegmentation");
+        System.out.println("<< End execute");
     }
 
     /**

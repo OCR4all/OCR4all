@@ -26,6 +26,12 @@ public class PreprocessingHelper {
     private String projectImageType;
 
     /**
+     * Processing structure of the project
+     * Possible values: { Directory, Pagexml }
+     */
+    private String processingMode;
+    
+    /**
      * Object to determine process states
      */
     private ProcessStateCollector procStateCol;
@@ -63,12 +69,14 @@ public class PreprocessingHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
+     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public PreprocessingHelper(String projectDir, String projectImageType) {
+    public PreprocessingHelper(String projectDir, String projectImageType, String processingMode) {
         projConf = new ProjectConfiguration(projectDir);
-        procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
         processHandler = new ProcessHandler();
         this.projectImageType = projectImageType;
+        this.processingMode = processingMode;
     }
 
     /**
@@ -213,7 +221,7 @@ public class PreprocessingHelper {
         }
 
         // Delete Despeckled images as well (they are generated from Binary images)
-        DespecklingHelper despecklingHelper = new DespecklingHelper(projConf.PROJECT_DIR, projectImageType);
+        DespecklingHelper despecklingHelper = new DespecklingHelper(projConf.PROJECT_DIR, projectImageType, processingMode);
         despecklingHelper.deleteOldFiles(pageIds);
     }
 

@@ -47,11 +47,12 @@ public class EvaluationHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
+     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public EvaluationHelper(String projectDir, String projectImageType) {
+    public EvaluationHelper(String projectDir, String projectImageType, String processingMode) {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
-        procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
         genericHelper = new GenericHelper(projConf);
     }
 
