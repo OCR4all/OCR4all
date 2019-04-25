@@ -4,6 +4,9 @@
 
 As suggested by the name one of the main goals of OCR4all is to allow basically any given user to independently perform OCR on a wide variety of historical printings and obtain high quality results with reasonable time expenditure. Therefore, **OCR4all is explicitly geared towards users with no technical background. If you are one of those users (or if you just want to use the tool and are not interested in the code), please go to the** [getting started project where you will find guides and test data](https://github.com/OCR4all/getting_started).
 
+Please note that OCR4all main focus is a **semi-automatic workflow** allowing users to perform OCR even on the earliest printed books, which is a very challenging task that often requires a significant amount of **manual interaction**, especially when almost perfect quality is desired.
+If you are looking for mass digitization of historical material the [OCR-D project](https://github.com/ocr-d) (in progress) might be worth a look.
+
 This repository contains the code for the main interface and server of the OCR4all project, 
 while the repositories [OCR4all/docker_image](https://github.com/OCR4all/docker_image) and [OCR4all/docker_base_image](https://github.com/OCR4all/docker_base_image) are about the creation of a preconfigurated docker image.
 
