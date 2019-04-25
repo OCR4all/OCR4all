@@ -44,10 +44,23 @@
                     </li>
                 </ul>
             </li>
+
+			<c:choose>
+				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+				</c:when>
+				<c:otherwise>
             <li><a href="RegionExtraction">Region Extraction</a></li>
             <li><a href="LineSegmentation">Line Segmentation</a></li>
+				</c:otherwise>
+			</c:choose>
             <li><a href="Recognition">Recognition</a></li>
+			<c:choose>
+				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+				</c:when>
+				<c:otherwise>
             <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}processing&dirType=pages" target="_blank">Ground Truth Production</a></li>
+				</c:otherwise>
+			</c:choose>
             <li><a href="Training">Training</a></li>
             <li><a href="Evaluation">Evaluation</a></li>
             <li><a href="ResultGeneration">Result Generation</a></li>
