@@ -1,4 +1,4 @@
-# OCR4all_Web
+# OCR4all
 
 [![Build Status](https://travis-ci.org/OCR4all/OCR4all.svg?branch=master)](https://travis-ci.org/OCR4all/OCR4all)
 
@@ -12,6 +12,12 @@ while the repositories [OCR4all/docker_image](https://github.com/OCR4all/docker_
 
 For installing the complete project with a docker image, please follow the instructions [here](https://github.com/OCR4all/docker_image).
 
+## Current Developments
+
+Plans for the (very) near future:
+* Enabling a second project management approach solely based on PageXML allowing for a more flexible workflow.
+* Integrating Tesseract for recognition.
+* Many minor bug fixes and improvements.
 
 ## Built With
 
@@ -26,16 +32,17 @@ For installing the complete project with a docker image, please follow the instr
 * [OCRopus](https://github.com/tmbdev/ocropy) - Collection of document analysis programs
 * [calamari](https://github.com/ChWick/calamari) - OCR Engine based on OCRopy and Kraken
 * [LAREX](https://github.com/chreul/LAREX) - Layout analysis on early printed books
+* [Kraken](https://github.com/mittagessen/kraken) - OCR engine for all the languages
 * [nashi](https://github.com/andbue/nashi) - Some bits of javascript to transcribe scanned pages using PageXML
 
 ## Authors and Helping Hands
 
 * **Christian Reul** (*project lead*) - Email: christian.reul@uni-wuerzburg.de
 * **Dennis Christ** and **Alexander Hartelt** (*OCR4all web development*) 
-* **Christoph Wick** (calamari)
-* **Nico Balbach** (LAREX web GUI)
-* **Andreas Büttner** (nashi)
-* **Björn Eyselein** (distribution via Docker)
-* **Maximilan Wehner** (tireless testing, guides, and non-technical user support)
-* **Christine Grundig, Frank Puppe, and Uwe Springmann** (ideas and feedback)
+* **Christoph Wick** (*calamari*)
+* **Nico Balbach** (*LAREX web GUI*)
+* **Andreas Büttner** (*nashi*)
+* **Björn Eyselein** (*distribution via Docker*)
+* **Maximilan Wehner** (*tireless testing, guides, and non-technical user support*)
+* **Christine Grundig, Frank Puppe, and Uwe Springmann** (*ideas and feedback*)
 * ...
