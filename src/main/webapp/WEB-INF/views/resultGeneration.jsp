@@ -23,7 +23,7 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-                    $.get( "ajax/resultGeneration/exists?", { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() } )
+                    $.post( "ajax/resultGeneration/exists", { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() } )
                     .done(function( data ){
                         if(data === false){
                             // Execute result process

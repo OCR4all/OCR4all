@@ -7,8 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import org.apache.commons.io.FilenameUtils;
-
 import de.uniwue.config.ProjectConfiguration;
 
 /**
@@ -50,14 +48,16 @@ public class GenericHelper {
         if (!new File(projConf.getImageDirectoryByType(imageType)).exists())
             return pageList;
 
+        String imageExtension = projConf.getImageExtensionByType(imageType);
+        
         // File depth of 1 -> no recursive (file)listing 
         Files.walk(Paths.get(projConf.getImageDirectoryByType(imageType)), 1)
         .map(Path::toFile)
         .filter(fileEntry -> fileEntry.isFile())
-        .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
+        .filter(fileEntry -> fileEntry.getName().endsWith(imageExtension))
         .sorted()
         .forEach(
-            fileEntry -> { pageList.add(FilenameUtils.removeExtension(fileEntry.getName())); }
+            fileEntry -> { pageList.add(fileEntry.getName().replace(imageExtension, "")); }
         );
         return pageList;
     }

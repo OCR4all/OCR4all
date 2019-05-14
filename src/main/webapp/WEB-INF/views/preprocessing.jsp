@@ -34,7 +34,7 @@
                         return;
                     }
 
-                    $.get( "ajax/preprocessing/exists?", { "pageIds[]" : selectedPages } )
+                    $.post( "ajax/preprocessing/exists", { "pageIds[]" : selectedPages } )
                     .done(function( data ){
                         if(data === false){
                             var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );

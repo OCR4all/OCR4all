@@ -164,7 +164,7 @@ public class TrainingController {
      * @param response Response to the request
      * @return Information if files exist
      */
-    @RequestMapping(value = "/ajax/training/exists" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/training/exists" , method = RequestMethod.POST)
     public @ResponseBody boolean filesExists(
                @RequestParam(value = "trainingId") String trainingId,
                HttpSession session, HttpServletResponse response

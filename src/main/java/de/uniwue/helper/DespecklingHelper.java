@@ -71,11 +71,11 @@ public class DespecklingHelper {
             if (stop == true) 
                 break;
 
-            Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.IMG_EXT);
+            Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.BINR_IMG_EXT);
             // Only the "standard" parameter is needed when despeckling
             // "marked" is only used to highlight changes for the user
             mat = ImageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
-            Imgcodecs.imwrite(projConf.DESP_IMG_DIR + File.separator + pageId + projConf.IMG_EXT, mat);
+            Imgcodecs.imwrite(projConf.DESP_IMG_DIR + File.separator + pageId + projConf.DESP_IMG_EXT, mat);
 
             progress = (int) (i / totalPages * 100);
             i = i + 1;
@@ -117,7 +117,7 @@ public class DespecklingHelper {
      */
     public void deleteOldFiles(List<String> pageIds) throws IOException {
         for(String pageId : pageIds) {
-            File despImg = new File(projConf.DESP_IMG_DIR + pageId + projConf.IMG_EXT);
+            File despImg = new File(projConf.DESP_IMG_DIR + pageId + projConf.DESP_IMG_EXT);
             if(despImg.exists())
                 despImg.delete();
         }

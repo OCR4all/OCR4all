@@ -88,7 +88,7 @@
                         $('#modal_errorhandling').modal('open');
                         return;
                     }
-                    $.get( "ajax/despeckling/exists?", { "pageIds[]" : selectedPages } )
+                    $.post( "ajax/despeckling/exists", { "pageIds[]" : selectedPages } )
                     .done(function( data ){
                         if(data === false){
                             var ajaxParams = { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val(), "pageIds[]" : selectedPages };

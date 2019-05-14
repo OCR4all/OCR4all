@@ -98,7 +98,7 @@ public class ImageHelper {
      * @throws IOException
      */
     public String getPageImage(String pageID, String imageType) throws IOException {
-        return getImageAsBase64(projConf.getImageDirectoryByType(imageType) + pageID + projConf.IMG_EXT);
+        return getImageAsBase64(projConf.getImageDirectoryByType(imageType) + pageID + projConf.getImageExtensionByType(imageType));
     }
 
     /**
@@ -140,7 +140,7 @@ public class ImageHelper {
      * @throws IOException 
      */
     public String getPreviewDespeckleAsBase64(String pageId, double maxContourRemovalSize, String illustrationType) throws IOException {
-        Mat binImage = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.IMG_EXT);
+        Mat binImage = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.BINR_IMG_EXT);
         Mat despImage = ImageDespeckle.despeckle(binImage, maxContourRemovalSize, illustrationType);
         return getImageAsBase64(despImage);
     }

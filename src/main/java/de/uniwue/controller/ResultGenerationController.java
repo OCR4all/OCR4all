@@ -158,7 +158,7 @@ public class ResultGenerationController {
      * @param response Response to the request
      * @return Information if files exist
      */
-    @RequestMapping(value = "/ajax/resultGeneration/exists" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/resultGeneration/exists" , method = RequestMethod.POST)
     public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam(value = "resultType", required = true) String resultType,

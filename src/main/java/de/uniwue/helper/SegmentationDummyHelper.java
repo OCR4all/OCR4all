@@ -2,15 +2,11 @@ package de.uniwue.helper;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.io.FilenameUtils;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.w3c.dom.Document;
@@ -72,27 +68,16 @@ public class SegmentationDummyHelper {
         SegmentationHelper segmentationHelper = new SegmentationHelper(projConf.PROJECT_DIR, this.projectImageType);
         segmentationHelper.deleteOldFiles(pageIds);
 
-        // Copy process specific images (based on project image type)
-        File projectSpecificPreprocDir = new File(projConf.getImageDirectoryByType(projectImageType));
-        if (projectSpecificPreprocDir.exists()){
-            File[] filesToMove = projectSpecificPreprocDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
-            for (File file : filesToMove) {
-                if (pageIds.contains(FilenameUtils.removeExtension(file.getName())) && stop == false) {
-                    Files.copy(Paths.get(file.getPath()),
-                        Paths.get(projConf.getImageDirectoryByType("OCR") + file.getName()),
-                        StandardCopyOption.valueOf("REPLACE_EXISTING"));
-                }
-            }
-        }
+        String projectSpecificPreprocExtension = projConf.getImageExtensionByType(projectImageType);
 
         int processedPages = 0;
         // generates XML files for each page
         File segmentationTypeDir = new File(projConf.getImageDirectoryByType(segmentationImageType));
         if (segmentationTypeDir.exists()){
-            File[] imageFiles = segmentationTypeDir.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
+            File[] imageFiles = segmentationTypeDir.listFiles((d, name) -> name.endsWith(projectSpecificPreprocExtension));
             for (File file : imageFiles) {
-                if (pageIds.contains(FilenameUtils.removeExtension(file.getName())) && stop == false) {
-                    extractXML(file,projConf.OCR_DIR);
+                if (pageIds.contains(file.getName().replace(projectSpecificPreprocExtension, "")) && stop == false) {
+                    extractXML(file,projConf.OCR_DIR, segmentationImageType);
                     progress = (int) ((double) processedPages / pageIds.size() * 100);
                 }
             }
@@ -101,14 +86,25 @@ public class SegmentationDummyHelper {
         progress = 100;
     }
 
-    public void extractXML(File file, String outputFolder) throws ParserConfigurationException, TransformerException {
+    /**
+     * Extract a Dummy PAGE XML from an image file with one paragraph
+     *  
+     * @param file Image file to create a PAGE XML for
+     * @param outputFolder Folder to save PAGE XML in
+     * @param segmentationImageType Image type of the segmentation (binary, despeckled)
+     * @throws ParserConfigurationException
+     * @throws TransformerException
+     */
+    public void extractXML(File file, String outputFolder, String segmentationImageType) throws ParserConfigurationException, TransformerException {
         String imagePath = file.getAbsolutePath();
-        String imageFilename = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1);
+        String imageFilename = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1).
+        								 replace(projConf.getImageExtensionByType(projectImageType), projConf.IMG_EXT);
         Mat image = Imgcodecs.imread(imagePath);
         if(image.width() == 0)
             return;
         Document xml = PageXMLWriter.getPageXML(image, imageFilename, "2017-07-15");
         PageXMLWriter.saveDocument(xml, imageFilename, outputFolder);
+        image.release();
     }
     /**
      * Returns the progress of the job

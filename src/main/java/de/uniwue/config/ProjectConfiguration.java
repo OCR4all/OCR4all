@@ -73,6 +73,10 @@ public final class ProjectConfiguration {
      */
     public final String GRAY_IMG_EXT = ".nrm" + IMG_EXT;
     /**
+     * Despeckled image extension of the project
+     */
+    public final String DESP_IMG_EXT = ".desp" + IMG_EXT;
+    /**
      * Default extension of files that indicate successful line segmentation
      */
     public final String PSEG_EXT = ".pseg" + IMG_EXT;
@@ -103,6 +107,7 @@ public final class ProjectConfiguration {
         switch(imageType) {
             case "Binary": imageExtension = this.BINR_IMG_EXT; break;
             case "Gray":   imageExtension = this.GRAY_IMG_EXT; break;
+            case "Despeckled": imageExtension = this.DESP_IMG_EXT; break;
             default:       imageExtension = this.IMG_EXT;      break;
         }
         return imageExtension;
@@ -126,7 +131,7 @@ public final class ProjectConfiguration {
     /**
      * Absolute path to original page images (is made absolute in Constructor)
      */
-    public String ORIG_IMG_DIR = "Original" + File.separator;
+    public String ORIG_IMG_DIR = "input" + File.separator;
     /**
      * Absolute path to original page images (is made absolute in Constructor)
      */
@@ -134,19 +139,19 @@ public final class ProjectConfiguration {
     /**
      * Absolute path to preprocessing directory (is made absolute in Constructor)
      */
-    public String PREPROC_DIR = "PreProc" + File.separator;
+    public String PREPROC_DIR = "processing" + File.separator;
     /**
      * Absolute path to preprocessed binary images (is made absolute in Constructor)
      */
-    public String BINR_IMG_DIR = PREPROC_DIR + "Binary" + File.separator;
+    public String BINR_IMG_DIR = PREPROC_DIR + File.separator;
     /**
      * Absolute path to preprocessed gray images (is made absolute in Constructor)
      */
-    public String GRAY_IMG_DIR = PREPROC_DIR + "Gray" + File.separator;
+    public String GRAY_IMG_DIR = PREPROC_DIR + File.separator;
     /**
      * Absolute path to preprocessed despeckled images (is made absolute in Constructor)
      */
-    public String DESP_IMG_DIR = PREPROC_DIR + "Despeckled" + File.separator;
+    public String DESP_IMG_DIR = PREPROC_DIR + File.separator;
     /**
      * Returns the filesystem path of the given image type
      *
@@ -171,11 +176,11 @@ public final class ProjectConfiguration {
     /**
      * Absolute path to OCR directory (is made absolute in Constructor)
      */
-    public String OCR_DIR = "OCR" + File.separator;
+    public String OCR_DIR = PREPROC_DIR + File.separator;
     /**
      * Absolute path to OCR pages directory (is made absolute in Constructor)
      */
-    public String PAGE_DIR  = OCR_DIR + "Pages" + File.separator;
+    public String PAGE_DIR  = PREPROC_DIR + File.separator;
     /**
      * Absolute path to OCR model directory (is made absolute in Constructor)
      */
@@ -190,9 +195,9 @@ public final class ProjectConfiguration {
     /**
      * Absolute path to Result directory (is made absolute in Constructor)
      */
-    public String RESULT_DIR = "Results" + File.separator;
+    public String RESULT_DIR = "results" + File.separator;
     /**
      * Absolute path to Result pages directory (is made absolute in Constructor)
      */
-    public String RESULT_PAGES_DIR = RESULT_DIR + "Pages" + File.separator;
+    public String RESULT_PAGES_DIR = RESULT_DIR + "pages" + File.separator;
 }

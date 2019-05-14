@@ -66,10 +66,6 @@ public class SegmentationHelper {
 
         // Delete image and PageXML files
         for (String pageId : pageIds) {
-            File segPng = new File(projConf.OCR_DIR + pageId + projConf.IMG_EXT);
-            if (segPng.exists())
-                segPng.delete();
-
             File segXml = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
             if (segXml.exists())
                 segXml.delete();

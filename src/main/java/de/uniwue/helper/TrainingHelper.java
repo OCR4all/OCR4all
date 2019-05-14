@@ -12,6 +12,11 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
@@ -123,14 +128,17 @@ public class TrainingHelper {
         List<Integer> trainingIds = new ArrayList<Integer>();
         trainingIds.add(-1);
         for (File trainingDir : trainingDirectories) {
-            try {
-                trainingIds.add(Integer.parseInt(trainingDir.getName()));
-            } catch (NumberFormatException e) {
-                // Ignore directories that have no Integer naming (irrelevant)
-            }
+			// Filter out empty directories
+			if(trainingDir.list().length > 0) {
+				try {
+					trainingIds.add(Integer.parseInt(trainingDir.getName()));
+				} catch (NumberFormatException e) {
+					// Ignore directories that have no Integer naming (irrelevant)
+				}
+			}
         }
 
-        return Integer.toString(Collections.max(trainingIds) + 1);
+		return Integer.toString(Collections.max(trainingIds) + 1);
     }
 
     /**
@@ -163,9 +171,24 @@ public class TrainingHelper {
 
         List<String> command = new ArrayList<String>();
         command.add("--files");
-        for (String gtImagePath : getImagesWithGt(projectImageType)) {
-            command.add(gtImagePath);
+        // Create temp json file with all segment images (to not overload parameter list)
+		// Temp file in a temp folder named "calamari-<random numbers>.json"
+        File segmentListFile = File.createTempFile("calamari-",".json");
+        segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode gtList = mapper.createArrayNode();
+        for (String gtFile : getImagesWithGt(projectImageType)) {
+            // Add affected line segment images with their absolute path to the json file
+        	gtList.add(gtFile);
         }
+        ObjectNode segmentObj = mapper.createObjectNode();
+        segmentObj.set("files", gtList);
+        ObjectWriter writer = mapper.writer();
+        writer.writeValue(segmentListFile, segmentObj); 
+        command.add(segmentListFile.toString());
+        System.out.println(segmentListFile);
+        
+        
         command.addAll(cmdArgs);
         command.add("--best_models_dir");
         command.add(trainingDir.getAbsolutePath());

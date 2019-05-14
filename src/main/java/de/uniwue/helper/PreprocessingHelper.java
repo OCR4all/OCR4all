@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.apache.commons.io.FilenameUtils;
-
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
@@ -92,11 +90,9 @@ public class PreprocessingHelper {
                 processedImageCount += 1;
                 continue;
             }
-            File binImage = new File(projConf.PREPROC_DIR + pageId + projConf.BINR_IMG_EXT);
-            File grayImage = new File(projConf.PREPROC_DIR + pageId + projConf.GRAY_IMG_EXT);
+            File binImage = new File(projConf.BINR_IMG_DIR + pageId + projConf.BINR_IMG_EXT);
+            File grayImage = new File(projConf.GRAY_IMG_DIR + pageId + projConf.GRAY_IMG_EXT);
             if (binImage.exists() && grayImage.exists()) {
-                binImage.renameTo(new File(projConf.BINR_IMG_DIR + FilenameUtils.removeExtension(FilenameUtils.removeExtension(binImage.getName())) + projConf.IMG_EXT));
-                grayImage.renameTo(new File(projConf.GRAY_IMG_DIR + FilenameUtils.removeExtension(FilenameUtils.removeExtension(grayImage.getName())) + projConf.IMG_EXT));
                 processState.put(pageId, true);
             }
         }
@@ -207,11 +203,11 @@ public class PreprocessingHelper {
      */
     public void deleteOldFiles(List<String> pageIds) throws IOException {
         for (String pageId : pageIds) {
-            File binImg = new File(projConf.BINR_IMG_DIR + pageId + projConf.IMG_EXT);
+            File binImg = new File(projConf.BINR_IMG_DIR + pageId + projConf.BINR_IMG_EXT);
             if(binImg.exists())
                 binImg.delete();
 
-            File grayImg = new File(projConf.GRAY_IMG_DIR + pageId + projConf.IMG_EXT);
+            File grayImg = new File(projConf.GRAY_IMG_DIR + pageId + projConf.GRAY_IMG_EXT);
             if(grayImg.exists())
                 grayImg.delete();
         }

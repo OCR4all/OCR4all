@@ -48,7 +48,7 @@ public class SegmentationController {
      * @param response Response to the request
      * @return Information if files exist
      */
-    @RequestMapping(value = "/ajax/segmentation/exists" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/segmentation/exists" , method = RequestMethod.POST)
     public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 HttpSession session, HttpServletResponse response

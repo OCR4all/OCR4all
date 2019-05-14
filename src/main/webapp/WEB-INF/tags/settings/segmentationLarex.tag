@@ -18,10 +18,11 @@
         <tr>
             <td>
                 <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
-                    <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}PreProc" />
-                    <input type="hidden" id="bookname" name="bookname" value="" />
+                    <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}" />
+                    <input type="hidden" id="bookname" name="bookname" value="processing" />
                     <input type="hidden" id="websave" name="websave" value="false" />
                     <input type="hidden" id="localsave" name="localsave" value="bookpath" />
+                    <input type="hidden" id="imagefilter" name="imagefilter" value="bin" />
                     <button data-id="openLarex" class="btn waves-effect waves-light" type="submit" name="action">
                         Open LAREX
                         <i class="material-icons right">chevron_right</i>

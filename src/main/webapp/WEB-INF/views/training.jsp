@@ -148,7 +148,7 @@
 
                     // In case of a custom training identifier, check for existance first
                     if ($('#trainingId').val() !== "") {
-                        $.get( "ajax/training/exists?" , { "trainingId" : $('#trainingId').val() })
+                        $.post( "ajax/training/exists" , { "trainingId" : $('#trainingId').val() })
                         .done(function( data ) {
                             if( data === false ) {
                                 // Execute Training process (training identifier does not exist)

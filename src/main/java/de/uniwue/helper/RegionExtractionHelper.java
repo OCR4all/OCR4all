@@ -32,6 +32,12 @@ public class RegionExtractionHelper {
     private GenericHelper genericHelper;
 
     /**
+     * Image type of the project
+     * Possible values: { Binary, Gray }
+     */
+    private String projectImageType;
+
+    /**
      * Object to determine process states
      */
     private ProcessStateCollector procStateCol;
@@ -60,6 +66,7 @@ public class RegionExtractionHelper {
         projConf = new ProjectConfiguration(projectDir);
         genericHelper = new GenericHelper(projConf);
         procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        this.projectImageType = projectImageType;
         processHandler = new ProcessHandler();
     }
 
@@ -83,7 +90,7 @@ public class RegionExtractionHelper {
      * @throws SAXException
      * @throws IOException
      */
-    public void execute(List<String> pageIds, int spacing, boolean useAvgBgd, int parallel)
+    public void execute(List<String> pageIds, int spacing, int maxskew, int skewsteps, int parallel)
             throws ParserConfigurationException, SAXException, IOException {
         stop = false;
         progress = 0;
@@ -101,10 +108,10 @@ public class RegionExtractionHelper {
             if (stop == true) 
                 break;
 
-            String imagePath = projConf.OCR_DIR + pageId + projConf.IMG_EXT;
+            String imagePath = projConf.getImageDirectoryByType(projectImageType) + pageId + projConf.getImageExtensionByType(projectImageType);
             String xmlPath = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
             String outputFolder = projConf.PAGE_DIR;
-            regions.addAll(RegionExtractor.extractSegments(xmlPath, imagePath, useAvgBgd, spacing, outputFolder));
+            regions.addAll(RegionExtractor.extractSegments(xmlPath, imagePath, spacing, outputFolder));
             // Optimization so that the ocropus-nlbin script will only be executed if the number of regions are at least matching the parallel parameter value
             // If this were not the case, the nlbin script could only use one core for pages that consist of only one segment. The rest of the cores would just idle
             if (regions.size() >= parallel || regionExtractedPageCount == pageIds.size() - 1) {
@@ -114,6 +121,10 @@ public class RegionExtractionHelper {
                 command.add("--parallel");
                 command.add(Integer.toString(parallel));
                 command.add("-n");
+                command.add("--maxskew");
+                command.add(Integer.toString(maxskew));
+                command.add("--skewsteps");
+                command.add(Integer.toString(skewsteps));
 
                 processHandler.setFetchProcessConsole(true);
                 processHandler.startProcess("ocropus-nlbin", command, false);

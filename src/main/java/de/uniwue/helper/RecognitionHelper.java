@@ -12,8 +12,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
@@ -238,11 +244,25 @@ public class RecognitionHelper {
 
         List<String> command = new ArrayList<String>();
         List<String> lineSegmentImages = getLineSegmentImagesForCurrentProcess(pageIds);
-        command.add("--files");;
+        command.add("--files");
+        // Create temp json file with all segment images (to not overload parameter list)
+		// Temp file in a temp folder named "calamari-<random numbers>.json"
+        File segmentListFile = File.createTempFile("calamari-",".json");
+        segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode segmentList = mapper.createArrayNode();
         for (String lineSegmentImage : lineSegmentImages) {
-            // Add affected line segment images with their absolute path to the command list
-            command.add(lineSegmentImage);
+            // Add affected line segment images with their absolute path to the json file
+        	segmentList.add(lineSegmentImage);
         }
+        ObjectNode segmentObj = mapper.createObjectNode();
+        segmentObj.set("files", segmentList);
+        ObjectWriter writer = mapper.writer();
+        writer.writeValue(segmentListFile, segmentObj); 
+        command.add(segmentListFile.toString());
+        
+        
+        //Add checkpoints
         Iterator<String> cmdArgsIterator = cmdArgs.iterator();
         while (cmdArgsIterator.hasNext()) {
             String arg = cmdArgsIterator.next();
@@ -265,6 +285,9 @@ public class RecognitionHelper {
 
         progress = 100;
         RecognitionRunning = false;
+        
+        // Clean up temp segmentListFile
+        segmentListFile.delete();
     }
 
     /**

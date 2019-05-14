@@ -44,8 +44,7 @@ public class RegionExtractor {
      * @throws SAXException 
      * @throws ParserConfigurationException 
      */
-    public static List<String> extractSegments(String xmlPath, String imagePath,
-            boolean useAvgBgd, int spacing,
+    public static List<String> extractSegments(String xmlPath, String imagePath, int spacing,
             String outputFolder) throws ParserConfigurationException, SAXException, IOException {
         // List of extracted regions
         List<String> regions = new ArrayList<String>();
@@ -80,8 +79,8 @@ public class RegionExtractor {
             }
 
             String outputPath = outputFolder + outputFileName;
-            boolean status = saveImage(region.getPoints(), image, useAvgBgd,
-                    spacing, outputPath);
+            boolean status = saveImage(region.getPoints(), image, 
+            		spacing, outputPath);
             if(status == true)
                 regions.add(outputPath);
         }
@@ -101,14 +100,9 @@ public class RegionExtractor {
      * @throws IOException
      */
     public static boolean saveImage(ArrayList<Point> pointList, Mat image,
-            boolean useAvgBgd, int spacing,
+            int spacing,
             String outputPath) throws IOException {
         Scalar avgBgd = new Scalar(255, 255, 255);
-
-        if (useAvgBgd) {
-            double[] bgd = calcAverageBackground(image);
-            avgBgd = new Scalar(bgd[0], bgd[1], bgd[2]);
-        }
 
         MatOfPoint points = new MatOfPoint(
                 pointList.toArray(new Point[pointList.size()]));

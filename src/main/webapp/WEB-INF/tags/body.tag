@@ -47,11 +47,11 @@
             <li><a href="RegionExtraction">Region Extraction</a></li>
             <li><a href="LineSegmentation">Line Segmentation</a></li>
             <li><a href="Recognition">Recognition</a></li>
-            <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}OCR/Pages&dirType=pages" target="_blank">Ground Truth Production</a></li>
+            <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}processing&dirType=pages" target="_blank">Ground Truth Production</a></li>
             <li><a href="Training">Training</a></li>
             <li><a href="Evaluation">Evaluation</a></li>
             <li><a href="ResultGeneration">Result Generation</a></li>
-            <!--<li><a href="PostCorrection">Post Correction</a></li>-->
+            <!-- <li><a href="PostCorrection">Post Correction</a></li> -->
             <li class="nav-separator"></li>
         </ul>
     </header>

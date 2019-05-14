@@ -44,10 +44,11 @@
                                     { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked') };
                                 break;
                             case "regionExtraction":
+
                                 processSettings[process] = {
-                                    "spacing" : $('input[id="spacing"]').val(),
-                                    "usespacing" : $('input[id=usespacing]').prop('checked'),
-                                    "avgbackground" : $('input[id=avgbackground]').prop('checked'),
+                                    "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
+                                    "maxskew" : $('input[id="regionExtraction--maxskew"]').val(),
+                                    "skewsteps" : $('input[id="regionExtraction--skewsteps"]').val(),
                                     "parallel" : $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find($('[data-setting="--parallel"]')).val()
                                 };
                                 break;
@@ -172,7 +173,7 @@
                         return;
                     }
 
-                    $.get( "ajax/processFlow/exists?", { "pageIds[]" : selectedPages, "processes[]" : processesToExecute } )
+                    $.post( "ajax/processFlow/exists", { "pageIds[]" : selectedPages, "processes[]" : processesToExecute } )
                     .done(function( data ){
                         if(data === false){
                             executeProcessFlow(selectedPages, processesToExecute);

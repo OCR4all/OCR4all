@@ -6,6 +6,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
@@ -94,10 +99,23 @@ public class EvaluationHelper {
         List<String> command = new ArrayList<String>();
         List<String> gtFiles = getGtFilesOfPages(pageIds);
         command.add("--gt");
+        // Create temp json file with all segment images (to not overload parameter list)
+		// Temp file in a temp folder named "calamari-<random numbers>.json"
+        File segmentListFile = File.createTempFile("calamari-",".json");
+        segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode gtList = mapper.createArrayNode();
         for (String gtFile : gtFiles) {
-            // Add affected line segment images with their absolute path to the command list
-            command.add(gtFile);
+            // Add affected line segment images with their absolute path to the json file
+        	gtList.add(gtFile);
         }
+        ObjectNode segmentObj = mapper.createObjectNode();
+        segmentObj.set("gt", gtList);
+        ObjectWriter writer = mapper.writer();
+        writer.writeValue(segmentListFile, segmentObj); 
+        command.add(segmentListFile.toString());
+
+        
         progress = 20;
         command.addAll(cmdArgs);
         command.add("--no_progress_bars");

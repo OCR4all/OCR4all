@@ -156,7 +156,7 @@ public class ProcessFlowController {
      * @param response Response to the request
      */
     public void doRegionExtraction(
-                String[] pageIds, Object spacing, Object avgBackground, Object parallel,
+                String[] pageIds, Object spacing, Object maxskew, Object skewsteps, Object parallel,
                 HttpSession session, HttpServletResponse response
             ) {
         if (pageIds.length == 0) {
@@ -165,9 +165,10 @@ public class ProcessFlowController {
         }
 
         Integer spacingInteger = Integer.parseInt((String)spacing);
-        Boolean avgBackgroundBoolean = Boolean.parseBoolean(avgBackground.toString());
+        Integer maxskewInteger = Integer.parseInt((String)maxskew);
+        Integer skewstepsInteger = Integer.parseInt((String)skewsteps);
         Integer parallelInteger = Integer.parseInt((String)parallel);
-        new RegionExtractionController().execute(pageIds, spacingInteger, avgBackgroundBoolean, parallelInteger,
+        new RegionExtractionController().execute(pageIds, spacingInteger, maxskewInteger, skewstepsInteger, parallelInteger,
             session, response, true);
     }
 
@@ -308,7 +309,7 @@ public class ProcessFlowController {
             session.setAttribute("currentProcess", "regionExtraction");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
             Map<String, Object> settings = processSettings.get("regionExtraction");
-            doRegionExtraction(pageIds, settings.get("spacing"), settings.get("avgbackground"), settings.get("parallel"), session, response);
+            doRegionExtraction(pageIds, settings.get("spacing"), settings.get("skewsteps"), settings.get("maxskew"), settings.get("parallel"), session, response);
             if (needsExit(session, response))
                 return;
         }
@@ -395,7 +396,7 @@ public class ProcessFlowController {
      * @param response Response to the request
      * @return Information if files exist
      */
-    @RequestMapping(value = "/ajax/processFlow/exists" , method = RequestMethod.GET)
+    @RequestMapping(value = "/ajax/processFlow/exists" , method = RequestMethod.POST)
     public @ResponseBody boolean filesExists(
                 @RequestParam("pageIds[]") String[] pageIds,
                 @RequestParam("processes[]") String[] processes,
