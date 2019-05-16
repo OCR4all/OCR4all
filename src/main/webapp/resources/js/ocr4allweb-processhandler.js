@@ -276,6 +276,7 @@ function cancelProcess() {
 //Flush previous entries from the console
 function consoleFlush() {
     $("pre").empty();
+    $("li.tab a").find('i.material-icons').remove();
 }
 // Call this function after document is ready
 function initializeProcessUpdate(controller, collapsibleOpenStandard, collapsibleOpenOnAction, updateConsole) {
