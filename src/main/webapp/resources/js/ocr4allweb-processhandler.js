@@ -207,6 +207,7 @@ function startProcessUpdate() {
 
 // Function to execute a process with given AJAX parameters
 function executeProcess(ajaxParams) {
+    consoleFlush();
     if( globalInProgress === true ) {
         $('#modal_inprogress').modal('open');
     }
@@ -272,6 +273,10 @@ function cancelProcess() {
     }
 }
 
+//Flush previous entries from the console
+function consoleFlush() {
+    $("pre").empty();
+}
 // Call this function after document is ready
 function initializeProcessUpdate(controller, collapsibleOpenStandard, collapsibleOpenOnAction, updateConsole) {
     // Set global variables to avoid function parameter passing
