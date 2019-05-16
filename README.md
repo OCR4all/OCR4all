@@ -12,6 +12,10 @@ while the repositories [OCR4all/docker_image](https://github.com/OCR4all/docker_
 
 For installing the complete project with a docker image, please follow the instructions [here](https://github.com/OCR4all/docker_image).
 
+## Mailing List
+
+OCR4all is under active development and consequently, frequent releases containing bug fixes and further functionality can be expected. In order to always be up to date, we highly recommend subscribing to our [mailing list](https://lists.uni-wuerzburg.de/mailman/listinfo/ocr4all) where we will always announce notable enhancements.
+
 ## Current Developments
 
 Plans for the (very) near future:
