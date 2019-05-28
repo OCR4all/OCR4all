@@ -133,7 +133,7 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
      * @throws IOException 
      */
     public int getProgress() throws IOException {
-        return getProgress();
+        return progress;
     }
 
 

@@ -40,7 +40,6 @@ public class LineSegmentationController {
         
         // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
-        System.out.println((lineSegmentationHelper instanceof LineSegmentationPageXMLHelper)+", "+processingMode);
         if (lineSegmentationHelper == null || 
         		(processingMode.equals("Directory") && lineSegmentationHelper instanceof LineSegmentationPageXMLHelper) ||
         		(processingMode.equals("Pagexml") && lineSegmentationHelper instanceof LineSegmentationDirectoryHelper)) {
@@ -63,7 +62,6 @@ public class LineSegmentationController {
         	}
             session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
         }
-        System.out.println(">>"+(lineSegmentationHelper instanceof LineSegmentationPageXMLHelper)+", "+processingMode);
         return lineSegmentationHelper;
     }
 
@@ -102,7 +100,6 @@ public class LineSegmentationController {
                @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
            ) {
 
-        System.out.println(">> Start execute");
         LineSegmentationHelper lineSegmentationHelper = provideHelper(session, response);
         if (lineSegmentationHelper == null)
             return;
@@ -117,7 +114,6 @@ public class LineSegmentationController {
             if (cmdArgs != null)
                 cmdArgList = Arrays.asList(cmdArgs);
 
-            System.out.println(String.join(" ", cmdArgList));
             lineSegmentationHelper.execute(Arrays.asList(pageIds), cmdArgList);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -125,7 +121,6 @@ public class LineSegmentationController {
             e.printStackTrace();
         }
         GenericController.removeFromProcessList(session, "lineSegmentation");
-        System.out.println("<< End execute");
     }
 
     /**

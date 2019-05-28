@@ -31,6 +31,12 @@ public class TrainingHelper {
     private String projectImageType;
 
     /**
+     * Processing structure of the project
+     * Possible values: { Directory, Pagexml }
+     */
+    private String processingMode;
+    
+    /**
      * Object to access project configuration
      */
     private ProjectConfiguration projConf;
@@ -55,11 +61,13 @@ public class TrainingHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
+     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public TrainingHelper(String projectDir, String projectImageType) {
+    public TrainingHelper(String projectDir, String projectImageType, String processingMode) {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
         this.projectImageType = projectImageType;
+        this.processingMode = processingMode;
     }
 
     /**
@@ -91,15 +99,18 @@ public class TrainingHelper {
      */
     public List<String> getImagesWithGt(String projectImageType) throws IOException {
         ArrayList<String> imagesWithGt = new ArrayList<String>();
+        final String gtExt = processingMode.equals("Pagexml") ? projConf.CONF_EXT : projConf.GT_EXT;
+
         // Add custom models to map
-        Files.walk(Paths.get(projConf.PAGE_DIR))
-        .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.getName().endsWith(projConf.GT_EXT))
-        .forEach(
-            fileEntry -> {
-                if (new File(fileEntry.getAbsolutePath().replace(projConf.GT_EXT, projConf.getImageExtensionByType(projectImageType))).exists())
-                    imagesWithGt.add(fileEntry.getAbsolutePath().replace(projConf.GT_EXT, projConf.getImageExtensionByType(projectImageType)));
-        });
+		Files.walk(Paths.get(projConf.PAGE_DIR))
+		.map(Path::toFile)
+		.filter(fileEntry -> fileEntry.getName().endsWith(gtExt))
+		.forEach(
+			fileEntry -> {
+				final String imageFile = fileEntry.getAbsolutePath().replace(gtExt, projConf.getImageExtensionByType(projectImageType));
+				if (new File(imageFile).exists())
+					imagesWithGt.add(imageFile);
+		});
         return imagesWithGt;
     }
 
@@ -194,6 +205,11 @@ public class TrainingHelper {
         command.add(trainingDir.getAbsolutePath());
 
         command.add("--no_progress_bars");
+
+        if(processingMode.equals("Pagexml")) {
+        	command.add("--dataset");
+        	command.add("PAGEXML");
+        }
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);

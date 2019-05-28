@@ -125,7 +125,7 @@ public class ProcessStateCollector {
     }
 
     /**
-     * Checks whether the required image files in "OCR/Pages/{pageId}" directory exist or not
+     * Checks whether the required textlines for the files in "OCR/Pages/{pageId}" exist or not
      *
      * @param pageID Identifier of the page (e.g 0002,0003)
      * @return Information if the required image files exist

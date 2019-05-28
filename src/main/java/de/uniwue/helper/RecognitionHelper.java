@@ -247,9 +247,11 @@ public class RecognitionHelper {
             }
         }
 
-        // Reset recognition data
-        deleteOldFiles(pageIds);
-        initialize(pageIds);
+        if(!processingMode.equals("Pagexml")) {
+			// Reset recognition data
+			deleteOldFiles(pageIds);
+			initialize(pageIds);
+        }
 
         List<String> command = new ArrayList<String>();
         List<String> lineSegmentImages = getLineSegmentImagesForCurrentProcess(pageIds);
@@ -260,9 +262,17 @@ public class RecognitionHelper {
         segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode segmentList = mapper.createArrayNode();
-        for (String lineSegmentImage : lineSegmentImages) {
-            // Add affected line segment images with their absolute path to the json file
-        	segmentList.add(lineSegmentImage);
+        if(processingMode.equals("Pagexml")) {
+			for (String pageId : pageIds) {
+				// Add affected images with their absolute path to the json file
+				segmentList.add(projConf.getImageDirectoryByType(projectImageType) + pageId + 
+									projConf.getImageExtensionByType(projectImageType));
+			}
+        } else {
+			for (String lineSegmentImage : lineSegmentImages) {
+				// Add affected line segment images with their absolute path to the json file
+				segmentList.add(lineSegmentImage);
+			}
         }
         ObjectNode segmentObj = mapper.createObjectNode();
         segmentObj.set("files", segmentList);
@@ -283,6 +293,11 @@ public class RecognitionHelper {
 
         command.add("--no_progress_bars");
 
+        if(processingMode.equals("Pagexml")) {
+        	command.add("--dataset");
+        	command.add("PAGEXML");
+        }
+
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
         processHandler.startProcess("calamari-predict", command, false);
@@ -290,7 +305,9 @@ public class RecognitionHelper {
         // Execute progress update to fill processState data structure with correct values
         getProgress();
         // Process extension to ocropus-gpageseg script
-        createSkippedSegments();
+        if(processingMode.equals("Pagexml")) {
+			createSkippedSegments();
+        }
 
         progress = 100;
         RecognitionRunning = false;
@@ -341,30 +358,31 @@ public class RecognitionHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      */
     public void deleteOldFiles(List<String> pageIds) {
-        // Delete all files created by subsequent processes to preserve data integrity
-        ResultGenerationHelper resultGenerationHelper = new ResultGenerationHelper(projConf.PROJECT_DIR, projectImageType, processingMode);
-        resultGenerationHelper.deleteOldFiles(pageIds, "txt");
-        resultGenerationHelper.deleteOldFiles(pageIds, "xml");
+    	if(processingMode.contentEquals("Pagexml")) {
+			// Delete all files created by subsequent processes to preserve data integrity
+			ResultGenerationHelper resultGenerationHelper = new ResultGenerationHelper(projConf.PROJECT_DIR, projectImageType, processingMode);
+			resultGenerationHelper.deleteOldFiles(pageIds, "txt");
 
-        for(String pageId : pageIds) {
-            File pageDirectory = new File(projConf.PAGE_DIR + pageId);
-            if (!pageDirectory.exists())
-                return;
+			for(String pageId : pageIds) {
+				File pageDirectory = new File(projConf.PAGE_DIR + pageId);
+				if (!pageDirectory.exists())
+					return;
 
-            File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
-            if (lineSegmentDirectories.length != 0) {
-                for (File dir : lineSegmentDirectories) {
-                    // Delete .txt files that store the recognized text
-                    // Keep .gt.txt files that store already manually corrected text
-                    File[] txtFiles = new File(dir.getAbsolutePath()).listFiles(
-                        (d, name) -> name.endsWith(projConf.REC_EXT) && !name.endsWith(projConf.GT_EXT)
-                    );
-                    for (File txtFile : txtFiles) {
-                        txtFile.delete();
-                    }
-                }
-            }
-        }
+				File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
+				if (lineSegmentDirectories.length != 0) {
+					for (File dir : lineSegmentDirectories) {
+						// Delete .txt files that store the recognized text
+						// Keep .gt.txt files that store already manually corrected text
+						File[] txtFiles = new File(dir.getAbsolutePath()).listFiles(
+							(d, name) -> name.endsWith(projConf.REC_EXT) && !name.endsWith(projConf.GT_EXT)
+						);
+						for (File txtFile : txtFiles) {
+							txtFile.delete();
+						}
+					}
+				}
+			}
+    	}
     }
 
     /**
