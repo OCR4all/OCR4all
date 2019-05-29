@@ -1,8 +1,8 @@
-<%@ tag description="SegmentationLarex settings" pageEncoding="UTF-8" %>
+<%@ tag description="Larex settings" pageEncoding="UTF-8" %>
 <table class="compact">
     <tbody>
         <tr>
-            <td><p>Segmentation image type</p></td>
+            <td><p>Image type</p></td>
             <td>
                 <div class="input-field">
                     <i class="material-icons prefix">image</i>

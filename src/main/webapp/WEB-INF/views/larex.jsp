@@ -1,14 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" processHandler="true">
-        <title>OCR4All - Post Correction (LAREX)</title>
+    <t:head>
+        <title>OCR4All - <c:out value='${title}'/> (LAREX)</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initializeProcessUpdate("segmentationLarex", [ 0 ], [ 1 ], false);
-
                 // Prevent redirecting to Larex if image folder does not exist
                 $("#larexForm").submit(function(e){
                     $.ajax({
@@ -33,35 +32,25 @@
                         default: imageSubExt = "";
                     }
                     $('#imagefilter').val(imageSubExt);
-                    // Change ImageList depending on the imageType selected
-                    reloadImageList($('#imageType').val(), true);
                 });
                 // Initialize image list
                 $('#imageType').change();
-
-                $('#agree').click(function() {
-                    var selectedPages = getSelectedPages();
-                    var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};
-                    // Execute segmentation process
-                    executeProcess(ajaxParams);
-                });
             });
         </script>
     </t:head>
-    <t:body heading="Post Correction (LAREX)" imageList="true" processModals="true">
+    <t:body heading="${title} (LAREX)">
         <div class="container includes-list">
             <div class="section">
                 <ul class="collapsible" data-collapsible="expandable">
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">line_style</i>Post Correction</div>
+                        <div class="collapsible-header active"><i class="material-icons">line_style</i><c:out value='${title}'/></div>
                         <div class="collapsible-body">
-                            <s:segmentationLarex></s:segmentationLarex>
+                            <s:larex></s:larex>
                         </div>
                     </li>
                 </ul>
             </div>
         </div>
-
         <div id="modal_alert" class="modal">
             <div class="modal-content red-text">
                 <h4>Error</h4>

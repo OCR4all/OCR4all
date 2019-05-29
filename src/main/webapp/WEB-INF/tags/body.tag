@@ -56,6 +56,7 @@
             <li><a href="Recognition">Recognition</a></li>
 			<c:choose>
 				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+			<li><a href="GroundTruthProductionLarex">Ground Truth Production</a></li>
 				</c:when>
 				<c:otherwise>
             <li><a href="/GTC_Web?gtcDir=${fn:replace(projectDir, '\\', '/')}processing&dirType=pages" target="_blank">Ground Truth Production</a></li>
@@ -63,7 +64,6 @@
 			</c:choose>
             <li><a href="Training">Training</a></li>
             <li><a href="Evaluation">Evaluation</a></li>
-            <li><a href="ResultGeneration">Result Generation</a></li>
 			<c:choose>
 				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
             <li><a href="PostCorrectionLarex">Post Correction</a></li>
@@ -72,10 +72,10 @@
             <li><a href="PostCorrection">Post Correction</a></li>
 				</c:otherwise>
 			</c:choose>
+            <li><a href="ResultGeneration">Result Generation</a></li>
             <li class="nav-separator"></li>
         </ul>
     </header>
-
     <main>
         <c:choose>
             <%-- Prevent visiting module pages if a project adjustment is currently in progress --%>

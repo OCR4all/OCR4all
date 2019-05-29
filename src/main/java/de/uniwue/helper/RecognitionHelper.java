@@ -296,6 +296,10 @@ public class RecognitionHelper {
         if(processingMode.equals("Pagexml")) {
         	command.add("--dataset");
         	command.add("PAGEXML");
+        	// Set output extension to input extension in order to overwrite the original file
+        	// (default would've been .pred.xml)
+        	command.add("--extension");
+        	command.add(".xml");
         }
 
         processHandler = new ProcessHandler();
