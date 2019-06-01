@@ -55,18 +55,15 @@ public class LarexController {
         switch(mode) {
         case "Segmentation":
         	mv.addObject("title", "Segmentation");
-        	mv.addObject("modes", new String[] {"segment"});
-        	mv.addObject("start_mode", "segment");
+        	mv.addObject("modes", "segment");
         	break;
         case "PostCorrection":
         	mv.addObject("title", "Post Correction");
-        	mv.addObject("modes", new String[] {"segment","lines","text"});
-        	mv.addObject("start_mode", "segment");
+        	mv.addObject("modes", "segment lines text");
         	break;
         case "GroundTruthProduction":
         	mv.addObject("title", "Ground Truth Production");
-        	mv.addObject("modes", new String[] {"segment","lines","text"});
-        	mv.addObject("start_mode", "text");
+        	mv.addObject("modes", "text segment lines");
         	break;
         	default:
         }
