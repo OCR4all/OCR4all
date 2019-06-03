@@ -4,12 +4,12 @@
     <groupId>de.uniwue</groupId>
     <artifactId>OCR4all_Web</artifactId>
     <packaging>war</packaging>
-    <version>0.0.7</version>
+    <version>0.0.7-1</version>
     <name>OCR4all_Web Maven Webapp</name>
     <url>http://maven.apache.org</url>
 
     <properties>
-        <spring.version>4.3.11.RELEASE</spring.version>
+        <spring.version>4.3.18.RELEASE</spring.version>
 
         <!-- Java version -->
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.1</version>
+            <version>2.9.9</version>
         </dependency>
 
         <!-- Apache Commons IO -->
