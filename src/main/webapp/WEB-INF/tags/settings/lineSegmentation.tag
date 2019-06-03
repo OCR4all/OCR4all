@@ -53,6 +53,8 @@
                              </p>
                     </td>
                 </tr>
+				</c:otherwise>
+			</c:choose>
                 <tr>
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
@@ -62,8 +64,6 @@
                         </div>
                     </td>
                 </tr>
-				</c:otherwise>
-			</c:choose>
             </tbody>
         </table>
     </c:when>

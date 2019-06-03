@@ -7,10 +7,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
@@ -52,26 +58,12 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
      */
     private int progress = -1;
 
+    private Map<String,Long> imagesLastModified;
+
     /**
      * Indicates if a Line Segmentation process is already running
      */
     private boolean lineSegmentationRunning = false;
-
-    /**
-     * Structure to monitor the progress of the process
-     * pageId : segmentId : processedState
-     *
-     * Structure example:
-     * {
-     *     "0002": {
-     *         "0002__000__paragraph" : true,
-     *         "0002__001__heading" : false,
-     *         ...
-     *     },
-     *     ...
-     * }
-     */
-    private TreeMap<String, TreeMap<String, Boolean>> processState = new TreeMap<String, TreeMap<String, Boolean>>();
 
     /**
      * Constructor
@@ -104,26 +96,12 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
      * @throws IOException
      */
     public void initializeProcessState(List<String> pageIds) throws IOException {
-        // Initialize the status structure
-        processState = new TreeMap<String, TreeMap<String, Boolean>>();
-
-        for(String pageId : pageIds) {
-            if(!new File(projConf.PAGE_DIR + pageId).exists())
-                continue;
-
-            TreeMap<String, Boolean> segments = new TreeMap<String, Boolean>();
-            Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
-            .map(Path::toFile)
-            .filter(fileEntry -> fileEntry.isFile())
-            .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImageType)))
-            .forEach(
-                fileEntry -> { 
-                    segments.put(FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName())), false);
-                }
-            );
-
-            processState.put(pageId, segments);
-        }
+        // Init the listener for image modification
+        imagesLastModified = new HashMap<>();
+        for(String pageId: pageIds) {
+			final String pageXML = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
+			imagesLastModified.put(pageXML,new File(pageXML).lastModified());
+		}
     }
 
     /**
@@ -133,6 +111,18 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
      * @throws IOException 
      */
     public int getProgress() throws IOException {
+    	int modifiedCount = 0;
+    	if(imagesLastModified != null) {
+    		for(String pagexml : imagesLastModified.keySet()) {
+				if(imagesLastModified.get(pagexml) < new File(pagexml).lastModified()) {
+					modifiedCount++;
+				}
+    		}
+    		progress = (modifiedCount*100) / imagesLastModified.size();
+    	} else {
+    		progress = -1;
+    	}
+    	
         return progress;
     }
 
@@ -152,22 +142,32 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
 
         // Reset line segment data
         initializeProcessState(pageIds);
-
-        int processedPages = 0;
+        
+        List<String> command = new ArrayList<String>();
+        // Create temp json file with all segment images (to not overload parameter list)
+		// Temp file in a temp folder named "lineseg-<random numbers>.json"
+        File segmentListFile = File.createTempFile("lineseg-",".json");
+        segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode dataList = mapper.createArrayNode();
         for (String pageId : pageIds) {
-			List<String> command = new ArrayList<String>();
-            command.add(projConf.getImageDirectoryByType(projectImageType) + pageId + projConf.getImageExtensionByType(projectImageType));
-            command.add(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
-			command.addAll(cmdArgs);
-			processHandler = new ProcessHandler();
-			processHandler.setFetchProcessConsole(true);
-			System.out.println("pagelineseg "+String.join(" ",command));
-			processHandler.startProcess("pagelineseg", command, false);
+            ArrayNode pageList = mapper.createArrayNode();
+        	pageList.add(projConf.getImageDirectoryByType(projectImageType) + pageId + projConf.getImageExtensionByType(projectImageType));
+        	final String pageXML = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
+            pageList.add(pageXML);
 
-			progress = (int) ((double) processedPages++ / pageIds.size() * 100);
+            // Add affected line segment images with their absolute path to the json file
+        	dataList.add(pageList);
         }
+        ObjectWriter writer = mapper.writer();
+        writer.writeValue(segmentListFile, dataList); 
+        
+        command.add(segmentListFile.toString());
+		command.addAll(cmdArgs);
+		processHandler.startProcess("pagelineseg", command, false);
+        
 
-        // Execute progress update to fill processState data structure with correct values
+        // Execute progress update to fill data structure with correct values
         getProgress();
 
         progress = 100;

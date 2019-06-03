@@ -69,7 +69,6 @@
             <li><a href="PostCorrectionLarex">Post Correction</a></li>
 				</c:when>
 				<c:otherwise>
-            <li><a href="PostCorrection">Post Correction</a></li>
 				</c:otherwise>
 			</c:choose>
             <li><a href="ResultGeneration">Result Generation</a></li>
