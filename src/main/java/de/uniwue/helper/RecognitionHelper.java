@@ -1,6 +1,7 @@
 package de.uniwue.helper;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -9,8 +10,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
@@ -73,6 +76,11 @@ public class RecognitionHelper {
     private boolean RecognitionRunning = false;
 
     /**
+     * Last time the images/pagexml are modified
+     */
+    private Map<String,Long> imagesLastModified;
+
+    /**
      * Structure to monitor the progress of the process
      * pageId : segmentId : lineSegmentId : processedState
      *
@@ -125,34 +133,43 @@ public class RecognitionHelper {
      * @throws IOException
      */
     public void initialize(List<String> pageIds) throws IOException {
-        // Initialize the status structure
-        processState = new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
+    	if(processingMode.equals("Directory")) {
+			// Initialize the status structure
+			processState = new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
 
-        for (String pageId : pageIds) {
-            TreeMap<String, TreeMap<String, Boolean>> segments = new TreeMap<String, TreeMap<String, Boolean>>();
-            // File depth of 1 -> no recursive (file)listing
-            File[] lineSegmentDirectories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-            if (lineSegmentDirectories.length != 0) {
-                for (File dir : lineSegmentDirectories) {
-                    TreeMap<String, Boolean> lineSegments = new TreeMap<String, Boolean>();
-                    Files.walk(Paths.get(dir.getAbsolutePath()), 1)
-                    .map(Path::toFile)
-                    .filter(fileEntry -> fileEntry.isFile())
-                    .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImageType)))
-                    .forEach(
-                        fileEntry -> {
-                            // Line segments have one of the following endings: ".bin.png" | ".nrm.png"
-                            // Therefore both extensions need to be removed
-                            String lineSegmentId = FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName()));
-                            lineSegments.put(lineSegmentId, false);
-                        }
-                    );
-                    segments.put(dir.getName(), lineSegments);
-                }
-            }
+			for (String pageId : pageIds) {
+				TreeMap<String, TreeMap<String, Boolean>> segments = new TreeMap<String, TreeMap<String, Boolean>>();
+				// File depth of 1 -> no recursive (file)listing
+				File[] lineSegmentDirectories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
+				if (lineSegmentDirectories.length != 0) {
+					for (File dir : lineSegmentDirectories) {
+						TreeMap<String, Boolean> lineSegments = new TreeMap<String, Boolean>();
+						Files.walk(Paths.get(dir.getAbsolutePath()), 1)
+						.map(Path::toFile)
+						.filter(fileEntry -> fileEntry.isFile())
+						.filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImageType)))
+						.forEach(
+							fileEntry -> {
+								// Line segments have one of the following endings: ".bin.png" | ".nrm.png"
+								// Therefore both extensions need to be removed
+								String lineSegmentId = FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName()));
+								lineSegments.put(lineSegmentId, false);
+							}
+						);
+						segments.put(dir.getName(), lineSegments);
+					}
+				}
 
-            processState.put(pageId, segments);
-        }
+				processState.put(pageId, segments);
+			}
+    	} else {
+			// Init the listener for image modification
+			imagesLastModified = new HashMap<>();
+			for(String pageId: pageIds) {
+				final String pageXML = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
+				imagesLastModified.put(pageXML,new File(pageXML).lastModified());
+			}
+    	}
     }
 
     /**
@@ -186,27 +203,42 @@ public class RecognitionHelper {
         if (RecognitionRunning == false)
             return progress;
 
-        int lineSegmentCount = 0;
-        int processedLineSegmentCount = 0;
-         // Identify how many line segments are already processed
-        for (String pageId : processState.keySet()) {
-            for (String segmentId : processState.get(pageId).keySet()) {
-                for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
-                    lineSegmentCount += 1;
+		if(processingMode.equals("Directory")) {
+			int lineSegmentCount = 0;
+			int processedLineSegmentCount = 0;
+			 // Identify how many line segments are already processed
+			for (String pageId : processState.keySet()) {
+					for (String segmentId : processState.get(pageId).keySet()) {
+						for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
+							lineSegmentCount += 1;
 
-                    if(processState.get(pageId).get(segmentId).get(lineSegmentId)) {
-                        processedLineSegmentCount += 1;
-                        continue;
-                    }
+							if(processState.get(pageId).get(segmentId).get(lineSegmentId)) {
+								processedLineSegmentCount += 1;
+								continue;
+							}
 
-                    if (new File(projConf.PAGE_DIR + pageId + File.separator + segmentId +
-                            File.separator + lineSegmentId + projConf.REC_EXT).exists()) {
-                        processState.get(pageId).get(segmentId).put(lineSegmentId, true);
-                    }
-                }
-            }
-        }
-        return (progress != 100) ? (int) ((double)processedLineSegmentCount / lineSegmentCount * 100) : 100;
+							if (new File(projConf.PAGE_DIR + pageId + File.separator + segmentId +
+									File.separator + lineSegmentId + projConf.REC_EXT).exists()) {
+								processState.get(pageId).get(segmentId).put(lineSegmentId, true);
+							}
+						}
+					}
+			}
+			return (progress != 100) ? (int) ((double)processedLineSegmentCount / lineSegmentCount * 100) : 100;
+		} else {
+			int modifiedCount = 0;
+			if(imagesLastModified != null) {
+				for(String pagexml : imagesLastModified.keySet()) {
+					if(imagesLastModified.get(pagexml) < new File(pagexml).lastModified()) {
+						modifiedCount++;
+					}
+				}
+				progress = (modifiedCount*100) / imagesLastModified.size();
+			} else {
+				progress = -1;
+			}
+			return progress;
+		}
     }
 
     /**
@@ -247,11 +279,9 @@ public class RecognitionHelper {
             }
         }
 
-        if(!processingMode.equals("Pagexml")) {
-			// Reset recognition data
-			deleteOldFiles(pageIds);
-			initialize(pageIds);
-        }
+		// Reset recognition data
+		deleteOldFiles(pageIds);
+		initialize(pageIds);
 
         List<String> command = new ArrayList<String>();
         List<String> lineSegmentImages = getLineSegmentImagesForCurrentProcess(pageIds);
@@ -361,8 +391,8 @@ public class RecognitionHelper {
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      */
-    public void deleteOldFiles(List<String> pageIds) {
-    	if(processingMode.contentEquals("Pagexml")) {
+    public void deleteOldFiles(List<String> pageIds) throws IOException {
+    	if(processingMode.equals("Directory")) {
 			// Delete all files created by subsequent processes to preserve data integrity
 			ResultGenerationHelper resultGenerationHelper = new ResultGenerationHelper(projConf.PROJECT_DIR, projectImageType, processingMode);
 			resultGenerationHelper.deleteOldFiles(pageIds, "txt");
@@ -384,6 +414,24 @@ public class RecognitionHelper {
 							txtFile.delete();
 						}
 					}
+				}
+			}
+    	} else {
+    		// Delete potential TextEquivs already existing in the page xmls
+			for(String pageId : pageIds) {
+				File pageXML = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
+				if (!pageXML.exists())
+					return;
+			   
+				// Load pageXML and replace/delete all Textline text content
+				String pageXMLContent = new String(Files.readAllBytes(pageXML.toPath()));
+				pageXMLContent = pageXMLContent.replaceAll("<TextEquiv[^>]*>.*?<\\/TextEquiv>", "");
+				
+				// Save new pageXML
+				try (FileWriter fileWriter = new FileWriter(pageXML)) {
+					fileWriter.write(pageXMLContent);
+					fileWriter.flush();
+					fileWriter.close();
 				}
 			}
     	}

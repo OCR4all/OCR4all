@@ -1,18 +1,14 @@
 package de.uniwue.helper;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-
-import org.apache.commons.io.FilenameUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -58,6 +54,9 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
      */
     private int progress = -1;
 
+    /**
+     * Last time the images/pagexml are modified
+     */
     private Map<String,Long> imagesLastModified;
 
     /**
@@ -141,6 +140,7 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
         progress = 0;
 
         // Reset line segment data
+        deleteOldFiles(pageIds);
         initializeProcessState(pageIds);
         
         List<String> command = new ArrayList<String>();
@@ -208,6 +208,31 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
 
         Collections.sort(validPageIds);
         return validPageIds;
+    }
+
+    /**
+     * Deletion of old process related data
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @throws IOException 
+     */
+    public void deleteOldFiles(List<String> pageIds) throws IOException {
+        for(String pageId : pageIds) {
+            File pageXML = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
+            if (!pageXML.exists())
+                return;
+           
+            // Load pageXML and replace/delete all TextLines
+			String pageXMLContent = new String(Files.readAllBytes(pageXML.toPath()));
+			pageXMLContent = pageXMLContent.replaceAll("<TextLine[^>]*>.*?<\\/TextLine>", "");
+			
+			// Save new pageXML
+			try (FileWriter fileWriter = new FileWriter(pageXML)) {
+				fileWriter.write(pageXMLContent);
+				fileWriter.flush();
+				fileWriter.close();
+			}
+        }
     }
 
     /**
