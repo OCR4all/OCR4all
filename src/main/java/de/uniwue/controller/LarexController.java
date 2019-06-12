@@ -59,11 +59,11 @@ public class LarexController {
         	break;
         case "PostCorrection":
         	mv.addObject("title", "Post Correction");
-        	mv.addObject("modes", "segment lines text");
+        	mv.addObject("modes", "edit lines text");
         	break;
         case "GroundTruthProduction":
         	mv.addObject("title", "Ground Truth Production");
-        	mv.addObject("modes", "text segment lines");
+        	mv.addObject("modes", "text edit lines");
         	break;
         	default:
         }
