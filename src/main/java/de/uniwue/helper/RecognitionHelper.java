@@ -425,7 +425,7 @@ public class RecognitionHelper {
 			   
 				// Load pageXML and replace/delete all Textline text content
 				String pageXMLContent = new String(Files.readAllBytes(pageXML.toPath()));
-				pageXMLContent = pageXMLContent.replaceAll("<TextEquiv[^>]*>.*?<\\/TextEquiv>", "");
+				pageXMLContent = pageXMLContent.replaceAll("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>[^<]*?\\<\\/TextEquiv\\>", "");
 				
 				// Save new pageXML
 				try (FileWriter fileWriter = new FileWriter(pageXML)) {

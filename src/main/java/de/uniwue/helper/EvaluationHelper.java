@@ -147,6 +147,7 @@ public class EvaluationHelper {
         	command.add("PAGEXML");
         	command.add("--pred_ext");
         	command.add(".xml");
+        	command.add("--skip_empty_gt");
         }
 
         processHandler = new ProcessHandler();
