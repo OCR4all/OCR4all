@@ -25,6 +25,12 @@ import de.uniwue.model.ProcessFlowData;
 @Controller
 public class ProcessFlowController {
     /**
+     * Processing structure of the project
+     * Possible values: { Directory, Pagexml }
+     */
+    private String processingMode;
+	
+    /**
      * Manages the helper object and stores it in the session
      *
      * @param session Session of the user
@@ -45,6 +51,7 @@ public class ProcessFlowController {
             );
             session.setAttribute("processFlowHelper", processFlowHelper);
         }
+        processingMode = session.getAttribute("processingMode").toString();
         return processFlowHelper;
     }
 
@@ -317,7 +324,12 @@ public class ProcessFlowController {
 
         if (processes.contains("lineSegmentation")) {
             session.setAttribute("currentProcess", "lineSegmentation");
-            pageIds = processFlowHelper.getValidPageIds(pageIds, "regionExtraction");
+
+			if(processingMode.equals("Directory")) {
+				pageIds = processFlowHelper.getValidPageIds(pageIds, "regionExtraction");
+			} else {
+				pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
+			}
             doLineSegmentation(pageIds, processSettings.get("lineSegmentation").get("cmdArgs"), session, response);
             if (needsExit(session, response))
                 return;
