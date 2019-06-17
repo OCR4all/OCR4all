@@ -45,6 +45,7 @@
                             </c:if>
                             { title: "Line Segmentation", data: "linesExtracted" },
                             { title: "Recognition", data: "recognition" },
+                            { title: "Ground Truth", data: "groundtruth" },
                         ],
                         createdRow: function( row, data, index ){
                             $('td:first-child', row).html('<a href="pageOverview?pageId=' + data.pageId + '">' + data.pageId + '</a>');

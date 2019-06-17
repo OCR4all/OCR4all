@@ -40,6 +40,11 @@ public class PageOverview {
     private boolean recognition = false;
 
     /**
+     * Groundtruth state
+     */
+    private boolean groundtruth = false;
+
+    /**
      * Constructor
      *
      * @param pageId  Page identifier
@@ -137,6 +142,24 @@ public class PageOverview {
         this.linesExtracted = linesExtracted;
     }
 
+    /**
+     * Sets the groundtruth status of the page
+     * 
+     * @param groundtruth Boolean representation of the status
+     */
+    public void setGroundtruth(boolean groundtruth) {
+		this.groundtruth = groundtruth;
+	}
+   
+    /**
+     * Gets the groundtruth status of the page
+     * 
+     * @return Boolean representation of the status
+     */
+    public boolean isGroundtruth() {
+		return groundtruth;
+	}
+    
     /**
      * Gets the recognition status of the page
      *

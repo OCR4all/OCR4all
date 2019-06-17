@@ -138,6 +138,7 @@ public class OverviewHelper {
             pOverview.setSegmentsExtracted(procStateCol.regionExtractionState(pageId));
             pOverview.setLinesExtracted(procStateCol.lineSegmentationState(pageId));
             pOverview.setRecognition(procStateCol.recognitionState(pageId));
+            pOverview.setGroundtruth(procStateCol.groundTruthState(pageId));
 
             overview.put(pageImg.getName(), pOverview);
         }

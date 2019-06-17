@@ -177,6 +177,7 @@
                             <c:if test='${(not empty processingMode) && (processingMode == "Directory")}'><th>Region Extraction</th></c:if>
                             <th>Line Segmentation</th>
                             <th>Recognition</th>
+                            <th>Ground Truth</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -190,6 +191,7 @@
                             </c:if>
                             <td><c:choose><c:when test="${pageOverview.linesExtracted == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
                             <td><c:choose><c:when test="${pageOverview.recognition == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
+                            <td><c:choose><c:when test="${pageOverview.groundtruth == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
                         </tr>
                     </tbody>
                 </table>
