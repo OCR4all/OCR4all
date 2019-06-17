@@ -125,7 +125,8 @@ public class ProcessStateCollector {
     }
 
     /**
-     * Checks whether the required textlines for the files in "OCR/Pages/{pageId}" exist or not
+     * Checks whether the required textlines for the image files exist or not.
+     * Also checks for binary/grayscale images to extract the lines from. 
      *
      * @param pageID Identifier of the page (e.g 0002,0003)
      * @return Information if the required image files exist
@@ -134,6 +135,12 @@ public class ProcessStateCollector {
         File pageXML = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
         if (!pageXML.exists())
             return false;
+
+        // Check if the images of the lines exist
+		String imageFile = projConf.getImageDirectoryByType(imageType) + pageId + projConf.getImageExtensionByType(imageType);
+		if (!new File(imageFile).exists()) {
+			return false;
+		}
 
         // Easy and fast check if an end tag of a TextLine exists 
         // Does not check if the xml is valid
@@ -156,7 +163,7 @@ public class ProcessStateCollector {
 			return false;
 		}
     }
-    
+
     /**
      * Determines the "RegionExtraction" process state of a given page
      *
@@ -192,28 +199,108 @@ public class ProcessStateCollector {
      * @return "Recognition" state of the page
      */
     public boolean recognitionState(String pageId) {
-        File pageDir = new File(projConf.PAGE_DIR + pageId);
-        if (!pageDir.exists())
-            return false;
+    	if(processingMode.equals("Directory")){
+    		// Check directory for recognition txts
+			File pageDir = new File(projConf.PAGE_DIR + pageId);
+			if (!pageDir.exists())
+				return false;
 
-        File[] lineSegmentDirectories = pageDir.listFiles(File::isDirectory);
-        if (lineSegmentDirectories.length == 0) {
-            return false;
-        }
+			File[] lineSegmentDirectories = pageDir.listFiles(File::isDirectory);
+			if (lineSegmentDirectories.length == 0) {
+				return false;
+			}
 
-        for (File dir : lineSegmentDirectories) {
-            File[] lineSegmentImgFiles = dir.listFiles((d, name) -> name.endsWith(projConf.getImageExtensionByType(imageType)));
-            // Check that for every line segmenation file a ".txt" exists (successful recognition)
-            for (File imgFile : lineSegmentImgFiles) {
-                // Call removeExtension twice, due to "Binary"|"Gray" image extensions (".bin.png"|".nrm.png")
-                if (!new File(FilenameUtils.removeExtension(FilenameUtils.removeExtension(imgFile.getAbsolutePath()))
-                         + projConf.REC_EXT).exists()) {
-                    return false;
+			for (File dir : lineSegmentDirectories) {
+				File[] lineSegmentImgFiles = dir.listFiles((d, name) -> name.endsWith(projConf.getImageExtensionByType(imageType)));
+				// Check that for every line segmenation file a ".txt" exists (successful recognition)
+				for (File imgFile : lineSegmentImgFiles) {
+					// Call removeExtension twice, due to "Binary"|"Gray" image extensions (".bin.png"|".nrm.png")
+					if (!new File(FilenameUtils.removeExtension(FilenameUtils.removeExtension(imgFile.getAbsolutePath()))
+							 + projConf.REC_EXT).exists()) {
+						return false;
+					}
+				}
+			}
+
+			return true;
+    	} else {
+    		// Check pagexml for TextEquivs
+			File pageXML = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
+			if (!pageXML.exists())
+				return false;
+
+			// Easy and fast check if an end tag of a TextLine exists 
+			// Does not check if the xml is valid
+			try {
+				FileInputStream fis = new FileInputStream(pageXML);
+				byte[] data = new byte[(int) pageXML.length()];
+				fis.read(data);
+				fis.close();
+				String pageXMLContent = new String(data, "UTF-8");
+				
+				Pattern p = Pattern.compile("\\</TextEquiv\\>");
+				Matcher matcher = p.matcher(pageXMLContent);
+
+				return matcher.find();
+			} catch (UnsupportedEncodingException e) {
+				return false;
+			} catch (FileNotFoundException e) {
+				return false;
+			} catch (IOException e) {
+				return false;
+			}
+    	}
+    }
+
+    /**
+     * Determines the "GroundTruth" process state of a given page
+     * 
+     * @param pageId Identifier of the page (e.g 0002,0003)
+     * @return "result" state of the page
+     */
+    public boolean groundTruthState(String pageId) {
+        if(processingMode.equals("Directory")) {
+        	// Check if any file has Ground Truth
+            File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
+            if (directories != null && directories.length != 0) {
+                for(File dir : directories) {
+                    File[] GtFiles = dir.listFiles((d, name) -> name.endsWith(projConf.GT_EXT));
+                    if(GtFiles.length > 0) {
+                    	return true;
+                    }
                 }
             }
-        }
+			return false;
+        } else {
+    		// Check pagexml for TextEquivs
+			File pageXML = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
+			if (!pageXML.exists())
+				return false;
 
-        return true;
+			// Easy and fast check if an end tag of a TextLine exists 
+			// Does not check if the xml is valid
+			try {
+				FileInputStream fis = new FileInputStream(pageXML);
+				byte[] data = new byte[(int) pageXML.length()];
+				fis.read(data);
+				fis.close();
+				String pageXMLContent = new String(data, "UTF-8");
+				
+				Pattern p = Pattern.compile("\\<TextEquiv[^>]+?index=\"0\"");
+				Matcher matcher = p.matcher(pageXMLContent);
+
+				if(matcher.find()) {
+					return true;
+				}
+			} catch (UnsupportedEncodingException e) {
+				return false;
+			} catch (FileNotFoundException e) {
+				return false;
+			} catch (IOException e) {
+				return false;
+			}
+			return false;
+        }
     }
 
     /**
@@ -231,5 +318,4 @@ public class ProcessStateCollector {
             pageResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
         return pageResult.exists();
     }
-
 }

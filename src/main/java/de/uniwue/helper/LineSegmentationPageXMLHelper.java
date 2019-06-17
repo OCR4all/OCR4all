@@ -192,17 +192,18 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
     }
 
     /**
-     * Returns the Ids of the pages, for which region extraction was already executed
+     * Returns the Ids of the pages, for which segmentation was already executed
      *
      * @return List of valid page Ids
      * @throws IOException 
      */
     public ArrayList<String> getValidPageIds() throws IOException {
-        // Get all pages and check which ones are already region extracted
+        // Get all pages and check which ones are segmented and have a image of type project image type (Gray | Binary)
         ArrayList<String> validPageIds = new ArrayList<String>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");
         for (String pageId : allPageIds) {
-            if (procStateCol.segmentationState(pageId) == true)
+        	String imageFile = projConf.getImageDirectoryByType(projectImageType) + pageId + projConf.getImageExtensionByType(projectImageType);
+            if (procStateCol.segmentationState(pageId) == true && new File(imageFile).exists())
                 validPageIds.add(pageId);
         }
 

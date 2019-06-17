@@ -43,6 +43,12 @@ public class EvaluationHelper {
     private int progress = -1;
 
     /**
+     * Processing structure of the project
+     * Possible values: { Directory, Pagexml }
+     */
+    private String processingMode;
+
+    /**
      * Constructor
      *
      * @param projectDir Path to the project directory
@@ -54,6 +60,7 @@ public class EvaluationHelper {
         processHandler = new ProcessHandler();
         procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
         genericHelper = new GenericHelper(projConf);
+        this.processingMode = processingMode;
     }
 
     /**
@@ -71,7 +78,7 @@ public class EvaluationHelper {
      * @return List of ".gt.txt" files
      * @throws IOException 
      */
-    public List<String> getGtFilesOfPages(List<String> pageIds){
+    public List<String> getGtTextFilesOfPages(List<String> pageIds){
         List<String> GtOfPages = new ArrayList<String>();
         for(String pageId : pageIds) {
             File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
@@ -88,28 +95,42 @@ public class EvaluationHelper {
 
     /**
      * Executes image Evaluation of all pages
-     * Achieved with the help of the external python program "ocropus-econf"
+     * Achieved with the help of the external python program "calamari-eval"
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs Command line arguments for "ocropus-econf"
+     * @param cmdArgs Command line arguments for "calamari-eval"
      * @throws IOException
      */
     public void execute(List<String> pageIds, List<String> cmdArgs) throws IOException {
         progress = 0;
 
         List<String> command = new ArrayList<String>();
-        List<String> gtFiles = getGtFilesOfPages(pageIds);
         command.add("--gt");
         // Create temp json file with all segment images (to not overload parameter list)
 		// Temp file in a temp folder named "calamari-<random numbers>.json"
         File segmentListFile = File.createTempFile("calamari-",".json");
         segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
         ObjectMapper mapper = new ObjectMapper();
+
+        List<String> gtFiles ;
+		if(processingMode.equals("Pagexml")) {
+			gtFiles = new ArrayList<String>();
+			for(String pageId : pageIds) {
+				if(procStateCol.groundTruthState(pageId)) {
+					gtFiles.add(new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).getAbsolutePath());
+				}
+			}
+		} else {
+			gtFiles = getGtTextFilesOfPages(pageIds);
+		}
+
         ArrayNode gtList = mapper.createArrayNode();
-        for (String gtFile : gtFiles) {
-            // Add affected line segment images with their absolute path to the json file
-        	gtList.add(gtFile);
-        }
+
+		for (String gtFile : gtFiles) {
+			// Add affected line segment images with their absolute path to the json file
+			gtList.add(gtFile);
+		}
+
         ObjectNode segmentObj = mapper.createObjectNode();
         segmentObj.set("gt", gtList);
         ObjectWriter writer = mapper.writer();
@@ -120,6 +141,13 @@ public class EvaluationHelper {
         progress = 20;
         command.addAll(cmdArgs);
         command.add("--no_progress_bars");
+
+        if(processingMode.equals("Pagexml")) {
+        	command.add("--dataset");
+        	command.add("PAGEXML");
+        	command.add("--pred_ext");
+        	command.add(".xml");
+        }
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
@@ -162,11 +190,12 @@ public class EvaluationHelper {
         // Get all pages and check which one were already recognized
         ArrayList<String> validPageIds = new ArrayList<String>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");
-        for (String pageId : allPageIds) {
-            if (procStateCol.recognitionState(pageId) == true)
-                validPageIds.add(pageId);
-        }
 
+		for(String pageId : allPageIds) {
+			if(procStateCol.groundTruthState(pageId)) {
+				validPageIds.add(pageId);
+			}
+		}
         Collections.sort(validPageIds);
         return validPageIds;
     }
