@@ -90,11 +90,11 @@ public class ProcessConflictDetector {
      * @param currentProcesses Processes that are currently running
      * @return Type of process conflict
      */
-    public static int segmentationLarexConflict(List<String> currentProcesses) {
+    public static int larexConflict(List<String> currentProcesses) {
         if (currentProcesses.size() == 0)
             return NO_CONFLICT;
 
-        if (currentProcesses.contains("segmentationLarex"))
+        if (currentProcesses.contains("larex"))
             return SAME_PROCESS;
 
         if (currentProcesses.contains("processFlow"))

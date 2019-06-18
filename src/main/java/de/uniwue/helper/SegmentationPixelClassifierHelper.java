@@ -63,10 +63,11 @@ public class SegmentationPixelClassifierHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
+     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public SegmentationPixelClassifierHelper(String projectDir, String projectImageType) {
+    public SegmentationPixelClassifierHelper(String projectDir, String projectImageType, String processingMode) {
         projConf = new ProjectConfiguration(projectDir);
-        procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
         processHandler = new ProcessHandler();
         this.projectImageType = projectImageType;
     }

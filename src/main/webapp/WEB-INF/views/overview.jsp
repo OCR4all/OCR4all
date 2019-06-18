@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <t:html>
     <t:head projectDataSel="true" processHandler="true">
         <title>OCR4All - Project Overview</title>
@@ -39,9 +40,12 @@
                             { title: "Preprocessing", data: "preprocessed" },
                             { title: "Noise Removal", data: "despeckled"},
                             { title: "Segmentation", data: "segmented" },
+                            <c:if test='${(not empty processingMode) && (processingMode == "Directory")}'>
                             { title: "Region Extraction", data: "segmentsExtracted" },
+                            </c:if>
                             { title: "Line Segmentation", data: "linesExtracted" },
                             { title: "Recognition", data: "recognition" },
+                            { title: "Ground Truth", data: "groundtruth" },
                         ],
                         createdRow: function( row, data, index ){
                             $('td:first-child', row).html('<a href="pageOverview?pageId=' + data.pageId + '">' + data.pageId + '</a>');
@@ -70,7 +74,7 @@
 
                 // Responsible for verification and loading of the project
                 function projectInitialization(newPageVisit) {
-                    var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
+                    var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val(), "processingMode" : $('#processingMode').val() };
                     // Check if directory exists
                     $.get( "ajax/overview/checkDir?",
                         // Only force new session if project loading is triggered by user

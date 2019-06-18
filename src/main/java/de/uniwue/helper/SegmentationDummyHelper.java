@@ -28,6 +28,12 @@ public class SegmentationDummyHelper {
     private String projectImageType;
 
     /**
+     * Processing structure of the project
+     * Possible values: { Directory, Pagexml }
+     */
+    private String processingMode;
+
+    /**
      * Status of the SegmentationLarex progress
      */
     private int progress = -1;
@@ -43,7 +49,8 @@ public class SegmentationDummyHelper {
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary,gray)
      */
-    public SegmentationDummyHelper(String projDir, String projectImageType) {
+    public SegmentationDummyHelper(String projDir, String projectImageType, String processingMode) {
+    	this.processingMode = processingMode;
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projDir);
     }
@@ -65,7 +72,7 @@ public class SegmentationDummyHelper {
         if (!ocrDir.exists())
             ocrDir.mkdir();
 
-        SegmentationHelper segmentationHelper = new SegmentationHelper(projConf.PROJECT_DIR, this.projectImageType);
+        SegmentationHelper segmentationHelper = new SegmentationHelper(projConf.PROJECT_DIR, this.projectImageType, processingMode);
         segmentationHelper.deleteOldFiles(pageIds);
 
         String projectSpecificPreprocExtension = projConf.getImageExtensionByType(projectImageType);

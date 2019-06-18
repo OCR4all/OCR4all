@@ -20,6 +20,12 @@ public class SegmentationHelper {
     private String projectImageType;
 
     /**
+     * Processing structure of the project
+     * Possible values: { Directory, Pagexml }
+     */
+    private String processingMode;
+    
+    /**
      * Object to determine process states
      */
     private ProcessStateCollector procStateCol;
@@ -29,11 +35,13 @@ public class SegmentationHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary,gray)
+     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public SegmentationHelper(String projDir, String projectImageType) {
+    public SegmentationHelper(String projDir, String projectImageType, String processingMode) {
+    	this.processingMode = processingMode;
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projDir);
-        procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
     }
 
     /**
@@ -61,7 +69,7 @@ public class SegmentationHelper {
             return;
 
         // Delete all files created by subsequent processes to preserve data integrity
-        RegionExtractionHelper regionExtracorHelper = new RegionExtractionHelper(projConf.PROJECT_DIR, this.projectImageType);
+        RegionExtractionHelper regionExtracorHelper = new RegionExtractionHelper(projConf.PROJECT_DIR, this.projectImageType, processingMode);
         regionExtracorHelper.deleteOldFiles(pageIds);
 
         // Delete image and PageXML files

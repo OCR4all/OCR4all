@@ -41,10 +41,11 @@ public class DespecklingHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
+     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public DespecklingHelper(String projectDir, String projectImageType) {
+    public DespecklingHelper(String projectDir, String projectImageType, String processingMode) {
         projConf = new ProjectConfiguration(projectDir);
-        procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
     }
 
     /**

@@ -38,7 +38,8 @@ public class ResultGenerationController {
         if (resultGenerationHelper == null) {
             resultGenerationHelper = new ResultGenerationHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
+                session.getAttribute("imageType").toString(),
+                session.getAttribute("processingMode").toString()
             );
             session.setAttribute("resultGenerationHelper", resultGenerationHelper);
         }

@@ -61,11 +61,13 @@ public class RegionExtractionHelper {
      * Constructor
      *
      * @param projectDir Path to the project directory
+     * @param projectImageType Type of the project (gray, binary)
+     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public RegionExtractionHelper(String projectDir, String projectImageType) {
+    public RegionExtractionHelper(String projectDir, String projectImageType, String processingMode) {
         projConf = new ProjectConfiguration(projectDir);
         genericHelper = new GenericHelper(projConf);
-        procStateCol = new ProcessStateCollector(projConf, projectImageType);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
         this.projectImageType = projectImageType;
         processHandler = new ProcessHandler();
     }

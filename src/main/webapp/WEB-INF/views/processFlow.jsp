@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
@@ -279,6 +280,10 @@
                                             </p>
                                         </td>
                                     </tr>
+									<c:choose>
+										<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+										</c:when>
+										<c:otherwise>
                                     <tr>
                                         <td><p>Region Extraction</p></td>
                                         <td>
@@ -288,6 +293,8 @@
                                             </p>
                                         </td>
                                     </tr>
+										</c:otherwise>
+									</c:choose>
                                     <tr>
                                         <td><p>Line Segmentation</p></td>
                                         <td>
@@ -359,12 +366,18 @@
                                         <s:segmentationDummy></s:segmentationDummy>
                                     </div>
                                 </li>
+									<c:choose>
+										<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+										</c:when>
+										<c:otherwise>
                                 <li data-id="regionExtraction">
                                     <div class="collapsible-header"><i class="material-icons">settings</i>Region Extraction</div>
                                     <div class="collapsible-body">
                                         <s:regionExtraction></s:regionExtraction>
                                     </div>
                                 </li>
+										</c:otherwise>
+									</c:choose>
                                 <li data-id="lineSegmentation">
                                     <div class="collapsible-header"><i class="material-icons">settings</i>Line Segmentation</div>
                                     <div class="collapsible-body">
@@ -437,6 +450,10 @@
                                         </div>
                                     </div>
                                 </li>
+								<c:choose>
+									<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+									</c:when>
+									<c:otherwise>
                                 <li data-id="regionExtraction">
                                     <div class="collapsible-header"><i class="material-icons">info_outline</i>Region Extraction</div>
                                     <div class="collapsible-body">
@@ -446,6 +463,8 @@
                                         </div>
                                     </div>
                                 </li>
+									</c:otherwise>
+								</c:choose>
                                 <li data-id="lineSegmentation">
                                     <div class="collapsible-header"><i class="material-icons">info_outline</i>Line Segmentation</div>
                                     <div class="collapsible-body">

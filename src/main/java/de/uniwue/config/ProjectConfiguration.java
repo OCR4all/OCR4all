@@ -143,15 +143,15 @@ public final class ProjectConfiguration {
     /**
      * Absolute path to preprocessed binary images (is made absolute in Constructor)
      */
-    public String BINR_IMG_DIR = PREPROC_DIR + File.separator;
+    public String BINR_IMG_DIR = PREPROC_DIR;
     /**
      * Absolute path to preprocessed gray images (is made absolute in Constructor)
      */
-    public String GRAY_IMG_DIR = PREPROC_DIR + File.separator;
+    public String GRAY_IMG_DIR = PREPROC_DIR;
     /**
      * Absolute path to preprocessed despeckled images (is made absolute in Constructor)
      */
-    public String DESP_IMG_DIR = PREPROC_DIR + File.separator;
+    public String DESP_IMG_DIR = PREPROC_DIR;
     /**
      * Returns the filesystem path of the given image type
      *
@@ -176,11 +176,11 @@ public final class ProjectConfiguration {
     /**
      * Absolute path to OCR directory (is made absolute in Constructor)
      */
-    public String OCR_DIR = PREPROC_DIR + File.separator;
+    public String OCR_DIR = PREPROC_DIR;
     /**
      * Absolute path to OCR pages directory (is made absolute in Constructor)
      */
-    public String PAGE_DIR  = PREPROC_DIR + File.separator;
+    public String PAGE_DIR  = PREPROC_DIR;
     /**
      * Absolute path to OCR model directory (is made absolute in Constructor)
      */
