@@ -64,7 +64,14 @@
             <li><a href="Training">Training</a></li>
             <li><a href="Evaluation">Evaluation</a></li>
             <li><a href="ResultGeneration">Result Generation</a></li>
-            <!-- <li><a href="PostCorrection">Post Correction</a></li> -->
+			<c:choose>
+				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+            <li><a href="PostCorrectionLarex">Post Correction</a></li>
+				</c:when>
+				<c:otherwise>
+            <li><a href="PostCorrection">Post Correction</a></li>
+				</c:otherwise>
+			</c:choose>
             <li class="nav-separator"></li>
         </ul>
     </header>
