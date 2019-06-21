@@ -14,7 +14,7 @@
                     <a target="_blank" class="grey-text text-lighten-2" href="#"><b>FAQ</b></a>
                 </div>
                 <div class="col l3 s6">
-                    <a class="grey-text text-lighten-2" target="_blank" href="#"><b>TEAM</b></a>
+                    <a class="grey-text text-lighten-2" target="_blank" href="Team"><b>TEAM</b></a>
                 </div>
                 <div class="col l3 s6">
                     <a target="_blank" class="grey-text text-lighten-2" href="https://www.uni-wuerzburg.de/en/sonstiges/imprint-privacy-policy/"><b>IMPRINT</b></a>
