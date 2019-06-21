@@ -277,6 +277,22 @@
                 <a href="#!" id="backupAndConvert" class="modal-action modal-close waves-effect waves-green btn-flat">Backup and convert files</a>
             </div>
          </div>
+        <div id="modal_convertpdf" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Attention</h4>
+                <p>
+                    The required PNG format was not found in the input folder.<br />
+                    A PDF document was found instead.
+                    <br />
+                    To be able to load your project successfully the PDF needs to be converted to seperate PNG files.<br />
+                    Please choose one of the offered possibilities to continue.<br />
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" id="cancelConvertPdf" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                <a href="#!" id="convertToPdf" class="modal-action modal-close waves-effect waves-green btn-flat">convert pdf</a>
+            </div>
+        </div>
         <div id="modal_adjustImages_failed" class="modal">
             <div class="modal-content red-text">
                 <h4>Error</h4>
