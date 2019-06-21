@@ -103,6 +103,14 @@
             <artifactId>pdfbox</artifactId>
             <version>2.0.15</version>
         </dependency>
+
+        <!-- PDFBox-tools https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox-tools -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox-tools</artifactId>
+            <version>2.0.15</version>
+        </dependency>
+
     </dependencies>
 
 
