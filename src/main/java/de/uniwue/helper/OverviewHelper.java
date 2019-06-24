@@ -514,4 +514,30 @@ public class OverviewHelper {
         overviewRunning = false;
         progress = -1;
     }
+
+    public boolean checkForPdf() throws IOException {
+        ArrayList<Predicate<File>> predicate = new ArrayList<Predicate<File>>();
+        predicate.add(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT));
+
+        ArrayList<File> imagesToProcess = new ArrayList<File>();
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+                .map(Path::toFile)
+                .filter(fileEntry -> fileEntry.isFile())
+                .filter(predicate.stream().reduce(w -> false, Predicate::or))
+                .sorted()
+                .forEach(
+                        fileEntry -> {
+                            imagesToProcess.add(fileEntry);
+                        }
+                );
+
+        if (imagesToProcess.size() <= 0) {
+            File[] pdfInDir = listFilesMatching(new File(projConf.ORIG_IMG_DIR), ".*\\.pdf");
+            if(pdfInDir.length > 1) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

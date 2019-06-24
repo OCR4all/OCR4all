@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -27,11 +28,17 @@ public class PdfToImageConverter {
     }*/
 
     /**
+     * Constructor
+     */
+    public PdfToImageConverter() {
+    }
+
+    /**
      * Converts the .pdf from the given path to seperate .png files in the parent directory
      * Blank pages will not be converted in this process
      * @param sourceDir Directory of source .pdf
      */
-    public static void convertPDF(String sourceDir) {
+    public static void convertPDF(String sourceDir, boolean deleteBlank) {
 
         File sourceFile = new File(sourceDir);
         String destinationDir = sourceFile.getPath();
@@ -52,11 +59,14 @@ public class PdfToImageConverter {
                             //page number parameter is zero based
                             BufferedImage img = renderer.renderImageWithDPI(pageCounter, pdfdpi, ImageType.RGB);
 
-                            //check if image is blank page
-                            if(!isBlank(img)) {
-                                //suffix in filename will be used as file format
-                                ImageIOUtil.writeImage(img,String.format("%04d", (pageCounter++) +1) + ".png", pdfdpi);
-
+                            if(deleteBlank) {
+                                //check if image is blank page
+                                if (!isBlank(img)) {
+                                    //suffix in filename will be used as file format
+                                    ImageIOUtil.writeImage(img, String.format("%04d", (pageCounter++) + 1) + ".png", pdfdpi);
+                                }
+                            }else {
+                                ImageIOUtil.writeImage(img, String.format("%04d", (pageCounter++) + 1) + ".png", pdfdpi);
                             }
                         }
                         document.close();
@@ -103,12 +113,12 @@ public class PdfToImageConverter {
      * Setter for changing the default DPI value of 300
      * @param newDPI new DPI value
      */
-    public void setDPI(int newDPI) {
-        this.pdfdpi = newDPI;
+    public static void setDPI(int newDPI) {
+        pdfdpi = newDPI;
     }
 
-    public int calculateDPI(int pageWidth) {
-        //TODO
-        return 300;
+    public static int getDPI() {
+        return pdfdpi;
     }
+
 }

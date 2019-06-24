@@ -89,16 +89,32 @@
                                     $.get( "ajax/overview/validateProject?", ajaxParams )
                                     .done(function( data ) {
                                          if( data === true ) {
-                                             // Two scenarios for loading overview page:
-                                             // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
-                                             // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
-                                             if( newPageVisit == false ) {
-                                                 location.reload();
-                                             }
-                                             else {
-                                                 // Load datatable after the last process update is surely finished
-                                                     datatable();
-                                             }
+
+                                             //checks for pdfs in dir if dir has no valid images
+                                             $.get("ajax/overview/checkpdf?")
+                                                 .done(function(data) {
+                                                 if( data === true) {
+                                                     openCollapsibleEntriesExclusively([0]);
+                                                     $('#modal_convertpdf').modal({
+                                                         dismissible: false
+                                                     });
+                                                     $('#modal_convertpdf').modal('open');
+                                                 }
+                                                 else {
+
+                                                     // Two scenarios for loading overview page:
+                                                     // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
+                                                     // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
+                                                     if( newPageVisit == false ) {
+                                                         location.reload();
+                                                     }
+                                                     else {
+                                                         // Load datatable after the last process update is surely finished
+                                                         datatable();
+                                                     }
+                                                 }
+                                             });
+
                                          }
                                          else{
                                              openCollapsibleEntriesExclusively([0]);
@@ -181,6 +197,37 @@
                         }
                     }, 500);
                 });
+                //kevin starts here
+                $('#cancelConvertPdf').click(function() {
+                    setTimeout(function() {
+                        // Unload project if user refuses the mandatory adjustments
+                        if( !isProcessRunning() ) {
+                            $.get( "ajax/overview/invalidateSession" );
+                        }
+                    }, 500);
+                });
+                $('#convertToPdf, #convertToPdfWithBlanks').click(function() {
+                    // Initialize process handler (wait time, due to delayed AJAX process start)
+                    setTimeout(function() {
+                        initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
+                    }, 500);
+
+                    // Start converting PDF
+                    var ajaxParams = {"deleteBlank" : ( $(this).attr('id') == 'convertToPdf' )};
+                    $.post( "ajax/overview/convertProjectFiles", ajaxParams )
+                        .done(function( data ) {
+                            // Load datatable after the last process update is surely finished
+                            setTimeout(function() {
+                                datatable();
+                            }, 2000);
+                        })
+                        .fail(function( data ) {
+                            //$('#modal_adjustImages_failed').modal('open');
+                        });
+                });
+
+
+                //kevin ends here
 
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
                     cancelProcess();
@@ -283,18 +330,19 @@
          </div>
         <div id="modal_convertpdf" class="modal">
             <div class="modal-content">
-                <h4 class="red-text">Attention</h4>
+                <h4 class="red-text">Convert PDF files</h4>
                 <p>
                     The required PNG format was not found in the input folder.<br />
                     A PDF document was found instead.
                     <br />
-                    To be able to load your project successfully the PDF needs to be converted to seperate PNG files.<br />
+                    To be able to load your project successfully the PDF needs to be converted to separate PNG files.<br />
                     Please choose one of the offered possibilities to continue.<br />
                 </p>
             </div>
             <div class="modal-footer">
                 <a href="#!" id="cancelConvertPdf" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
-                <a href="#!" id="convertToPdf" class="modal-action modal-close waves-effect waves-green btn-flat">convert pdf</a>
+                <a href="#!" id="convertToPdf" class="modal-action modal-close waves-effect waves-green btn-flat">Convert PDF and delete blank pages</a>
+                <a href="#!" id="convertToPdfWithBlanks" class="modal-action modal-close waves-effect waves-green btn-flat">convert pdf and leave blank pages</a>
             </div>
         </div>
         <div id="modal_adjustImages_failed" class="modal">
