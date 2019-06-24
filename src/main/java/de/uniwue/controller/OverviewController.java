@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import de.uniwue.feature.PdfToImageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.OverviewHelper;
 import de.uniwue.model.PageOverview;
+import de.uniwue.feature.PdfToImageConverter;
 
 /**
  * Controller class for pages of overview module
@@ -48,6 +50,7 @@ public class OverviewController {
         }
         return overviewHelper;
     }
+
 
     /**
      * Response to the request to send content of the project root
@@ -112,8 +115,8 @@ public class OverviewController {
     /**
      * Response to the request to send the process status of every page
      *
-     * @param projectDir Absolute path to the project
-     * @param imageType Project type (Binary or Gray)
+     * //@param projectDir Absolute path to the project
+     * //@param imageType Project type (Binary or Gray)
      * @param session Session of the user
      * @param response Response to the request
      * @return Returns the status of every page of the project
@@ -298,5 +301,60 @@ public class OverviewController {
             return;
 
         overviewHelper.cancelProcess();
+    }
+
+    /**
+     * Response to the Request to check the Project Dir for PDFs
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return
+     */
+    @RequestMapping(value ="/ajax/overview/checkpdf" , method = RequestMethod.POST)
+    public @ResponseBody boolean checkForPdf(
+            HttpSession session, HttpServletResponse response
+    ) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null)
+            return false;
+
+        try {
+            session.setAttribute("projectAdjustment", "Please wait unitil the project adjustment is finished.");
+            return overviewHelper.checkForPdf();
+        } catch (Exception e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Response to the Request to convert a PDF in to image files
+     * @param deleteBlank flag to delete blank pages
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="/ajax/overview/convertProjectFiles" , method = RequestMethod.POST)
+    public @ResponseBody void convertFiles(
+            @RequestParam("deleteBlank") Boolean deleteBlank,
+            HttpSession session, HttpServletResponse response
+    ) {
+        //OverviewHelper overviewHelper = provideHelper(session, response);
+        PdfToImageConverter converter = new PdfToImageConverter();
+        if (converter == null)
+            return;
+
+        try {
+            session.setAttribute("projectAdjustment", "Please wait unitil the project adjustment is finished.");
+            PdfToImageConverter.convertPDF(session.getAttribute("projectDir").toString(), deleteBlank);
+        } catch (Exception e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
     }
 }
