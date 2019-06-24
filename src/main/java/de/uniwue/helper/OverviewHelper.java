@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -515,29 +516,37 @@ public class OverviewHelper {
         progress = -1;
     }
 
+    /**
+     * checks if the project dir contains no images and a PDF
+     * @return TRUE if there are no images and directory contains PDF
+     * @throws IOException
+     */
     public boolean checkForPdf() throws IOException {
-        ArrayList<Predicate<File>> predicate = new ArrayList<Predicate<File>>();
+        File dir = new File(projConf.ORIG_IMG_DIR);
+      /*  ArrayList<Predicate<File>> predicate = new ArrayList<Predicate<File>>();
         predicate.add(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT));
 
-        ArrayList<File> imagesToProcess = new ArrayList<File>();
+        int images = 0;
         // File depth of 1 -> no recursive (file)listing
-        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+        List<File> imagesToProcess = Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
                 .map(Path::toFile)
-                .filter(fileEntry -> fileEntry.isFile())
-                .filter(predicate.stream().reduce(w -> false, Predicate::or))
-                .sorted()
-                .forEach(
-                        fileEntry -> {
-                            imagesToProcess.add(fileEntry);
-                        }
-                );
+                .filter(fileEntry -> fileEntry.isFile()).collect(Collectors.toList());
+       */
+        File[] pngInDir = dir.listFiles((d, name) -> name.endsWith(".png"));
 
-        if (imagesToProcess.size() <= 0) {
-            File[] pdfInDir = listFilesMatching(new File(projConf.ORIG_IMG_DIR), ".*\\.pdf");
-            if(pdfInDir.length > 1) {
+        if (pngInDir.length() == 0) {
+            System.out.println("no images found");
+
+            File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith(".pdf"));
+            //File[] pdfInDir = listFilesMatching(new File(projConf.ORIG_IMG_DIR), ".*\\.pdf");
+            if(pdfInDir.length > 0) {
+                System.out.println("found pdf");
                 return true;
             }
+            System.out.println("pdfInDir.length: " + pdfInDir.length);
+            System.out.println("no PDF found");
         }
+        System.out.println("images found: " + pngInDir.size());
         return false;
     }
 }

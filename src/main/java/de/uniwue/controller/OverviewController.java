@@ -312,16 +312,19 @@ public class OverviewController {
      * @param response Response to the request
      * @return
      */
-    @RequestMapping(value ="/ajax/overview/checkpdf" , method = RequestMethod.POST)
+    @RequestMapping(value ="/ajax/overview/checkpdf" , method = RequestMethod.GET)
     public @ResponseBody boolean checkForPdf(
             HttpSession session, HttpServletResponse response
     ) {
         OverviewHelper overviewHelper = provideHelper(session, response);
-        if (overviewHelper == null)
+        if (overviewHelper == null) {
+            System.out.println("helper null");
             return false;
+        }
 
         try {
-            session.setAttribute("projectAdjustment", "Please wait unitil the project adjustment is finished.");
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            System.out.println("came here");
             return overviewHelper.checkForPdf();
         } catch (Exception e) {
             // Prevent loading an invalid project
@@ -330,6 +333,7 @@ public class OverviewController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
         }
+        System.out.println("failed");
         return false;
     }
 

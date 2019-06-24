@@ -91,7 +91,7 @@
                                          if( data === true ) {
 
                                              //checks for pdfs in dir if dir has no valid images
-                                             $.get("ajax/overview/checkpdf?")
+                                             $.get("ajax/overview/checkpdf")
                                                  .done(function(data) {
                                                  if( data === true) {
                                                      openCollapsibleEntriesExclusively([0]);
@@ -101,7 +101,7 @@
                                                      $('#modal_convertpdf').modal('open');
                                                  }
                                                  else {
-
+                                                     //$('#modal_convertpdf').modal('open');
                                                      // Two scenarios for loading overview page:
                                                      // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
                                                      // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
