@@ -1,5 +1,7 @@
 package de.uniwue.helper;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -18,6 +20,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
@@ -95,6 +102,13 @@ public class OverviewHelper {
      */
     private boolean stopProcess = false;
 
+    private int pdfdpi = 300;
+    private int conversionProgress = 0;
+    private int pagesToConvert = -1;
+    private int pagesConverted = 0;
+
+    private boolean conversionFlag = false;
+
     /**
      * Constructor
      *
@@ -125,7 +139,7 @@ public class OverviewHelper {
     /**
      * Generates status overview for one page
      *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * //@param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
     public void initialize(String pageId) throws IOException {
@@ -175,7 +189,7 @@ public class OverviewHelper {
      * Generates content for one page
      * This includes its segments and their lines
      *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * //@param pageIds Identifiers of the pages (e.g 0002,0003)
      * @return Sorted map of page content
      * @throws IOException 
      */
@@ -415,20 +429,24 @@ public class OverviewHelper {
     /**
      * Adjustments to files so that they correspond to the project standard 
      * 
-     * @param backupImages Determines if a backup of the image folder is required 
+     * @param flag Determines if a backup of the image folder is required
+     *             OR determines if blank pages will not be saved on conversion
      * @throws IOException
      */
-    public void execute(boolean backupImages) throws IOException {
+    public void execute(boolean flag, boolean convert) throws IOException {
         overviewRunning = true;
         progress = 0;
+        conversionFlag = convert;
         initializeProcessState();
+        if(convert) {
+            convertPDF(projConf.ORIG_IMG_DIR,flag);
+        } else {
+            if (flag)
+                FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
 
-        if (backupImages)
-            FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
-
-        convertImagesToPNG();
-        renameFiles();
-
+            convertImagesToPNG();
+            renameFiles();
+        }
         getProgress();
         overviewRunning = false;
         progress = 100;
@@ -437,7 +455,7 @@ public class OverviewHelper {
     /**
      * Initializes the structure with which the progress of the process can be monitored
      *
-     * @param pageIds Identifiers of the pages 
+     * @param //pageIds Identifiers of the pages
      * @throws IOException
      */
     public void initializeProcessState() throws IOException {
@@ -472,33 +490,41 @@ public class OverviewHelper {
         // Prevent function from calculation progress if process is not running
         if (overviewRunning == false)
             return progress;
+        if(conversionFlag) {
+            if (pagesToConvert < 0) {
+                return 0;
+            } else {
+                return (int) ((double) pagesConverted / pagesToConvert * 100);
 
-        int files = 0;
-        int processedFiles = 0;
+            }
+        } else {
+            int files = 0;
+            int processedFiles = 0;
 
-        for (String fileName : processState.keySet()) {
-            for (String processType : processState.get(fileName).keySet()) {
-                files += 1;
+            for (String fileName : processState.keySet()) {
+                for (String processType : processState.get(fileName).keySet()) {
+                    files += 1;
 
-                if (processState.get(fileName).get(processType) == true) {
-                    processedFiles += 1;
-                    continue;
-                }
+                    if (processState.get(fileName).get(processType) == true) {
+                        processedFiles += 1;
+                        continue;
+                    }
 
-                if (processType == "backup") {
-                    if ( new File(projConf.BACKUP_IMG_DIR + fileName).exists())
-                        processState.get(fileName).put(processType, true);
-                }
+                    if (processType == "backup") {
+                        if (new File(projConf.BACKUP_IMG_DIR + fileName).exists())
+                            processState.get(fileName).put(processType, true);
+                    }
 
-                if (processType == "pngConversion") {
-                    if (new File(projConf.ORIG_IMG_DIR + FilenameUtils.removeExtension(fileName) + projConf.IMG_EXT).exists())
-                        processState.get(fileName).put(processType, true);
+                    if (processType == "pngConversion") {
+                        if (new File(projConf.ORIG_IMG_DIR + FilenameUtils.removeExtension(fileName) + projConf.IMG_EXT).exists())
+                            processState.get(fileName).put(processType, true);
+                    }
                 }
             }
-        }
 
-        // Safe check, in case Files were not adjusted
-        return (progress != 100) ? (int) ((double) processedFiles / files * 100) : 100;
+            // Safe check, in case Files were not adjusted
+            return (progress != 100) ? (int) ((double) processedFiles / files * 100) : 100;
+        }
     }
 
     /**
@@ -532,21 +558,122 @@ public class OverviewHelper {
                 .map(Path::toFile)
                 .filter(fileEntry -> fileEntry.isFile()).collect(Collectors.toList());
        */
-        File[] pngInDir = dir.listFiles((d, name) -> name.endsWith(".png"));
+        File[] pngInDir = dir.listFiles((d, name) -> name.endsWith("png"));
 
-        if (pngInDir.length() == 0) {
+        if (pngInDir.length == 0) {
             System.out.println("no images found");
 
-            File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith(".pdf"));
+            File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith("pdf"));
             //File[] pdfInDir = listFilesMatching(new File(projConf.ORIG_IMG_DIR), ".*\\.pdf");
             if(pdfInDir.length > 0) {
                 System.out.println("found pdf");
+                System.out.println("Project Dir is: " + projConf.ORIG_IMG_DIR);
                 return true;
             }
             System.out.println("pdfInDir.length: " + pdfInDir.length);
             System.out.println("no PDF found");
         }
-        System.out.println("images found: " + pngInDir.size());
+        System.out.println("images found: " + pngInDir.length);
         return false;
     }
+
+    public void convertPDF(String sourceDir, boolean deleteBlank) {
+        System.out.println("came to converting");
+        File dir = new File(sourceDir);
+        File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith("pdf"));
+        //File sourceFile = new File(sourceDir);
+        //String destinationDir = dir.getPath();
+        File destinationFile = new File(dir.getPath());
+
+        /*if(!destinationFile.exists()) {
+            destinationFile.mkdir();
+            System.out.println("Folder Created -> " +destinationFile.getAbsolutePath());
+        }*/
+
+        if(dir.exists()) {
+            try {
+
+                PDDocument document = PDDocument.load(pdfInDir[0]);
+                pagesToConvert = document.getNumberOfPages();
+                PDFRenderer renderer = new PDFRenderer(document);
+                int pageCounter = 0;
+                for(PDPage page : document.getPages()) {
+                    if(stopProcess) {
+                        break;
+                    }
+                    //page number parameter is zero based
+                    BufferedImage img = renderer.renderImageWithDPI(pageCounter, pdfdpi, ImageType.RGB);
+
+                    if(false) {
+                        System.out.println("page"+pageCounter+" rendered at " + pdfdpi + " DPI");
+                        //check if image is blank page
+                        if (!isBlank(img)) {
+                            //suffix in filename will be used as file format
+                            try {
+                                ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", (pageCounter++) + 1) + ".png", pdfdpi);
+
+                            } catch (Exception e) {
+                                System.out.println("could not write image file");
+                            }
+                            //ImageIOUtil.writeImage(img, String.format("%04d", (pageCounter++) + 1) + ".png", pdfdpi);
+                        }
+                    }else {
+                        System.out.println("page"+pageCounter+" rendered at " + pdfdpi + " DPI");
+                        ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", (pageCounter++) + 1) + ".png", pdfdpi);
+                    }
+                    pagesConverted = pageCounter;
+                }
+                document.close();
+            } catch (Exception e) {
+                System.out.println("ERROR: PDF stopped existing");
+                System.out.println("sourcedir was:" +sourceDir);
+                System.out.println("dir was:" +dir.getPath());
+                e.printStackTrace();
+            }
+
+        } else {
+            System.out.println(dir.getName() + " Folder does not exist");
+            //System.err.println(sourceFile.getName() + " does not exist");
+        }
+
+    }
+
+    /**
+     * Checks if rendered Image is blank white or light-gray
+     * @param img rendered Image from .pdf
+     * @return TRUE if Page is blank
+     */
+    private static boolean isBlank(BufferedImage img) {
+        long count = 0;
+        int height = img.getHeight();
+        int width = img.getWidth();
+        Double areaFactor = (width * height) * 0.99;
+
+        for(int x=0; x < width; x++) {
+            for(int y=0; y < height; y++) {
+                Color c = new Color(img.getRGB(x,y));
+                //verify light gray and white
+                if (c.getRed() == c.getGreen() && c.getRed() == c.getBlue()
+                        && c.getRed() >= 248) {
+                    count++;
+                }
+            }
+        }
+
+        if(count >= areaFactor) {
+            return true;
+        } else{
+            return false;
+        }
+    }
+
+    /**
+     * Setter for changing the default DPI value of 300
+     * @param newDPI new DPI value
+     */
+    public void setDPI(int newDPI) {
+        pdfdpi = newDPI;
+    }
+
+
 }
