@@ -66,7 +66,7 @@
                         let liList = [];
                         for (i = 0; i < picListL.length; i++) {
                             let id = picListL[i].pageId;
-                            let newLocation = window.location.href.split("?")[0] + "?pageId=" + id;
+                            let newLocation = window.location.href.split("?")[0] + "?len=" + picListL.length + "&pageId=" + id;
                             let li = document.createElement("li");
                             let a = document.createElement("a");
                             a.setAttribute("href", newLocation);
