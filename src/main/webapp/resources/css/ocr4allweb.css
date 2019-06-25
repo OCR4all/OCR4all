@@ -294,6 +294,12 @@ button[data-id="msRecModelAddOption"] {
 .footer-copyright{
   display: block !important;
 }
+.personList{
+  width: 80%;
+  margin: auto;
+  padding-top: 4vh;
+  padding-bottom: 4vh;
+}
 
 @media only screen and (max-width : 1700px) {
   button[data-id="msRecModelAddOption"] {
