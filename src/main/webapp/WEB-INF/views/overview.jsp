@@ -193,7 +193,6 @@
                         }
                     }, 500);
                 });
-                //kevin starts here
                 $('#cancelConvertPdf').click(function() {
                     setTimeout(function() {
                         // Unload project if user refuses the mandatory adjustments
@@ -209,9 +208,10 @@
                     }, 500);
 
                     // Start converting PDF
-                    var ajaxParams = {"deleteBlank" : ( $(this).attr('id') == 'convertToPdf' )};
+                    var ajaxParams = {"deleteBlank" : ( $(this).attr('id') == 'convertToPdf' ), "dpi" : document.getElementById('dpi').value};
                     $.post( "ajax/overview/convertProjectFiles", ajaxParams )
                         .done(function( data ) {
+                            //$('#modal_convertpdf').modal('close');
                             // Load datatable after the last process update is surely finished
                             setTimeout(function() {
                                 datatable();
@@ -221,9 +221,6 @@
                             //$('#modal_adjustImages_failed').modal('open');
                         });
                 });
-
-
-                //kevin ends here
 
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
                     cancelProcess();
@@ -246,7 +243,19 @@
                 } else {
                     openCollapsibleEntriesExclusively([0]);
                 }
+                //checking if dpi input value si valid and disabling button if not
+                $('#dpi').on('input', function(e) {
+                    if(this.checkValidity()){
+                        $('#convertToPdf').addClass("disabled");
+                        $('#convertToPdfWithBlanks').addClass("disabled");
+                    }else{
+                        $('#convertToPdf').removeClass("disabled");
+                        $('#convertToPdfWithBlanks').removeClass("disabled");
+                    }
+                });
             });
+
+
         </script>
     </t:head>
     <t:body heading="Project Overview" processModals="true">
@@ -327,13 +336,35 @@
         <div id="modal_convertpdf" class="modal">
             <div class="modal-content">
                 <h4 class="red-text">Convert PDF files</h4>
-                <p>
-                    The required PNG format was not found in the input folder.<br />
-                    A PDF document was found instead.
-                    <br />
-                    To be able to load your project successfully the PDF needs to be converted to separate PNG files.<br />
-                    Please choose one of the offered possibilities to continue.<br />
-                </p>
+                <table class="compact">
+                    <tbody>
+                    <tr>
+                        <td><p>
+                            The required PNG format was not found in the input folder.<br />
+                            A PDF document was found instead.
+                            <br />
+                            <br />
+                            To be able to load your project successfully the PDF needs to be converted to separate PNG files.<br />
+                            Please choose one of the offered possibilities to continue.<br /></p></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><p>
+                            The default value of the DPI used when rendering is set to 300: <br />
+                            Please note that a higher DPI corresponds to a higher rendering Time.
+                            <br />
+                            <br />
+                            This may take a while.</p></td>
+                        <td>
+                            <br />
+                            <div class="input-field">
+                                <input id="dpi" type="number" value="300" min="50" max="2000"/>
+                                <label for="dpi" data-type="int" data-error="Has to be integer">Default: 300</label>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
             <div class="modal-footer">
                 <a href="#!" id="cancelConvertPdf" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>

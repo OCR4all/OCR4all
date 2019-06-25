@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import de.uniwue.feature.PdfToImageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.OverviewHelper;
 import de.uniwue.model.PageOverview;
-import de.uniwue.feature.PdfToImageConverter;
 
 /**
  * Controller class for pages of overview module
@@ -50,7 +48,6 @@ public class OverviewController {
         }
         return overviewHelper;
     }
-
 
     /**
      * Response to the request to send content of the project root
@@ -239,8 +236,8 @@ public class OverviewController {
             return;
 
         try {
-            session.setAttribute("projectAdjustment", "Please wait unitil the project adjustment is finished.");
-            overviewHelper.execute(backupImages);
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            overviewHelper.execute(backupImages,false);
             session.setAttribute("projectAdjustment", "");
         } catch (IOException e) {
             // Prevent loading an invalid project
@@ -322,6 +319,7 @@ public class OverviewController {
         try {
             session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
             System.out.println("came here");
+            session.setAttribute("projectAdjustment", "");
             return overviewHelper.checkForPdf();
         } catch (Exception e) {
             // Prevent loading an invalid project
@@ -343,16 +341,19 @@ public class OverviewController {
     @RequestMapping(value ="/ajax/overview/convertProjectFiles" , method = RequestMethod.POST)
     public @ResponseBody void convertFiles(
             @RequestParam("deleteBlank") Boolean deleteBlank,
+            @RequestParam("dpi") int dpi,
             HttpSession session, HttpServletResponse response
     ) {
-        //OverviewHelper overviewHelper = provideHelper(session, response);
-        PdfToImageConverter converter = new PdfToImageConverter();
-        if (converter == null)
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        //PdfToImageConverter converter = provideConverter(session,response);
+        if (overviewHelper == null)
             return;
 
         try {
-            session.setAttribute("projectAdjustment", "Please wait unitil the project adjustment is finished.");
-            PdfToImageConverter.convertPDF(session.getAttribute("projectDir").toString(), deleteBlank);
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            overviewHelper.setDPI(dpi);
+            overviewHelper.execute(deleteBlank, true);
+            session.setAttribute("projectAdjustment", "");
         } catch (Exception e) {
             // Prevent loading an invalid project
             session.invalidate();
