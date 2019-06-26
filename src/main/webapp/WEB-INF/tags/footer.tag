@@ -23,7 +23,8 @@
             <div>
                 <h6 class="grey-text dev-statement center-align text-lighten-2">
                     <b>
-                        Developed at the Center for Philology and Digitality "Kallimachos" and the Chair of Artificial Intelligence (Professor Dr. Frank Puppe) at the University Würzburg
+                        Developed at the Center for Philology and Digitality "Kallimachos" and<break/>
+                        the Chair of Artificial Intelligence (Professor Dr. Frank Puppe) at the University Würzburg
                     </b>
                 </h6>
             </div>
