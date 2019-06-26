@@ -34,11 +34,16 @@
                 </td>
             </tr>
             <tr>
-                <td><p>Whitelist characters</p></td>
+                <td>
+                    <p>
+                        Whitelist characters<br/>
+                        <span class="userInfo">Example: ABCDEFGHIJ...012345</span>
+                    </p>
+                </td>
                 <td>
                     <div class="input-field">
-                        <input id="training--whitelist" data-setting="--whitelist" type="string"/>
-                        <label for="training--whitelist" data-type="str" data-error="Has to be string">Default: A-Za-z0-9</label>
+                        <input id="training--whitelist" data-setting="--whitelist" type="text"/>
+                        <label for="training--whitelist">Default: A-Za-z0-9</label>
                     </div>
                 </td>
             </tr>
