@@ -543,52 +543,36 @@ public class OverviewHelper {
     }
 
     /**
-     * checks if the project dir contains no images and a PDF
+     * Checks if the project dir contains no images and a PDF
      * @return TRUE if there are no images and directory contains PDF
      * @throws IOException
      */
     public boolean checkForPdf() throws IOException {
         File dir = new File(projConf.ORIG_IMG_DIR);
-      /*  ArrayList<Predicate<File>> predicate = new ArrayList<Predicate<File>>();
-        predicate.add(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT));
-
-        int images = 0;
-        // File depth of 1 -> no recursive (file)listing
-        List<File> imagesToProcess = Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
-                .map(Path::toFile)
-                .filter(fileEntry -> fileEntry.isFile()).collect(Collectors.toList());
-       */
         File[] pngInDir = dir.listFiles((d, name) -> name.endsWith("png"));
 
         if (pngInDir.length == 0) {
-            System.out.println("no images found");
 
             File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith("pdf"));
-            //File[] pdfInDir = listFilesMatching(new File(projConf.ORIG_IMG_DIR), ".*\\.pdf");
             if(pdfInDir.length > 0) {
-                System.out.println("found pdf");
-                System.out.println("Project Dir is: " + projConf.ORIG_IMG_DIR);
                 return true;
             }
-            System.out.println("pdfInDir.length: " + pdfInDir.length);
             System.out.println("no PDF found");
         }
         System.out.println("images found: " + pngInDir.length);
         return false;
     }
 
+    /**
+     * Converts a PDF to several PNG files
+     * @param sourceDir data input directory
+     * @param deleteBlank Determines if blank pages will not be rendered
+     */
     public void convertPDF(String sourceDir, boolean deleteBlank) {
         System.out.println("came to converting");
         File dir = new File(sourceDir);
         File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith("pdf"));
-        //File sourceFile = new File(sourceDir);
-        //String destinationDir = dir.getPath();
         File destinationFile = new File(dir.getPath());
-
-        /*if(!destinationFile.exists()) {
-            destinationFile.mkdir();
-            System.out.println("Folder Created -> " +destinationFile.getAbsolutePath());
-        }*/
 
         if(dir.exists()) {
             try {
@@ -604,7 +588,7 @@ public class OverviewHelper {
                     //page number parameter is zero based
                     BufferedImage img = renderer.renderImageWithDPI(pageCounter, pdfdpi, ImageType.RGB);
 
-                    if(false) {
+                    if(deleteBlank) {
                         System.out.println("page"+pageCounter+" rendered at " + pdfdpi + " DPI");
                         //check if image is blank page
                         if (!isBlank(img)) {
@@ -615,7 +599,6 @@ public class OverviewHelper {
                             } catch (Exception e) {
                                 System.out.println("could not write image file");
                             }
-                            //ImageIOUtil.writeImage(img, String.format("%04d", (pageCounter++) + 1) + ".png", pdfdpi);
                         }
                     }else {
                         System.out.println("page"+pageCounter+" rendered at " + pdfdpi + " DPI");
@@ -625,15 +608,11 @@ public class OverviewHelper {
                 }
                 document.close();
             } catch (Exception e) {
-                System.out.println("ERROR: PDF stopped existing");
-                System.out.println("sourcedir was:" +sourceDir);
-                System.out.println("dir was:" +dir.getPath());
                 e.printStackTrace();
             }
 
         } else {
             System.out.println(dir.getName() + " Folder does not exist");
-            //System.err.println(sourceFile.getName() + " does not exist");
         }
 
     }
