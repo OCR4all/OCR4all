@@ -249,7 +249,7 @@
                 }
                 //checking if dpi input value si valid and disabling button if not
                 $('#dpi').on('input', function(e) {
-                    if(this.checkValidity()){
+                    if(!this.checkValidity()){
                         $('#convertToPdf').addClass("disabled");
                         $('#convertToPdfWithBlanks').addClass("disabled");
                     }else{
@@ -355,15 +355,15 @@
                     <tr>
                         <td><p>
                             The default value of the DPI used when rendering is set to 300: <br />
-                            Please note that a higher DPI corresponds to a higher rendering Time.
+                            Please note that a higher DPI corresponds to a higher rendering time.
                             <br />
                             <br />
                             This may take a while.</p></td>
                         <td>
                             <br />
                             <div class="input-field">
-                                <input id="dpi" type="number" value="300" min="50" max="2000"/>
-                                <label for="dpi" data-type="int" data-error="Has to be integer">Default: 300</label>
+                                <input id="dpi" type="number" value="300" min="50" max="2000" step="10"/>
+                                <label for="dpi" data-type="int" data-error="Has to be integer">Rendering DPI:</label>
                             </div>
                         </td>
                     </tr>
