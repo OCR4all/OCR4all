@@ -6,10 +6,10 @@
 <t:body heading="Team">
     <div class="personList center-align grey-text text-darken-1">
         <div class="row">
-            <div class="col l6 s12">
-                <h5><b>Contact and lead</b></h5>
+            <div class="col l12 s12">
+                <h5><b>Contact</b></h5>
             </div>
-            <div class="col l6 s12">
+            <div class="col l12 s12">
                 <ul class="collection">
                     <li class="collection-item">
                         <h6>Christian Reul</h6>
@@ -24,27 +24,25 @@
                 </ul>
             </div>
         </div>
-        <div class="divider"></div>
         <div class="row">
-            <div class="col l6 s12">
+            <div class="col l12 s12">
                 <h5><b>Developer</b></h5>
             </div>
-            <div class="col l6 s12">
+            <div class="col l12 s12">
                 <ul class="collection">
-                    <li class="collection-item">Nico Balbach (Larex and more)</li>
-                    <li class="collection-item">Dennis Christ</li>
-                    <li class="collection-item">Alexander Hartelt</li>
-                    <li class="collection-item">Björn Eyselein (Docker distribution)</li>
+                    <li class="collection-item">Dennis Christ (OCR4all)</li>
+                    <li class="collection-item">Alexander Hartelt (OCR4all)</li>
+                    <li class="collection-item">Nico Balbach (LAREX and OCR4all)</li>
                     <li class="collection-item">Christoph Wick (Calamari)</li>
+                    <li class="collection-item">Björn Eyselein (Distribution via Docker)</li>
                 </ul>
             </div>
         </div>
-        <div class="divider"></div>
         <div class="row">
-            <div class="col l6 s12">
+            <div class="col l12 s12">
                 <h5><b>Ideas and feedback</b></h5>
             </div>
-            <div class="col l6 s12">
+            <div class="col l12 s12">
                 <ul class="collection">
                     <li class="collection-item"><h6>Prof. Dr. Frank Puppe</h6></li>
                     <li class="collection-item"><h6>Dr. Uwe Springmann</h6></li>
