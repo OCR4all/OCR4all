@@ -199,9 +199,9 @@ public class TrainingHelper {
         command.add(segmentListFile.toString());
         System.out.println(segmentListFile);
 
-        System.out.println(cmdArgs);
         command.addAll(cmdArgs);
         command.add("--best_models_dir");
+
         command.add(trainingDir.getAbsolutePath());
 
         command.add("--no_progress_bars");
