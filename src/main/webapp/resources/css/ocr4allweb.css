@@ -300,7 +300,9 @@ button[data-id="msRecModelAddOption"] {
   padding-top: 4vh;
   padding-bottom: 4vh;
 }
-
+.divider{
+  margin-bottom: 25px;
+}
 @media only screen and (max-width : 1700px) {
   button[data-id="msRecModelAddOption"] {
     margin-left: 0px;
