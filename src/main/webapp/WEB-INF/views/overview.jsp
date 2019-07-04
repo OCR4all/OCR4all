@@ -156,6 +156,57 @@
                     });
                 }
 
+                function sessionInitialization(newPageVisit, completeDir) {
+                    var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
+                    // Check if directory exists
+                    $.get( "ajax/overview/checkDir?",
+                        // Only force new session if project loading is triggered by user
+                        $.extend(ajaxParams, {"resetSession" : !newPageVisit})
+                    )
+                        .done(function( data ) {
+                            if( data === true ) {
+                                $.get( "ajax/overview/validate?" )
+                                    .done(function( data ) {
+                                        if( data === true ) {
+                                            // Check if filenames match project specific naming convention
+                                            var ajaxParams = {"completeDir" : completeDir};
+                                            $.post( "ajax/overview/exportGtc", ajaxParams )
+                                                .done(function( data ) {
+                                                    // Load datatable after the last process update is surely finished
+                                                    setTimeout(function() {
+                                                        datatable();
+                                                    }, 2000);
+                                                })
+                                                .fail(function( data ) {
+                                                    $('#modal_exportgtc_failed').modal('open');
+                                                });
+                                        }
+                                        else{
+                                            // Unload project if directory structure is not valid
+                                            $.get( "ajax/overview/invalidateSession" );
+
+                                            openCollapsibleEntriesExclusively([0]);
+                                            $('#modal_validateDir').modal('open');
+                                        }
+                                    });
+                            }
+                            else {
+                                // Unload project if directory does not exist
+                                $.get( "ajax/overview/invalidateSession" );
+
+                                openCollapsibleEntriesExclusively([0]);
+                                $('#projectDir').addClass('invalid').focus();
+                                // Prevent datatable from reloading an invalid directory
+                                clearInterval(datatableReloadIntveral);
+
+                                $('#modal_checkDir_failed').modal('open');
+                            }
+                        })
+                        .fail(function( data ) {
+                            $('#modal_checkDir_failed').modal('open');
+                        });
+                }
+
                 $('button[data-id="loadProject"]').click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         openCollapsibleEntriesExclusively([0]);
@@ -235,6 +286,16 @@
                             projectInitialization(true, true);
                         }
                     }, 500);
+
+                    setTimeout(function() {
+                        if( !isProcessRunning() ) {
+                            sessionInitialization(false,($(this).attr('id') == 'exportAllPages'));
+                        }
+                        else {
+                            $('#modal_inprogress').modal('open');
+                        }
+                    }, 500);
+
                 });
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
                     cancelProcess();
@@ -399,6 +460,18 @@
                 <a href="#!" id="convertToPdfWithBlanks" class="modal-action modal-close waves-effect waves-green btn-flat">convert pdf and leave blank pages</a>
             </div>
         </div>
+        <div id="modal_exportgtc" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Export GTC</h4>
+                <p>
+                            Would you like to export the Ground Truth Data to a .zip file ?<br /></p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" id="cancelExport" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                <a href="#!" id="exportPages" class="modal-action modal-close waves-effect waves-green btn-flat">Export Pages</a>
+                <a href="#!" id="exportAllPages" class="modal-action modal-close waves-effect waves-green btn-flat">Export All Pages</a>
+            </div>
+        </div>
         <div id="modal_adjustImages_failed" class="modal">
             <div class="modal-content red-text">
                 <h4>Error</h4>
@@ -411,6 +484,19 @@
                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
          </div>
+
+        <div id="modal_exportgtc_failed" class="modal">
+            <div class="modal-content red-text">
+                <h4>Error</h4>
+                <p>
+                    Due to an unexpected Error Ground Truth Data could not be exported.<br />
+                    Please reload the Project.<br />
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+            </div>
+        </div>
         <div id="modal_validateDir" class="modal">
             <div class="modal-content red-text">
                 <h4>Error</h4>

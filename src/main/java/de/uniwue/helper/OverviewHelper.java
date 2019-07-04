@@ -2,11 +2,7 @@ package de.uniwue.helper;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +12,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
@@ -654,6 +652,7 @@ public class OverviewHelper {
 
         } else {
             throw new FileNotFoundException(dir.getName() + " Folder does not exist");
+
         }
 
     }
@@ -693,10 +692,129 @@ public class OverviewHelper {
         pdfdpi = newDPI;
     }
 
+    /**
+     * Zips processing Directory
+     */
+    public void zipDir() {
+        try {
+            FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + "GTC.zip");
+            ZipOutputStream zipOut = new ZipOutputStream(fos);
+            File fileToZip = new File(projConf.PREPROC_DIR);
+
+            zipFile(fileToZip,fileToZip.getName(),zipOut);
+            zipOut.close();
+            fos.close();
+            System.out.println("finishes zipping at: " + projConf.PREPROC_DIR +File.separator+ "GTC.zip");          //Line has to deleted before pull request
+
+        } catch(Exception e) {
+            System.out.println("File probably exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened for any other reason");          //Line has to deleted before pull request
+            System.out.println("OR if FileNotFoundException there is no read permission to file");          //Line has to deleted before pull request
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Zips specified pages from processing directory
+     * @param pageIds pages to zip
+     */
+    public void zipPages(String pageIds[]) {
+        try {
+
+            FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + File.separator + "GTC.zip");
+            ZipOutputStream zipOut = new ZipOutputStream(fos);
+            //File fileToZip = new File(projConf.PREPROC_DIR);
+
+            for(String pageId : pageIds){
+                File fileToZip = new File(projConf.PREPROC_DIR + File.separator + pageId + File.separator);
+                zipFile(fileToZip,fileToZip.getName(),zipOut);
+            }
+
+            zipOut.close();
+            fos.close();
+            System.out.println("finishes zipping at: " + fos.toString());          //Line has to deleted before pull request
+
+        } catch(Exception e) {
+            System.out.println("File probably exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened for any other reason");          //Line has to deleted before pull request
+            System.out.println("OR if FileNotFoundException there is no read permission to file");          //Line has to deleted before pull request
+            e.printStackTrace();
+        }
+    }
+
+
+    /**Recursive function that zips files that are either GTC files or folders
+     *
+     * @param fileToZip absolute path to file
+     * @param fileName  name of file
+     * @param zipOut    ZipOutputStream
+     * @throws IOException
+     */
+
+
+    public void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException{
+        if (fileToZip.isHidden()) {
+            return;
+        }
+        if (fileToZip.isDirectory()) {
+            if (fileName.endsWith(File.separator)) {
+                zipOut.putNextEntry(new ZipEntry(fileName));
+                zipOut.closeEntry();
+            } else {
+                zipOut.putNextEntry(new ZipEntry(fileName + File.separator));
+                zipOut.closeEntry();
+            }
+            FilenameFilter nameFilter = new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String s) {
+                    try {
+                        return checkGTC(dir.toString() + File.separator + s);
+                    } catch(IOException e) {
+                        return false;
+                    }
+                }
+            };
+
+            File[] children = fileToZip.listFiles(nameFilter);
+            for (File childFile : children) {
+                zipFile(childFile, fileName + File.separator + childFile.getName(), zipOut);
+            }
+            return;
+        }
+        FileInputStream fis = new FileInputStream(fileToZip);
+        ZipEntry zipEntry = new ZipEntry(fileName);
+        zipOut.putNextEntry(zipEntry);
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+        }
+        fis.close();
+    }
+
+
+    /**
+     * Checks if the project dir contains no images and a PDF
+     * @return TRUE if there are no images and directory contains PDF
+     * @throws IOException
+     */
+    public boolean checkGTC(String pathToFile) throws IOException {
+        File file = new File(pathToFile);
+
+        System.out.println("checking: " + pathToFile);          //Line has to deleted before pull request
+
+        if(pathToFile.endsWith(projConf.BINR_IMG_EXT)
+                || pathToFile.endsWith(projConf.GRAY_IMG_EXT)
+                || pathToFile.endsWith(projConf.GT_EXT)
+                || file.isDirectory()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     /**
      * Converts BufferedImage to OpenCV.Mat
-     * @param image buffered image
+     * @param bufferedimage buffered image
      * @return matrix of the buffered image
      */
     public Mat bufferedImageToMat(BufferedImage bufferedimage) throws IOException {
