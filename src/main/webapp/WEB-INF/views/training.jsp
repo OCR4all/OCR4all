@@ -87,6 +87,7 @@
                     }
                 });
 
+
                 // Adjust pretraining dropdown menu count if folds change
                 $('#training--n_folds').on('change', function() {
                     var pretrainingType = $('#pretrainingType').val();
@@ -110,7 +111,17 @@
                         }
                     }
                 });
-
+                // Fill the whitelist select dynamically with the values from the chars.json
+                $.getJSON('resources/chars.json')
+                    .done( function ( json ){
+                        $.each( json, function ( key, val ){
+                            $('<option>', {
+                                "value": val,
+                                text: key
+                            }).appendTo('#whitelist-select');
+                        });
+                        $('#whitelist-select').material_select();
+                    });
 
                 // Module specufic function to get the input parameters
                 function getExtendedInputParams() {
@@ -173,6 +184,12 @@
                 $('#agree').click(function() {
                     // Execute Training process
                     executeProcess(getExtendedInputParams());
+                });
+                $('select[id=whitelist-select]').change(function () {
+                    // Update the Textarea with the selected preconfigured whitelist
+                    $('#training--whitelist').val($('#whitelist-select').val());
+                    $('#training--whitelist').trigger('autoresize');
+                    $('#training--whitelist').trigger('focus');
                 });
             });
         </script>

@@ -303,6 +303,15 @@ button[data-id="msRecModelAddOption"] {
 .divider{
   margin-bottom: 25px;
 }
+.flex{
+  display: flex;
+}
+.whitelist_drop{
+  width: 70%;
+}
+.whitelist_wrapper{
+  left: 0px !important;
+}
 @media only screen and (max-width : 1700px) {
   button[data-id="msRecModelAddOption"] {
     margin-left: 0px;
