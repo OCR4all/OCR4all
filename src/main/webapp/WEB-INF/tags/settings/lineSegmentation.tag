@@ -6,7 +6,28 @@
     <c:when test="${settingsType == 'general'}">
         <table class="compact">
             <tbody>
+
+			<c:choose>
+				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
                 <tr>
+                    <td>
+                        <p>
+                            Image processing scale 
+                            <br />
+                            <span class="userWarning">Will be estimated from the image if left empty</span>
+                        </p>
+                        
+                    </td>
+                    <td>
+                        <div class="input-field">
+                            <input id="lineSegmentation--scale" data-setting="--scale" type="number" />
+                            <label for="lineSegmentation--scale" data-type="float" data-error="Has to be a float">Default: -1</label>
+                        </div>
+                    </td>
+                </tr>
+				</c:when>
+				<c:otherwise>
+				 <tr>
                     <td>
                         <p>
                             Maximum # whitespace column separators 
@@ -32,6 +53,8 @@
                              </p>
                     </td>
                 </tr>
+				</c:otherwise>
+			</c:choose>
                 <tr>
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
@@ -46,6 +69,10 @@
     </c:when>
     <%-- Advanced settings --%>
     <c:when test="${settingsType == 'advanced'}">
+		<c:choose>
+			<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+			</c:when>
+			<c:otherwise>
         <ul class="collapsible" data-collapsible="accordion">
             <li>
                 <div class="collapsible-header">Error checking</div>
@@ -293,5 +320,7 @@
                 </div>
             </li>
         </ul>
+			</c:otherwise>
+		</c:choose>
     </c:when>
 </c:choose>

@@ -37,7 +37,8 @@ public class DespecklingController {
         if (despecklingHelper == null) {
             despecklingHelper = new DespecklingHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
+                session.getAttribute("imageType").toString(),
+                session.getAttribute("processingMode").toString()
             );
             session.setAttribute("despecklingHelper", despecklingHelper);
         }

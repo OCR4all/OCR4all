@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.uniwue.helper.LineSegmentationDirectoryHelper;
 import de.uniwue.helper.LineSegmentationHelper;
+import de.uniwue.helper.LineSegmentationPageXMLHelper;
 
 /**
  * Controller class for line segmentation module
@@ -34,13 +36,30 @@ public class LineSegmentationController {
         if (GenericController.isSessionValid(session, response) == false)
             return null;
 
+        String processingMode = session.getAttribute("processingMode").toString();
+        
         // Keep a single helper object in session
         LineSegmentationHelper lineSegmentationHelper = (LineSegmentationHelper) session.getAttribute("lineSegmentationHelper");
-        if (lineSegmentationHelper == null) {
-            lineSegmentationHelper = new LineSegmentationHelper(
-                session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
-            );
+        if (lineSegmentationHelper == null || 
+        		(processingMode.equals("Directory") && lineSegmentationHelper instanceof LineSegmentationPageXMLHelper) ||
+        		(processingMode.equals("Pagexml") && lineSegmentationHelper instanceof LineSegmentationDirectoryHelper)) {
+
+        	// Select correct lineSegmentHelper for processingMode
+        	if(processingMode.equals("Directory")){
+				lineSegmentationHelper = new LineSegmentationDirectoryHelper(
+					session.getAttribute("projectDir").toString(),
+					session.getAttribute("imageType").toString(),
+					processingMode
+				);
+        	} else if(processingMode.equals("Pagexml")) {
+				lineSegmentationHelper = new LineSegmentationPageXMLHelper(
+					session.getAttribute("projectDir").toString(),
+					session.getAttribute("imageType").toString(),
+					processingMode
+				);
+        	} else {
+        		throw new IllegalArgumentException(String.format("Unknown processingMode %s", processingMode));
+        	}
             session.setAttribute("lineSegmentationHelper", lineSegmentationHelper);
         }
         return lineSegmentationHelper;
@@ -80,6 +99,7 @@ public class LineSegmentationController {
                HttpSession session, HttpServletResponse response,
                @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
            ) {
+
         LineSegmentationHelper lineSegmentationHelper = provideHelper(session, response);
         if (lineSegmentationHelper == null)
             return;

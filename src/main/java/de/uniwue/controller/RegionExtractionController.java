@@ -40,7 +40,8 @@ public class RegionExtractionController {
         if (regionExtractionHelper == null) {
             regionExtractionHelper = new RegionExtractionHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString()
+                session.getAttribute("imageType").toString(),
+                session.getAttribute("processingMode").toString()
             );
             session.setAttribute("regionExtractionHelper", regionExtractionHelper);
         }
