@@ -90,7 +90,7 @@
                                     .done(function( data ) {
                                          if( data === true ) {
 
-                                             //checks for pdfs in dir if dir has no valid images
+                                             // Check if dir only houses pdf files and no images
                                              $.get("ajax/overview/checkpdf")
                                                  .done(function(data) {
                                                  if( data === true) {
@@ -101,7 +101,6 @@
                                                      $('#modal_convertpdf').modal('open');
                                                  }
                                                  else {
-                                                     //$('#modal_convertpdf').modal('open');
                                                      // Two scenarios for loading overview page:
                                                      // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
                                                      // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
@@ -215,14 +214,12 @@
                     var ajaxParams = {"deleteBlank" : ( $(this).attr('id') == 'convertToPdf' ), "dpi" : document.getElementById('dpi').value};
                     $.post( "ajax/overview/convertProjectFiles", ajaxParams )
                         .done(function( data ) {
-                            //$('#modal_convertpdf').modal('close');
                             // Load datatable after the last process update is surely finished
                             setTimeout(function() {
                                 datatable();
                             }, 2000);
                         })
                         .fail(function( data ) {
-                            //$('#modal_adjustImages_failed').modal('open');
                         });
                 });
 

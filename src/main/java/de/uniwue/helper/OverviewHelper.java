@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +32,10 @@ import org.opencv.imgcodecs.Imgcodecs;
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.model.PageOverview;
+
+import org.opencv.imgproc.Imgproc;
+import org.opencv.core.*;
+import java.awt.image.DataBufferByte;
 
 public class OverviewHelper {
     /**
@@ -102,12 +107,26 @@ public class OverviewHelper {
      */
     private boolean stopProcess = false;
 
+    /**
+     * Default value to be used for PDF Rendering
+     */
     private int pdfdpi = 300;
+
+    /**
+     * Indicates Conversion Process to be used by Progress bar
+     */
     private int conversionProgress = 0;
+    /**
+     * Pages to be converted, used in calculation of conversion progression
+     */
     private int pagesToConvert = -1;
+
+    /**
+     * Pages already converted,used in calculation of conversion progression
+     */
     private int pagesConverted = 0;
 
-    private boolean conversionFlag = false;
+    private boolean pdfConversionFlag = false;
 
     /**
      * Constructor
@@ -139,7 +158,7 @@ public class OverviewHelper {
     /**
      * Generates status overview for one page
      *
-     * //@param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param pageId Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
     public void initialize(String pageId) throws IOException {
@@ -189,7 +208,7 @@ public class OverviewHelper {
      * Generates content for one page
      * This includes its segments and their lines
      *
-     * //@param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param pageId Identifiers of the pages (e.g 0002,0003)
      * @return Sorted map of page content
      * @throws IOException 
      */
@@ -429,19 +448,29 @@ public class OverviewHelper {
     /**
      * Adjustments to files so that they correspond to the project standard 
      * 
-     * @param flag Determines if a backup of the image folder is required
-     *             OR determines if blank pages will not be saved on conversion
+     * @param backupDelete Determines if a backup of the image folder is required when
+     *                     TRUE => backup folder containing old images will be created
+     *                     FALSE => no backup of old images will be created
+     *             OR determines if blank pages will not be saved on PDF conversion
+     *                     TRUE => blank pages in PDF will not be saved as PNG
+     *                     FALSE => All pages of PDF will be saved as PNG
+     * @param convert sets pdfConversionFlag
      * @throws IOException
      */
-    public void execute(boolean flag, boolean convert) throws IOException {
+    public void execute(boolean backupDelete, boolean convert) throws IOException {
         overviewRunning = true;
         progress = 0;
-        conversionFlag = convert;
+        pdfConversionFlag = convert;
         initializeProcessState();
         if(convert) {
-            convertPDF(projConf.ORIG_IMG_DIR,flag);
+            try {
+                convertPDF(projConf.ORIG_IMG_DIR,backupDelete);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
         } else {
-            if (flag)
+            if (backupDelete)
                 FileUtils.copyDirectory(new File(projConf.ORIG_IMG_DIR), new File(projConf.BACKUP_IMG_DIR));
 
             convertImagesToPNG();
@@ -455,7 +484,6 @@ public class OverviewHelper {
     /**
      * Initializes the structure with which the progress of the process can be monitored
      *
-     * @param //pageIds Identifiers of the pages
      * @throws IOException
      */
     public void initializeProcessState() throws IOException {
@@ -490,7 +518,7 @@ public class OverviewHelper {
         // Prevent function from calculation progress if process is not running
         if (overviewRunning == false)
             return progress;
-        if(conversionFlag) {
+        if(pdfConversionFlag) {
             if (pagesToConvert < 0) {
                 return 0;
             } else {
@@ -547,7 +575,7 @@ public class OverviewHelper {
      * @return TRUE if there are no images and directory contains PDF
      * @throws IOException
      */
-    public boolean checkForPdf() throws IOException {
+    public boolean checkPdfConvertable() throws IOException {
         File dir = new File(projConf.ORIG_IMG_DIR);
         File[] pngInDir = dir.listFiles((d, name) -> name.endsWith("png"));
 
@@ -557,9 +585,7 @@ public class OverviewHelper {
             if(pdfInDir.length > 0) {
                 return true;
             }
-            System.out.println("no PDF found");
         }
-        System.out.println("images found: " + pngInDir.length);
         return false;
     }
 
@@ -567,9 +593,9 @@ public class OverviewHelper {
      * Converts a PDF to several PNG files
      * @param sourceDir data input directory
      * @param deleteBlank Determines if blank pages will not be rendered
+     * @throws FileNotFoundException
      */
-    public void convertPDF(String sourceDir, boolean deleteBlank) {
-        System.out.println("came to converting");
+    public void convertPDF(String sourceDir, boolean deleteBlank) throws FileNotFoundException {
         File dir = new File(sourceDir);
         File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith("pdf"));
         File destinationFile = new File(dir.getPath());
@@ -589,20 +615,18 @@ public class OverviewHelper {
                     BufferedImage img = renderer.renderImageWithDPI(pageCounter, pdfdpi, ImageType.RGB);
 
                     if(deleteBlank) {
-                        System.out.println("page"+pageCounter+" rendered at " + pdfdpi + " DPI");
                         //check if image is blank page
-                        if (!isBlank(img)) {
+                        if (!isBlank(bufferedImageToMat(img),0.01,0.01)) {
                             //suffix in filename will be used as file format
                             try {
-                                ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", (pageCounter++) + 1) + ".png", pdfdpi);
+                                ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", ++pageCounter) + ".png", pdfdpi);
 
                             } catch (Exception e) {
-                                System.out.println("could not write image file");
+                                e.printStackTrace();
                             }
                         }
                     }else {
-                        System.out.println("page"+pageCounter+" rendered at " + pdfdpi + " DPI");
-                        ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", (pageCounter++) + 1) + ".png", pdfdpi);
+                        ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", ++pageCounter) + ".png", pdfdpi);
                     }
                     pagesConverted = pageCounter;
                 }
@@ -612,7 +636,7 @@ public class OverviewHelper {
             }
 
         } else {
-            System.out.println(dir.getName() + " Folder does not exist");
+            throw new FileNotFoundException(dir.getName() + " Folder does not exist");
         }
 
     }
@@ -620,31 +644,30 @@ public class OverviewHelper {
     /**
      * Checks if rendered Image is blank white or light-gray
      * @param img rendered Image from .pdf
+     * @param areaFactor Percent of the area that is allowed to be blank [0,1]
+     * @param whiteFactor Percent brightness a pixel has to have to be considered bland [0,1]
      * @return TRUE if Page is blank
      */
-    private static boolean isBlank(BufferedImage img) {
-        long count = 0;
-        int height = img.getHeight();
-        int width = img.getWidth();
-        Double areaFactor = (width * height) * 0.99;
-
-        for(int x=0; x < width; x++) {
-            for(int y=0; y < height; y++) {
-                Color c = new Color(img.getRGB(x,y));
-                //verify light gray and white
-                if (c.getRed() == c.getGreen() && c.getRed() == c.getBlue()
-                        && c.getRed() >= 248) {
-                    count++;
-                }
-            }
+    private boolean isBlank(Mat img, double areaFactor, double whiteFactor) {
+        if (!(0 <= areaFactor && areaFactor <= 1) || !(0 <= whiteFactor && whiteFactor <= 1)) {
+            throw new IllegalArgumentException("Percent factors are not in range of 0% and 100%");
         }
 
-        if(count >= areaFactor) {
-            return true;
-        } else{
-            return false;
-        }
+        // Convert image to grayscale
+        final Mat gray = new Mat(img.size(), CvType.CV_8UC1);
+        Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY);
+        /* Create a binary mask with all pixels that are considered blank as 1
+           and everything else as 0 */
+        final Mat blankMat = new Mat(img.size(), CvType.CV_8UC1);
+        Imgproc.threshold(gray, blankMat, 255 * whiteFactor, 1, Imgproc.THRESH_BINARY);
+        gray.release(); //Clear RAM
+
+        boolean blank = (img.size().height * img.size().width * areaFactor) <= Core.countNonZero(blankMat);
+        blankMat.release(); //Clear RAM
+
+        return blank;
     }
+
 
     /**
      * Setter for changing the default DPI value of 300
@@ -654,5 +677,17 @@ public class OverviewHelper {
         pdfdpi = newDPI;
     }
 
+
+    /**
+     * Converts BufferedImage to OpenCV.Mat
+     * @param bi buffered image
+     * @return matrix of the buffered image
+     */
+    public Mat bufferedImageToMat(BufferedImage bi) {
+        Mat mat = new Mat(bi.getHeight(), bi.getWidth(), CvType.CV_8UC3);
+        byte[] data = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
+        mat.put(0, 0, data);
+        return mat;
+    }
 
 }
