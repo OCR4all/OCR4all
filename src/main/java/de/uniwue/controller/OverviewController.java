@@ -112,8 +112,6 @@ public class OverviewController {
     /**
      * Response to the request to send the process status of every page
      *
-     * //@param projectDir Absolute path to the project
-     * //@param imageType Project type (Binary or Gray)
      * @param session Session of the user
      * @param response Response to the request
      * @return Returns the status of every page of the project
@@ -307,20 +305,18 @@ public class OverviewController {
      * @return
      */
     @RequestMapping(value ="/ajax/overview/checkpdf" , method = RequestMethod.GET)
-    public @ResponseBody boolean checkForPdf(
+    public @ResponseBody boolean checkPdfConvertable(
             HttpSession session, HttpServletResponse response
     ) {
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null) {
-            System.out.println("helper null");
             return false;
         }
 
         try {
             session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
-            System.out.println("came here");
             session.setAttribute("projectAdjustment", "");
-            return overviewHelper.checkForPdf();
+            return overviewHelper.checkPdfConvertable();
         } catch (Exception e) {
             // Prevent loading an invalid project
             session.invalidate();
@@ -328,7 +324,6 @@ public class OverviewController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
         }
-        System.out.println("failed");
         return false;
     }
 
