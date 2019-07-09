@@ -126,6 +126,10 @@ public class OverviewHelper {
      */
     private int pagesConverted = 0;
 
+    /**
+     * Flag to determine which process the Progress bar is currently showing
+     */
+
     private boolean pdfConversionFlag = false;
 
     /**
