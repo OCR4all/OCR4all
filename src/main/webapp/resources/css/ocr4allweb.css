@@ -306,11 +306,14 @@ button[data-id="msRecModelAddOption"] {
 .flex{
   display: flex;
 }
-.whitelist_drop{
-  width: 70%;
+.whitelist-button{
+  margin: auto auto 21px;
 }
-.whitelist_wrapper{
+#whitelist-select{
   left: 0px !important;
+  margin-top: 85px; /* #TODO Change this ugly hack asap*/
+  padding-top: 5px;
+  padding-left: 5px;
 }
 @media only screen and (max-width : 1700px) {
   button[data-id="msRecModelAddOption"] {
