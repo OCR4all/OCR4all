@@ -115,12 +115,21 @@
                 $.getJSON('resources/chars.json')
                     .done( function ( json ){
                         $.each( json, function ( key, val ){
-                            $('<option>', {
-                                "value": val,
+                            $('<li>', {
+                                "data-chars": val,
                                 text: key
                             }).appendTo('#whitelist-select');
                         });
-                        $('#whitelist-select').material_select();
+                        $('#whitelist-select').dropdown({
+                            inDuration: 300,
+                            outDuration: 225,
+                            constrainWidth: false, // Does not change width of dropdown to that of the activator
+                            hover: true, // Activate on hover
+                            gutter: 0, // Spacing from edge
+                            belowOrigin: false, // Displays dropdown below the button
+                            alignment: 'left', // Displays dropdown with edge aligned to the left of button
+                            stopPropagation: false // Stops event propagation);
+                        });
                     });
 
                 // Module specufic function to get the input parameters
@@ -185,9 +194,9 @@
                     // Execute Training process
                     executeProcess(getExtendedInputParams());
                 });
-                $('select[id=whitelist-select]').change(function () {
+                $('ul[id=whitelist-select]').on("click", "li", function () {
                     // Update the Textarea with the selected preconfigured whitelist
-                    $('#training--whitelist').val($('#whitelist-select').val());
+                    $('#training--whitelist').val($(this).data("chars"));
                     $('#training--whitelist').trigger('autoresize');
                     $('#training--whitelist').trigger('focus');
                 });

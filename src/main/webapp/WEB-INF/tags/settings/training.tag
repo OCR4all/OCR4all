@@ -35,23 +35,16 @@
             </tr>
             <tr>
                 <td>
-                    <div class="row flex">
-                        <div class="col l6 s6">
-                            Whitelist characters<br/>
-                            <span class="userInfo">Example: ABCDEFGHIJ...012345</span>
-                        </div>
-                        <div class="input-field col l6 s6 whitelist_wrapper">
-                            <select id="whitelist-select" class="whitelist_drop">
-                                <option value="" disabled selected >Choose list</option>
-                            </select>
-                            <label>Preconfigured whitelists</label>
-                        </div>
+                    Whitelist characters<br/>
+                    <span class="userInfo">Example: ABCDEFGHIJ...012345</span>
                     </p>
                 </td>
                 <td>
-                    <div class="input-field">
+                    <div class="input-field flex">
                         <textarea id="training--whitelist" class="materialize-textarea" data-setting="--whitelist" type="text"></textarea>
                         <label for="training--whitelist">Default: A-Za-z0-9</label>
+                        <a class="waves-effect waves-light dropdown-button btn whitelist-button" data-constrainWidth="false" href="#" data-activates="whitelist-select"><i class="material-icons">play_for_work</i></a>
+                        <ul id="whitelist-select" class="dropdown-content"></ul>
                     </div>
                 </td>
             </tr>
