@@ -198,10 +198,10 @@ public class TrainingHelper {
         writer.writeValue(segmentListFile, segmentObj); 
         command.add(segmentListFile.toString());
         System.out.println(segmentListFile);
-
+        
+        
         command.addAll(cmdArgs);
         command.add("--best_models_dir");
-
         command.add(trainingDir.getAbsolutePath());
 
         command.add("--no_progress_bars");
