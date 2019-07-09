@@ -6,18 +6,17 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -34,8 +33,9 @@ import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.model.PageOverview;
 
 import org.opencv.imgproc.Imgproc;
-import org.opencv.core.*;
-import java.awt.image.DataBufferByte;
+import org.opencv.core.CvType;
+import org.opencv.core.Core;
+import org.opencv.core.MatOfByte;
 
 public class OverviewHelper {
     /**
@@ -583,7 +583,7 @@ public class OverviewHelper {
     }
 
     /**
-     * Converts a PDF to several PNG files
+     * Converts all PDF in folder to several PNG files
      * @param sourceDir data input directory
      * @param deleteBlank Determines if blank pages will not be rendered
      * @throws FileNotFoundException
@@ -591,39 +591,46 @@ public class OverviewHelper {
     public void convertPDF(String sourceDir, boolean deleteBlank) throws FileNotFoundException {
         File dir = new File(sourceDir);
         File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith("pdf"));
-        File destinationFile = new File(dir.getPath());
+        List<File> sortedPDFs = Arrays.stream(pdfInDir)
+                .sorted((f1,f2) -> f1.getName().compareTo(f2.getName())).collect(Collectors.toList());
 
         if(dir.exists()) {
             try {
-
-                PDDocument document = PDDocument.load(pdfInDir[0]);
-                pagesToConvert = document.getNumberOfPages();
-                PDFRenderer renderer = new PDFRenderer(document);
-                int pageCounter = 0;
-                for(PDPage page : document.getPages()) {
-                    if(stopProcess) {
-                        break;
-                    }
-                    //page number parameter is zero based
-                    BufferedImage img = renderer.renderImageWithDPI(pageCounter, pdfdpi, ImageType.RGB);
-
-                    if(deleteBlank) {
-                        //check if image is blank page
-                        if (!isBlank(bufferedImageToMat(img),0.01,0.01)) {
-                            //suffix in filename will be used as file format
-                            try {
-                                ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", ++pageCounter) + ".png", pdfdpi);
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }else {
-                        ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", ++pageCounter) + ".png", pdfdpi);
-                    }
-                    pagesConverted = pageCounter;
+                for(File pdf : sortedPDFs) {
+                    PDDocument document = PDDocument.load(pdf);
+                    pagesToConvert += document.getNumberOfPages();
+                    document.close();
                 }
-                document.close();
+                int pageCounter = 0;
+                for(File pdf : sortedPDFs) {
+                    PDDocument document = PDDocument.load(pdf);
+                    PDFRenderer renderer = new PDFRenderer(document);
+                    int docPages = 0;
+                    for(PDPage page : document.getPages()) {
+                        if(stopProcess) {
+                            break;
+                        }
+                        //page number parameter is zero based
+                        BufferedImage img = renderer.renderImageWithDPI(docPages++, pdfdpi, ImageType.RGB);
+
+                        if(deleteBlank) {
+                            //check if image is blank page
+                            if (!isBlank(bufferedImageToMat(img),0.99,0.99)) {
+                                //suffix in filename will be used as file format
+                                try {
+                                    ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", ++pageCounter) + ".png", pdfdpi);
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }else {
+                            ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", ++pageCounter) + ".png", pdfdpi);
+                        }
+                        pagesConverted = pageCounter;
+                    }
+                    document.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -661,7 +668,6 @@ public class OverviewHelper {
         return blank;
     }
 
-
     /**
      * Setter for changing the default DPI value of 300
      * @param newDPI new DPI value
@@ -673,14 +679,14 @@ public class OverviewHelper {
 
     /**
      * Converts BufferedImage to OpenCV.Mat
-     * @param bi buffered image
+     * @param image buffered image
      * @return matrix of the buffered image
      */
-    public Mat bufferedImageToMat(BufferedImage bi) {
-        Mat mat = new Mat(bi.getHeight(), bi.getWidth(), CvType.CV_8UC3);
-        byte[] data = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
-        mat.put(0, 0, data);
-        return mat;
+    public Mat bufferedImageToMat(BufferedImage image) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", byteArrayOutputStream);
+        byteArrayOutputStream.flush();
+        return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
     }
 
 }
