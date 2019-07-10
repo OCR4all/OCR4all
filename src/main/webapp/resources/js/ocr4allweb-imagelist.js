@@ -35,22 +35,26 @@ var lastChecked = null;
 // Feature to select multiple checkboxes while holding down the shift key
 // See: https://stackoverflow.com/questions/659508/how-can-i-shift-select-multiple-checkboxes-like-gmail/659571#659571
 function initializeMultiCheckboxSelection() {
-    $('#imageList input[type="checkbox"]').on('click', function(event) {
+    // Add event listener on li element instead of directly to checkbox in order to allow shift click in firefox.
+    // A click on checkboxes in firefox is not triggered, if a modifier is active (shift, alt, ctrl)
+    const doesProvideMod = !(navigator.userAgent.indexOf("Firefox") >= 0);
+    $('#imageList>li').on('click', (doesProvideMod ? 'input[type="checkbox"]' : 'label'), function(event) {
+        const checkbox = doesProvideMod ? this : $(this).siblings('input[type="checkbox"]')[0];
         if( !lastChecked ) {
-            lastChecked = this;
+            lastChecked = checkbox;
             return;
         }
 
         if( event.shiftKey ) {
             var checkBoxes = $('#imageList input[type="checkbox"]').not('#selectAll');
-            var start = $(checkBoxes).index($(this));
+            var start = $(checkBoxes).index($(checkbox));
             var end =   $(checkBoxes).index($(lastChecked));
 
             $(checkBoxes).slice(Math.min(start, end), Math.max(start, end) + 1).prop('checked', $(lastChecked).is(':checked'));
         }
 
-        $(this).change();
-        lastChecked = this;
+        $(checkbox).change();
+        lastChecked = checkbox;
     });
 }
 

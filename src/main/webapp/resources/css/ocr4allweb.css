@@ -291,11 +291,39 @@ button[data-id="msRecModelAddOption"] {
   font-size: 1.2rem;
   line-height: 3vh;
 }
+.footer-copyright{
+  display: block !important;
+}
+.personList{
+  width: 80%;
+  margin: auto;
+  padding-top: 4vh;
+  padding-bottom: 4vh;
+}
+.divider{
+  margin-bottom: 25px;
+}
+.flex{
+  display: flex;
+}
+.whitelist-button{
+  margin: auto auto 21px;
+}
+#whitelist-select{
+  left: 0px !important;
+  margin-top: 85px; /* #TODO Change this ugly hack asap*/
+  padding-top: 5px;
+  padding-left: 5px;
+}
 @media only screen and (max-width : 1700px) {
   button[data-id="msRecModelAddOption"] {
     margin-left: 0px;
     margin-top: 5px;
     display:block;
   }
+}
+input[type=number]:invalid {
+  border-bottom: 1px solid red !important;
+  box-shadow: 0 1px 0 0 red !important;
 }
 

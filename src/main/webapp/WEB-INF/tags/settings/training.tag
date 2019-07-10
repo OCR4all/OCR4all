@@ -35,29 +35,16 @@
             </tr>
             <tr>
                 <td>
-                    <p>
-                        Early stopping
-                        <br />
-                        <span class="userInfo">The number of models that must be worse than the current best model to stop</span>
+                    Whitelist characters<br/>
+                    <span class="userInfo">Example: ABCDEFGHIJ...012345</span>
                     </p>
                 </td>
                 <td>
-                    <div class="input-field">
-                        <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" value="5"/>
-                        <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td><p>
-                    Early stopping frequency
-                    <br />
-                    <span class="userInfo">Number of training steps between the evaluation of the current model</span>
-                </p></td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--early_stopping_frequency" data-setting="--early_stopping_frequency" type="number"/>
-                        <label for="training--early_stopping_frequency" data-type="int" data-error="Has to be integer">Default: # GT lines / 2 (Integer value)</label>
+                    <div class="input-field flex">
+                        <textarea id="training--whitelist" class="materialize-textarea" data-setting="--whitelist" type="text" spellcheck="false"></textarea>
+                        <label for="training--whitelist">Default: A-Za-z0-9</label>
+                        <a class="waves-effect waves-light dropdown-button btn whitelist-button" data-constrainWidth="false" href="#" data-activates="whitelist-select"><i class="material-icons">play_for_work</i></a>
+                        <ul id="whitelist-select" class="dropdown-content"></ul>
                     </div>
                 </td>
             </tr>
@@ -272,6 +259,34 @@
                         <input type="checkbox" class="filled-in" data-setting="--no_skip_invalid_gt" id="training--no_skip_invalid_gt" />
                         <label for="training--no_skip_invalid_gt"></label>
                     </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>
+                        Early stopping
+                        <br />
+                        <span class="userInfo">The number of models that must be worse than the current best model to stop</span>
+                    </p>
+                </td>
+                <td>
+                    <div class="input-field">
+                        <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" value="5"/>
+                        <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><p>
+                    Early stopping frequency
+                    <br />
+                    <span class="userInfo">Number of training steps between the evaluation of the current model</span>
+                </p></td>
+                <td>
+                    <div class="input-field">
+                        <input id="training--early_stopping_frequency" data-setting="--early_stopping_frequency" type="number"/>
+                        <label for="training--early_stopping_frequency" data-type="int" data-error="Has to be integer">Default: # GT lines / 2 (Integer value)</label>
+                    </div>
                 </td>
             </tr>
             </tbody>

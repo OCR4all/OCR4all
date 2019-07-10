@@ -58,6 +58,7 @@ public class ProcessStateCollector {
         return true;
     }
 
+
     /**
      * Determines the "Despeckling" process state of a given page
      *

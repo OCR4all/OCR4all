@@ -26,6 +26,10 @@ function getInputParams(settingsEl) {
         if( $(this).val() !== "" && $(this).attr('data-setting'))
             params['cmdArgs'].push($(this).attr('data-setting'), $(this).val());
     });
+    $.each($(settingsEl).find('textarea[type="text"]').not(".ignoreParam"), function() {
+        if( $(this).val() !== "" && $(this).attr('data-setting'))
+            params['cmdArgs'].push($(this).attr('data-setting'), $(this).val());
+    });
     $.each($(settingsEl).find('select').not(".ignoreParam"), function() {
         if( $(this).val() && $(this).val().length > 0 && $(this).attr('data-setting')) {
             if($(this).attr('multiple')) {

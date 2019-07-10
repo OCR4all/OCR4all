@@ -89,16 +89,31 @@
                                     $.get( "ajax/overview/validateProject?", ajaxParams )
                                     .done(function( data ) {
                                          if( data === true ) {
-                                             // Two scenarios for loading overview page:
-                                             // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
-                                             // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
-                                             if( newPageVisit == false ) {
-                                                 location.reload();
-                                             }
-                                             else {
-                                                 // Load datatable after the last process update is surely finished
-                                                     datatable();
-                                             }
+
+                                             // Check if dir only houses pdf files and no images
+                                             $.get("ajax/overview/checkpdf")
+                                                 .done(function(data) {
+                                                 if( data === true) {
+                                                     openCollapsibleEntriesExclusively([0]);
+                                                     $('#modal_convertpdf').modal({
+                                                         dismissible: false
+                                                     });
+                                                     $('#modal_convertpdf').modal('open');
+                                                 }
+                                                 else {
+                                                     // Two scenarios for loading overview page:
+                                                     // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
+                                                     // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
+                                                     if( newPageVisit == false ) {
+                                                         location.reload();
+                                                     }
+                                                     else {
+                                                         // Load datatable after the last process update is surely finished
+                                                         datatable();
+                                                     }
+                                                 }
+                                             });
+
                                          }
                                          else{
                                              openCollapsibleEntriesExclusively([0]);
@@ -181,6 +196,32 @@
                         }
                     }, 500);
                 });
+                $('#cancelConvertPdf').click(function() {
+                    setTimeout(function() {
+                        // Unload project if user refuses the mandatory adjustments
+                        if( !isProcessRunning() ) {
+                            $.get( "ajax/overview/invalidateSession" );
+                        }
+                    }, 500);
+                });
+                $('#convertToPdf, #convertToPdfWithBlanks').click(function() {
+                    // Initialize process handler (wait time, due to delayed AJAX process start)
+                    setTimeout(function() {
+                        initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
+                    }, 500);
+
+                    // Start converting PDF
+                    var ajaxParams = {"deleteBlank" : ( $(this).attr('id') == 'convertToPdf' ), "dpi" : document.getElementById('dpi').value};
+                    $.post( "ajax/overview/convertProjectFiles", ajaxParams )
+                        .done(function( data ) {
+                            // Load datatable after the last process update is surely finished
+                            setTimeout(function() {
+                                datatable();
+                            }, 2000);
+                        })
+                        .fail(function( data ) {
+                        });
+                });
 
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
                     cancelProcess();
@@ -203,7 +244,19 @@
                 } else {
                     openCollapsibleEntriesExclusively([0]);
                 }
+                //checking if dpi input value si valid and disabling button if not
+                $('#dpi').on('input', function(e) {
+                    if(!this.checkValidity()){
+                        $('#convertToPdf').addClass("disabled");
+                        $('#convertToPdfWithBlanks').addClass("disabled");
+                    }else{
+                        $('#convertToPdf').removeClass("disabled");
+                        $('#convertToPdfWithBlanks').removeClass("disabled");
+                    }
+                });
             });
+
+
         </script>
     </t:head>
     <t:body heading="Project Overview" processModals="true">
@@ -281,6 +334,45 @@
                 <a href="#!" id="backupAndConvert" class="modal-action modal-close waves-effect waves-green btn-flat">Backup and convert files</a>
             </div>
          </div>
+        <div id="modal_convertpdf" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Convert PDF files</h4>
+                <table class="compact">
+                    <tbody>
+                    <tr>
+                        <td><p>
+                            The required PNG format was not found in the input folder.<br />
+                            A PDF document was found instead.
+                            <br />
+                            <br />
+                            To be able to load your project successfully the PDF needs to be converted to separate PNG files.<br />
+                            Please choose one of the offered possibilities to continue.<br /></p></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><p>
+                            The default value of the DPI used when rendering is set to 300: <br />
+                            Please note that a higher DPI corresponds to a higher rendering time.
+                            <br />
+                            <br />
+                            This may take a while.</p></td>
+                        <td>
+                            <br />
+                            <div class="input-field">
+                                <input id="dpi" type="number" value="300" min="50" max="2000" step="10"/>
+                                <label for="dpi" data-type="int" data-error="Has to be integer">Rendering DPI:</label>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" id="cancelConvertPdf" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                <a href="#!" id="convertToPdf" class="modal-action modal-close waves-effect waves-green btn-flat">Convert PDF and delete blank pages</a>
+                <a href="#!" id="convertToPdfWithBlanks" class="modal-action modal-close waves-effect waves-green btn-flat">convert pdf and leave blank pages</a>
+            </div>
+        </div>
         <div id="modal_adjustImages_failed" class="modal">
             <div class="modal-content red-text">
                 <h4>Error</h4>

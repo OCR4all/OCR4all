@@ -113,8 +113,6 @@ public class OverviewController {
     /**
      * Response to the request to send the process status of every page
      *
-     * @param projectDir Absolute path to the project
-     * @param imageType Project type (Binary or Gray)
      * @param session Session of the user
      * @param response Response to the request
      * @return Returns the status of every page of the project
@@ -239,8 +237,8 @@ public class OverviewController {
             return;
 
         try {
-            session.setAttribute("projectAdjustment", "Please wait unitil the project adjustment is finished.");
-            overviewHelper.execute(backupImages);
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            overviewHelper.execute(backupImages,false);
             session.setAttribute("projectAdjustment", "");
         } catch (IOException e) {
             // Prevent loading an invalid project
@@ -301,5 +299,65 @@ public class OverviewController {
             return;
 
         overviewHelper.cancelProcess();
+    }
+
+    /**
+     * Response to the Request to check the Project Dir for PDFs
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return
+     */
+    @RequestMapping(value ="/ajax/overview/checkpdf" , method = RequestMethod.GET)
+    public @ResponseBody boolean checkPdfConvertable(
+            HttpSession session, HttpServletResponse response
+    ) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null) {
+            return false;
+        }
+
+        try {
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            session.setAttribute("projectAdjustment", "");
+            return overviewHelper.checkPdfConvertable();
+        } catch (Exception e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Response to the Request to convert a PDF in to image files
+     * @param deleteBlank flag to delete blank pages
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="/ajax/overview/convertProjectFiles" , method = RequestMethod.POST)
+    public @ResponseBody void convertFiles(
+            @RequestParam("deleteBlank") Boolean deleteBlank,
+            @RequestParam("dpi") int dpi,
+            HttpSession session, HttpServletResponse response
+    ) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        //PdfToImageConverter converter = provideConverter(session,response);
+        if (overviewHelper == null)
+            return;
+
+        try {
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            overviewHelper.setDPI(dpi);
+            overviewHelper.execute(deleteBlank, true);
+            session.setAttribute("projectAdjustment", "");
+        } catch (Exception e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
     }
 }

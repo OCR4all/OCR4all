@@ -87,6 +87,7 @@
                     }
                 });
 
+
                 // Adjust pretraining dropdown menu count if folds change
                 $('#training--n_folds').on('change', function() {
                     var pretrainingType = $('#pretrainingType').val();
@@ -110,7 +111,26 @@
                         }
                     }
                 });
-
+                // Fill the whitelist select dynamically with the values from the chars.json
+                $.getJSON('resources/chars.json')
+                    .done( function ( json ){
+                        $.each( json, function ( key, val ){
+                            $('<li>', {
+                                "data-chars": val,
+                                text: key
+                            }).appendTo('#whitelist-select');
+                        });
+                        $('#whitelist-select').dropdown({
+                            inDuration: 300,
+                            outDuration: 225,
+                            constrainWidth: false, // Does not change width of dropdown to that of the activator
+                            hover: true, // Activate on hover
+                            gutter: 0, // Spacing from edge
+                            belowOrigin: false, // Displays dropdown below the button
+                            alignment: 'left', // Displays dropdown with edge aligned to the left of button
+                            stopPropagation: false // Stops event propagation);
+                        });
+                    });
 
                 // Module specufic function to get the input parameters
                 function getExtendedInputParams() {
@@ -173,6 +193,12 @@
                 $('#agree').click(function() {
                     // Execute Training process
                     executeProcess(getExtendedInputParams());
+                });
+                $('ul[id=whitelist-select]').on("click", "li", function () {
+                    // Update the Textarea with the selected preconfigured whitelist
+                    $('#training--whitelist').val($(this).data("chars"));
+                    $('#training--whitelist').trigger('autoresize');
+                    $('#training--whitelist').trigger('focus');
                 });
             });
         </script>
