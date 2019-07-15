@@ -49,10 +49,12 @@ public class ImageHelper {
      * @param img Mat of the image
      * @return Byte array of the image
      */
-    private byte[] convertImageMatToByte(Mat img) {
-        MatOfByte matOfByte = new MatOfByte();
+    private byte[] convertImageMatToByte(final Mat img) {
+        final MatOfByte matOfByte = new MatOfByte();
         Imgcodecs.imencode(projConf.IMG_EXT, img, matOfByte); 
-        return matOfByte.toArray();
+        final byte[] bytes = matOfByte.toArray();
+        matOfByte.release();
+        return bytes;
     }
 
     /**
@@ -62,12 +64,12 @@ public class ImageHelper {
      * @return Returns the image as a base64 string
      * @throws IOException
      */
-    private String getImageAsBase64(Mat img) throws IOException {
-        if (imageResize != null) {
-            img = imageResize.getScaledImage(img);
-        }
+    private String getImageAsBase64(final Mat img) throws IOException {
+    	Mat workImage = (imageResize != null) ? imageResize.getScaledImage(img) : img;
 
-        byte[] returnBuff = convertImageMatToByte(img);
+        byte[] returnBuff = convertImageMatToByte(workImage);
+        if(imageResize != null)
+        	workImage.release();
         if (returnBuff == null)
             return "";
 
@@ -82,11 +84,13 @@ public class ImageHelper {
      * @throws IOException
      */
     private String getImageAsBase64(String path) throws IOException {
-        Mat img = Imgcodecs.imread(path);
+        final Mat img = Imgcodecs.imread(path);
         if (img.empty())
             return "";
 
-        return getImageAsBase64(img);
+        String base64 = getImageAsBase64(img);
+        img.release();
+        return base64;
     }
 
     /**
@@ -140,8 +144,12 @@ public class ImageHelper {
      * @throws IOException 
      */
     public String getPreviewDespeckleAsBase64(String pageId, double maxContourRemovalSize, String illustrationType) throws IOException {
-        Mat binImage = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.BINR_IMG_EXT);
-        Mat despImage = ImageDespeckle.despeckle(binImage, maxContourRemovalSize, illustrationType);
-        return getImageAsBase64(despImage);
+        final Mat binImage = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.BINR_IMG_EXT);
+        final Mat despImage = ImageDespeckle.despeckle(binImage, maxContourRemovalSize, illustrationType);
+        binImage.release();
+        String base64 = getImageAsBase64(despImage);
+        despImage.release();
+
+        return base64;
     }
 }

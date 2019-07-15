@@ -106,7 +106,7 @@ public class SegmentationDummyHelper {
         String imagePath = file.getAbsolutePath();
         String imageFilename = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1).
         								 replace(projConf.getImageExtensionByType(projectImageType), projConf.IMG_EXT);
-        Mat image = Imgcodecs.imread(imagePath);
+        final Mat image = Imgcodecs.imread(imagePath);
         if(image.width() == 0)
             return;
         Document xml = PageXMLWriter.getPageXML(image, imageFilename, "2017-07-15");

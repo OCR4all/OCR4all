@@ -24,26 +24,30 @@ public class ImageDespeckle {
      * @param maxContourRemovalSize Maximum size of the contours to be removed
      * @param illustrationType Standard: the result image shows the resulting binary image | 
      *                         Marked:  the result image shows the resulting binary image and additionally represents the removed contours
-     * @return Resulting binary image
+     * @return Resulting binary image (new mat)
      */
-    public static Mat despeckle(Mat binary, double maxContourRemovalSize, String illustrationType) {
+    public static Mat despeckle(final Mat binary, double maxContourRemovalSize, String illustrationType) {
         // Convert to gray channel only (binary images sometimes seem to have RGB channels)
-        Mat bwImage = new Mat();
-        Imgproc.cvtColor(binary, bwImage, Imgproc.COLOR_RGB2GRAY);
+        final Mat result = new Mat();
+        Imgproc.cvtColor(binary, result, Imgproc.COLOR_RGB2GRAY);
 
-        Mat inverted = new Mat();
-        Core.bitwise_not(bwImage, inverted);
+        final Mat inverted = new Mat();
+        Core.bitwise_not(result, inverted);
 
-        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(inverted, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        final ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        final Mat hierarchy = new Mat();
+        Imgproc.findContours(inverted, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        inverted.release();
+        hierarchy.release();
 
-        Mat result = bwImage.clone();
         if (contours.size() > 1) {
-            ArrayList<MatOfPoint> toRemove = new ArrayList<MatOfPoint>();
-            for (MatOfPoint contour : contours) {
+            final ArrayList<MatOfPoint> toRemove = new ArrayList<MatOfPoint>();
+            for (final MatOfPoint contour : contours) {
                 double area = Imgproc.contourArea(contour);
                 if (area < maxContourRemovalSize) {
                     toRemove.add(contour);
+                } else {
+                    contour.release();
                 }
             }
 
@@ -54,6 +58,10 @@ public class ImageDespeckle {
             }
             else {
                 Imgproc.drawContours(result, toRemove, -1, new Scalar(255), -1);
+            }
+
+            for(final MatOfPoint contour: toRemove){
+                contour.release();
             }
         }
 

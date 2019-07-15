@@ -393,7 +393,7 @@ public class OverviewHelper {
                 if (stopProcess == true)
                     return;
 
-                Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
+                final Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
                 // Convert and save as new image file
                 Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
                 // Remove old image file (project needs to be valid for the loading process)
@@ -659,7 +659,7 @@ public class OverviewHelper {
      * @param whiteFactor Percent brightness a pixel has to have to be considered bland [0,1]
      * @return TRUE if Page is blank
      */
-    private boolean isBlank(Mat img, double areaFactor, double whiteFactor) {
+    private boolean isBlank(final Mat img, double areaFactor, double whiteFactor) {
         if (!(0 <= areaFactor && areaFactor <= 1) || !(0 <= whiteFactor && whiteFactor <= 1)) {
             throw new IllegalArgumentException("Percent factors are not in range of 0% and 100%");
         }
@@ -693,11 +693,14 @@ public class OverviewHelper {
      * @param image buffered image
      * @return matrix of the buffered image
      */
-    public Mat bufferedImageToMat(BufferedImage image) throws IOException {
+    public Mat bufferedImageToMat(BufferedImage bufferedimage) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", byteArrayOutputStream);
+        ImageIO.write(bufferedimage, "png", byteArrayOutputStream);
         byteArrayOutputStream.flush();
-        return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+        final MatOfByte bytes = new MatOfByte(byteArrayOutputStream.toByteArray());
+        final Mat image = Imgcodecs.imdecode(bytes, Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+        bytes.release();
+        return image;
     }
 
 }
