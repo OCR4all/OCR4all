@@ -50,7 +50,7 @@ public class RegionExtractor {
         List<String> regions = new ArrayList<String>();
         Page page = PageXMLImport.readPageXML(xmlPath);
         //maybe use flags if regions are extracted from binary/grayscale (which should be the case)
-        Mat image = Imgcodecs.imread(imagePath);
+        final Mat image = Imgcodecs.imread(imagePath);
 
         //maybe some checks needed. image.width == 0 etc.
         String pageIdentifier = page.getImageFilename().substring(0,
@@ -99,21 +99,25 @@ public class RegionExtractor {
      * @param outputPath Path, where the file should be stored
      * @throws IOException
      */
-    public static boolean saveImage(ArrayList<Point> pointList, Mat image,
+    public static boolean saveImage(ArrayList<Point> pointList, final Mat image,
             int spacing,
             String outputPath) throws IOException {
         Scalar avgBgd = new Scalar(255, 255, 255);
 
-        MatOfPoint points = new MatOfPoint(
+        final MatOfPoint points = new MatOfPoint(
                 pointList.toArray(new Point[pointList.size()]));
         Rect rect = Imgproc.boundingRect(points);
 
-        Mat mask = new Mat(image.size(), CvType.CV_8UC1, new Scalar(0));
-        Mat bgd = new Mat(image.size(), image.type(), avgBgd);
+        final Mat mask = new Mat(image.size(), CvType.CV_8UC1, new Scalar(0));
+        final Mat bgd = new Mat(image.size(), image.type(), avgBgd);
 
-        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        final ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         contours.add(points);
         Imgproc.drawContours(mask, contours, -1, new Scalar(255), -1);
+
+        for(final MatOfPoint contour : contours){
+            contour.release();
+        }
 
         image.copyTo(bgd, mask);
 
@@ -143,9 +147,9 @@ public class RegionExtractor {
                 result = new Mat(bgd, newRect);
             } else {
                 result = new Mat(newRect.size(), bgd.type(), avgBgd);
-                Mat submat = result.submat(new Rect(spacing, spacing,
+                final Mat submat = result.submat(new Rect(spacing, spacing,
                         rect.width, rect.height));
-                Mat tempResult = new Mat(bgd, rect);
+                final Mat tempResult = new Mat(bgd, rect);
                 tempResult.copyTo(submat);
 
                 releaseAll(submat, tempResult);
@@ -163,11 +167,10 @@ public class RegionExtractor {
      * Frees memory of the mat object which was allocated by the imread method
      * @param mats objects which should get released
      */
-    public static void releaseAll(Mat... mats) {
-        for(Mat mat : mats) {
+    public static void releaseAll(final Mat... mats) {
+        for(final Mat mat : mats) {
             if (mat != null) {
                 mat.release();
-                mat = null;
             }
         }
     }
@@ -177,14 +180,14 @@ public class RegionExtractor {
      * @param original Mat object of the image
      * @return average background color
      */
-    public static double[] calcAverageBackground(Mat original) {
+    public static double[] calcAverageBackground(final Mat original) {
         if (original.channels() == 1) {
             return calcAverageBackgroundGray(original);
         }
         
-        Mat gray = new Mat();
+        final Mat gray = new Mat();
         Imgproc.cvtColor(original, gray, Imgproc.COLOR_BGR2GRAY);
-        Mat binary = new Mat();
+        final Mat binary = new Mat();
         Imgproc.threshold(gray, binary, -1, 255, Imgproc.THRESH_OTSU);
 
         double sumRed = 0;
@@ -215,8 +218,8 @@ public class RegionExtractor {
      * @param gray Mat object of the grayscale image
      * @return average background color
      */
-    public static double[] calcAverageBackgroundGray(Mat gray) {
-        Mat binary = new Mat();
+    public static double[] calcAverageBackgroundGray(final Mat gray) {
+        final Mat binary = new Mat();
         Imgproc.threshold(gray, binary, -1, 255, Imgproc.THRESH_OTSU);
 
         double sum = 0;
