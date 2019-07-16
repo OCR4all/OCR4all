@@ -375,11 +375,14 @@ public class OverviewController {
         }
     }
 
-    @RequestMapping(value ="ajax/overview/exportGtc" , method = RequestMethod.POST)
+    @RequestMapping(value ="ajax/overview/exportGtcAll" , method = RequestMethod.POST)
     public @ResponseBody void exportGtc(
             @RequestParam("completeDir") Boolean completeDir,
             HttpSession session, HttpServletResponse response
     ) {
+
+        System.out.println("tried all");
+
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null) {
             System.out.println("OVH null");          //Line has to deleted before pull request
@@ -388,6 +391,11 @@ public class OverviewController {
 
         try {
             session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+
+            /*
+                    switched to two functions because boolean didnt properly work in jsp
+             */
+
             if(Boolean.TRUE) {
                 System.out.println("zip complete dir");          //Line has to deleted before pull request
                 overviewHelper.zipDir();
@@ -396,6 +404,34 @@ public class OverviewController {
                 /*overviewHelper.zipPages(pageIds);*/
             }
             System.out.println("CompleteDir was: " + completeDir);           //Line has to deleted before pull request
+            session.setAttribute("projectAdjustment", "");
+        } catch (Exception e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+    }
+    @RequestMapping(value ="ajax/overview/exportGtcPages" , method = RequestMethod.POST)
+    public @ResponseBody void exportGtcPages(
+            @RequestParam("completeDir") String pages,
+            HttpSession session, HttpServletResponse response
+    ) {
+        System.out.println("tried pages");
+        System.out.println(pages);
+
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null) {
+            System.out.println("OVH null");          //Line has to deleted before pull request
+            return;
+        }
+
+        try {
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+
+            System.out.println("zip pages");          //Line has to deleted before pull request
+            overviewHelper.zipPages(pages);
+
             session.setAttribute("projectAdjustment", "");
         } catch (Exception e) {
             // Prevent loading an invalid project

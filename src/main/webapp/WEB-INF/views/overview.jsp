@@ -156,7 +156,7 @@
                     });
                 }
 
-                function sessionInitialization(newPageVisit, completeDir) {
+                function exportData(newPageVisit, completeDir, pages) {
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
                     // Check if directory exists
                     $.get( "ajax/overview/checkDir?",
@@ -169,17 +169,32 @@
                                     .done(function( data ) {
                                         if( data === true ) {
                                             // Check if filenames match project specific naming convention
-                                            var ajaxParams = {"completeDir" : completeDir};
-                                            $.post( "ajax/overview/exportGtc", ajaxParams )
-                                                .done(function( data ) {
-                                                    // Load datatable after the last process update is surely finished
-                                                    setTimeout(function() {
-                                                        datatable();
-                                                    }, 2000);
-                                                })
-                                                .fail(function( data ) {
-                                                    $('#modal_exportgtc_failed').modal('open');
-                                                });
+                                            if(completeDir === true) {
+                                                var ajaxParams = {"completeDir" : Boolean('true')};
+                                                $.post( "ajax/overview/exportGtcAll", ajaxParams )
+                                                    .done(function( data ) {
+                                                        // Load datatable after the last process update is surely finished
+                                                        setTimeout(function() {
+                                                            datatable();
+                                                        }, 2000);
+                                                    })
+                                                    .fail(function( data ) {
+                                                        $('#modal_exportgtc_failed').modal('open');
+                                                    });
+                                            }
+                                            else{
+                                                var ajaxParams = {"pages" : pages};
+                                                $.post( "ajax/overview/exportGtcPages", ajaxParams )
+                                                    .done(function( data ) {
+                                                        // Load datatable after the last process update is surely finished
+                                                        setTimeout(function() {
+                                                            datatable();
+                                                        }, 2000);
+                                                    })
+                                                    .fail(function( data ) {
+                                                        $('#modal_exportgtc_failed').modal('open');
+                                                    });
+                                            }
                                         }
                                         else{
                                             // Unload project if directory structure is not valid
@@ -279,7 +294,9 @@
                         .fail(function( data ) {
                         });
                 });
-                $('#continueLegacy').click(function() {
+
+                $('#exportAllPages').click(function() {
+                    // Initialize process handler (wait time, due to delayed AJAX process start)
                     setTimeout(function() {
                         // Unload project if user refuses the mandatory adjustments
                         if( !isProcessRunning() ) {
@@ -289,7 +306,7 @@
 
                     setTimeout(function() {
                         if( !isProcessRunning() ) {
-                            sessionInitialization(false,($(this).attr('id') == 'exportAllPages'));
+                            exportData(false,($(this).attr('id') == 'exportAllPages'),0);
                         }
                         else {
                             $('#modal_inprogress').modal('open');
@@ -297,6 +314,24 @@
                     }, 500);
 
                 });
+
+                $('#exportPages').click(function() {
+                    // Initialize process handler (wait time, due to delayed AJAX process start)
+                    setTimeout(function() {
+                        initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
+                    }, 500);
+
+                    setTimeout(function() {
+                        if( !isProcessRunning() ) {
+                            exportData(false,false,document.getElementById('pages').value);
+                        }
+                        else {
+                            $('#modal_inprogress').modal('open');
+                        }
+                    }, 500);
+                });
+
+
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
                     cancelProcess();
 
@@ -465,6 +500,24 @@
                 <h4 class="red-text">Export GTC</h4>
                 <p>
                             Would you like to export the Ground Truth Data to a .zip file ?<br /></p>
+<<<<<<< HEAD
+=======
+
+                <div class="input-field">
+                    <input id="pageNo" datatype="text"/>
+                    <label for="pageNo">Pages to Export:</label>
+                </div>
+        <!--    <div>
+                                <ul id="imageList" class="side-nav image-list">
+                                    <li class="heading"><i class="material-icons image-list-trigger">remove_red_eye</i>Pages</li>
+                                    <li class="select-all">
+                                        <input type="checkbox" class="" id="selectAll" />
+                                        <label for="selectAll"></label>
+                                        Select all
+                                    </li>
+                                </ul>
+                            </div>-->
+>>>>>>> 69cf488... added page selection
             </div>
             <div class="modal-footer">
                 <a href="#!" id="cancelExport" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
