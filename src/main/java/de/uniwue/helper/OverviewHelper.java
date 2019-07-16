@@ -706,8 +706,6 @@ public class OverviewHelper {
             zipFile(fileToZip,fileToZip.getName(),zipOut);
             zipOut.close();
             fos.close();
-            System.out.println("finishes zipping at: " + projConf.PREPROC_DIR +File.separator+ "GTC.zip");          //Line has to deleted before pull request
-
         } catch(Exception e) {
             System.out.println("File probably exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened for any other reason");          //Line has to deleted before pull request
             System.out.println("OR if FileNotFoundException there is no read permission to file");          //Line has to deleted before pull request
@@ -717,23 +715,39 @@ public class OverviewHelper {
 
     /**
      * Zips specified pages from processing directory
-     * @param pageIds pages to zip
+     * @param pages pages to zip
      */
-    public void zipPages(String pageIds[]) {
+    public void zipPages(String pages) {
+
+        List<String> pageIds = null;
+
         try {
-
-            FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + File.separator + "GTC.zip");
-            ZipOutputStream zipOut = new ZipOutputStream(fos);
-            //File fileToZip = new File(projConf.PREPROC_DIR);
-
-            for(String pageId : pageIds){
-                File fileToZip = new File(projConf.PREPROC_DIR + File.separator + pageId + File.separator);
-                zipFile(fileToZip,fileToZip.getName(),zipOut);
+            Scanner scanner = new Scanner(pages);
+            scanner.useDelimiter(",|;|\n");
+            while(scanner.hasNext()){
+                pageIds.add(scanner.next());
             }
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.out.println("Error while parsing page input");
+        }
 
-            zipOut.close();
-            fos.close();
-            System.out.println("finishes zipping at: " + fos.toString());          //Line has to deleted before pull request
+
+
+        try {
+            if(pageIds != null) {
+                FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + File.separator + "GTC.zip");
+                ZipOutputStream zipOut = new ZipOutputStream(fos);
+                //File fileToZip = new File(projConf.PREPROC_DIR);
+
+                for (String pageId : pageIds) {
+                    File fileToZip = new File(projConf.PREPROC_DIR + File.separator + pageId + File.separator);
+                    zipFile(fileToZip, fileToZip.getName(), zipOut);
+                }
+
+                zipOut.close();
+                fos.close();
+            }
 
         } catch(Exception e) {
             System.out.println("File probably exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened for any other reason");          //Line has to deleted before pull request
@@ -800,8 +814,6 @@ public class OverviewHelper {
      */
     public boolean checkGTC(String pathToFile) throws IOException {
         File file = new File(pathToFile);
-
-        System.out.println("checking: " + pathToFile);          //Line has to deleted before pull request
 
         if(pathToFile.endsWith(projConf.BINR_IMG_EXT)
                 || pathToFile.endsWith(projConf.GRAY_IMG_EXT)
