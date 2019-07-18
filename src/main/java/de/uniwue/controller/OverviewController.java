@@ -396,7 +396,6 @@ public class OverviewController {
 
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null) {
-            System.out.println("OVH null");          //Line has to deleted before pull request
             return;
         }
 
