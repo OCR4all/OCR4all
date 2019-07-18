@@ -41,9 +41,8 @@ public class ProcessHandler {
 
         @Override
         public void run() {
-            try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            String nextLine = null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))){
+                String nextLine = null;
                 while ((nextLine = reader.readLine()) != null) {
                     consumeInputLine.accept(nextLine);
                 }

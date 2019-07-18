@@ -145,8 +145,7 @@ public class ProcessStateCollector {
 
         // Easy and fast check if an end tag of a TextLine exists 
         // Does not check if the xml is valid
-        try {
-			FileInputStream fis = new FileInputStream(pageXML);
+        try (FileInputStream fis = new FileInputStream(pageXML)) {
 			byte[] data = new byte[(int) pageXML.length()];
 			fis.read(data);
 			fis.close();
@@ -232,8 +231,7 @@ public class ProcessStateCollector {
 
 			// Easy and fast check if an end tag of a TextLine exists 
 			// Does not check if the xml is valid
-			try {
-				FileInputStream fis = new FileInputStream(pageXML);
+			try (FileInputStream fis = new FileInputStream(pageXML)){
 				byte[] data = new byte[(int) pageXML.length()];
 				fis.read(data);
 				fis.close();
@@ -280,8 +278,7 @@ public class ProcessStateCollector {
 
 			// Easy and fast check if an end tag of a TextLine exists 
 			// Does not check if the xml is valid
-			try {
-				FileInputStream fis = new FileInputStream(pageXML);
+			try (FileInputStream fis = new FileInputStream(pageXML)){
 				byte[] data = new byte[(int) pageXML.length()];
 				fis.read(data);
 				fis.close();

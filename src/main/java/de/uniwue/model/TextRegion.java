@@ -51,8 +51,9 @@ public class TextRegion implements Comparable<TextRegion> {
         Point[] pointArray = new Point[points.size()];
         pointArray = points.toArray(pointArray);
         
-        MatOfPoint pointMat = new MatOfPoint(pointArray);
+        final MatOfPoint pointMat = new MatOfPoint(pointArray);
         Rect rect = Imgproc.boundingRect(pointMat);
+        pointMat.release();
 
         this.rect = rect;
     }

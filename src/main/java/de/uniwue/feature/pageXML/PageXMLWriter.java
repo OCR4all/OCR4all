@@ -67,7 +67,7 @@ public class PageXMLWriter {
      * @return pageXML document or null if parse error
      * @throws ParserConfigurationException 
      */
-    public static Document getPageXML(Mat image, String imageFilename, String pageXMLVersion) throws ParserConfigurationException {
+    public static Document getPageXML(final Mat image, String imageFilename, String pageXMLVersion) throws ParserConfigurationException {
         if (!pageXMLVersion.equals("2017-07-15") && !pageXMLVersion.equals("2010-03-19")) {
             pageXMLVersion = "2010-03-19";
         }

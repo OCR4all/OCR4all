@@ -72,11 +72,13 @@ public class DespecklingHelper {
             if (stop == true) 
                 break;
 
-            Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.BINR_IMG_EXT);
+            final Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.BINR_IMG_EXT);
             // Only the "standard" parameter is needed when despeckling
             // "marked" is only used to highlight changes for the user
-            mat = ImageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
-            Imgcodecs.imwrite(projConf.DESP_IMG_DIR + File.separator + pageId + projConf.DESP_IMG_EXT, mat);
+            final Mat despeckled = ImageDespeckle.despeckle(mat, maxContourRemovalSize, "standard");
+            mat.release();
+            Imgcodecs.imwrite(projConf.DESP_IMG_DIR + File.separator + pageId + projConf.DESP_IMG_EXT, despeckled);
+            despeckled.release();
 
             progress = (int) (i / totalPages * 100);
             i = i + 1;
