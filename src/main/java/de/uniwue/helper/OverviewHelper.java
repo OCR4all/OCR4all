@@ -699,23 +699,22 @@ public class OverviewHelper {
     /**
      * Zips processing Directory
      */
-    public void zipDir() {
+    public void zipDir(Boolean binary, Boolean gray) {
         try {
-            FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + "GTC.zip");
+            FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
             ZipOutputStream zipOut = new ZipOutputStream(fos);
-            //###
             FilenameFilter nameFilter = (file, s) -> true;
             File fileToZip = new File(projConf.PREPROC_DIR);
             File[] pageFiles = fileToZip.listFiles(nameFilter);
             for (File pageFile : pageFiles) {
-                zipFile(pageFile,pageFile.getName(),zipOut);
+                zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
                 System.out.println("zipped " + pageFile.getName());
             }
-            //####
-            //zipFile(fileToZip,fileToZip.getName(),zipOut);
             zipOut.close();
+            System.out.println("ZipOutputStream closed");
             fos.close();
-            System.out.println("finishes zipping at: " + projConf.PREPROC_DIR +File.separator+ "GTC.zip");          //Line has to deleted before pull request
+            System.out.println("FileOutputStream closed");
+            System.out.println("finishes zipping at: " + projConf.PROJECT_DIR + "GTC.zip");          //Line has to deleted before pull request
 
         } catch(Exception e) {
             System.out.println("File probably exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened for any other reason");          //Line has to deleted before pull request
@@ -728,7 +727,7 @@ public class OverviewHelper {
      * Zips specified pages from processing directory
      * @param pages pages to zip
      */
-    public void zipPages(String pages) {
+    public void zipPages(String pages, Boolean binary, Boolean gray) {
 
         List<String> pageIdSegments = new ArrayList<String>();
 
@@ -789,7 +788,7 @@ public class OverviewHelper {
 
         try {
             if(!pageIds.isEmpty()) {
-                FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + "GTC.zip");
+                FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
                 //File fileToZip = new File(projConf.PREPROC_DIR);
 
@@ -800,13 +799,15 @@ public class OverviewHelper {
                     File fileToZip = new File(projConf.PREPROC_DIR);
                     File[] pageFiles = fileToZip.listFiles(nameFilter);
                     for (File pageFile : pageFiles) {
-                        zipFile(pageFile,pageFile.getName(),zipOut);
+                        zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
                     }
                     System.out.println("zipped page no " + pageId);
                 }
 
                 zipOut.close();
+                System.out.println("ZipOutputStream closed");
                 fos.close();
+                System.out.println("FileOutputStream closed");
             } else{
                 System.out.println("page list is empty");
             }
@@ -828,7 +829,7 @@ public class OverviewHelper {
      */
 
 
-    public void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException{
+    public void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, Boolean binary, Boolean gray) throws IOException{
         if (fileToZip.isHidden()) {
             return;
         }
@@ -842,7 +843,7 @@ public class OverviewHelper {
             }
             FilenameFilter nameFilter = (dir, s) -> {
                 try {
-                    return checkGTC(dir.toString() + File.separator + s);
+                    return checkGTC(dir.toString() + File.separator + s, binary, gray);
                 } catch(IOException e) {
                     return false;
                 }
@@ -850,37 +851,39 @@ public class OverviewHelper {
 
             File[] children = fileToZip.listFiles(nameFilter);
             for (File childFile : children) {
-                zipFile(childFile, fileName + File.separator + childFile.getName(), zipOut);
+                zipFile(childFile, fileName + File.separator + childFile.getName(), zipOut, binary, gray);
             }
             return;
         }
-        FileInputStream fis = new FileInputStream(fileToZip);
-        ZipEntry zipEntry = new ZipEntry(fileName);
-        zipOut.putNextEntry(zipEntry);
-        byte[] bytes = new byte[1024];
-        int length;
-        while ((length = fis.read(bytes)) >= 0) {
-            zipOut.write(bytes, 0, length);
+        if(checkGTC(fileName,binary,gray)) {
+            FileInputStream fis = new FileInputStream(fileToZip);
+            ZipEntry zipEntry = new ZipEntry(fileName);
+            zipOut.putNextEntry(zipEntry);
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = fis.read(bytes)) >= 0) {
+                zipOut.write(bytes, 0, length);
+            }
+            fis.close();
         }
-        fis.close();
     }
 
 
     /**
-     * Checks if the project dir contains no images and a PDF
+     * Checks if file belongs to Ground Truth Data
+     * @param pathToFile path to file
+     * @param binary determines if binary images will be checked positive
+     * @param gray determines is grayscale images will be checke positive
      * @return TRUE if there are no images and directory contains PDF
      * @throws IOException
      */
-    public boolean checkGTC(String pathToFile) throws IOException {
+    public boolean checkGTC(String pathToFile, Boolean binary, Boolean gray) throws IOException {
         File file = new File(pathToFile);
-
-        //System.out.println("checking: " + pathToFile);          //Line has to deleted before pull request
-
-        if(pathToFile.endsWith(projConf.BINR_IMG_EXT)
-                || pathToFile.endsWith(projConf.GRAY_IMG_EXT)
+        if(((binary && pathToFile.endsWith(projConf.BINR_IMG_EXT))
+                || (gray &&pathToFile.endsWith(projConf.GRAY_IMG_EXT))
                 || pathToFile.endsWith(projConf.GT_EXT)
                 || pathToFile.endsWith("xml")
-                || file.isDirectory()) {
+                || file.isDirectory())) {
             return true;
         } else {
             return false;

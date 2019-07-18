@@ -156,7 +156,7 @@
                     });
                 }
 
-                function exportData(newPageVisit, completeDir, pages) {
+                function exportData(newPageVisit, completeDir, pages, binary, gray) {
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
                     // Check if directory exists
                     $.get( "ajax/overview/checkDir?",
@@ -169,23 +169,9 @@
                                     .done(function( data ) {
                                         if( data === true ) {
                                             // Check if filenames match project specific naming convention
-                                            if(completeDir == true) {
-                                                var ajaxParams = {"completeDir" : completeDir};
-                                                $.post( "ajax/overview/exportGtcAll", ajaxParams )
-                                                    .done(function( data ) {
-                                                        // Load datatable after the last process update is surely finished
-                                                        setTimeout(function() {
-                                                            datatable();
-                                                        }, 2000);
-                                                    })
-                                                    .fail(function( data ) {
-                                                        $('#modal_exportgtc_failed').modal('open');
-                                                    });
-                                            }
-                                            else{
                                                 console.log(pages);
-                                                var ajaxParams = {"pages" : pages};
-                                                $.post( "ajax/overview/exportGtcPages", ajaxParams )
+                                                var ajaxParams = {"completeDir" : completeDir, "pages" : pages, "binary" : binary, "gray" : gray};
+                                                $.post( "ajax/overview/exportGtc", ajaxParams )
                                                     .done(function( data ) {
                                                         // Load datatable after the last process update is surely finished
                                                         setTimeout(function() {
@@ -195,7 +181,6 @@
                                                     .fail(function( data ) {
                                                         $('#modal_exportgtc_failed').modal('open');
                                                     });
-                                            }
                                         }
                                         else{
                                             // Unload project if directory structure is not valid
@@ -308,7 +293,10 @@
 
                     setTimeout(function() {
                         if( !isProcessRunning() ) {
-                            exportData(false,($this.attr('id') == 'exportAllPages'),document.getElementById('pageNo').value);
+                            exportData(false,($this.attr('id') == 'exportAllPages'),
+                                document.getElementById('pageNo').value,
+                                document.getElementById('binaryCheckbox').checked,
+                                document.getElementById('grayCheckbox').checked);
                         }
                         else {
                             $('#modal_inprogress').modal('open');
@@ -499,26 +487,40 @@
         <div id="modal_exportgtc" class="modal">
             <div class="modal-content">
                 <h4 class="red-text">Export GTC</h4>
-                <p>
-                            Would you like to export the Ground Truth Data to a .zip file ?<br /></p>
-<<<<<<< HEAD
-=======
+                <table class="compact">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <p>
+                                Would you like to export the Ground Truth Data to a .zip file ?<br />
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>Please choose which image type you would like to zip:</p>
+                            <div>
+                                <input type="checkbox" id="binaryCheckbox" name="Binary">
+                                <label for="binaryCheckbox">Binary</label>
+                            </div>
 
-                <div class="input-field">
-                    <input id="pageNo" datatype="text"/>
-                    <label for="pageNo">Pages to Export:</label>
-                </div>
-        <!--    <div>
-                                <ul id="imageList" class="side-nav image-list">
-                                    <li class="heading"><i class="material-icons image-list-trigger">remove_red_eye</i>Pages</li>
-                                    <li class="select-all">
-                                        <input type="checkbox" class="" id="selectAll" />
-                                        <label for="selectAll"></label>
-                                        Select all
-                                    </li>
-                                </ul>
-                            </div>-->
->>>>>>> 69cf488... added page selection
+                            <div>
+                                <input type="checkbox" id="grayCheckbox" name="Gray">
+                                <label for="grayCheckbox">Gray</label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="col s12">
+                                <div class="input-field inline">
+                                    <input id="pageNo" type="text">
+                                    <label for="pageNo">Pages to Export</label>
+                                    <span class="helper-text">ex.: 1-4,6,8-10</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
             <div class="modal-footer">
                 <a href="#!" id="cancelExport" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
