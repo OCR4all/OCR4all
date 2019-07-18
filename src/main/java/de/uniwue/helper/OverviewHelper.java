@@ -679,10 +679,6 @@ public class OverviewHelper {
         if (!(0 <= areaFactor && areaFactor <= 1) || !(0 <= whiteFactor && whiteFactor <= 1)) {
             throw new IllegalArgumentException("Percent factors are not in range of 0% and 100%");
         }
-        //+++++++++++++++++++++++++++++++++++++
-
-        System.out.println("checked blank pages");
-        //+++++++++++++++++++++++++++++++++++++
         // Convert image to grayscale
         final Mat gray = new Mat(img.size(), CvType.CV_8UC1);
         Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY);
@@ -708,6 +704,8 @@ public class OverviewHelper {
 
     /**
      * Zips processing Directory
+     * @param binary    determines if binary image will be zipped
+     * @param gray      determines if grayscale image will be zipped
      */
     public void zipDir(Boolean binary, Boolean gray) {
         try {
@@ -718,14 +716,10 @@ public class OverviewHelper {
             File[] pageFiles = fileToZip.listFiles(nameFilter);
             for (File pageFile : pageFiles) {
                 zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
-                System.out.println("zipped " + pageFile.getName());
             }
             zipOut.close();
-            System.out.println("ZipOutputStream closed");
             fos.close();
         } catch(Exception e) {
-            System.out.println("File probably exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened for any other reason");          //Line has to deleted before pull request
-            System.out.println("OR if FileNotFoundException there is no read permission to file");          //Line has to deleted before pull request
             e.printStackTrace();
         }
     }
@@ -733,11 +727,13 @@ public class OverviewHelper {
     /**
      * Zips specified pages from processing directory
      * @param pages pages to zip
+     * @param binary    determines if binary image will be zipped
+     * @param gray      determines if grayscale image will be zipped
      */
     public void zipPages(String pages, Boolean binary, Boolean gray) {
 
         List<String> pageIdSegments = new ArrayList<String>();
-
+        //splits page input on commas and semi-colons
         try {
             Scanner scanner = new Scanner(pages);
             scanner.useDelimiter(",|;|\n");
@@ -747,10 +743,10 @@ public class OverviewHelper {
             scanner.close();
         } catch(Exception e) {
             e.printStackTrace();
-            System.out.println("something went wrong in parser stage 1");
             return;
         }
 
+        //splits every segment at hyphen and fills this range up with corresponding numbers
         List<Integer> pageIds = new ArrayList<Integer>();
         try {
             if(!pageIdSegments.isEmpty()) {
@@ -767,38 +763,25 @@ public class OverviewHelper {
                                 pageIds.add(i);
                             }
                         } else {
-                            System.out.println("size of pageRange somehow was: " + pageRange.size());
+                            throw new IndexOutOfBoundsException("page range is negative or had more than one range");
                         }
                     } else {
                         pageIds.add(Integer.parseInt(segment));
                     }
-
-
                 }
             } else {
-                System.out.println("somehow there were no segments in pageIdSegments");
+                throw new IllegalArgumentException("No pages selected");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("something went wrong in parser stage 2");
             return;
         }
-        //++++++++++++++++
-        System.out.print("pages now to be zipped:");
-        for(int i : pageIds) {
-            System.out.print(Integer.toString(i) + ", ");
-        }
-        System.out.println();
-        //++++++++++++++++
 
-
-
+        //now zips every page selected
         try {
             if(!pageIds.isEmpty()) {
                 FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
-                //File fileToZip = new File(projConf.PREPROC_DIR);
-
                 for (int pageId : pageIds) {
 
                     FilenameFilter nameFilter = (dir, s) -> s.startsWith(String.format("%04d", pageId));
@@ -808,35 +791,34 @@ public class OverviewHelper {
                     for (File pageFile : pageFiles) {
                         zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
                     }
-                    System.out.println("zipped page no " + pageId);
                 }
 
                 zipOut.close();
-                System.out.println("ZipOutputStream closed");
                 fos.close();
+            } else{
+                throw new IllegalArgumentException("page list is empty");
             }
 
         } catch(Exception e) {
-            System.out.println("File probably exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened for any other reason");          //Line has to deleted before pull request
-            System.out.println("OR if FileNotFoundException there is no read permission to file");          //Line has to deleted before pull request
             e.printStackTrace();
         }
     }
-
 
     /**Recursive function that zips files that are either GTC files or folders
      *
      * @param fileToZip absolute path to file
      * @param fileName  name of file
      * @param zipOut    ZipOutputStream
+     * @param binary    determines if binary image will be zipped
+     * @param gray      determines if grayscale image will be zipped
      * @throws IOException
      */
-
-
     public void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, Boolean binary, Boolean gray) throws IOException{
+        //do not zip hidden file
         if (fileToZip.isHidden()) {
             return;
         }
+        //if file is directory list all files in directory and check for GTC data
         if (fileToZip.isDirectory()) {
             if (fileName.endsWith(File.separator)) {
                 zipOut.putNextEntry(new ZipEntry(fileName));
@@ -859,6 +841,7 @@ public class OverviewHelper {
             }
             return;
         }
+        //additional check necessary for root folder
         if(checkGTC(fileName,binary,gray)) {
             FileInputStream fis = new FileInputStream(fileToZip);
             ZipEntry zipEntry = new ZipEntry(fileName);

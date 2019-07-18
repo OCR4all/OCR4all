@@ -375,6 +375,16 @@ public class OverviewController {
         }
     }
 
+
+    /**
+     * Response to the Request to export Ground Truth Data from Project
+     * @param completeDir determines if complete project GTD will be zipped
+     * @param pages selected pages to zip
+     * @param binary determines if binary images will be included
+     * @param gray determines if grayscale images will be included
+     * @param session Session of the user
+     * @param response Response to the Request
+     */
     @RequestMapping(value ="ajax/overview/exportGtc" , method = RequestMethod.POST)
     public @ResponseBody void exportGtc(
             @RequestParam("completeDir") Boolean completeDir,
@@ -391,15 +401,9 @@ public class OverviewController {
         try {
             session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
 
-            /*
-                    switched to two functions because boolean didnt properly work in jsp
-             */
-
             if(completeDir) {
-                System.out.println("zip complete dir");          //Line has to deleted before pull request
                 overviewHelper.zipDir(binary, gray);
             } else {
-                System.out.println("zip pages");          //Line has to deleted before pull request
                 overviewHelper.zipPages(pages, binary, gray);
             }
             session.setAttribute("projectAdjustment", "");
