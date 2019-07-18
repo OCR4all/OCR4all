@@ -1,21 +1,31 @@
 package de.uniwue.helper;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
@@ -25,18 +35,16 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.model.PageOverview;
-
-import org.opencv.imgproc.Imgproc;
-import org.opencv.core.CvType;
-import org.opencv.core.Core;
-import org.opencv.core.MatOfByte;
-import javax.imageio.ImageIO;
 
 public class OverviewHelper {
     /**
@@ -701,21 +709,19 @@ public class OverviewHelper {
     /**
      * Zips processing Directory
      */
-    public void zipDir() {
+    public void zipDir(Boolean binary, Boolean gray) {
         try {
-            FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + "GTC.zip");
+            FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
             ZipOutputStream zipOut = new ZipOutputStream(fos);
-            //###
             FilenameFilter nameFilter = (file, s) -> true;
             File fileToZip = new File(projConf.PREPROC_DIR);
             File[] pageFiles = fileToZip.listFiles(nameFilter);
             for (File pageFile : pageFiles) {
-                zipFile(pageFile,pageFile.getName(),zipOut);
+                zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
                 System.out.println("zipped " + pageFile.getName());
             }
-            //####
-            //zipFile(fileToZip,fileToZip.getName(),zipOut);
             zipOut.close();
+            System.out.println("ZipOutputStream closed");
             fos.close();
         } catch(Exception e) {
             System.out.println("File probably exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened for any other reason");          //Line has to deleted before pull request
@@ -728,7 +734,7 @@ public class OverviewHelper {
      * Zips specified pages from processing directory
      * @param pages pages to zip
      */
-    public void zipPages(String pages) {
+    public void zipPages(String pages, Boolean binary, Boolean gray) {
 
         List<String> pageIdSegments = new ArrayList<String>();
 
@@ -789,7 +795,7 @@ public class OverviewHelper {
 
         try {
             if(!pageIds.isEmpty()) {
-                FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + "GTC.zip");
+                FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
                 //File fileToZip = new File(projConf.PREPROC_DIR);
 
@@ -800,12 +806,13 @@ public class OverviewHelper {
                     File fileToZip = new File(projConf.PREPROC_DIR);
                     File[] pageFiles = fileToZip.listFiles(nameFilter);
                     for (File pageFile : pageFiles) {
-                        zipFile(pageFile,pageFile.getName(),zipOut);
+                        zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
                     }
                     System.out.println("zipped page no " + pageId);
                 }
 
                 zipOut.close();
+                System.out.println("ZipOutputStream closed");
                 fos.close();
             }
 
@@ -826,7 +833,7 @@ public class OverviewHelper {
      */
 
 
-    public void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException{
+    public void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, Boolean binary, Boolean gray) throws IOException{
         if (fileToZip.isHidden()) {
             return;
         }
@@ -840,7 +847,7 @@ public class OverviewHelper {
             }
             FilenameFilter nameFilter = (dir, s) -> {
                 try {
-                    return checkGTC(dir.toString() + File.separator + s);
+                    return checkGTC(dir.toString() + File.separator + s, binary, gray);
                 } catch(IOException e) {
                     return false;
                 }
@@ -848,35 +855,39 @@ public class OverviewHelper {
 
             File[] children = fileToZip.listFiles(nameFilter);
             for (File childFile : children) {
-                zipFile(childFile, fileName + File.separator + childFile.getName(), zipOut);
+                zipFile(childFile, fileName + File.separator + childFile.getName(), zipOut, binary, gray);
             }
             return;
         }
-        FileInputStream fis = new FileInputStream(fileToZip);
-        ZipEntry zipEntry = new ZipEntry(fileName);
-        zipOut.putNextEntry(zipEntry);
-        byte[] bytes = new byte[1024];
-        int length;
-        while ((length = fis.read(bytes)) >= 0) {
-            zipOut.write(bytes, 0, length);
+        if(checkGTC(fileName,binary,gray)) {
+            FileInputStream fis = new FileInputStream(fileToZip);
+            ZipEntry zipEntry = new ZipEntry(fileName);
+            zipOut.putNextEntry(zipEntry);
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = fis.read(bytes)) >= 0) {
+                zipOut.write(bytes, 0, length);
+            }
+            fis.close();
         }
-        fis.close();
     }
 
 
     /**
-     * Checks if the project dir contains no images and a PDF
+     * Checks if file belongs to Ground Truth Data
+     * @param pathToFile path to file
+     * @param binary determines if binary images will be checked positive
+     * @param gray determines is grayscale images will be checke positive
      * @return TRUE if there are no images and directory contains PDF
      * @throws IOException
      */
-    public boolean checkGTC(String pathToFile) throws IOException {
+    public boolean checkGTC(String pathToFile, Boolean binary, Boolean gray) throws IOException {
         File file = new File(pathToFile);
-
-        if(pathToFile.endsWith(projConf.BINR_IMG_EXT)
-                || pathToFile.endsWith(projConf.GRAY_IMG_EXT)
+        if(((binary && pathToFile.endsWith(projConf.BINR_IMG_EXT))
+                || (gray && pathToFile.endsWith(projConf.GRAY_IMG_EXT))
                 || pathToFile.endsWith(projConf.GT_EXT)
                 || pathToFile.endsWith("xml")
-                || file.isDirectory()) {
+                || file.isDirectory())) {
             return true;
         } else {
             return false;

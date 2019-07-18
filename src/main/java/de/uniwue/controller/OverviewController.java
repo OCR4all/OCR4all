@@ -375,9 +375,12 @@ public class OverviewController {
         }
     }
 
-    @RequestMapping(value ="ajax/overview/exportGtcAll" , method = RequestMethod.POST)
+    @RequestMapping(value ="ajax/overview/exportGtc" , method = RequestMethod.POST)
     public @ResponseBody void exportGtc(
             @RequestParam("completeDir") Boolean completeDir,
+            @RequestParam("pages") String pages,
+            @RequestParam("binary") Boolean binary,
+            @RequestParam("gray") Boolean gray,
             HttpSession session, HttpServletResponse response
     ) {
         OverviewHelper overviewHelper = provideHelper(session, response);
@@ -392,32 +395,13 @@ public class OverviewController {
                     switched to two functions because boolean didnt properly work in jsp
              */
 
-            if(Boolean.TRUE) {
-                overviewHelper.zipDir();
+            if(completeDir) {
+                System.out.println("zip complete dir");          //Line has to deleted before pull request
+                overviewHelper.zipDir(binary, gray);
+            } else {
+                System.out.println("zip pages");          //Line has to deleted before pull request
+                overviewHelper.zipPages(pages, binary, gray);
             }
-            session.setAttribute("projectAdjustment", "");
-        } catch (Exception e) {
-            // Prevent loading an invalid project
-            session.invalidate();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            e.printStackTrace();
-        }
-    }
-    @RequestMapping(value ="ajax/overview/exportGtcPages" , method = RequestMethod.POST)
-    public @ResponseBody void exportGtcPages(
-            @RequestParam("pages") String pages,
-            HttpSession session, HttpServletResponse response
-    ) {
-        OverviewHelper overviewHelper = provideHelper(session, response);
-        if (overviewHelper == null) {
-            return;
-        }
-
-        try {
-            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
-
-            overviewHelper.zipPages(pages);
-
             session.setAttribute("projectAdjustment", "");
         } catch (Exception e) {
             // Prevent loading an invalid project
