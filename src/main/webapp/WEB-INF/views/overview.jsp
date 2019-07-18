@@ -352,6 +352,13 @@
                         $('#convertToPdfWithBlanks').removeClass("disabled");
                     }
                 });
+                $('#pageNo').on('input', function(e) {
+                    if(!this.checkValidity()){
+                        $('#exportPages').addClass("disabled");
+                    }else{
+                        $('#exportPages').removeClass("disabled");
+                    }
+                });
             });
 
 
@@ -500,21 +507,21 @@
                         <td>
                             <p>Please choose which image type you would like to zip:</p>
                             <div>
-                                <input type="checkbox" id="binaryCheckbox" name="Binary">
+                                <input type="checkbox" id="binaryCheckbox" name="Binary" checked="checked">
                                 <label for="binaryCheckbox">Binary</label>
                             </div>
 
                             <div>
-                                <input type="checkbox" id="grayCheckbox" name="Gray">
+                                <input type="checkbox" id="grayCheckbox" name="Gray" checked="checked">
                                 <label for="grayCheckbox">Gray</label>
                             </div>
                         </td>
                         <td>
                             <div class="col s12">
                                 <div class="input-field inline">
-                                    <input id="pageNo" type="text">
+                                    <input id="pageNo" type="text" pattern="^(\d+\s*([\-]?\s*\d+)?)((,|;){1}(\d+\s*([\-]?\s*\d+)?))*$">
                                     <label for="pageNo">Pages to Export</label>
-                                    <span class="helper-text">ex.: 1-4,6,8-10</span>
+                                    <span class="helper-text" style="color:gray;font-weight:lighter">e.g. 1-4,6,8-10</span>
                                 </div>
                             </div>
                         </td>
