@@ -36,6 +36,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.core.CvType;
 import org.opencv.core.Core;
 import org.opencv.core.MatOfByte;
+import javax.imageio.ImageIO;
 
 public class OverviewHelper {
     /**
@@ -670,7 +671,10 @@ public class OverviewHelper {
         if (!(0 <= areaFactor && areaFactor <= 1) || !(0 <= whiteFactor && whiteFactor <= 1)) {
             throw new IllegalArgumentException("Percent factors are not in range of 0% and 100%");
         }
+        //+++++++++++++++++++++++++++++++++++++
 
+        System.out.println("checked blank pages");
+        //+++++++++++++++++++++++++++++++++++++
         // Convert image to grayscale
         final Mat gray = new Mat(img.size(), CvType.CV_8UC1);
         Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY);
@@ -701,9 +705,16 @@ public class OverviewHelper {
         try {
             FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + "GTC.zip");
             ZipOutputStream zipOut = new ZipOutputStream(fos);
+            //###
+            FilenameFilter nameFilter = (file, s) -> true;
             File fileToZip = new File(projConf.PREPROC_DIR);
-
-            zipFile(fileToZip,fileToZip.getName(),zipOut);
+            File[] pageFiles = fileToZip.listFiles(nameFilter);
+            for (File pageFile : pageFiles) {
+                zipFile(pageFile,pageFile.getName(),zipOut);
+                System.out.println("zipped " + pageFile.getName());
+            }
+            //####
+            //zipFile(fileToZip,fileToZip.getName(),zipOut);
             zipOut.close();
             fos.close();
         } catch(Exception e) {
@@ -719,30 +730,79 @@ public class OverviewHelper {
      */
     public void zipPages(String pages) {
 
-        List<String> pageIds = null;
+        List<String> pageIdSegments = new ArrayList<String>();
 
         try {
             Scanner scanner = new Scanner(pages);
             scanner.useDelimiter(",|;|\n");
             while(scanner.hasNext()){
-                pageIds.add(scanner.next());
+                pageIdSegments.add(scanner.next());
             }
+            scanner.close();
         } catch(Exception e) {
             e.printStackTrace();
-            System.out.println("Error while parsing page input");
+            System.out.println("something went wrong in parser stage 1");
+            return;
         }
+
+        List<Integer> pageIds = new ArrayList<Integer>();
+        try {
+            if(!pageIdSegments.isEmpty()) {
+                for (String segment : pageIdSegments) {
+                    if(segment.contains("-")) {
+                        Scanner scanner = new Scanner(segment);
+                        scanner.useDelimiter("-");
+                        List<String> pageRange = new ArrayList<String>();
+                        while(scanner.hasNext()){
+                            pageRange.add(scanner.next());
+                        }
+                        if(pageRange.size() == 2) {
+                            for(int i = Integer.parseInt(pageRange.get(0)); i <= Integer.parseInt(pageRange.get(1));i++) {
+                                pageIds.add(i);
+                            }
+                        } else {
+                            System.out.println("size of pageRange somehow was: " + pageRange.size());
+                        }
+                    } else {
+                        pageIds.add(Integer.parseInt(segment));
+                    }
+
+
+                }
+            } else {
+                System.out.println("somehow there were no segments in pageIdSegments");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("something went wrong in parser stage 2");
+            return;
+        }
+        //++++++++++++++++
+        System.out.print("pages now to be zipped:");
+        for(int i : pageIds) {
+            System.out.print(Integer.toString(i) + ", ");
+        }
+        System.out.println();
+        //++++++++++++++++
 
 
 
         try {
-            if(pageIds != null) {
-                FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + File.separator + "GTC.zip");
+            if(!pageIds.isEmpty()) {
+                FileOutputStream fos = new FileOutputStream(projConf.PREPROC_DIR + "GTC.zip");
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
                 //File fileToZip = new File(projConf.PREPROC_DIR);
 
-                for (String pageId : pageIds) {
-                    File fileToZip = new File(projConf.PREPROC_DIR + File.separator + pageId + File.separator);
-                    zipFile(fileToZip, fileToZip.getName(), zipOut);
+                for (int pageId : pageIds) {
+
+                    FilenameFilter nameFilter = (dir, s) -> s.startsWith(String.format("%04d", pageId));
+
+                    File fileToZip = new File(projConf.PREPROC_DIR);
+                    File[] pageFiles = fileToZip.listFiles(nameFilter);
+                    for (File pageFile : pageFiles) {
+                        zipFile(pageFile,pageFile.getName(),zipOut);
+                    }
+                    System.out.println("zipped page no " + pageId);
                 }
 
                 zipOut.close();
@@ -778,14 +838,11 @@ public class OverviewHelper {
                 zipOut.putNextEntry(new ZipEntry(fileName + File.separator));
                 zipOut.closeEntry();
             }
-            FilenameFilter nameFilter = new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String s) {
-                    try {
-                        return checkGTC(dir.toString() + File.separator + s);
-                    } catch(IOException e) {
-                        return false;
-                    }
+            FilenameFilter nameFilter = (dir, s) -> {
+                try {
+                    return checkGTC(dir.toString() + File.separator + s);
+                } catch(IOException e) {
+                    return false;
                 }
             };
 
@@ -818,6 +875,7 @@ public class OverviewHelper {
         if(pathToFile.endsWith(projConf.BINR_IMG_EXT)
                 || pathToFile.endsWith(projConf.GRAY_IMG_EXT)
                 || pathToFile.endsWith(projConf.GT_EXT)
+                || pathToFile.endsWith("xml")
                 || file.isDirectory()) {
             return true;
         } else {
@@ -838,6 +896,7 @@ public class OverviewHelper {
         final Mat image = Imgcodecs.imdecode(bytes, Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
         bytes.release();
         return image;
+
     }
 
 }

@@ -170,8 +170,8 @@
                                     .done(function( data ) {
                                         if( data === true ) {
                                             // Check if filenames match project specific naming convention
-                                            if(completeDir === true) {
-                                                var ajaxParams = {"completeDir" : Boolean('true')};
+                                            if(completeDir == true) {
+                                                var ajaxParams = {"completeDir" : completeDir};
                                                 $.post( "ajax/overview/exportGtcAll", ajaxParams )
                                                     .done(function( data ) {
                                                         // Load datatable after the last process update is surely finished
@@ -184,6 +184,7 @@
                                                     });
                                             }
                                             else{
+                                                console.log(pages);
                                                 var ajaxParams = {"pages" : pages};
                                                 $.post( "ajax/overview/exportGtcPages", ajaxParams )
                                                     .done(function( data ) {
@@ -307,27 +308,12 @@
                         }
                     }, 500);
                 });
-                $('#exportPages, #exportAllPages').click(function() {
-                    // Initialize process handler (wait time, due to delayed AJAX process start)
-
-                    setTimeout(function() {
-                        if( !isProcessRunning() ) {
-                            exportData(false,($(this).attr('id') == 'exportAllPages'),0);
-                        }
-                        else {
-                            $('#modal_inprogress').modal('open');
-                        }
-                    }, 500);
-                });
-                $('#exportPages').click(function() {
+                $('#exportAllPages, #exportPages').click(function() {
+                    const $this = $(this);
                     // Initialize process handler (wait time, due to delayed AJAX process start)
                     setTimeout(function() {
-                        initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
-                    }, 500);
-
-                    setTimeout(function() {
                         if( !isProcessRunning() ) {
-                            exportData(false,false,document.getElementById('pages').value);
+                            exportData(false,($this.attr('id') == 'exportAllPages'),document.getElementById('pageNo').value);
                         }
                         else {
                             $('#modal_inprogress').modal('open');

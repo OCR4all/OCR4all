@@ -405,7 +405,7 @@ public class OverviewController {
     }
     @RequestMapping(value ="ajax/overview/exportGtcPages" , method = RequestMethod.POST)
     public @ResponseBody void exportGtcPages(
-            @RequestParam("completeDir") String pages,
+            @RequestParam("pages") String pages,
             HttpSession session, HttpServletResponse response
     ) {
         OverviewHelper overviewHelper = provideHelper(session, response);
