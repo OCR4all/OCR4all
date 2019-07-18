@@ -64,7 +64,6 @@ public class RegionExtractor {
 
             String index = page.getReadingOrder().findIndex(region.getId());
 
-            //the PageXML representation of the reading order is retarded
             if (index != null) {
                 String id = index.replace("r", "");
 
