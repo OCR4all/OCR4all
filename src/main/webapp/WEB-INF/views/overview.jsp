@@ -169,8 +169,8 @@
                                     .done(function( data ) {
                                         if( data === true ) {
                                             // Check if filenames match project specific naming convention
-                                            if(completeDir === true) {
-                                                var ajaxParams = {"completeDir" : Boolean('true')};
+                                            if(completeDir == true) {
+                                                var ajaxParams = {"completeDir" : completeDir};
                                                 $.post( "ajax/overview/exportGtcAll", ajaxParams )
                                                     .done(function( data ) {
                                                         // Load datatable after the last process update is surely finished
@@ -183,6 +183,7 @@
                                                     });
                                             }
                                             else{
+                                                console.log(pages);
                                                 var ajaxParams = {"pages" : pages};
                                                 $.post( "ajax/overview/exportGtcPages", ajaxParams )
                                                     .done(function( data ) {
@@ -295,7 +296,8 @@
                         });
                 });
 
-                $('#exportAllPages').click(function() {
+                $('#exportAllPages, #exportPages').click(function() {
+                    const $this = $(this);
                     // Initialize process handler (wait time, due to delayed AJAX process start)
                     setTimeout(function() {
                         // Unload project if user refuses the mandatory adjustments
@@ -306,7 +308,7 @@
 
                     setTimeout(function() {
                         if( !isProcessRunning() ) {
-                            exportData(false,($(this).attr('id') == 'exportAllPages'),0);
+                            exportData(false,($this.attr('id') == 'exportAllPages'),document.getElementById('pageNo').value);
                         }
                         else {
                             $('#modal_inprogress').modal('open');
@@ -330,7 +332,6 @@
                         }
                     }, 500);
                 });
-
 
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
                     cancelProcess();
