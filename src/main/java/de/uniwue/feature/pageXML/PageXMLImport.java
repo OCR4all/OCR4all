@@ -144,6 +144,26 @@ public class PageXMLImport {
     }
 
     /**
+     * Creates an Arraylist of RegionRefIndexed objects from an xml element
+     * The RegionRefindex represents the reading order of the different textregions
+     * @param orderedGroup extracted XML node
+     * @return Arraylist of RegionRefIndexed
+     */
+    private static ArrayList<RegionRefIndexed> extractRegionRef(Element unorderedGroup) {
+        ArrayList<RegionRefIndexed> regionRefIndices = new ArrayList<RegionRefIndexed>();
+        NodeList rriNodes = unorderedGroup.getElementsByTagName("RegionRef");
+
+        for (int i = 0; i < rriNodes.getLength(); i++) {
+            Element rriElement = (Element) rriNodes.item(i);
+            String regionRef = rriElement.getAttribute("regionRef");
+
+            RegionRefIndexed rri = new RegionRefIndexed(""+i, regionRef);
+            regionRefIndices.add(rri);
+        }
+
+        return regionRefIndices;
+    }
+    /**
      * Creates a readingOrder object from the extracted xml element
      * @param readingOrderElement extracted XML element
      * @return ReadingOrder object, which represents the readingOrder of the page
@@ -152,11 +172,16 @@ public class PageXMLImport {
         if (readingOrderElement == null) {
             return null;
         }
+		ArrayList<RegionRefIndexed> regionRefIndices;
+        Element readingOrderList = (Element) readingOrderElement.getElementsByTagName("OrderedGroup").item(0);
+        if(readingOrderList != null) {
+			regionRefIndices = extractRegionRefIndices(readingOrderList);
+        } else {
+			readingOrderList = (Element) readingOrderElement.getElementsByTagName("UnorderedGroup").item(0);
+			regionRefIndices = extractRegionRef(readingOrderList);
+        }
 
-        Element orderedGroup = (Element) readingOrderElement.getElementsByTagName("OrderedGroup").item(0);
-        String id = orderedGroup.getAttribute("id");
-
-        ArrayList<RegionRefIndexed> regionRefIndices = extractRegionRefIndices(orderedGroup);
+        String id = readingOrderList.getAttribute("id");
         ReadingOrder readingOrder = new ReadingOrder(id, regionRefIndices);
 
         return readingOrder;
