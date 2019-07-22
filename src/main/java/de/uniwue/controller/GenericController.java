@@ -52,7 +52,8 @@ import de.uniwue.helper.GenericHelper;
         if (processList == null)
             processList = new ArrayList<String>();
 
-        processList.add(process);
+        if(!processList.contains(process)) 
+			processList.add(process);
         session.setAttribute("processList", processList);
     }
 
