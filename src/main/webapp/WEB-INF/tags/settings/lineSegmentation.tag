@@ -25,6 +25,15 @@
                         </div>
                     </td>
                 </tr>
+                <tr>
+                    <td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
+                    <td>
+                         <div class="input-field">
+                             <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
+                             <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
+                        </div>
+                    </td>
+                </tr>
 				</c:when>
 				<c:otherwise>
 				 <tr>
