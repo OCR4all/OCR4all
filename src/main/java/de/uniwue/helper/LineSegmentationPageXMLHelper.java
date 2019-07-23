@@ -163,9 +163,9 @@ public class LineSegmentationPageXMLHelper  implements LineSegmentationHelper{
         writer.writeValue(segmentListFile, dataList); 
         
         command.add(segmentListFile.toString());
-		command.addAll(cmdArgs);
+        command.addAll(cmdArgs);
         processHandler.setFetchProcessConsole(true);
-		processHandler.startProcess("pagelineseg", command, false);
+        processHandler.startProcess("pagelineseg", command, false);
         
 
         // Execute progress update to fill data structure with correct values
