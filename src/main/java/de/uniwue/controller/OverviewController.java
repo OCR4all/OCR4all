@@ -221,6 +221,22 @@ public class OverviewController {
     }
 
     /**
+     * Response to the request to check if this project includes legacy (Directory) files
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Returns the status of the filename check
+     */
+    @RequestMapping(value ="/ajax/overview/isLegacy" , method = RequestMethod.GET)
+    public @ResponseBody boolean checkLegacy(HttpSession session, HttpServletResponse response) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null)
+            return false;
+
+	   return overviewHelper.isLegacy();
+    }
+
+    /**
      * Response to adjust the files according to the project standard
      *
      * @param backupImages Determines if a backup of the image folder is required 

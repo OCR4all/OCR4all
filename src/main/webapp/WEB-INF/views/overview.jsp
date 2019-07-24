@@ -73,7 +73,7 @@
                 }
 
                 // Responsible for verification and loading of the project
-                function projectInitialization(newPageVisit) {
+                function projectInitialization(newPageVisit, allowLegacy=false) {
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val(), "processingMode" : $('#processingMode').val() };
                     // Check if directory exists
                     $.get( "ajax/overview/checkDir?",
@@ -89,31 +89,42 @@
                                     $.get( "ajax/overview/validateProject?", ajaxParams )
                                     .done(function( data ) {
                                          if( data === true ) {
-
-                                             // Check if dir only houses pdf files and no images
-                                             $.get("ajax/overview/checkpdf")
-                                                 .done(function(data) {
-                                                 if( data === true) {
-                                                     openCollapsibleEntriesExclusively([0]);
-                                                     $('#modal_convertpdf').modal({
-                                                         dismissible: false
-                                                     });
-                                                     $('#modal_convertpdf').modal('open');
-                                                 }
-                                                 else {
-                                                     // Two scenarios for loading overview page:
-                                                     // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
-                                                     // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
-                                                     if( newPageVisit == false ) {
-                                                         location.reload();
-                                                     }
-                                                     else {
-                                                         // Load datatable after the last process update is surely finished
-                                                         datatable();
-                                                     }
-                                                 }
-                                             });
-
+                                            if( !allowLegacy && ($('#processingMode').val() === "Pagexml") ){
+                                                // Check if the project still contains legacy files
+                                                $.get("ajax/overview/isLegacy")
+                                                .done(function(data) {
+                                                    if( data === true ){
+                                                        $('#modal_legacy').modal({
+                                                            dismissible: true
+                                                        });
+                                                        $('#modal_legacy').modal('open');
+                                                    }
+                                                });
+                                            } else {
+                                                // Check if dir only houses pdf files and no images
+                                                $.get("ajax/overview/checkpdf")
+                                                    .done(function(data) {
+                                                    if( data === true) {
+                                                        openCollapsibleEntriesExclusively([0]);
+                                                        $('#modal_convertpdf').modal({
+                                                            dismissible: false
+                                                        });
+                                                        $('#modal_convertpdf').modal('open');
+                                                    }
+                                                    else {
+                                                        // Two scenarios for loading overview page:
+                                                        // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
+                                                        // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
+                                                        if( newPageVisit == false ) {
+                                                            location.reload();
+                                                        }
+                                                        else {
+                                                            // Load datatable after the last process update is surely finished
+                                                            datatable();
+                                                        }
+                                                    }
+                                                });
+                                            }
                                          }
                                          else{
                                              openCollapsibleEntriesExclusively([0]);
@@ -196,7 +207,7 @@
                         }
                     }, 500);
                 });
-                $('#cancelConvertPdf').click(function() {
+                $('#cancelConvertPdf', '#cancelLegacy').click(function() {
                     setTimeout(function() {
                         // Unload project if user refuses the mandatory adjustments
                         if( !isProcessRunning() ) {
@@ -222,7 +233,25 @@
                         .fail(function( data ) {
                         });
                 });
-
+                $('#continueLegacy').click(function() {
+                    setTimeout(function() {
+                        // Unload project if user refuses the mandatory adjustments
+                        if( !isProcessRunning() ) {
+                            projectInitialization(true, true);
+                        }
+                    }, 500);
+                });
+                $('#openLegacy').click(function() {
+                    setTimeout(function() {
+                        // Unload project if user refuses the mandatory adjustments
+                        if( !isProcessRunning() ) {
+                            const $processingMode = $("#processingMode");
+                            $processingMode.val("Directory");
+                            $processingMode.material_select();
+                            projectInitialization(false, false);
+                        }
+                    }, 500);
+                });
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
                     cancelProcess();
 
@@ -290,6 +319,9 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">dehaze</i>Overview</div>
                         <div class="collapsible-body">
+                            <c:if test='${(not empty processingMode) && (processingMode == "Directory")}'>
+                            <p class="red-text">Loaded with Legacy (This mode will be removed in future OCR4all versions)</p>    
+                            </c:if>
                             <table id="overviewTable" class="display centered" width="100%"></table>
                         </div>
                     </li>
@@ -334,6 +366,22 @@
                 <a href="#!" id="backupAndConvert" class="modal-action modal-close waves-effect waves-green btn-flat">Backup and convert files</a>
             </div>
          </div>
+        <div id="modal_legacy" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Warning: Legacy files found</h4>
+                <p>The project you are about to load with the "Latest" mode, includes files of an old version of OCR4all.</p>
+                <p>Please use the "Legacy" option under "Project processing mode" for those projects, 
+                    since some processing results from your project may otherwise not be available.</p>
+                <p>Opening and editing your project with the "Latest" processing mode will not delete any legacy data from your project,
+                    but existing legacy data from "Line Segmentations", "Recognitions" and "Ground Truth Productions" will not be accessible in this mode.</p>
+                <p>Be aware that the "Legacy" option will be removed in future OCR4all releases.</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" id="continueLegacy" class="modal-action modal-close waves-effect waves-green btn-flat">Continue with Latest</a>
+                <a href="#!" id="openLegacy" class="modal-action modal-close waves-effect waves-green btn-flat">Load with Legacy</a>
+                <a href="#!" id="cancelLegacy" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+            </div>
+        </div>
         <div id="modal_convertpdf" class="modal">
             <div class="modal-content">
                 <h4 class="red-text">Convert PDF files</h4>

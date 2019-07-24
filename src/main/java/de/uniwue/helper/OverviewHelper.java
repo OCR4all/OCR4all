@@ -351,6 +351,24 @@ public class OverviewHelper {
     }
 
     /**
+     * Checks if the project structure of this project is a legacy project (Directory)
+     *
+     * @return Project validation status
+     * @throws IOException 
+     */
+    public boolean isLegacy() {
+		File project = Paths.get(projConf.OCR_DIR).toFile();
+		// Check for every folder inside the inputs folder that consists of 
+		// numbers and may therefore be legacy data
+		long numberDirectories = Arrays.stream(project.listFiles())
+				.filter(f -> f.isDirectory())
+				.filter(f -> f.getName().matches("\\d{4}"))
+				.count();
+		
+		return numberDirectories > 0;
+    }
+
+    /**
      * Lists all available projects from the data directory
      *
      * @return Map of projects (key = projName | value = path)
