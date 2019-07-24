@@ -17,8 +17,6 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FilenameUtils;
-
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
@@ -45,11 +43,6 @@ public class ResultGenerationHelper {
      */
     private ProcessHandler processHandler;
 
-    /**
-     * Processing structure of the project
-     * Possible values: { Directory, Pagexml }
-     */
-    private String processingMode;
     
     /**
      * Progress of the result generation process
@@ -86,14 +79,12 @@ public class ResultGenerationHelper {
      *
      * @param projectDir       Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
-     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public ResultGenerationHelper(String projectDir, String projectImageType, String processingMode) {
+    public ResultGenerationHelper(String projectDir, String projectImageType) {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
-        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
         genericHelper = new GenericHelper(projConf);
-        this.processingMode = processingMode;
     }
 
     /**
@@ -117,31 +108,6 @@ public class ResultGenerationHelper {
 
 		for (String pageId : pageIds) {
 			TreeMap<String, TreeMap<String, Boolean>> segments = new TreeMap<String, TreeMap<String, Boolean>>();
-
-			if(processingMode.equals("Directory")) {
-				// File depth of 1 -> no recursive (file)listing
-				File[] lineSegmentDirectories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-				if (lineSegmentDirectories.length != 0) {
-					for (File dir : lineSegmentDirectories) {
-						TreeMap<String, Boolean> lineSegments = new TreeMap<String, Boolean>();
-						Files.walk(Paths.get(dir.getAbsolutePath()), 1)
-								.map(Path::toFile)
-								.filter(fileEntry -> fileEntry.isFile())
-								.filter(fileEntry -> fileEntry.getName().endsWith(projConf.REC_EXT))
-								.filter(fileEntry -> !fileEntry.getName().endsWith(projConf.GT_EXT))
-								.forEach(
-										fileEntry -> {
-											//.pred.txt is removed to get the id of the line segment
-											if (fileEntry.getName().contains(projConf.REC_EXT)) {
-												String lineSegmentId = fileEntry.getName().substring(0, fileEntry.getName().indexOf(projConf.REC_EXT));
-												lineSegments.put(lineSegmentId, false);
-											}
-										}
-								);
-						segments.put(dir.getName(), lineSegments);
-					}
-				}
-			}
 			processState.put(pageId, segments);
 		}
     }
@@ -194,34 +160,13 @@ public class ResultGenerationHelper {
 			return;
 		
 		File[] xmlFiles = dir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
-    	if(processingMode.equals("Directory")) {
-			processHandler = new ProcessHandler();
-			processHandler.setFetchProcessConsole(true);
-
-			int processedPages = 1;
-			for (File xmlFile : xmlFiles) {
-				if (stopProcess == true)
-					return;
-				if (!pageIds.contains(FilenameUtils.removeExtension(xmlFile.getName())))
-					continue;
-				List<String> command = new ArrayList<String>();
-				command.add(xmlFile.getAbsolutePath());
-				command.add("--output");
-				command.add(projConf.RESULT_PAGES_DIR + xmlFile.getName());
-				processHandler.startProcess("pagedir2pagexml", command, false);
-
-				progress = (int) ((double) processedPages / xmlFiles.length * 100);
-				processedPages++;
-			}
-    	} else {
-    		// Copy all xml files into output
-    		int processedPages = 0;
-    		for(File xmlFile : xmlFiles) {
-    			File xmlOutFile = new File(projConf.RESULT_PAGES_DIR + xmlFile.getName());
-    			Files.copy(xmlFile.toPath(),xmlOutFile.toPath());
-				progress = (int) ((double) processedPages / xmlFiles.length * 100);
-				processedPages++;
-    		}
+        // Copy all xml files into output
+        int processedPages = 0;
+        for(File xmlFile : xmlFiles) {
+            File xmlOutFile = new File(projConf.RESULT_PAGES_DIR + xmlFile.getName());
+            Files.copy(xmlFile.toPath(),xmlOutFile.toPath());
+            progress = (int) ((double) processedPages / xmlFiles.length * 100);
+            processedPages++;
     	}
     }
 
@@ -236,86 +181,50 @@ public class ResultGenerationHelper {
         deleteOldFiles(pageIds, "txt");
 
 		TreeMap<String, String> pageResult = new TreeMap<String, String>();
-		int processElementCount = 0;
-		if(processingMode.equals("Directory")){
-			for (String pageId : processState.keySet()) {
-				for (String segmentId : processState.get(pageId).keySet()) {
-					processElementCount += processState.get(pageId).get(segmentId).size();
-				}
-			}
-		} else {
-			processElementCount = pageIds.size();
-		}
-
+		int processElementCount = pageIds.size();
 		int processedElements = 1;
 		// For each page: Concatenation of the recognition/gt output of the linesegmentation of the page
 		//                Saving output to a txt file (located at /Results/Pages/)
 		for (String pageId : processState.keySet()) {
 			pageResult.put(pageId, new String());
 
-			if(processingMode.equals("Directory")){
-				// Gather every ground truth or recognition txt and group them per page
-				for (String segmentId : processState.get(pageId).keySet()) {
-					for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
-						if (stopProcess == true)
-							return;
+            // Retrieve every ground truth or recognition line in the page xmls and group them per page
+            Path path =  Paths.get(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
+            BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"));
+            StringBuilder contents = new StringBuilder();
+            while(reader.ready()) {
+                contents.append(reader.readLine());
+            }
+            final String xmlContent = contents.toString();
+            
+            // Find all textlines inside the file
 
-						String lineSegDir = projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId;
-						// Using the gt output when available otherwise the recognition output
-						Path path = Paths.get(lineSegDir + projConf.GT_EXT);
-						if (!Files.exists(path))
-							path = Paths.get(lineSegDir + projConf.REC_EXT);
+            Pattern textlinePattern = Pattern.compile("\\<TextLine[^>]+?\\>(.*?)\\<\\/TextLine\\>");
+            Pattern gtPattern = Pattern.compile("\\<TextEquiv[^>]+?index=\"0\"[^>]*?\\>(.*?)\\<\\/TextEquiv\\>");
+            Pattern recPattern = Pattern.compile("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>(.*?)\\<\\/TextEquiv\\>");
+            Matcher matcher = textlinePattern.matcher(xmlContent);
 
-						BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"));
-						String currentLine = new String();
-						while ((currentLine = reader.readLine()) != null) {
-							pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
-						}
+            while(matcher.find()) {
+                if (stopProcess == true)
+                    return;
+                String textlineContent = matcher.group(1);
 
-					}
-
-					processedElements++;
-					progress = (int) ((double) processedElements / processElementCount * 100);
-				}
-			} else {
-				// Retrieve every ground truth or recognition line in the page xmls and group them per page
-				Path path =  Paths.get(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
-				BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"));
-				StringBuilder contents = new StringBuilder();
-				while(reader.ready()) {
-					contents.append(reader.readLine());
-				}
-				final String xmlContent = contents.toString();
-				
-				// Find all textlines inside the file
-
-				Pattern textlinePattern = Pattern.compile("\\<TextLine[^>]+?\\>(.*?)\\<\\/TextLine\\>");
-				Pattern gtPattern = Pattern.compile("\\<TextEquiv[^>]+?index=\"0\"[^>]*?\\>(.*?)\\<\\/TextEquiv\\>");
-				Pattern recPattern = Pattern.compile("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>(.*?)\\<\\/TextEquiv\\>");
-				Matcher matcher = textlinePattern.matcher(xmlContent);
-
-				while(matcher.find()) {
-					if (stopProcess == true)
-						return;
-					String textlineContent = matcher.group(1);
-
-					Matcher gtMatcher = gtPattern.matcher(textlineContent);
-					// Check for ground truth text
-					if(gtMatcher.find()) {
-						String currentLine = gtMatcher.group(1).replaceAll("\\<[^>]*?\\>", "");
-						pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
-					} else {
-						// Check for recognition text if gt text does not exist
-						Matcher recMatcher = recPattern.matcher(textlineContent);
-						if(recMatcher.find()) {
-							String currentLine = recMatcher.group(1).replaceAll("\\<[^>]*?\\>", "");
-							pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
-						}
-					}
-				}
-				processedElements++;
-				progress = (int) ((double) processedElements / processElementCount * 100);
-			}
+                Matcher gtMatcher = gtPattern.matcher(textlineContent);
+                // Check for ground truth text
+                if(gtMatcher.find()) {
+                    String currentLine = gtMatcher.group(1).replaceAll("\\<[^>]*?\\>", "");
+                    pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
+                } else {
+                    // Check for recognition text if gt text does not exist
+                    Matcher recMatcher = recPattern.matcher(textlineContent);
+                    if(recMatcher.find()) {
+                        String currentLine = recMatcher.group(1).replaceAll("\\<[^>]*?\\>", "");
+                        pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
+                    }
+                }
+            }
+            processedElements++;
+            progress = (int) ((double) processedElements / processElementCount * 100);
 			
 			
 			try (OutputStreamWriter writer =

@@ -21,12 +21,6 @@ public class LarexHelper {
      */
     private String projectImageType;
 
-    /**
-     * Processing structure of the project
-     * Possible values: { Directory, Pagexml }
-     */
-    private String processingMode;
-
      /**
      * Status of the SegmentationLarex progress
      */
@@ -43,8 +37,7 @@ public class LarexHelper {
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary,gray)
      */
-    public LarexHelper(String projDir, String projectImageType, String processingMode) {
-    	this.processingMode = processingMode;
+    public LarexHelper(String projDir, String projectImageType) {
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projDir);
     }

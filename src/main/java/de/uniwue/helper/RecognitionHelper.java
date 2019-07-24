@@ -44,11 +44,6 @@ public class RecognitionHelper {
      */
     private String projectImageType;
 
-    /**
-     * Processing structure of the project
-     * Possible values: { Directory, Pagexml }
-     */
-    private String processingMode;
 
     /**
      * Object to use generic functionalities
@@ -105,15 +100,13 @@ public class RecognitionHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
-     * @param processingMode Processing structure of the project (Directory, Pagexml)
      * 
      */
-    public RecognitionHelper(String projectDir, String projectImageType, String processingMode) {
+    public RecognitionHelper(String projectDir, String projectImageType) {
         this.projectImageType = projectImageType;
-        this.processingMode = processingMode;
         projConf = new ProjectConfiguration(projectDir);
         genericHelper = new GenericHelper(projConf);
-        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
         processHandler = new ProcessHandler();
     }
 
@@ -133,43 +126,12 @@ public class RecognitionHelper {
      * @throws IOException
      */
     public void initialize(List<String> pageIds) throws IOException {
-    	if(processingMode.equals("Directory")) {
-			// Initialize the status structure
-			processState = new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
-
-			for (String pageId : pageIds) {
-				TreeMap<String, TreeMap<String, Boolean>> segments = new TreeMap<String, TreeMap<String, Boolean>>();
-				// File depth of 1 -> no recursive (file)listing
-				File[] lineSegmentDirectories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-				if (lineSegmentDirectories.length != 0) {
-					for (File dir : lineSegmentDirectories) {
-						TreeMap<String, Boolean> lineSegments = new TreeMap<String, Boolean>();
-						Files.walk(Paths.get(dir.getAbsolutePath()), 1)
-						.map(Path::toFile)
-						.filter(fileEntry -> fileEntry.isFile())
-						.filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(projectImageType)))
-						.forEach(
-							fileEntry -> {
-								// Line segments have one of the following endings: ".bin.png" | ".nrm.png"
-								// Therefore both extensions need to be removed
-								String lineSegmentId = FilenameUtils.removeExtension(FilenameUtils.removeExtension(fileEntry.getName()));
-								lineSegments.put(lineSegmentId, false);
-							}
-						);
-						segments.put(dir.getName(), lineSegments);
-					}
-				}
-
-				processState.put(pageId, segments);
-			}
-    	} else {
-			// Init the listener for image modification
-			imagesLastModified = new HashMap<>();
-			for(String pageId: pageIds) {
-				final String pageXML = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
-				imagesLastModified.put(pageXML,new File(pageXML).lastModified());
-			}
-    	}
+        // Init the listener for image modification
+        imagesLastModified = new HashMap<>();
+        for(String pageId: pageIds) {
+            final String pageXML = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
+            imagesLastModified.put(pageXML,new File(pageXML).lastModified());
+        }
     }
 
     /**
@@ -203,42 +165,18 @@ public class RecognitionHelper {
         if (RecognitionRunning == false)
             return progress;
 
-		if(processingMode.equals("Directory")) {
-			int lineSegmentCount = 0;
-			int processedLineSegmentCount = 0;
-			 // Identify how many line segments are already processed
-			for (String pageId : processState.keySet()) {
-					for (String segmentId : processState.get(pageId).keySet()) {
-						for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
-							lineSegmentCount += 1;
-
-							if(processState.get(pageId).get(segmentId).get(lineSegmentId)) {
-								processedLineSegmentCount += 1;
-								continue;
-							}
-
-							if (new File(projConf.PAGE_DIR + pageId + File.separator + segmentId +
-									File.separator + lineSegmentId + projConf.REC_EXT).exists()) {
-								processState.get(pageId).get(segmentId).put(lineSegmentId, true);
-							}
-						}
-					}
-			}
-			return (progress != 100) ? (int) ((double)processedLineSegmentCount / lineSegmentCount * 100) : 100;
-		} else {
-			int modifiedCount = 0;
-			if(imagesLastModified != null) {
-				for(String pagexml : imagesLastModified.keySet()) {
-					if(imagesLastModified.get(pagexml) < new File(pagexml).lastModified()) {
-						modifiedCount++;
-					}
-				}
-				progress = (modifiedCount*100) / imagesLastModified.size();
-			} else {
-				progress = -1;
-			}
-			return progress;
-		}
+        int modifiedCount = 0;
+        if(imagesLastModified != null) {
+            for(String pagexml : imagesLastModified.keySet()) {
+                if(imagesLastModified.get(pagexml) < new File(pagexml).lastModified()) {
+                    modifiedCount++;
+                }
+            }
+            progress = (modifiedCount*100) / imagesLastModified.size();
+        } else {
+            progress = -1;
+        }
+        return progress;
     }
 
     /**
@@ -292,17 +230,10 @@ public class RecognitionHelper {
         segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode segmentList = mapper.createArrayNode();
-        if(processingMode.equals("Pagexml")) {
-			for (String pageId : pageIds) {
-				// Add affected images with their absolute path to the json file
-				segmentList.add(projConf.getImageDirectoryByType(projectImageType) + pageId + 
-									projConf.getImageExtensionByType(projectImageType));
-			}
-        } else {
-			for (String lineSegmentImage : lineSegmentImages) {
-				// Add affected line segment images with their absolute path to the json file
-				segmentList.add(lineSegmentImage);
-			}
+        for (String pageId : pageIds) {
+            // Add affected images with their absolute path to the json file
+            segmentList.add(projConf.getImageDirectoryByType(projectImageType) + pageId + 
+                                projConf.getImageExtensionByType(projectImageType));
         }
         ObjectNode segmentObj = mapper.createObjectNode();
         segmentObj.set("files", segmentList);
@@ -323,14 +254,12 @@ public class RecognitionHelper {
 
         command.add("--no_progress_bars");
 
-        if(processingMode.equals("Pagexml")) {
-        	command.add("--dataset");
-        	command.add("PAGEXML");
-        	// Set output extension to input extension in order to overwrite the original file
-        	// (default would've been .pred.xml)
-        	command.add("--extension");
-        	command.add(".xml");
-        }
+        command.add("--dataset");
+        command.add("PAGEXML");
+        // Set output extension to input extension in order to overwrite the original file
+        // (default would've been .pred.xml)
+        command.add("--extension");
+        command.add(".xml");
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
@@ -339,9 +268,7 @@ public class RecognitionHelper {
         // Execute progress update to fill processState data structure with correct values
         getProgress();
         // Process extension to ocropus-gpageseg script
-        if(processingMode.equals("Pagexml")) {
-			createSkippedSegments();
-        }
+        createSkippedSegments();
 
         progress = 100;
         RecognitionRunning = false;
@@ -392,48 +319,22 @@ public class RecognitionHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      */
     public void deleteOldFiles(List<String> pageIds) throws IOException {
-    	if(processingMode.equals("Directory")) {
-			// Delete all files created by subsequent processes to preserve data integrity
-			ResultGenerationHelper resultGenerationHelper = new ResultGenerationHelper(projConf.PROJECT_DIR, projectImageType, processingMode);
-			resultGenerationHelper.deleteOldFiles(pageIds, "txt");
-
-			for(String pageId : pageIds) {
-				File pageDirectory = new File(projConf.PAGE_DIR + pageId);
-				if (!pageDirectory.exists())
-					return;
-
-				File[] lineSegmentDirectories = pageDirectory.listFiles(File::isDirectory);
-				if (lineSegmentDirectories.length != 0) {
-					for (File dir : lineSegmentDirectories) {
-						// Delete .txt files that store the recognized text
-						// Keep .gt.txt files that store already manually corrected text
-						File[] txtFiles = new File(dir.getAbsolutePath()).listFiles(
-							(d, name) -> name.endsWith(projConf.REC_EXT) && !name.endsWith(projConf.GT_EXT)
-						);
-						for (File txtFile : txtFiles) {
-							txtFile.delete();
-						}
-					}
-				}
-			}
-    	} else {
-    		// Delete potential TextEquivs already existing in the page xmls
-			for(String pageId : pageIds) {
-				File pageXML = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
-				if (!pageXML.exists())
-					return;
-			   
-				// Load pageXML and replace/delete all Textline text content
-				String pageXMLContent = new String(Files.readAllBytes(pageXML.toPath()));
-				pageXMLContent = pageXMLContent.replaceAll("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>[^<]*?\\<\\/TextEquiv\\>", "");
-				
-				// Save new pageXML
-				try (FileWriter fileWriter = new FileWriter(pageXML)) {
-					fileWriter.write(pageXMLContent);
-					fileWriter.flush();
-					fileWriter.close();
-				}
-			}
+        // Delete potential TextEquivs already existing in the page xmls
+        for(String pageId : pageIds) {
+            File pageXML = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
+            if (!pageXML.exists())
+                return;
+            
+            // Load pageXML and replace/delete all Textline text content
+            String pageXMLContent = new String(Files.readAllBytes(pageXML.toPath()));
+            pageXMLContent = pageXMLContent.replaceAll("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>[^<]*?\\<\\/TextEquiv\\>", "");
+            
+            // Save new pageXML
+            try (FileWriter fileWriter = new FileWriter(pageXML)) {
+                fileWriter.write(pageXMLContent);
+                fileWriter.flush();
+                fileWriter.close();
+            }
     	}
     }
 
