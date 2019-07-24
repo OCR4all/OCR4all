@@ -64,8 +64,8 @@
                         <c:otherwise><c:set value='selected="selected"' var="pagexmlSel"></c:set></c:otherwise>
                     </c:choose>
                     <select id="processingMode" name="processingMode" class="suffix">
-                        <option value="Pagexml" ${pagexmlSel}>PageXML</option>
-                        <option value="Directory" ${directorySel}>Directory</option>
+                        <option value="Pagexml" ${pagexmlSel}>Latest</option>
+                        <option value="Directory" ${directorySel}>Legacy</option>
                     </select>
                     <label></label>
                 </div>

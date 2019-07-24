@@ -110,6 +110,9 @@ public class DespecklingController {
             return;
 
         despecklingHelper.cancelDespecklingProcess();
+        // Directly remove despeckling from process list and
+        // let it cancel in the background
+        GenericController.removeFromProcessList(session, "despeckling");
     }
 
     /**
