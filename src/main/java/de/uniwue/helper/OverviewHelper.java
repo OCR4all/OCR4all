@@ -360,12 +360,15 @@ public class OverviewHelper {
 		File project = Paths.get(projConf.OCR_DIR).toFile();
 		// Check for every folder inside the inputs folder that consists of 
 		// numbers and may therefore be legacy data
-		long numberDirectories = Arrays.stream(project.listFiles())
-				.filter(f -> f.isDirectory())
-				.filter(f -> f.getName().matches("\\d{4}"))
-				.count();
-		
-		return numberDirectories > 0;
+		if(project.exists()) {
+			long numberDirectories = Arrays.stream(project.listFiles())
+					.filter(f -> f.isDirectory())
+					.filter(f -> f.getName().matches("\\d{4}"))
+					.count();
+			return numberDirectories > 0;
+		} else {
+			return false;
+		}
     }
 
     /**

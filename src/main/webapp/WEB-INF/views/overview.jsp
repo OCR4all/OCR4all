@@ -89,7 +89,7 @@
                                     $.get( "ajax/overview/validateProject?", ajaxParams )
                                     .done(function( data ) {
                                          if( data === true ) {
-                                            if( !allowLegacy && ($('#processingMode').val() === "Pagexml") ){
+                                            if( newPageVisit && !allowLegacy && ($('#processingMode').val() === "Pagexml") ){
                                                 // Check if the project still contains legacy files
                                                 $.get("ajax/overview/isLegacy")
                                                 .done(function(data) {
@@ -98,6 +98,8 @@
                                                             dismissible: true
                                                         });
                                                         $('#modal_legacy').modal('open');
+                                                    } else {
+                                                        projectInitialization(true, true);
                                                     }
                                                 });
                                             } else {
