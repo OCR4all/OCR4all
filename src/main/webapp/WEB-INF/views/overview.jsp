@@ -302,7 +302,6 @@
                             $('#modal_inprogress').modal('open');
                         }
                     }, 500);
-
                 });
 
                 $('#exportPages').click(function() {
