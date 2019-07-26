@@ -663,7 +663,6 @@ public class OverviewHelper {
 
         } else {
             throw new FileNotFoundException(dir.getName() + " Folder does not exist");
-
         }
 
     }
@@ -890,7 +889,6 @@ public class OverviewHelper {
         final Mat image = Imgcodecs.imdecode(bytes, Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
         bytes.release();
         return image;
-
     }
 
 }

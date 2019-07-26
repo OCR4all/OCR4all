@@ -155,7 +155,6 @@
                         $('#modal_checkDir_failed').modal('open');
                     });
                 }
-//----------------------------------------------------------------------------------------------------------------------
 
                 function exportData(newPageVisit, completeDir, pages, binary, gray) {
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
@@ -209,10 +208,6 @@
                         });
                 }
 
-
-
-
-                //------------------------------------------------------------------------------------------------------
                 $('button[data-id="loadProject"]').click(function() {
                     if( $.trim($('#projectDir').val()).length === 0 ) {
                         openCollapsibleEntriesExclusively([0]);
