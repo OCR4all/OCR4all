@@ -34,8 +34,18 @@
                 </td>
             </tr>
             <tr>
+                <td><p>Keep all characters loaded from the last model</p></td>
                 <td>
-                    Whitelist characters<br/>
+                    <p>
+                        <input type="checkbox" class="filled-in" data-setting="--keep_loaded_codec" id="training--keep_loaded_codec" />
+                        <label for="training--keep_loaded_codec"></label>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                	<p>
+                    Whitelist characters to keep in the model<br/>
                     <span class="userInfo">Example: ABCDEFGHIJ...012345</span>
                     </p>
                 </td>
@@ -132,6 +142,19 @@
                         </select>
                         <label></label>
                     </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                	<p>Load data on the fly instead of preloading it<br>
+                        <span class="userInfo">Reduces RAM usage, increases processing time</span>
+					</p>
+				</td>
+                <td>
+                    <p>
+                        <input type="checkbox" class="filled-in" data-setting="--train_data_on_the_fly" id="training--train_data_on_the_fly" />
+                        <label for="training--train_data_on_the_fly"></label>
+                    </p>
                 </td>
             </tr>
             <tr>
