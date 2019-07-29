@@ -152,7 +152,7 @@
 				</td>
                 <td>
                     <p>
-                        <input type="checkbox" class="filled-in" data-setting="--keep_loaded_codec" id="training--train_data_on_the_fly" />
+                        <input type="checkbox" class="filled-in" data-setting="--train_data_on_the_fly" id="training--train_data_on_the_fly" />
                         <label for="training--train_data_on_the_fly"></label>
                     </p>
                 </td>
