@@ -194,7 +194,7 @@
             </div>
             <div class="section">
                 <div class="row">
-                    <div class="col s6">
+                    <div class="col s12">
                         <h4 class="center">Images</h4>
                         <ul id="images" class="collapsible" data-collapsible="accordion" data-type="page">
                             <li>
@@ -223,8 +223,8 @@
                             </li>
                         </ul>
                     </div>
+                    <!--
                     <div class="col s6">
-                        <!-- TODO extract from pagexml -->
                         <h4 class="center">Segments</h4>
                         <ul id="segments" class="collapsible" data-collapsible="accordion" data-type="segment">
                             <c:forEach items="${segments}" var="seg">
@@ -247,6 +247,7 @@
                             </c:forEach>
                         </ul>
                     </div>
+                	-->
                 </div>
             </div>
         </div>
