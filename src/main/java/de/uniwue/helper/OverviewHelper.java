@@ -882,7 +882,7 @@ public class OverviewHelper {
 
     /**
      * Converts BufferedImage to OpenCV.Mat
-     * @param image buffered image
+     * @param bufferedimage buffered image
      * @return matrix of the buffered image
      */
     public Mat bufferedImageToMat(BufferedImage bufferedimage) throws IOException {

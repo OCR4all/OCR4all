@@ -315,6 +315,9 @@ button[data-id="msRecModelAddOption"] {
   padding-top: 5px;
   padding-left: 5px;
 }
+.secondary-btn {
+  float: right;
+}
 @media only screen and (max-width : 1700px) {
   button[data-id="msRecModelAddOption"] {
     margin-left: 0px;
