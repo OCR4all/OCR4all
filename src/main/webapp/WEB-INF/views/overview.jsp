@@ -377,7 +377,10 @@
                     Cancel Project Adjustment
                     <i class="material-icons right">cancel</i>
                 </button>
-
+                <button data-id="exportGTC" class="btn waves-effect waves-light" type="submit" name="action">
+                    Export GTD
+                    <i class="material-icons right">arrow_downward</i>
+                </button>
                 <ul class="collapsible" data-collapsible="accordion">
                     <li>
                         <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
