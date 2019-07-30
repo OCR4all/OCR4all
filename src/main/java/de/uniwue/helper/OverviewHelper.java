@@ -708,16 +708,18 @@ public class OverviewHelper {
      */
     public void zipDir(Boolean binary, Boolean gray) {
         try {
-            FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
-            ZipOutputStream zipOut = new ZipOutputStream(fos);
-            FilenameFilter nameFilter = (file, s) -> true;
-            File fileToZip = new File(projConf.PREPROC_DIR);
-            File[] pageFiles = fileToZip.listFiles(nameFilter);
-            for (File pageFile : pageFiles) {
-                zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
+            if(new File(projConf.PREPROC_DIR).exists()) {
+                FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
+                ZipOutputStream zipOut = new ZipOutputStream(fos);
+                FilenameFilter nameFilter = (file, s) -> true;
+                File fileToZip = new File(projConf.PREPROC_DIR);
+                File[] pageFiles = fileToZip.listFiles(nameFilter);
+                for (File pageFile : pageFiles) {
+                    zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
+                }
+                zipOut.close();
+                fos.close();
             }
-            zipOut.close();
-            fos.close();
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -779,21 +781,23 @@ public class OverviewHelper {
         //now zips every page selected
         try {
             if(!pageIds.isEmpty()) {
-                FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
-                ZipOutputStream zipOut = new ZipOutputStream(fos);
-                for (int pageId : pageIds) {
+                if(new File(projConf.PREPROC_DIR).exists()) {
+                    FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
+                    ZipOutputStream zipOut = new ZipOutputStream(fos);
+                    for (int pageId : pageIds) {
 
-                    FilenameFilter nameFilter = (dir, s) -> s.startsWith(String.format("%04d", pageId));
+                        FilenameFilter nameFilter = (dir, s) -> s.startsWith(String.format("%04d", pageId));
 
-                    File fileToZip = new File(projConf.PREPROC_DIR);
-                    File[] pageFiles = fileToZip.listFiles(nameFilter);
-                    for (File pageFile : pageFiles) {
-                        zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
+                        File fileToZip = new File(projConf.PREPROC_DIR);
+                        File[] pageFiles = fileToZip.listFiles(nameFilter);
+                        for (File pageFile : pageFiles) {
+                            zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
+                        }
                     }
-                }
 
-                zipOut.close();
-                fos.close();
+                    zipOut.close();
+                    fos.close();
+                }
             } else{
                 throw new IllegalArgumentException("page list is empty");
             }
@@ -889,6 +893,26 @@ public class OverviewHelper {
         final Mat image = Imgcodecs.imdecode(bytes, Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
         bytes.release();
         return image;
+    }
+
+    /**
+     * Checks if there is any exportable Ground Truth Data in Project
+     * @return true if GT data exist
+     */
+    public boolean checkGtcExportable() {
+        try {
+            File procDir = new File(projConf.PREPROC_DIR);
+            if(procDir.isDirectory()) {
+                for (File file : procDir.listFiles()) {
+                    if(checkGTC(file.getAbsolutePath(),true,true)) {
+                        return true;
+                    }
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

@@ -115,6 +115,8 @@
                                                             else {
                                                                 // Load datatable after the last process update is surely finished
                                                                 datatable();
+                                                                // Load image list
+                                                                initializeImageList("OCR", false, data);
                                                             }
                                                         }
                                                     });
@@ -147,7 +149,6 @@
                             $('#projectDir').addClass('invalid').focus();
                             // Prevent datatable from reloading an invalid directory
                             clearInterval(datatableReloadIntveral);
-
                             $('#modal_checkDir_failed').modal('open');
                         }
                     })
@@ -157,19 +158,17 @@
                 }
 
                 function exportData(newPageVisit, completeDir, pages, binary, gray) {
-                    var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val() };
+                    var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val(), "processingMode" : $('#processingMode').val() };
                     // Check if directory exists
                     $.get( "ajax/overview/checkDir?",
                         // Only force new session if project loading is triggered by user
-                        $.extend(ajaxParams, {"resetSession" : !newPageVisit})
+                        $.extend(ajaxParams, {"resetSession" : false})
                     )
                         .done(function( data ) {
                             if( data === true ) {
                                 $.get( "ajax/overview/validate?" )
                                     .done(function( data ) {
                                         if( data === true ) {
-                                            // Check if filenames match project specific naming convention
-                                                console.log(pages);
                                                 var ajaxParams = {"completeDir" : completeDir, "pages" : pages, "binary" : binary, "gray" : gray};
                                                 $.post( "ajax/overview/exportGtc", ajaxParams )
                                                     .done(function( data ) {
@@ -256,10 +255,6 @@
                 });
                 $('#cancelConvertPdf').click(function() {
                     setTimeout(function() {
-                        // Unload project if user refuses the mandatory adjustments
-                        if( !isProcessRunning() ) {
-                            $.get( "ajax/overview/invalidateSession" );
-                        }
                     }, 500);
                 });
                 $('#convertToPdf, #convertToPdfWithBlanks').click(function() {
@@ -310,6 +305,25 @@
                     // Unload project if user cancels the mandatory adjustments
                     setTimeout(function() {
                         $.get( "ajax/overview/invalidateSession" );
+                    }, 500);
+                });
+
+                $('button[data-id="exportGTC"]').click(function() {
+                    $.get("ajax/overview/checkGtc" )
+                        .done(function( data ) {
+                            if(data === true) {
+                                $('#modal_exportgtc').modal('open');
+                            }
+                            else {
+                                $('#modal_noGtcFound').modal('open');
+                            }
+                        })
+                            .fail(function ( data ) {
+                                console.log("failed check")
+                                $('#modal_noGtcFound').modal('open');
+                            });
+
+                    setTimeout(function() {
                     }, 500);
                 });
 
@@ -516,6 +530,17 @@
                 <a href="#!" id="cancelExport" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
                 <a href="#!" id="exportPages" class="modal-action modal-close waves-effect waves-green btn-flat">Export Pages</a>
                 <a href="#!" id="exportAllPages" class="modal-action modal-close waves-effect waves-green btn-flat">Export All Pages</a>
+            </div>
+        </div>
+        <div id="modal_noGtcFound" class="modal">
+            <div class="modal-content red-text">
+                <h4>No Ground Truth Data was found</h4>
+                <p>
+                    Please be sure to load a project with Ground Truth Data before exporting.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
         <div id="modal_adjustImages_failed" class="modal">
