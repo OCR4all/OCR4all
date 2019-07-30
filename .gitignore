@@ -21,3 +21,8 @@ target/
 # Python
 .pynative
 .pydevproject
+
+# vim
+*~
+*.swp
+*.swo
