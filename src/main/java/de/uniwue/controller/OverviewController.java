@@ -416,4 +416,28 @@ public class OverviewController {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Response to the Request to check for exportable Ground Truth Data
+     * @param session Session of the user
+     * @param response Response to the Request
+     * @return
+     */
+    @RequestMapping(value ="ajax/overview/checkGtc" , method = RequestMethod.GET)
+    public @ResponseBody boolean checkGtcExportable(
+            HttpSession session, HttpServletResponse response
+    ) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null) {
+            return false;
+        }
+        try {
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            session.setAttribute("projectAdjustment", "");
+            return overviewHelper.checkGtcExportable();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
