@@ -24,22 +24,14 @@ public class ProcessFlowHelper {
     private String imageType;
 
     /**
-     * Processing structure of the project
-     * Possible values: { Directory, Pagexml }
-     */
-    private String processingMode;
-
-    /**
      * Constructor
      *
      * @param projectDir Absolute path to the project
      * @param imageType Image type of the project
-     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public ProcessFlowHelper(String projectDir, String imageType, String processingMode) {
+    public ProcessFlowHelper(String projectDir, String imageType) {
         this.projConf = new ProjectConfiguration(projectDir);
         this.imageType  = imageType;
-        this.processingMode = processingMode;
     }
 
     /**
@@ -51,7 +43,7 @@ public class ProcessFlowHelper {
      */
     public String[] getValidPageIds(String[] initialPageIds, String checkProcess) {
         // Needed to determine process states
-        ProcessStateCollector procStateCol = new ProcessStateCollector(projConf, imageType, processingMode);
+        ProcessStateCollector procStateCol = new ProcessStateCollector(projConf, imageType);
 
         // Verify state of each page for the given process and store the successful ones
         Set<String> processedPages = new TreeSet<String>();
@@ -60,7 +52,6 @@ public class ProcessFlowHelper {
                 case "preprocessing":     if (procStateCol.preprocessingState(pageId)) processedPages.add(pageId); break;
                 case "despeckling":       if (procStateCol.despecklingState(pageId)) processedPages.add(pageId); break;
                 case "segmentation":      if (procStateCol.segmentationState(pageId)) processedPages.add(pageId); break;
-                case "regionExtraction":  if (procStateCol.regionExtractionState(pageId)) processedPages.add(pageId); break;
                 case "lineSegmentation":  if (procStateCol.lineSegmentationState(pageId)) processedPages.add(pageId); break;
                 case "recognition":       if (procStateCol.recognitionState(pageId)) processedPages.add(pageId); break;
                 default: break;

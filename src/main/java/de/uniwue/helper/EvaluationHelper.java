@@ -43,24 +43,16 @@ public class EvaluationHelper {
     private int progress = -1;
 
     /**
-     * Processing structure of the project
-     * Possible values: { Directory, Pagexml }
-     */
-    private String processingMode;
-
-    /**
      * Constructor
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
-     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public EvaluationHelper(String projectDir, String projectImageType, String processingMode) {
+    public EvaluationHelper(String projectDir, String projectImageType) {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
-        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
         genericHelper = new GenericHelper(projConf);
-        this.processingMode = processingMode;
     }
 
     /**
@@ -112,17 +104,12 @@ public class EvaluationHelper {
         segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
         ObjectMapper mapper = new ObjectMapper();
 
-        List<String> gtFiles ;
-		if(processingMode.equals("Pagexml")) {
-			gtFiles = new ArrayList<String>();
-			for(String pageId : pageIds) {
-				if(procStateCol.groundTruthState(pageId)) {
-					gtFiles.add(new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).getAbsolutePath());
-				}
-			}
-		} else {
-			gtFiles = getGtTextFilesOfPages(pageIds);
-		}
+        final List<String> gtFiles = new ArrayList<String>();
+        for(String pageId : pageIds) {
+            if(procStateCol.groundTruthState(pageId)) {
+                gtFiles.add(new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).getAbsolutePath());
+            }
+        }
 
         ArrayNode gtList = mapper.createArrayNode();
 
@@ -142,13 +129,11 @@ public class EvaluationHelper {
         command.addAll(cmdArgs);
         command.add("--no_progress_bars");
 
-        if(processingMode.equals("Pagexml")) {
-        	command.add("--dataset");
-        	command.add("PAGEXML");
-        	command.add("--pred_ext");
-        	command.add(".xml");
-        	command.add("--skip_empty_gt");
-        }
+        command.add("--dataset");
+        command.add("PAGEXML");
+        command.add("--pred_ext");
+        command.add(".xml");
+        command.add("--skip_empty_gt");
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);

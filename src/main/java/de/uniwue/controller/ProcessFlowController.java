@@ -24,11 +24,6 @@ import de.uniwue.model.ProcessFlowData;
  */
 @Controller
 public class ProcessFlowController {
-    /**
-     * Processing structure of the project
-     * Possible values: { Directory, Pagexml }
-     */
-    private String processingMode;
 	
     /**
      * Manages the helper object and stores it in the session
@@ -46,12 +41,10 @@ public class ProcessFlowController {
         if (processFlowHelper == null) {
             processFlowHelper = new ProcessFlowHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString(),
-                session.getAttribute("processingMode").toString()
+                session.getAttribute("imageType").toString()
             );
             session.setAttribute("processFlowHelper", processFlowHelper);
         }
-        processingMode = session.getAttribute("processingMode").toString();
         return processFlowHelper;
     }
 
@@ -152,32 +145,6 @@ public class ProcessFlowController {
         }
 
         new SegmentationDummyController().execute(pageIds, (String)segmentationImageType, session, response, true);
-    }
-
-    /**
-     * Helper function to execute the RegionExtraction process via its Controller
-     *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @param spacing
-     * @param avgBackground
-     * @param session Session of the user
-     * @param response Response to the request
-     */
-    public void doRegionExtraction(
-                String[] pageIds, Object spacing, Object maxskew, Object skewsteps, Object parallel,
-                HttpSession session, HttpServletResponse response
-            ) {
-        if (pageIds.length == 0) {
-            response.setStatus(531); //531 = Custom: Exited due to invalid input
-            return;
-        }
-
-        Integer spacingInteger = Integer.parseInt((String)spacing);
-        Integer maxskewInteger = Integer.parseInt((String)maxskew);
-        Integer skewstepsInteger = Integer.parseInt((String)skewsteps);
-        Integer parallelInteger = Integer.parseInt((String)parallel);
-        new RegionExtractionController().execute(pageIds, spacingInteger, maxskewInteger, skewstepsInteger, parallelInteger,
-            session, response, true);
     }
 
     /**
@@ -313,23 +280,10 @@ public class ProcessFlowController {
                 return;
         }
 
-        if (processes.contains("regionExtraction")) {
-            session.setAttribute("currentProcess", "regionExtraction");
-            pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
-            Map<String, Object> settings = processSettings.get("regionExtraction");
-            doRegionExtraction(pageIds, settings.get("spacing"), settings.get("skewsteps"), settings.get("maxskew"), settings.get("parallel"), session, response);
-            if (needsExit(session, response))
-                return;
-        }
-
         if (processes.contains("lineSegmentation")) {
             session.setAttribute("currentProcess", "lineSegmentation");
 
-			if(processingMode.equals("Directory")) {
-				pageIds = processFlowHelper.getValidPageIds(pageIds, "regionExtraction");
-			} else {
-				pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
-			}
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "segmentation");
             doLineSegmentation(pageIds, processSettings.get("lineSegmentation").get("cmdArgs"), session, response);
             if (needsExit(session, response))
                 return;
@@ -392,7 +346,6 @@ public class ProcessFlowController {
                 case "preprocessing":     new PreprocessingController().cancel(session, response); break;
                 case "despeckling":       new DespecklingController().cancel(session, response); break;
                 case "segmentationDummy": new SegmentationDummyController().cancel(session, response); break;
-                case "regionExtraction":  new RegionExtractionController().cancel(session, response); break;
                 case "lineSegmentation":  new LineSegmentationController().cancel(session, response); break;
                 case "recognition":       new RecognitionController().cancel(session, response); break;
                 default: return;
@@ -425,7 +378,6 @@ public class ProcessFlowController {
                 case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response) == true) return true; break;
                 case "despeckling":       if(new DespecklingController().filesExists(pageIds, session, response) == true) return true; break;
                 case "segmentationDummy": if(new SegmentationController().filesExists(pageIds, session, response) == true) return true; break;
-                case "regionExtraction":  if(new RegionExtractionController().filesExists(pageIds, session, response) == true) return true; break;
                 case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response) == true) return true; break;
                 case "recognition":       if(new RecognitionController().filesExists(pageIds, session, response) == true) return true; break;
                 default: break;

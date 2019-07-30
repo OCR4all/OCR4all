@@ -63,12 +63,6 @@ public class OverviewHelper {
     private String imageType;
 
     /**
-     * Processing structure of the project
-     * Possible values: { Directory, Pagexml }
-     */
-    private String processingMode;
-
-    /**
      * Object to access project configuration
      */
     private ProjectConfiguration projConf;
@@ -113,10 +107,6 @@ public class OverviewHelper {
     private int pdfdpi = 300;
 
     /**
-     * Indicates Conversion Process to be used by Progress bar
-     */
-    private int conversionProgress = 0;
-    /**
      * Pages to be converted, used in calculation of conversion progression
      */
     private int pagesToConvert = -1;
@@ -137,13 +127,11 @@ public class OverviewHelper {
      *
      * @param pathToProject  Absolute path of the project on the filesystem
      * @param imageType  Image type of the project
-     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public OverviewHelper(String pathToProject, String imageType, String processingMode) {
+    public OverviewHelper(String pathToProject, String imageType) {
         this.imageType = imageType;
         this.projConf = new ProjectConfiguration(pathToProject);
-        this.procStateCol = new ProcessStateCollector(this.projConf, imageType, processingMode);
-        this.processingMode = processingMode;
+        this.procStateCol = new ProcessStateCollector(this.projConf, imageType);
     }
 
     /**
@@ -151,12 +139,10 @@ public class OverviewHelper {
      *
      * @param projConf  Object to access project configuration
      * @param imageType  Image type of the project
-     * @param processingMode  Project processing structure either Directory or PageXML
      */
-    public OverviewHelper(ProjectConfiguration projConf, String imageType, String processingMode) {
+    public OverviewHelper(ProjectConfiguration projConf, String imageType) {
         this.imageType = imageType;
         this.projConf = projConf;
-        this.processingMode = processingMode;
     }
 
     /**
@@ -173,7 +159,6 @@ public class OverviewHelper {
             pOverview.setPreprocessed(procStateCol.preprocessingState(pageId));
             pOverview.setDespeckled(procStateCol.despecklingState(pageId));
             pOverview.setSegmented(procStateCol.segmentationState(pageId));
-            pOverview.setSegmentsExtracted(procStateCol.regionExtractionState(pageId));
             pOverview.setLinesExtracted(procStateCol.lineSegmentationState(pageId));
             pOverview.setRecognition(procStateCol.recognitionState(pageId));
             pOverview.setGroundtruth(procStateCol.groundTruthState(pageId));

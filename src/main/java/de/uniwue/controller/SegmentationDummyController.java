@@ -40,8 +40,7 @@ public class SegmentationDummyController {
         if (segmentationDummyHelper == null) {
             segmentationDummyHelper = new SegmentationDummyHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString(),
-                session.getAttribute("processingMode").toString()
+                session.getAttribute("imageType").toString()
             );
             session.setAttribute("segmentationDummyHelper", segmentationDummyHelper);
         }

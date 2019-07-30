@@ -174,7 +174,6 @@
                             <th>Preprocessing</th>
                             <th>Noise Removal</th>
                             <th>Segmentation</th>
-                            <c:if test='${(not empty processingMode) && (processingMode == "Directory")}'><th>Region Extraction</th></c:if>
                             <th>Line Segmentation</th>
                             <th>Recognition</th>
                             <th>Ground Truth</th>
@@ -186,9 +185,6 @@
                             <td><c:choose><c:when test="${pageOverview.preprocessed == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
                             <td><c:choose><c:when test="${pageOverview.despeckled == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
                             <td><c:choose><c:when test="${pageOverview.segmented == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
-                            <c:if test='${(not empty processingMode) && (processingMode == "Directory")}'>
-                                <td><c:choose><c:when test="${pageOverview.segmentsExtracted == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
-                            </c:if>
                             <td><c:choose><c:when test="${pageOverview.linesExtracted == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
                             <td><c:choose><c:when test="${pageOverview.recognition == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
                             <td><c:choose><c:when test="${pageOverview.groundtruth == 'true'}"><i class="material-icons green-text">check</i></c:when><c:otherwise><i class="material-icons red-text">clear</i></c:otherwise></c:choose></td>
@@ -198,7 +194,7 @@
             </div>
             <div class="section">
                 <div class="row">
-                    <div class="col s6">
+                    <div class="col s12">
                         <h4 class="center">Images</h4>
                         <ul id="images" class="collapsible" data-collapsible="accordion" data-type="page">
                             <li>
@@ -227,8 +223,8 @@
                             </li>
                         </ul>
                     </div>
+                    <!--
                     <div class="col s6">
-                        <c:if test='${(not empty processingMode) && (processingMode == "Directory")}'>
                         <h4 class="center">Segments</h4>
                         <ul id="segments" class="collapsible" data-collapsible="accordion" data-type="segment">
                             <c:forEach items="${segments}" var="seg">
@@ -250,8 +246,8 @@
                             </li>
                             </c:forEach>
                         </ul>
-                        </c:if>
                     </div>
+                	-->
                 </div>
             </div>
         </div>
