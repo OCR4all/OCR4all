@@ -13,13 +13,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.TreeMap;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -709,7 +707,12 @@ public class OverviewHelper {
     public void zipDir(Boolean binary, Boolean gray) {
         try {
             if(new File(projConf.PREPROC_DIR).exists()) {
-                FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
+                LocalDateTime localTime = LocalDateTime.now();
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
+                        .withLocale( Locale.getDefault() )
+                        .withZone( ZoneId.systemDefault());
+                String name = projConf.PROJECT_DIR + "GTC_" + localTime.format(timeFormatter) + ".zip";
+                FileOutputStream fos = new FileOutputStream(name);
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
                 FilenameFilter nameFilter = (file, s) -> true;
                 File fileToZip = new File(projConf.PREPROC_DIR);
@@ -782,7 +785,12 @@ public class OverviewHelper {
         try {
             if(!pageIds.isEmpty()) {
                 if(new File(projConf.PREPROC_DIR).exists()) {
-                    FileOutputStream fos = new FileOutputStream(projConf.PROJECT_DIR + "GTC.zip");
+                    LocalDateTime localTime = LocalDateTime.now();
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
+                            .withLocale( Locale.getDefault() )
+                            .withZone( ZoneId.systemDefault());
+                    String name = projConf.PROJECT_DIR + "GTC_" + localTime.format(timeFormatter) + ".zip";
+                    FileOutputStream fos = new FileOutputStream(name);
                     ZipOutputStream zipOut = new ZipOutputStream(fos);
                     for (int pageId : pageIds) {
 
