@@ -111,10 +111,41 @@
             <version>2.0.15</version>
         </dependency>
 
+        <!-- PAGE xml -->
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>basic</artifactId>
+            <version>1.4.02</version>
+        </dependency>
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>Dla</artifactId>
+            <version>1.4.02</version>
+        </dependency>
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>Io</artifactId>
+            <version>1.4.02</version>
+        </dependency>
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>Maths</artifactId>
+            <version>1.4.02</version>
+        </dependency>
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>Text</artifactId>
+            <version>1.4.02</version>
+        </dependency>
+
     </dependencies>
 
-
-
+    <repositories>
+        <repository>
+    			  <id>Internal project repository</id>
+    			  <url>file://${basedir}/src/lib/repository/</url>
+        </repository>
+    </repositories>
 
     <distributionManagement>
         <repository>
