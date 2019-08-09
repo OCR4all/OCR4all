@@ -6,6 +6,22 @@
     <c:when test="${settingsType == 'general'}">
         <table class="compact">
             <tbody>
+				<tr>
+                    <td>
+                        <p>
+                            Maximum # whitespace column separators 
+                            <br />
+                            <span class="userWarning">Should be set to '-1' if no column separation is desired/required.</span>
+                        </p>
+                        
+                    </td>
+                    <td>
+                        <div class="input-field">
+                            <input id="lineSegmentation--maxcolseps" data-setting="--maxcolseps" type="number" step="1" value="-1" />
+                            <label for="lineSegmentation--maxcolseps" data-type="int" data-error="Has to be int">Default: -1</label>
+                        </div>
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <p>
