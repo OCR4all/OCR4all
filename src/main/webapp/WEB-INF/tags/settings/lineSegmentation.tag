@@ -9,28 +9,19 @@
 
 			<c:choose>
 				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-                <tr>
+				<tr>
                     <td>
                         <p>
-                            Image processing scale 
+                            Maximum # whitespace column separators 
                             <br />
-                            <span class="userWarning">Will be estimated from the image if left empty</span>
+                            <span class="userWarning">Should be set to '-1' if no column separation is desired/required.</span>
                         </p>
                         
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="lineSegmentation--scale" data-setting="--scale" type="number" />
-                            <label for="lineSegmentation--scale" data-type="float" data-error="Has to be a float">Default: -1</label>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
-                    <td>
-                         <div class="input-field">
-                             <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
-                             <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
+                            <input id="lineSegmentation--maxcolseps" data-setting="--maxcolseps" type="number" step="1" value="-1" />
+                            <label for="lineSegmentation--maxcolseps" data-type="int" data-error="Has to be int">Default: -1</label>
                         </div>
                     </td>
                 </tr>
@@ -80,6 +71,31 @@
     <c:when test="${settingsType == 'advanced'}">
 		<c:choose>
 			<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+                <tr>
+                    <td>
+                        <p>
+                            Image processing scale 
+                            <br />
+                            <span class="userWarning">Will be estimated from the image if left empty</span>
+                        </p>
+                        
+                    </td>
+                    <td>
+                        <div class="input-field">
+                            <input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.001" />
+                            <label for="lineSegmentation--scale" data-type="float" data-error="Has to be a float">Default: -1</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
+                    <td>
+                         <div class="input-field">
+                             <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
+                             <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
+                        </div>
+                    </td>
+                </tr>
 			</c:when>
 			<c:otherwise>
         <ul class="collapsible" data-collapsible="accordion">
@@ -171,6 +187,22 @@
                                     </div>
                                 </td>
                             </tr>
+							<tr>
+								<td>
+									<p>
+										Filter strength for individual characters when creating a textline)
+										<br />
+										<span class="userWarning">Smaller values will filter out less characters (based on size)</span>
+									</p>
+									
+								</td>
+								<td>
+									<div class="input-field">
+										<input id="lineSegmentation--filter_strength" data-setting="--filter_strength" type="number" step="0.001"/>
+										<label for="lineSegmentation--filter_strength" data-type="float" data-error="Has to be a float">Default: 1</label>
+									</div>
+								</td>
+							</tr>
                         </tbody>
                     </table>
                 </div>
