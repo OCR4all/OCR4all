@@ -2,9 +2,17 @@ package de.uniwue.feature.pageXML;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.primaresearch.dla.page.Page;
 import org.primaresearch.dla.page.io.xml.PageXmlInputOutput;
+import org.primaresearch.dla.page.io.xml.XmlPageReader;
 import org.primaresearch.dla.page.layout.physical.ContentObject;
 import org.primaresearch.dla.page.layout.physical.ContentObjectProcessor;
 import org.primaresearch.dla.page.layout.physical.text.TextObject;
@@ -13,7 +21,10 @@ import org.primaresearch.dla.page.layout.physical.text.impl.TextLine;
 import org.primaresearch.dla.page.layout.physical.text.impl.TextRegion;
 import org.primaresearch.dla.page.layout.physical.text.impl.Word;
 import org.primaresearch.io.FormatVersion;
+import org.primaresearch.io.xml.SchemaModelParser;
 import org.primaresearch.io.xml.XmlFormatVersion;
+import org.primaresearch.io.xml.XmlModelAndValidatorProvider;
+import org.primaresearch.io.xml.XmlValidator;
 import org.primaresearch.io.xml.variable.XmlVariableFileReader;
 import org.primaresearch.shared.variable.VariableMap;
 import org.primaresearch.text.filter.TextFilter;
@@ -24,6 +35,21 @@ public class PageConverter {
     private String gtsidToSet = null;
     private FormatVersion targetformat = null;
     private VariableMap textFilterRules = null;
+
+    /** Map [schemaVersion, validator] */
+    private Map<XmlFormatVersion, XmlValidator> validators = new HashMap<XmlFormatVersion, XmlValidator>();
+
+    /** Map [schemaVersion, schemaFilePath] */
+    private Map<XmlFormatVersion, URL> schemaSources = new HashMap<XmlFormatVersion, URL>();
+
+    /** Map [schemaVersion, schemaFilePath] */
+    private List<XmlFormatVersion> defaultSchemas = new ArrayList<XmlFormatVersion>();
+
+    /** Map [schemaVersion, schemaParser] */
+    private Map<XmlFormatVersion, SchemaModelParser> schemaParsers = new HashMap<XmlFormatVersion, SchemaModelParser>();
+
+
+    private XmlFormatVersion latestSchemaVersion;
 
     /**
      * Main function
@@ -125,10 +151,16 @@ public class PageConverter {
      * @param targetFilename File path to output PAGE XML
      */
     public void run(String sourceFilename, String targetFilename) {
+
+        System.out.println("now in Converter, sourceFilename is: " + sourceFilename);
+        System.out.println("and targeFilenamee : " + targetFilename);
+
         //Load
         Page page = null;
         try {
             page = PageXmlInputOutput.readPage(sourceFilename);
+            XmlModelAndValidatorProvider validatorProvider = null;
+            XmlPageReader reader = null;
         } catch (Exception e) {
             System.err.println("Could not load source PAGE XML file: "+sourceFilename);
             e.printStackTrace();
@@ -231,6 +263,25 @@ public class PageConverter {
     }
 
     /**
+     * reads the specified page from source file
+     * @param filePath path to source file
+     * @param pageNo page to be read
+     * @return PageXML page
+     */
+    public Page readPage(String filePath, int pageNo) {
+        Page page = new Page();
+        try {
+            FileInputStream readStream =  new FileInputStream(filePath);
+            page = PageXmlInputOutput.readPage(filePath);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+
+        return page;
+    }
+    /**
      * Sets the GtsId that is to be added to the PAGE document.<br>
      * Note: The ID has to be conform to the XML ID convention (start with letter, ...).
      * @param pattern A specific ID or [start,end], where 'start' is the index of the first character
@@ -291,5 +342,6 @@ public class PageConverter {
         this.textFilterRules = textFilterRules;
     }
 
+    }
 
 }
