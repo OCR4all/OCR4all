@@ -1,21 +1,29 @@
 package de.uniwue.helper;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.*;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
@@ -25,17 +33,16 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.model.PageOverview;
-
-import org.opencv.imgproc.Imgproc;
-import org.opencv.core.CvType;
-import org.opencv.core.Core;
-import org.opencv.core.MatOfByte;
 
 public class OverviewHelper {
     /**
@@ -669,7 +676,6 @@ public class OverviewHelper {
         if (!(0 <= areaFactor && areaFactor <= 1) || !(0 <= whiteFactor && whiteFactor <= 1)) {
             throw new IllegalArgumentException("Percent factors are not in range of 0% and 100%");
         }
-
         // Convert image to grayscale
         final Mat gray = new Mat(img.size(), CvType.CV_8UC1);
         Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY);
@@ -693,10 +699,198 @@ public class OverviewHelper {
         pdfdpi = newDPI;
     }
 
+    /**
+     * Zips processing Directory
+     * @param binary    determines if binary image will be zipped
+     * @param gray      determines if grayscale image will be zipped
+     */
+    public void zipDir(Boolean binary, Boolean gray) {
+        try {
+            if(new File(projConf.PREPROC_DIR).exists()) {
+                LocalDateTime localTime = LocalDateTime.now();
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
+                        .withLocale( Locale.getDefault() )
+                        .withZone( ZoneId.systemDefault());
+                String name = projConf.PROJECT_DIR + "GTC_" + localTime.format(timeFormatter) + ".zip";
+                FileOutputStream fos = new FileOutputStream(name);
+                ZipOutputStream zipOut = new ZipOutputStream(fos);
+                FilenameFilter nameFilter = (file, s) -> true;
+                File fileToZip = new File(projConf.PREPROC_DIR);
+                File[] pageFiles = fileToZip.listFiles(nameFilter);
+                for (File pageFile : pageFiles) {
+                    zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
+                }
+                zipOut.close();
+                fos.close();
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Zips specified pages from processing directory
+     * @param pages pages to zip
+     * @param binary    determines if binary image will be zipped
+     * @param gray      determines if grayscale image will be zipped
+     */
+    public void zipPages(String pages, Boolean binary, Boolean gray) {
+
+        List<String> pageIdSegments = new ArrayList<String>();
+        //splits page input on commas and semi-colons
+        try {
+            Scanner scanner = new Scanner(pages);
+            scanner.useDelimiter(",|;|\n");
+            while(scanner.hasNext()){
+                pageIdSegments.add(scanner.next());
+            }
+            scanner.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        //splits every segment at hyphen and fills this range up with corresponding numbers
+        List<Integer> pageIds = new ArrayList<Integer>();
+        try {
+            if(!pageIdSegments.isEmpty()) {
+                for (String segment : pageIdSegments) {
+                    if(segment.contains("-")) {
+                        Scanner scanner = new Scanner(segment);
+                        scanner.useDelimiter("-");
+                        List<String> pageRange = new ArrayList<String>();
+                        while(scanner.hasNext()){
+                            pageRange.add(scanner.next());
+                        }
+                        if(pageRange.size() == 2) {
+                            for(int i = Integer.parseInt(pageRange.get(0)); i <= Integer.parseInt(pageRange.get(1));i++) {
+                                pageIds.add(i);
+                            }
+                        } else {
+                            throw new IndexOutOfBoundsException("page range is negative or had more than one range");
+                        }
+                    } else {
+                        pageIds.add(Integer.parseInt(segment));
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException("No pages selected");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        //now zips every page selected
+        try {
+            if(!pageIds.isEmpty()) {
+                if(new File(projConf.PREPROC_DIR).exists()) {
+                    LocalDateTime localTime = LocalDateTime.now();
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
+                            .withLocale( Locale.getDefault() )
+                            .withZone( ZoneId.systemDefault());
+                    String name = projConf.PROJECT_DIR + "GTC_" + localTime.format(timeFormatter) + ".zip";
+                    FileOutputStream fos = new FileOutputStream(name);
+                    ZipOutputStream zipOut = new ZipOutputStream(fos);
+                    for (int pageId : pageIds) {
+
+                        FilenameFilter nameFilter = (dir, s) -> s.startsWith(String.format("%04d", pageId));
+
+                        File fileToZip = new File(projConf.PREPROC_DIR);
+                        File[] pageFiles = fileToZip.listFiles(nameFilter);
+                        for (File pageFile : pageFiles) {
+                            zipFile(pageFile,pageFile.getName(),zipOut, binary, gray);
+                        }
+                    }
+
+                    zipOut.close();
+                    fos.close();
+                }
+            } else{
+                throw new IllegalArgumentException("page list is empty");
+            }
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**Recursive function that zips files that are either GTC files or folders
+     *
+     * @param fileToZip absolute path to file
+     * @param fileName  name of file
+     * @param zipOut    ZipOutputStream
+     * @param binary    determines if binary image will be zipped
+     * @param gray      determines if grayscale image will be zipped
+     * @throws IOException
+     */
+    public void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, Boolean binary, Boolean gray) throws IOException{
+        //do not zip hidden file
+        if (fileToZip.isHidden()) {
+            return;
+        }
+        //if file is directory list all files in directory and check for GTC data
+        if (fileToZip.isDirectory()) {
+            if (fileName.endsWith(File.separator)) {
+                zipOut.putNextEntry(new ZipEntry(fileName));
+                zipOut.closeEntry();
+            } else {
+                zipOut.putNextEntry(new ZipEntry(fileName + File.separator));
+                zipOut.closeEntry();
+            }
+            FilenameFilter nameFilter = (dir, s) -> {
+                try {
+                    return checkGTC(dir.toString() + File.separator + s, binary, gray);
+                } catch(IOException e) {
+                    return false;
+                }
+            };
+
+            File[] children = fileToZip.listFiles(nameFilter);
+            for (File childFile : children) {
+                zipFile(childFile, fileName + File.separator + childFile.getName(), zipOut, binary, gray);
+            }
+            return;
+        }
+        //additional check necessary for root folder
+        if(checkGTC(fileName,binary,gray)) {
+            FileInputStream fis = new FileInputStream(fileToZip);
+            ZipEntry zipEntry = new ZipEntry(fileName);
+            zipOut.putNextEntry(zipEntry);
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = fis.read(bytes)) >= 0) {
+                zipOut.write(bytes, 0, length);
+            }
+            fis.close();
+        }
+    }
+
+
+    /**
+     * Checks if file belongs to Ground Truth Data
+     * @param pathToFile path to file
+     * @param binary determines if binary images will be checked positive
+     * @param gray determines is grayscale images will be checke positive
+     * @return TRUE if there are no images and directory contains PDF
+     * @throws IOException
+     */
+    public boolean checkGTC(String pathToFile, Boolean binary, Boolean gray) throws IOException {
+        File file = new File(pathToFile);
+        if(((binary && pathToFile.endsWith(projConf.BINR_IMG_EXT))
+                || (gray && pathToFile.endsWith(projConf.GRAY_IMG_EXT))
+                || pathToFile.endsWith(projConf.GT_EXT)
+                || pathToFile.endsWith("xml")
+                || file.isDirectory())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Converts BufferedImage to OpenCV.Mat
-     * @param image buffered image
+     * @param bufferedimage buffered image
      * @return matrix of the buffered image
      */
     public Mat bufferedImageToMat(BufferedImage bufferedimage) throws IOException {
@@ -707,6 +901,26 @@ public class OverviewHelper {
         final Mat image = Imgcodecs.imdecode(bytes, Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
         bytes.release();
         return image;
+    }
+
+    /**
+     * Checks if there is any exportable Ground Truth Data in Project
+     * @return true if GT data exist
+     */
+    public boolean checkGtcExportable() {
+        try {
+            File procDir = new File(projConf.PREPROC_DIR);
+            if(procDir.isDirectory()) {
+                for (File file : procDir.listFiles()) {
+                    if(checkGTC(file.getAbsolutePath(),true,true)) {
+                        return true;
+                    }
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }
