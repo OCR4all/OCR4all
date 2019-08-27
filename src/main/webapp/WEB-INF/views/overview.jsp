@@ -300,8 +300,21 @@
                 });
 
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
-                    cancelProcess();
-
+                    //cancel only in file conversion progress
+                    if(globalInProgress) {
+                        cancelProcess();
+                    }
+                    else {
+                        $.post( "ajax/" + globalController + "/cancel" )
+                            .done(function( data ) {
+                                stopProcessUpdate("Process cancelled", "");
+                                $('#modal_successfulcancel').modal('open');
+                            })
+                            .fail(function( data ) {
+                                stopProcessUpdate("ERROR: Error during process cancelling", "red-text");
+                                $('#modal_failcancel').modal('open');
+                            });
+                    }
                     // Unload project if user cancels the mandatory adjustments
                     setTimeout(function() {
                         $.get( "ajax/overview/invalidateSession" );
