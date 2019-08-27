@@ -27,8 +27,8 @@
                 $('#imageType').on('change', function() {
                     let imageSubExt = ""; 
                     switch($('#imageType').val()){
-                        case "Binary": imageSubExt = "bin"; break;
-                        case "Despeckled": imageSubExt = "desp"; break;
+                        case "Binary": imageSubExt = "bin nrm"; break;
+                        case "Despeckled": imageSubExt = "desp nrm"; break;
                         default: imageSubExt = "";
                     }
                     $('#imagefilter').val(imageSubExt);
