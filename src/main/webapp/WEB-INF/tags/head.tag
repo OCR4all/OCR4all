@@ -97,7 +97,12 @@
             // Expand all side navigation collapsibles (to show nested elements)
             $('.side-nav .collapsible-header').addClass('active');
             $('.side-nav .collapsible').collapsible();
+
+            $('#open_menu').click(function() {
+                $('#slide-out').removeClass('hiddendiv');
+            });
         });
+
     </script>
 
     <jsp:doBody />
