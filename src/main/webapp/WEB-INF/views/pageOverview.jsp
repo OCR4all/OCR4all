@@ -70,6 +70,7 @@
                             let li = document.createElement("li");
                             let a = document.createElement("a");
                             a.setAttribute("href", newLocation);
+                            li.setAttribute('value', id);
                             li.appendChild(a);
                             a.textContent = "Page" + " " + id;
                             liList.push(li);
@@ -105,23 +106,28 @@
                             }
                         );
                     });
+                //Prev next button
 
                 $(".prev-page").click(() => {
-                    var searchParams = new URLSearchParams(window.location.search);
-                    var pageidcoerce = (+searchParams.get("pageId")) - 1;
-                    var pageid = ("0000" + pageidcoerce).slice(-4);
-                    if (pageid !== "0000") {
-                        var newLocation = window.location.href.split("?")[0] + "?len=" + picListL.length + "&pageId=" + pageid;
+                    let searchParams = new URLSearchParams(window.location.search);
+                    let page_id = (searchParams.get("pageId"));
+                    let prev_page_index  = $('#pages01>li').index($('#pages01>li[value=' + page_id + ']'))-1;
+
+                    if (prev_page_index !== -1) {
+                        let prev_page = $('#pages01>li').eq(prev_page_index).val();
+                        let newLocation = window.location.href.split("?")[0] + "?len=" + picListL.length + "&pageId=" + prev_page.toString().padStart(4, '0');
                         window.location.href = newLocation;
                     }
                 });
 
                 $(".next-page").click(() => {
-                    var searchParams = new URLSearchParams(window.location.search);
-                    var pageidcoerce = (+searchParams.get("pageId")) + 1;
-                    var pageid = ("0000" + pageidcoerce).slice(-4);
-                    var newLocation = window.location.href.split("?")[0] + "?len=" + picListL.length + "&pageId=" + pageid;
-                    if (pageidcoerce !== (+searchParams.get("len")+1)){
+                    let searchParams = new URLSearchParams(window.location.search);
+                    let page_id = (searchParams.get("pageId"));
+                    let next_page_index  = $('#pages01>li').index($('#pages01>li[value=' + page_id + ']'))+1;
+
+                    if (next_page_index !== (+searchParams.get("len"))){
+                        let next_page = $('#pages01>li').eq(next_page_index).val();
+                        let newLocation = window.location.href.split("?")[0] + "?len=" + picListL.length + "&pageId=" + next_page.toString().padStart(4, '0');
                         window.location.href = newLocation;
                     }
                 });
