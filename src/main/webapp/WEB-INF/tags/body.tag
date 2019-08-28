@@ -18,10 +18,9 @@
         </nav>
 
         <div class="container">
-            <a href="#" data-activates="slide-out" class="button-collapse top-nav"><i class="material-icons">menu</i></a>
+            <a href="#" id="open_menu" data-activates="slide-out" class="button-collapse top-nav"><i class="material-icons">menu</i></a>
         </div>
-
-        <ul id="slide-out" class="side-nav">
+        <ul id="slide-out" class="side-nav hiddendiv">
             <li class="site-description">OCR 4 All</li>
             <li class="nav-separator"></li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
