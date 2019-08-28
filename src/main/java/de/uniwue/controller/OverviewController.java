@@ -386,7 +386,7 @@ public class OverviewController {
      * @param response Response to the Request
      */
     @RequestMapping(value ="ajax/overview/exportGtc" , method = RequestMethod.POST)
-    public @ResponseBody void exportGtc(
+    public @ResponseBody String exportGtc(
             @RequestParam("completeDir") Boolean completeDir,
             @RequestParam("pages") String pages,
             @RequestParam("binary") Boolean binary,
@@ -395,7 +395,7 @@ public class OverviewController {
     ) {
         OverviewHelper overviewHelper = provideHelper(session, response);
         if (overviewHelper == null) {
-            return;
+            return null;
         }
 
         try {
@@ -413,6 +413,7 @@ public class OverviewController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
         }
+        return overviewHelper.getProjDir();
     }
 
     /**

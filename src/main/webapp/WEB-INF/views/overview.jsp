@@ -176,6 +176,7 @@
                                                             datatable();
                                                         }, 2000);
                                                         $('#gtc_spinner').addClass('hiddendiv');
+                                                        $('#zip_path').text("> " + data);
                                                         $('#modal_export_finished').modal('open');
                                                     })
                                                     .fail(function( data ) {
@@ -627,8 +628,9 @@
             <div class="modal-content">
                 <h4 class="blue-text">Ground Truth Export finished</h4>
                 <p>
-                    The zip file with the ground truth data and current timestamp can now be found in your current project folder.
+                    The zip file with the ground truth data and current timestamp can now be found in your current project folder:
                 </p>
+                <p id="zip_path"></p>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Ok</a>

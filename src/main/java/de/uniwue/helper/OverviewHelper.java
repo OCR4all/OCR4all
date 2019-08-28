@@ -130,6 +130,11 @@ public class OverviewHelper {
     private boolean pdfConversionFlag = false;
 
     /**
+     * name of the current zip file
+     */
+    private String zipName;
+
+    /**
      * Constructor
      *
      * @param pathToProject  Absolute path of the project on the filesystem
@@ -711,8 +716,8 @@ public class OverviewHelper {
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
                         .withLocale( Locale.getDefault() )
                         .withZone( ZoneId.systemDefault());
-                String name = projConf.PROJECT_DIR + "GTC_" + localTime.format(timeFormatter) + ".zip";
-                FileOutputStream fos = new FileOutputStream(name);
+                zipName = projConf.PROJECT_DIR + "GTC_" + localTime.format(timeFormatter) + ".zip";
+                FileOutputStream fos = new FileOutputStream(zipName);
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
                 FilenameFilter nameFilter = (file, s) -> true;
                 File fileToZip = new File(projConf.PREPROC_DIR);
@@ -789,8 +794,8 @@ public class OverviewHelper {
                     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
                             .withLocale( Locale.getDefault() )
                             .withZone( ZoneId.systemDefault());
-                    String name = projConf.PROJECT_DIR + "GTC_" + localTime.format(timeFormatter) + ".zip";
-                    FileOutputStream fos = new FileOutputStream(name);
+                    zipName = projConf.PROJECT_DIR + "GTC_" + localTime.format(timeFormatter) + ".zip";
+                    FileOutputStream fos = new FileOutputStream(zipName);
                     ZipOutputStream zipOut = new ZipOutputStream(fos);
                     for (int pageId : pageIds) {
 
@@ -921,6 +926,18 @@ public class OverviewHelper {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Returns Project dir to Controller
+     * @return String Project dir
+     */
+    public String getProjDir() {
+        String[] dirs = zipName.split(File.separator);
+        String relZipName = dirs[dirs.length-3]+ File.separator +
+                            dirs[dirs.length-2]+ File.separator +
+                            dirs[dirs.length -1];
+        return relZipName;
     }
 
 }
