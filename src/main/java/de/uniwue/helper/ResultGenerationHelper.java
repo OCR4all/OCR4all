@@ -161,7 +161,6 @@ public class ResultGenerationHelper {
      */
     public void executeXmlProcess(List<String> pageIds, String time) throws IOException {
 		File dir = new File(projConf.OCR_DIR);
-		//deleteOldFiles(pageIds, "xml");
 		if (!dir.exists())
 			return;
 		
@@ -184,7 +183,6 @@ public class ResultGenerationHelper {
      */
     public void executeTextProcess(List<String> pageIds, String time) throws IOException {
         initialize(pageIds);
-        //deleteOldFiles(pageIds, "txt");
 
 		TreeMap<String, String> pageResult = new TreeMap<String, String>();
 		int processElementCount = pageIds.size();
@@ -293,33 +291,6 @@ public class ResultGenerationHelper {
      */
     public int getProgress() {
         return progress;
-    }
-
-    /**
-     * Deletion of old process related files
-     *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     */
-    public void deleteOldFiles(List<String> pageIds, String type) {
-        // Delete result of each page
-        for (String pageId : pageIds) {
-            if (type.equals("txt")) {
-                File pageTxtResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
-                if (pageTxtResult.exists())
-                    pageTxtResult.delete();
-            }
-            if (type.equals("xml")) {
-                File pageXmlResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.CONF_EXT);
-                if (pageXmlResult.exists())
-                    pageXmlResult.delete();
-            }
-        }
-        if (type.equals("txt")) {
-            // delete the concatenated result of the pages
-            File completeResult = new File(projConf.RESULT_DIR + "complete" + projConf.REC_EXT);
-            if (completeResult.exists())
-                completeResult.delete();
-        }
     }
 
     /**
