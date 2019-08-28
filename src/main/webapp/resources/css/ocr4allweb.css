@@ -262,9 +262,13 @@ button[data-id="msRecModelAddOption"] {
   display: inline-flex;
   vertical-align: middle;
   line-height: 3vh;
-  color: #8c9eff;
   padding-top: 30px;
-
+}
+.pn-button:active {
+  background-color: transparent !important;
+}
+.pn-button:focus {
+  background-color: transparent !important;
 }
 .prev-area{
   text-align: left;
