@@ -110,7 +110,7 @@
 
                 $("#pn-prev").click(() => {
                     let searchParams = new URLSearchParams(window.location.search);
-                    let page_id = (searchParams.get("pageId"));
+                    let page_id = searchParams.get("pageId");
                     let prev_page_index  = $('#pages01>li').index($('#pages01>li[value=' + page_id + ']'))-1;
 
                     if (prev_page_index >= 0) {
@@ -122,7 +122,7 @@
 
                 $("#pn-next").click(() => {
                     let searchParams = new URLSearchParams(window.location.search);
-                    let page_id = (searchParams.get("pageId"));
+                    let page_id = searchParams.get("pageId");
                     let next_page_index  = $('#pages01>li').index($('#pages01>li[value=' + page_id + ']'))+1;
 
                     if (next_page_index < $('#pages01>li').length){
