@@ -67,7 +67,7 @@ public class SegmentationImportHelper {
         progress = 0;
 
         PageConverter converter = new PageConverter();
-        converter.run(projConf.ORIG_IMG_DIR+"DemoImage1_ABBYY.xml",projConf.PREPROC_DIR+"test.xml");
+        converter.run(projConf.ORIG_IMG_DIR+"DemoImage1_ABBYY_Basic.xml",projConf.PREPROC_DIR+"0001.xml");
         progress = 100;
     }
     /**

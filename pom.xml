@@ -114,28 +114,33 @@
         <!-- PAGE xml -->
         <dependency>
             <groupId>org.primaresearch</groupId>
-            <artifactId>basic</artifactId>
-            <version>1.4.02</version>
+            <artifactId>Basic</artifactId>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Dla</artifactId>
-            <version>1.4.02</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Io</artifactId>
-            <version>1.4.02</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Maths</artifactId>
-            <version>1.4.02</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Text</artifactId>
-            <version>1.4.02</version>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>json</artifactId>
+            <version>1.5</version>
         </dependency>
 
     </dependencies>

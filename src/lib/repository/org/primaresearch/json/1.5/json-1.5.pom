@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.primaresearch</groupId>
-  <artifactId>Io</artifactId>
-  <version>1.4.02</version>
+  <artifactId>json</artifactId>
+  <version>1.5</version>
   <description>POM was created from install:install-file</description>
 </project>
