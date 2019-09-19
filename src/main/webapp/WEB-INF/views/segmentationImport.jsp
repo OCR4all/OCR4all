@@ -27,6 +27,7 @@
                             setTimeout(function() {
                                 datatable();
                             }, 2000);
+                            $('#modal_fin').modal('open');
                         })
                         .fail(function( data ) {
                             $('#modal_error').modal('open');
@@ -44,7 +45,7 @@
             });
         </script>
     </t:head>
-    <t:body heading="Segmentation Import" imageList="true" processModals="true">
+    <t:body heading="Segmentation Import" imageList="false" processModals="true">
         <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
@@ -106,7 +107,32 @@
                     Currently only selected XML formats are supported: ABBYY FineReader 10 XML, ALTO XML and hOCR XML<br />
                     Please be aware that only the official XML schemes can be converted.
                     <br />
-                    To Import the OCR XML, either save it in the input folder or enter the path of the file.
+                    To Import the OCR XML save the files in the Input folder and press the "IMPORT" button.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Ok</a>
+            </div>
+        </div>
+        <div id="modal_fin" class="modal">
+            <div class="modal-content blue-grey-text">
+                <h4>Please note:</h4>
+                <p>
+                    After converting the subtypes of each Region has to be set with Larex.
+                    <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
+                        <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}" />
+                        <input type="hidden" id="bookname" name="bookname" value="processing" />
+                        <input type="hidden" id="websave" name="websave" value="false" />
+                        <input type="hidden" id="localsave" name="localsave" value="bookpath" />
+                        <input type="hidden" id="imagefilter" name="imagefilter" value="bin" />
+                        <c:if test="${not empty modes}" >
+                            <input type="hidden" id="modes" name="modes" value="${modes}" />
+                        </c:if>
+                        <button data-id="openLarex" class="btn waves-effect waves-light" type="submit" name="action">
+                            Open LAREX
+                            <i class="material-icons right">chevron_right</i>
+                        </button>
+                    </form>
                 </p>
             </div>
             <div class="modal-footer">

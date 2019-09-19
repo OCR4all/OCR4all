@@ -3,6 +3,11 @@ package de.uniwue.helper;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,7 +48,7 @@ public class SegmentationImportHelper {
     /**
      * Indicates if the process should be cancelled
      */
-    private boolean stop = false;
+    private boolean stopProcess = false;
 
     /**
      * Constructor
@@ -65,11 +70,77 @@ public class SegmentationImportHelper {
      */
     public void execute(String sourceFilePath, String destFilePath) throws IOException, ParserConfigurationException, TransformerException {
         progress = 0;
-
+        System.out.println("source: " + sourceFilePath);
+        System.out.println("(unwichtig) output: " + destFilePath);
+        renameFiles();
         PageConverter converter = new PageConverter();
-        converter.run(projConf.ORIG_IMG_DIR+"DemoImage1_ABBYY_Basic.xml",projConf.PREPROC_DIR+"0001.xml");
+
+        ArrayList<File> xmlFiles = new ArrayList<File>();
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+                .map(Path::toFile)
+                .filter(fileEntry -> fileEntry.isFile())
+                .filter(fileEntry -> fileEntry.getName().endsWith(projConf.CONF_EXT))
+                .filter(fileEntry -> fileEntry.getName().matches("[0-9]{4}"+projConf.CONF_EXT))
+                .sorted()
+                .forEach(
+                        fileEntry -> { xmlFiles.add(fileEntry); }
+                );
+
+        for (File xmlFile : xmlFiles) {
+            System.out.println(xmlFile.getName());
+            System.out.println(xmlFile.getAbsoluteFile());
+            converter.run(xmlFile.getAbsolutePath(), projConf.PREPROC_DIR+xmlFile.getName());
+        }
+        //converter.run(sourceFilePath,projConf.PREPROC_DIR+"0001.xml");
         progress = 100;
     }
+
+    /**
+     * Renames all files in the 'original' folder to names that consists of an ascending number of digits (e.g 0001, 0002 ...)
+     *
+     * @throws IOException
+     */
+    public void renameFiles() throws IOException {
+        if (stopProcess == true)
+            return;
+        ArrayList<File> xmlFiles = new ArrayList<File>();
+        // File depth of 1 -> no recursive (file)listing
+        Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
+                .map(Path::toFile)
+                .filter(fileEntry -> fileEntry.isFile())
+                .filter(fileEntry -> fileEntry.getName().endsWith(projConf.CONF_EXT))
+                .sorted()
+                .forEach(
+                        fileEntry -> { xmlFiles.add(fileEntry); }
+                );
+
+        int minimumFormatLength = String.valueOf(xmlFiles.size()).length();
+        // File names must consist of at least four digits
+        if (minimumFormatLength < projConf.minimumNameLength)
+            minimumFormatLength = projConf.minimumNameLength;
+
+        // Build formatting possibility
+        String format = "";
+        for (int i = 1; i <= minimumFormatLength; i++)
+            format = format + 0;
+        DecimalFormat df = new DecimalFormat(format);
+
+        int formattingCounter = 1;
+        for (File file : xmlFiles) {
+            if (stopProcess == true)
+                return;
+
+            if (!file.getName().equals(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.CONF_EXT)) {
+                //file.renameTo(new File(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.CONF_EXT));
+                File validFile = file;
+                validFile.renameTo(new File(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.CONF_EXT));
+                validFile.createNewFile();
+            }
+            formattingCounter++;
+        }
+    }
+
     /**
      * Returns the progress of the job
      *
@@ -90,7 +161,7 @@ public class SegmentationImportHelper {
      * Cancels the process
      */
     public void cancelProcess() {
-        stop = true;
+        stopProcess = true;
     }
 
     /**

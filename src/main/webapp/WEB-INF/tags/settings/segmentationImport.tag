@@ -7,7 +7,7 @@
         <td>
             <div class="input-field">
                 <i class="material-icons prefix">folder</i>
-                <input id="importFile" type="text" class="validate suffix" value="/var/ocr4all/data/" data-projdataselrefid="projectSelection" />
+                <input id="importFile" type="text" class="validate suffix" value="/var/ocr4all/data/abbyy/input/DemoImage1_ABBYY.xml" data-projdataselrefid="projectSelection" />
                 <label for="importFile" data-error="Directory path is empty or could not be accessed on the filesystem"></label>
             </div>
         </td>

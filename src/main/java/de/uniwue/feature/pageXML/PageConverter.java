@@ -2,6 +2,16 @@ package de.uniwue.feature.pageXML;
 
 
 import java.io.File;
+import javax.swing.plaf.basic.BasicListUI;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.*;
+
 
 import org.primaresearch.dla.page.Page;
 import org.primaresearch.dla.page.io.xml.PageXmlInputOutput;
@@ -30,18 +40,16 @@ public class PageConverter {
 
     /**
      * Runs the conversion
-     * @param sourceFilename File path of input PAGE XML
-     * @param targetFilename File path to output PAGE XML
-     */
-    /**
-     * Runs the conversion
-     * @param sourceFilename File path of input PAGE XML
+     * @param sourceFilename File path of input XML
      * @param targetFilename File path to output PAGE XML
      */
     public void run(String sourceFilename, String targetFilename) {
         //Load
         Page page = null;
         System.out.println("source is: '"+sourceFilename+"'");
+
+        removeSeperatorsAndTables(sourceFilename);
+
         try {
             page = PageXmlInputOutput.readPage(sourceFilename);
         } catch (Exception e) {
@@ -80,6 +88,13 @@ public class PageConverter {
                 System.err.println("Error writing target PAGE XML file");
         } catch (Exception e) {
             System.err.println("Could not save target PAGE XML file: "+targetFilename);
+            e.printStackTrace();
+        }
+
+        //conform to Larex and Calamari quirks
+        try {
+            setImageFilename(targetFilename);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -202,6 +217,65 @@ public class PageConverter {
      */
     public void setTextFilterRules(VariableMap textFilterRules) {
         this.textFilterRules = textFilterRules;
+    }
+
+    /**
+     * removes Separators and Tables from Abbyy XML file(only works with FineReader10
+     * @param xmlPath path to XML file
+     */
+    public void removeSeperatorsAndTables(String xmlPath) {
+        try {
+            File xmlFile = new File(xmlPath);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+            Node page = doc.getElementsByTagName("page").item(0);
+            NodeList blocks = page.getChildNodes();
+
+            for(int i = 0; i < blocks.getLength(); i++) {
+                Node block = blocks.item(i);
+                NamedNodeMap attr = block.getAttributes();
+                Node nodeAttr = attr.getNamedItem("blockType");
+                if(nodeAttr.getTextContent().equals("Table")
+                || nodeAttr.getTextContent().equals("SeparatorsBox")
+                || nodeAttr.getTextContent().equals("Separator")) {
+                    page.removeChild(block);
+                }
+            }
+
+            doc.normalizeDocument();
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setImageFilename(String xmlPath) {
+        try {
+            File xmlFile = new File(xmlPath);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+            Node page = doc.getElementsByTagName("Page").item(0);
+            NamedNodeMap attr = page.getAttributes();
+            Node nodeAttr = attr.getNamedItem("imageFilename");
+            nodeAttr.setTextContent(xmlFile.getName());
+
+            doc.normalizeDocument();
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
