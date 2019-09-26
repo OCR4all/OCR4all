@@ -43,7 +43,7 @@ public class SegmentationController {
     /**
      * Response to the request to check if old process related files exist
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param session Session of the user
      * @param response Response to the request
      * @return Information if files exist

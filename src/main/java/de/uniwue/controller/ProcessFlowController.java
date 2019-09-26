@@ -356,8 +356,8 @@ public class ProcessFlowController {
     /**
      * Response to the request to check if old process related files exist
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param processes[] Names of the processes that should be executed
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param processes Names of the processes that should be executed
      * @param session Session of the user
      * @param response Response to the request
      * @return Information if files exist

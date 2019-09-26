@@ -67,8 +67,8 @@ public class EvaluationController {
     /**
      * Response to the request to return the evaluation status and output information
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs[] Command line arguments for evaluation process
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs Command line arguments for evaluation process
      * @param session Session of the user
      * @param response Response to the request
      */

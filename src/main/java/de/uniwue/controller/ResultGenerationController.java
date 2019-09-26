@@ -66,8 +66,7 @@ public class ResultGenerationController {
     /**
      * Response to the request to return the result generation status and output information
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs[] Command line arguments for result generation process
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param session Session of the user
      * @param response Response to the request
      */
@@ -152,7 +151,7 @@ public class ResultGenerationController {
     /**
      * Response to the request to check if old process related files exist
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param resultType Type of the result, which should be checked (xml, txt) 
      * @param session Session of the user
      * @param response Response to the request

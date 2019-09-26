@@ -67,8 +67,8 @@ public class PreprocessingController {
     /**
      * Response to the request to return the preprocessing status and output information
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs[] Command line arguments for preprocessing process
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs Command line arguments for preprocessing process
      * @param session Session of the user
      * @param response Response to the request
      * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
@@ -159,7 +159,7 @@ public class PreprocessingController {
     /**
      * Response to the request to check if old process related files exist
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param session Session of the user
      * @param response Response to the request
      * @return Information if files exist

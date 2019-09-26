@@ -73,7 +73,7 @@ public class ProcessHandler {
          * Constructor
          *
          * @param process Process to watch
-         * @param consumeInputLine Consumer to pass the process to
+         * @param consumeProcess Consumer to pass the process to
          */
         public ProcessCompletionNotifier(Process process, Consumer<Process> consumeProcess) {
             this.process = process;
@@ -157,7 +157,7 @@ public class ProcessHandler {
      * Extends existing console std.err with new content
      * Will be used as consumer by the StreamHandler 
      *
-     * @param consoleOut New std.err content of the process
+     * @param consoleErr New std.err content of the process
      */
     private void appendConsoleError(String consoleErr) {
         this.consoleErr += consoleErr + System.lineSeparator();

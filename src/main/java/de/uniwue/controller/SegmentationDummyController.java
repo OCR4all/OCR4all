@@ -69,8 +69,7 @@ public class SegmentationDummyController {
      * Response to the request to execute the process
      *
      * @param pageIds Ids of specified pages
-     * @param imageType Type of the images (binary,despeckled)
-     * @param replace If true, replaces the existing image files
+     * @param segmentationImageType Type of the images (binary,despeckled)
      * @param session Session of the user
      * @param response Response to the request
      * @param inProcessFlow Indicates if the process is executed within the ProcessFlow

@@ -67,7 +67,7 @@ public class TrainingController {
     /**
      * Response to the request to return the training status and output information
      *
-     * @param cmdArgs[] Command line arguments for training process
+     * @param cmdArgs Array of Command line arguments for training process
      * @param trainingId Custom identifier to name the training directory
      * @param session Session of the user
      * @param response Response to the request

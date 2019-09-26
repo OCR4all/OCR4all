@@ -28,7 +28,7 @@ public class SegmentationHelper {
     /**
      * Constructor
      *
-     * @param projectDir Path to the project directory
+     * @param projDir Path to the project directory
      * @param projectImageType Type of the project (binary,gray)
      */
     public SegmentationHelper(String projDir, String projectImageType) {

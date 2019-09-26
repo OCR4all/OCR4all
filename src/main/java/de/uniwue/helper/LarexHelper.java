@@ -34,7 +34,7 @@ public class LarexHelper {
     /**
      * Constructor
      *
-     * @param projectDir Path to the project directory
+     * @param projDir Path to the project directory
      * @param projectImageType Type of the project (binary,gray)
      */
     public LarexHelper(String projDir, String projectImageType) {

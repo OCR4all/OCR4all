@@ -31,7 +31,7 @@ public class ProcessStateCollector {
      * Constructor
      *
      * @param projConf Project configuration object
-     * @param projectImageType Type of the project (gray, binary)
+     * @param imageType Type of the project (gray, binary)
      * @param imageType Image type of the project
      */
     public ProcessStateCollector(ProjectConfiguration projConf, String imageType) {
@@ -42,7 +42,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "Preprocessing" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "Preprocessing" state of the page
      */
     public boolean preprocessingState(String pageId) {
@@ -55,7 +55,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "Despeckling" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "Despeckling" state of the page
      */
     public boolean despecklingState(String pageId) {
@@ -67,7 +67,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "Segmentation" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "Segmentation" state of the page
      */
     public boolean segmentationState(String pageId) {
@@ -76,13 +76,53 @@ public class ProcessStateCollector {
         }
         return true;
     }
+    
+    /**
+     * Checks whether the required image files in "OCR/Pages/{pageId}" directory exist or not
+     *
+     * @param pageId Identifier of the page (e.g 0002,0003)
+     * @param includePseg Determines if the ".pseg.png" file should be checked as well (for line segmentation only)
+     * @return Information if the required image files exist
+     */
+    public boolean existPageDirImageFiles(String pageId, boolean includePseg) {
+        File pageDir = new File(projConf.PAGE_DIR + pageId);
+        if (!pageDir.exists())
+            return false;
 
+        // Identify plain region images (REGION_ID.png)
+        File[] plainRegionImgFiles = pageDir.listFiles((d, name) ->
+            name.endsWith(projConf.IMG_EXT) &&
+            !name.endsWith(projConf.BINR_IMG_EXT) &&
+            !name.endsWith(projConf.GRAY_IMG_EXT) &&
+            !name.endsWith(projConf.PSEG_EXT)
+        );
+
+        if (plainRegionImgFiles.length == 0)
+            return false;
+
+        // Check that for every region file a ".bin.png" and ".nrm.png exists (successful region extraction)
+        // If required, check that for every region file a ".pseg.png" exists (successful line segmentation)
+        for (File imgFile : plainRegionImgFiles) {
+            if (!new File(FilenameUtils.removeExtension(imgFile.getAbsolutePath()) + projConf.BINR_IMG_EXT).exists())
+                return false;
+
+            if (!new File(FilenameUtils.removeExtension(imgFile.getAbsolutePath()) + projConf.GRAY_IMG_EXT).exists())
+                return false;
+
+            if (includePseg == true) {
+                if (!new File(FilenameUtils.removeExtension(imgFile.getAbsolutePath()) + projConf.PSEG_EXT).exists())
+                    return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Checks whether the required textlines for the image files exist or not.
      * Also checks for binary/grayscale images to extract the lines from. 
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return Information if the required image files exist
      */
     public boolean existLines(String pageId) {
@@ -120,7 +160,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "LineSegmentation" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "LineSegmentation" state of the page
      */
     public boolean lineSegmentationState(String pageId) {
@@ -131,7 +171,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "Recognition" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "Recognition" state of the page
      */
     public boolean recognitionState(String pageId) {
@@ -200,7 +240,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "ResultGeneration" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @param resultType Type of the result, which should be checked (xml, txt) 
      * @return "result" state of the page
      */

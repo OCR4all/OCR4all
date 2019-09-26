@@ -235,7 +235,8 @@ public class TrainingHelper {
     /**
      * Deletion of old process related files
      *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param projectName name of project
+     * @param trainingId Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
     public void deleteOldFiles(String projectName, String trainingId) throws IOException {
