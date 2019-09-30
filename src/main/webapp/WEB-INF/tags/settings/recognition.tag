@@ -59,6 +59,21 @@
                         </div>
                     </td>
                  </tr>
+			<c:choose>
+				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+				<tr>
+					<td><p>Estimate skew angle for every region without one</p></td>
+					<td>
+						<p>
+							<input type="checkbox" class="filled-in" data-setting="--estimate_skew" id="recognition--estimate_skew" checked="checked"/>
+							<label for="recognition--estimate_skew"></label>
+						</p>
+					</td>
+				</tr>
+				</c:when>
+				<c:otherwise>
+				</c:otherwise>
+			</c:choose>
             </tbody>
         </table>
     </c:when>
