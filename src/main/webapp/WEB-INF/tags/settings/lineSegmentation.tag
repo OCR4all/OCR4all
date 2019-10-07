@@ -6,27 +6,6 @@
     <c:when test="${settingsType == 'general'}">
         <table class="compact">
             <tbody>
-
-			<c:choose>
-				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-				<tr>
-                    <td>
-                        <p>
-                            Maximum # whitespace column separators 
-                            <br />
-                            <span class="userWarning">Should be set to '-1' if no column separation is desired/required.</span>
-                        </p>
-                        
-                    </td>
-                    <td>
-                        <div class="input-field">
-                            <input id="lineSegmentation--maxcolseps" data-setting="--maxcolseps" type="number" step="1" value="-1" />
-                            <label for="lineSegmentation--maxcolseps" data-type="int" data-error="Has to be int">Default: -1</label>
-                        </div>
-                    </td>
-                </tr>
-				</c:when>
-				<c:otherwise>
 				 <tr>
                     <td>
                         <p>
@@ -43,6 +22,10 @@
                         </div>
                     </td>
                 </tr>
+			<c:choose>
+				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+				</c:when>
+				<c:otherwise>
                 <tr>
                     <td><p>Output grayscale lines as well</p></td>
                     <td>
@@ -71,31 +54,65 @@
     <c:when test="${settingsType == 'advanced'}">
 		<c:choose>
 			<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-                <tr>
-                    <td>
-                        <p>
-                            Image processing scale 
-                            <br />
-                            <span class="userWarning">Will be estimated from the image if left empty</span>
-                        </p>
-                        
-                    </td>
-                    <td>
-                        <div class="input-field">
-                            <input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.001" />
-                            <label for="lineSegmentation--scale" data-type="float" data-error="Has to be a float">Default: -1</label>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
-                    <td>
-                         <div class="input-field">
-                             <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
-                             <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
-                        </div>
-                    </td>
-                </tr>
+        <ul class="collapsible" data-collapsible="accordion">
+            <li>
+                <div class="collapsible-header">Scale parameters checking</div>
+                <div class="collapsible-body">
+					<table class="compact">
+						<tr>
+							<td>
+								<p>
+									Image processing scale 
+									<br />
+									<span class="userWarning">Will be estimated from the image if left empty</span>
+								</p>
+								
+							</td>
+							<td>
+								<div class="input-field">
+									<input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.001" />
+									<label for="lineSegmentation--scale" data-type="float" data-error="Has to be a float">Default: -1</label>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td><p>Non-standard scaling of horizontal parameters</p></td>
+							<td>
+								<div class="input-field">
+								<input id="--hscale" data-setting="--hscale" type="number" step="0.1" />
+								<label for="--hscale" data-type="float" data-error="Has to be float">Default: 1</label>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td><p>Non-standard scaling of vertical parameters</p></td>
+							<td>
+								<div class="input-field">
+								<input id="lineSegmentation--vscale" data-setting="--vscale" type="number" step="0.1" />
+								<label for="lineSegmentation--vscale" data-type="float" data-error="Has to be float">Default: 1</label>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</li>
+			<li>
+				<div class="collapsible-header">Line extraction parameters</div>
+				<div class="collapsible-body">
+					<table class="compact">
+						<tr>
+							<td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
+							<td>
+								 <div class="input-field">
+									 <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
+									 <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</li>
+		</ul>
 			</c:when>
 			<c:otherwise>
         <ul class="collapsible" data-collapsible="accordion">
