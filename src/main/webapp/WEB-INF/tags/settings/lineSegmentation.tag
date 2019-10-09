@@ -173,6 +173,7 @@
                                     </div>
                                 </td>
                             </tr>
+						<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
                             <tr>
                                 <td><p>Noise threshold for removing small components from lines</p></td>
                                 <td>
@@ -182,12 +183,13 @@
                                     </div>
                                 </td>
                             </tr>
+						</c:if>
                         </tbody>
                     </table>
                 </div>
             </li>
             <li>
-                <div class="collapsible-header">Column parameters</div>
+                <div class="collapsible-header">Black column parameters</div>
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
@@ -236,6 +238,7 @@
                                     </div>
                                </td>
                             </tr>
+						<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
                             <tr>
                                 <td><p>Minimum aspect ratio for column separators</p></td>
                                 <td>
@@ -245,6 +248,7 @@
                                     </div>
                                 </td>
                             </tr>
+						</c:if>
                         </tbody>
                     </table>
                 </div>
