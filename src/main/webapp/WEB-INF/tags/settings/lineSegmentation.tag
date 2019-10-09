@@ -22,10 +22,7 @@
                         </div>
                     </td>
                 </tr>
-			<c:choose>
-				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-				</c:when>
-				<c:otherwise>
+			<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
                 <tr>
                     <td><p>Output grayscale lines as well</p></td>
                     <td>
@@ -36,8 +33,7 @@
                              </p>
                     </td>
                 </tr>
-				</c:otherwise>
-			</c:choose>
+			</c:if>
                 <tr>
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
@@ -52,70 +48,8 @@
     </c:when>
     <%-- Advanced settings --%>
     <c:when test="${settingsType == 'advanced'}">
-		<c:choose>
-			<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
         <ul class="collapsible" data-collapsible="accordion">
-            <li>
-                <div class="collapsible-header">Scale parameters checking</div>
-                <div class="collapsible-body">
-					<table class="compact">
-						<tr>
-							<td>
-								<p>
-									Image processing scale 
-									<br />
-									<span class="userWarning">Will be estimated from the image if left empty</span>
-								</p>
-								
-							</td>
-							<td>
-								<div class="input-field">
-									<input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.001" />
-									<label for="lineSegmentation--scale" data-type="float" data-error="Has to be a float">Default: -1</label>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td><p>Non-standard scaling of horizontal parameters</p></td>
-							<td>
-								<div class="input-field">
-								<input id="--hscale" data-setting="--hscale" type="number" step="0.1" />
-								<label for="--hscale" data-type="float" data-error="Has to be float">Default: 1</label>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td><p>Non-standard scaling of vertical parameters</p></td>
-							<td>
-								<div class="input-field">
-								<input id="lineSegmentation--vscale" data-setting="--vscale" type="number" step="0.1" />
-								<label for="lineSegmentation--vscale" data-type="float" data-error="Has to be float">Default: 1</label>
-								</div>
-							</td>
-						</tr>
-					</table>
-				</div>
-			</li>
-			<li>
-				<div class="collapsible-header">Line extraction parameters</div>
-				<div class="collapsible-body">
-					<table class="compact">
-						<tr>
-							<td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
-							<td>
-								 <div class="input-field">
-									 <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
-									 <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
-								</div>
-							</td>
-						</tr>
-					</table>
-				</div>
-			</li>
-		</ul>
-			</c:when>
-			<c:otherwise>
-        <ul class="collapsible" data-collapsible="accordion">
+		<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
             <li>
                 <div class="collapsible-header">Error checking</div>
                 <div class="collapsible-body">
@@ -145,6 +79,7 @@
                     </table>
                 </div>
             </li>
+	   </c:if>
             <li>
                 <div class="collapsible-header">Limits</div>
                 <div class="collapsible-body">
@@ -319,15 +254,16 @@
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
-                        <tr>
-                            <td><p>Use gaussian instead of uniform</p></td>
-                            <td>
-                                <p>
-                                    <input type="checkbox" class="filled-in" id="lineSegmentation--usegauss" data-setting="--usegauss"/>
-                                    <label for="lineSegmentation--usegauss"></label>
-                                </p>
-                            </td>
-                        </tr>
+							<tr>
+								<td><p>Use gaussian instead of uniform</p></td>
+								<td>
+									<p>
+										<input type="checkbox" class="filled-in" id="lineSegmentation--usegauss" data-setting="--usegauss"/>
+										<label for="lineSegmentation--usegauss"></label>
+									</p>
+								</td>
+							</tr>
+						<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
                             <tr>
                                 <td><p>Padding for extracted lines </p></td>
                                 <td>
@@ -346,10 +282,25 @@
                                     </div>
                                 </td>
                             </tr>
+						</c:if>
+
+						<c:if test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+							<tr>
+								<td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
+								<td>
+									 <div class="input-field">
+										 <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
+										 <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
+									</div>
+								</td>
+							</tr>
+						</c:if>
+
                         </tbody>
                     </table>
                 </div>
             </li>
+		<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
             <li>
                 <div class="collapsible-header">Other parameters</div>
                 <div class="collapsible-body">
@@ -377,8 +328,7 @@
                     </table>
                 </div>
             </li>
+		</c:if>
         </ul>
-			</c:otherwise>
-		</c:choose>
     </c:when>
 </c:choose>
