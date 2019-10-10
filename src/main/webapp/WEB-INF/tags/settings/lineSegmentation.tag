@@ -184,8 +184,8 @@
 								<td><p>Steps between 0 and +/-maxskew to estimate the possible skew of a region.</p></td>
 								<td>
 									<div class="input-field">
-										<input id="lineSegmentation--skewsteps" data-setting="-skewsteps" type="number" step="1"/>
-										<label for="lineSegmentation-skewsteps" data-type="int" data-error="Has to be a float">Default: 8</label>
+										<input id="lineSegmentation--skewsteps" data-setting="--skewsteps" type="number" step="1"/>
+										<label for="lineSegmentation--skewsteps" data-type="int" data-error="Has to be a float">Default: 8</label>
 									</div>
 								</td>
 							</tr>
@@ -317,13 +317,25 @@
                     </table>
                 </div>
             </li>
-		<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
             <li>
                 <div class="collapsible-header">Other parameters</div>
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
-                               <tr>
+					<c:choose>
+						<c:when test='${(not empty processingMode) || (processingMode == "Pagexml")}'>
+						   <tr>
+                                <td><p>Remove ImageRegions from the image before processing TextRegions for TextLines</p></td>
+                                <td>
+                                        <p>
+                                            <input type="checkbox" data-setting="--remove_images" class="filled-in" id="lineSegmentation--remove_images"/>
+                                            <label for="lineSegmentation--remove_images"></label>
+                                        </p>
+                                </td>
+                            </tr>
+						</c:when>
+						<c:otherwise>
+						   <tr>
                                 <td><p>Be less verbose</p></td>
                                 <td>
                                         <p>
@@ -341,11 +353,12 @@
                                         </p>
                                 </td>
                             </tr>
+						</c:otherwise>
+					</c:choose>
                         </tbody>
                     </table>
                 </div>
             </li>
-		</c:if>
         </ul>
     </c:when>
 </c:choose>
