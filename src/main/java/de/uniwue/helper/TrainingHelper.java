@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -180,9 +179,22 @@ public class TrainingHelper {
         //// Estimate Skew
         if (cmdArgsWork.contains("--estimate_skew")) {
         	// Calculate the skew of all regions where none was calculated before
+        	List<String> skewparams = new ArrayList<>();
+        	final int maxskewIndex = cmdArgsWork.indexOf("--maxskew");
+        	if(maxskewIndex > -1) {
+        		skewparams.add(cmdArgsWork.remove(maxskewIndex));
+        		skewparams.add(cmdArgsWork.remove(maxskewIndex));
+        	}
+        	final int skewstepsIndex = cmdArgsWork.indexOf("--skewsteps");
+        	if(skewstepsIndex > -1) {
+        		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
+        		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
+        	}
+        	
 			// Create temp json file with all segment images (to not overload parameter list)
 			// Temp file in a temp folder named "skew-<random numbers>.json"
 			File segmentListFile = File.createTempFile("skew-",".json");
+			skewparams.add(segmentListFile.toString());
 			segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
 			ObjectMapper mapper = new ObjectMapper();
 			ArrayNode dataList = mapper.createArrayNode();
@@ -202,7 +214,7 @@ public class TrainingHelper {
 			
             processHandler = new ProcessHandler();
             processHandler.setFetchProcessConsole(true);
-            processHandler.startProcess("skewestimate", Arrays.asList(new String[] {segmentListFile.toString()}), false);
+            processHandler.startProcess("skewestimate", skewparams, false);
 
         	cmdArgsWork.remove("--estimate_skew");
         }

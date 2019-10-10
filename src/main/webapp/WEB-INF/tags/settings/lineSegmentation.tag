@@ -113,7 +113,13 @@
                     <table class="compact">
                         <tbody>
                             <tr>
-                                <td><p>The basic scale of the document (roughly, xheight) </p></td>
+                                <td>
+                                	<p>
+                                		The basic scale of the document (roughly, xheight) 
+										<br />
+										<span class="userWarning">Will automatically be estimated if 0 or negative.</span>
+                                	</p>
+                                </td>
                                 <td>
                                     <div class="input-field">
                                     <input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.1" />
@@ -159,6 +165,35 @@
                     </table>
                 </div>
             </li>
+		<c:if test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+            <li>
+                <div class="collapsible-header">Region skew estimate parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+						   <tr>
+								<td><p>Maximum estimated skew of a region</p></td>
+								<td>
+									<div class="input-field">
+										<input id="lineSegmentation--maxskew" data-setting="--maxskew" type="number" step="0.001"/>
+										<label for="lineSegmentation--maxskew" data-type="float" data-error="Has to be a float">Default: 2.0</label>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td><p>Steps between 0 and +/-maxskew to estimate the possible skew of a region.</p></td>
+								<td>
+									<div class="input-field">
+										<input id="lineSegmentation--skewsteps" data-setting="-skewsteps" type="number" step="1"/>
+										<label for="lineSegmentation-skewsteps" data-type="int" data-error="Has to be a float">Default: 8</label>
+									</div>
+								</td>
+							</tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+		</c:if>
             <li>
                 <div class="collapsible-header">Line parameters</div>
                 <div class="collapsible-body">
@@ -189,7 +224,7 @@
                 </div>
             </li>
             <li>
-                <div class="collapsible-header">Black column parameters</div>
+                <div class="collapsible-header">Black column separators parameters</div>
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
@@ -198,7 +233,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="lineSegmentation--maxseps" data-setting="--maxseps" type="number" step="0.1" />
-                                        <label for="lineSegmentation--maxseps" data-type="float" data-error="Has to be float">Default: 2</label>
+                                        <label for="lineSegmentation--maxseps" data-type="float" data-error="Has to be float">Default: 0</label>
                                     </div>
                                 </td>
                             </tr>
@@ -211,21 +246,12 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td><p>Also check for black column separators</p></td>
-                                <td>
-                                        <p>
-                                            <input type="checkbox" data-setting="--blackseps" class="filled-in" id="lineSegmentation--blackseps"/>
-                                            <label for="lineSegmentation--blackseps"></label>
-                                        </p>
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
             </li>
             <li>
-                <div class="collapsible-header">Whitespace column separators</div>
+                <div class="collapsible-header">White column separators parameters</div>
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
@@ -287,19 +313,6 @@
                                 </td>
                             </tr>
 						</c:if>
-
-						<c:if test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-							<tr>
-								<td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
-								<td>
-									 <div class="input-field">
-										 <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
-										 <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
-									</div>
-								</td>
-							</tr>
-						</c:if>
-
                         </tbody>
                     </table>
                 </div>
