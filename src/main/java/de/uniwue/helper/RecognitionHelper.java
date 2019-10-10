@@ -267,21 +267,68 @@ public class RecognitionHelper {
      * @param cmdArgs Command line arguments for "calamary-predict"
      * @throws IOException
      */
-    public void execute(List<String> pageIds, List<String> cmdArgs) throws IOException {
+    public void execute(List<String> pageIds, final List<String> cmdArgs) throws IOException {
         RecognitionRunning = true;
         progress = 0;
+
+        List<String> cmdArgsWork = new ArrayList<>(cmdArgs);
+        
+        //// Estimate Skew
+        if (cmdArgsWork.contains("--estimate_skew")) {
+        	// Calculate the skew of all regions where none was calculated before
+        	List<String> skewparams = new ArrayList<>();
+        	final int maxskewIndex = cmdArgsWork.indexOf("--maxskew");
+        	if(maxskewIndex > -1) {
+        		skewparams.add(cmdArgsWork.remove(maxskewIndex));
+        		skewparams.add(cmdArgsWork.remove(maxskewIndex));
+        	}
+        	final int skewstepsIndex = cmdArgsWork.indexOf("--skewsteps");
+        	if(skewstepsIndex > -1) {
+        		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
+        		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
+        	}
+        	
+			// Create temp json file with all segment images (to not overload parameter list)
+			// Temp file in a temp folder named "skew-<random numbers>.json"
+			File segmentListFile = File.createTempFile("skew-",".json");
+			skewparams.add(segmentListFile.toString());
+			segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
+			ObjectMapper mapper = new ObjectMapper();
+			ArrayNode dataList = mapper.createArrayNode();
+			for (String pageId : pageIds) {
+				ArrayNode pageList = mapper.createArrayNode();
+				pageList.add(projConf.getImageDirectoryByType(projectImageType) + pageId +
+						projConf.getImageExtensionByType(projectImageType));
+				final String pageXML = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
+				pageList.add(pageXML);
+
+				// Add affected line segment images with their absolute path to the json file
+				dataList.add(pageList);
+			}
+			ObjectWriter writer = mapper.writer();
+			writer.writeValue(segmentListFile, dataList); 
+			
+            processHandler = new ProcessHandler();
+            processHandler.setFetchProcessConsole(true);
+            processHandler.startProcess("skewestimate", skewparams, false);
+
+        	cmdArgsWork.remove("--estimate_skew");
+        }
+        
+        
+        //// Recognize
+		// Reset recognition data
+		deleteOldFiles(pageIds);
+		initialize(pageIds);
+
         int index;
-        if (cmdArgs.contains("--checkpoint")) {
-            index = cmdArgs.indexOf("--checkpoint");
-            for(String ckpt : extractModelsOfJoinedString(cmdArgs.get(index + 1))) {
+        if (cmdArgsWork.contains("--checkpoint")) {
+            index = cmdArgsWork.indexOf("--checkpoint");
+            for(String ckpt : extractModelsOfJoinedString(cmdArgsWork.get(index + 1))) {
                 if (new File(ckpt).exists() == false)
                     throw new IOException("Model does not exist under the specified path");
             }
         }
-
-		// Reset recognition data
-		deleteOldFiles(pageIds);
-		initialize(pageIds);
 
         List<String> command = new ArrayList<String>();
         List<String> lineSegmentImages = getLineSegmentImagesForCurrentProcess(pageIds);
@@ -312,7 +359,7 @@ public class RecognitionHelper {
         
         
         //Add checkpoints
-        Iterator<String> cmdArgsIterator = cmdArgs.iterator();
+        Iterator<String> cmdArgsIterator = cmdArgsWork.iterator();
         while (cmdArgsIterator.hasNext()) {
             String arg = cmdArgsIterator.next();
             command.add(arg);

@@ -6,27 +6,6 @@
     <c:when test="${settingsType == 'general'}">
         <table class="compact">
             <tbody>
-
-			<c:choose>
-				<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-				<tr>
-                    <td>
-                        <p>
-                            Maximum # whitespace column separators 
-                            <br />
-                            <span class="userWarning">Should be set to '-1' if no column separation is desired/required.</span>
-                        </p>
-                        
-                    </td>
-                    <td>
-                        <div class="input-field">
-                            <input id="lineSegmentation--maxcolseps" data-setting="--maxcolseps" type="number" step="1" value="-1" />
-                            <label for="lineSegmentation--maxcolseps" data-type="int" data-error="Has to be int">Default: -1</label>
-                        </div>
-                    </td>
-                </tr>
-				</c:when>
-				<c:otherwise>
 				 <tr>
                     <td>
                         <p>
@@ -43,6 +22,7 @@
                         </div>
                     </td>
                 </tr>
+			<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
                 <tr>
                     <td><p>Output grayscale lines as well</p></td>
                     <td>
@@ -53,8 +33,7 @@
                              </p>
                     </td>
                 </tr>
-				</c:otherwise>
-			</c:choose>
+			</c:if>
                 <tr>
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
@@ -69,36 +48,8 @@
     </c:when>
     <%-- Advanced settings --%>
     <c:when test="${settingsType == 'advanced'}">
-		<c:choose>
-			<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-                <tr>
-                    <td>
-                        <p>
-                            Image processing scale 
-                            <br />
-                            <span class="userWarning">Will be estimated from the image if left empty</span>
-                        </p>
-                        
-                    </td>
-                    <td>
-                        <div class="input-field">
-                            <input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.001" />
-                            <label for="lineSegmentation--scale" data-type="float" data-error="Has to be a float">Default: -1</label>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
-                    <td>
-                         <div class="input-field">
-                             <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
-                             <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
-                        </div>
-                    </td>
-                </tr>
-			</c:when>
-			<c:otherwise>
         <ul class="collapsible" data-collapsible="accordion">
+		<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
             <li>
                 <div class="collapsible-header">Error checking</div>
                 <div class="collapsible-body">
@@ -128,6 +79,7 @@
                     </table>
                 </div>
             </li>
+	   </c:if>
             <li>
                 <div class="collapsible-header">Limits</div>
                 <div class="collapsible-body">
@@ -161,7 +113,13 @@
                     <table class="compact">
                         <tbody>
                             <tr>
-                                <td><p>The basic scale of the document (roughly, xheight) </p></td>
+                                <td>
+                                	<p>
+                                		The basic scale of the document (roughly, xheight) 
+										<br />
+										<span class="userWarning">Will automatically be estimated if 0 or negative.</span>
+                                	</p>
+                                </td>
                                 <td>
                                     <div class="input-field">
                                     <input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.1" />
@@ -207,6 +165,35 @@
                     </table>
                 </div>
             </li>
+		<c:if test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+            <li>
+                <div class="collapsible-header">Region skew estimate parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+						   <tr>
+								<td><p>Maximum estimated skew of a region</p></td>
+								<td>
+									<div class="input-field">
+										<input id="lineSegmentation--maxskew" data-setting="--maxskew" type="number" step="0.001"/>
+										<label for="lineSegmentation--maxskew" data-type="float" data-error="Has to be a float">Default: 2.0</label>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td><p>Steps between 0 and +/-maxskew to estimate the possible skew of a region.</p></td>
+								<td>
+									<div class="input-field">
+										<input id="lineSegmentation--skewsteps" data-setting="--skewsteps" type="number" step="1"/>
+										<label for="lineSegmentation--skewsteps" data-type="int" data-error="Has to be a float">Default: 8</label>
+									</div>
+								</td>
+							</tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+		</c:if>
             <li>
                 <div class="collapsible-header">Line parameters</div>
                 <div class="collapsible-body">
@@ -221,6 +208,7 @@
                                     </div>
                                 </td>
                             </tr>
+						<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
                             <tr>
                                 <td><p>Noise threshold for removing small components from lines</p></td>
                                 <td>
@@ -230,12 +218,13 @@
                                     </div>
                                 </td>
                             </tr>
+						</c:if>
                         </tbody>
                     </table>
                 </div>
             </li>
             <li>
-                <div class="collapsible-header">Column parameters</div>
+                <div class="collapsible-header">Black column separators parameters</div>
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
@@ -244,7 +233,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="lineSegmentation--maxseps" data-setting="--maxseps" type="number" step="0.1" />
-                                        <label for="lineSegmentation--maxseps" data-type="float" data-error="Has to be float">Default: 2</label>
+                                        <label for="lineSegmentation--maxseps" data-type="float" data-error="Has to be float">Default: 0</label>
                                     </div>
                                 </td>
                             </tr>
@@ -257,21 +246,12 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td><p>Also check for black column separators</p></td>
-                                <td>
-                                        <p>
-                                            <input type="checkbox" data-setting="--blackseps" class="filled-in" id="lineSegmentation--blackseps"/>
-                                            <label for="lineSegmentation--blackseps"></label>
-                                        </p>
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
             </li>
             <li>
-                <div class="collapsible-header">Whitespace column separators</div>
+                <div class="collapsible-header">White column separators parameters</div>
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
@@ -284,6 +264,7 @@
                                     </div>
                                </td>
                             </tr>
+						<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
                             <tr>
                                 <td><p>Minimum aspect ratio for column separators</p></td>
                                 <td>
@@ -293,6 +274,7 @@
                                     </div>
                                 </td>
                             </tr>
+						</c:if>
                         </tbody>
                     </table>
                 </div>
@@ -302,15 +284,16 @@
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
-                        <tr>
-                            <td><p>Use gaussian instead of uniform</p></td>
-                            <td>
-                                <p>
-                                    <input type="checkbox" class="filled-in" id="lineSegmentation--usegauss" data-setting="--usegauss"/>
-                                    <label for="lineSegmentation--usegauss"></label>
-                                </p>
-                            </td>
-                        </tr>
+							<tr>
+								<td><p>Use gaussian instead of uniform</p></td>
+								<td>
+									<p>
+										<input type="checkbox" class="filled-in" id="lineSegmentation--usegauss" data-setting="--usegauss"/>
+										<label for="lineSegmentation--usegauss"></label>
+									</p>
+								</td>
+							</tr>
+						<c:if test='${(empty processingMode) || (processingMode != "Pagexml")}'>
                             <tr>
                                 <td><p>Padding for extracted lines </p></td>
                                 <td>
@@ -329,6 +312,7 @@
                                     </div>
                                 </td>
                             </tr>
+						</c:if>
                         </tbody>
                     </table>
                 </div>
@@ -338,7 +322,20 @@
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
-                               <tr>
+					<c:choose>
+						<c:when test='${(not empty processingMode) || (processingMode == "Pagexml")}'>
+						   <tr>
+                                <td><p>Remove ImageRegions from the image before processing TextRegions for TextLines</p></td>
+                                <td>
+                                        <p>
+                                            <input type="checkbox" data-setting="--remove_images" class="filled-in" id="lineSegmentation--remove_images"/>
+                                            <label for="lineSegmentation--remove_images"></label>
+                                        </p>
+                                </td>
+                            </tr>
+						</c:when>
+						<c:otherwise>
+						   <tr>
                                 <td><p>Be less verbose</p></td>
                                 <td>
                                         <p>
@@ -356,12 +353,12 @@
                                         </p>
                                 </td>
                             </tr>
+						</c:otherwise>
+					</c:choose>
                         </tbody>
                     </table>
                 </div>
             </li>
         </ul>
-			</c:otherwise>
-		</c:choose>
     </c:when>
 </c:choose>

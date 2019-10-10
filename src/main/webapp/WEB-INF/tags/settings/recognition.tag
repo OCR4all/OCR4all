@@ -59,6 +59,36 @@
                         </div>
                     </td>
                  </tr>
+
+			<c:if test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
+				<tr>
+					<td><p>Estimate skew angle for every region without one</p></td>
+					<td>
+						<p>
+							<input type="checkbox" class="filled-in" data-setting="--estimate_skew" id="recognition--estimate_skew" checked="checked"/>
+							<label for="recognition--estimate_skew"></label>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td><p>Maximum estimated skew of a region</p></td>
+					<td>
+						<div class="input-field">
+							<input id="recognition--maxskew" data-setting="--maxskew" type="number" step="0.001"/>
+							<label for="recognition--maxskew" data-type="float" data-error="Has to be a float">Default: 2.0</label>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><p>Steps between 0 and +/-maxskew to estimate the possible skew of a region.</p></td>
+					<td>
+						<div class="input-field">
+							<input id="recognition--skewsteps" data-setting="--skewsteps" type="number" step="1"/>
+							<label for="recognition--skewsteps" data-type="wint" data-error="Has to be a float">Default: 8</label>
+						</div>
+					</td>
+				</tr>
+			</c:if>
             </tbody>
         </table>
     </c:when>
