@@ -70,6 +70,7 @@
                             let li = document.createElement("li");
                             let a = document.createElement("a");
                             a.setAttribute("href", newLocation);
+                            li.setAttribute('value', id);
                             li.appendChild(a);
                             a.textContent = "Page" + " " + id;
                             liList.push(li);
@@ -105,23 +106,28 @@
                             }
                         );
                     });
+                //Prev next button
 
-                $(".prev-page").click(() => {
-                    var searchParams = new URLSearchParams(window.location.search);
-                    var pageidcoerce = (+searchParams.get("pageId")) - 1;
-                    var pageid = ("0000" + pageidcoerce).slice(-4);
-                    if (pageid !== "0000") {
-                        var newLocation = window.location.href.split("?")[0] + "?len=" + picListL.length + "&pageId=" + pageid;
+                $("#pn-prev").click(() => {
+                    let searchParams = new URLSearchParams(window.location.search);
+                    let page_id = searchParams.get("pageId");
+                    let prev_page_index  = $('#pages01>li').index($('#pages01>li[value=' + page_id + ']'))-1;
+
+                    if (prev_page_index >= 0) {
+                        let prev_page = $('#pages01>li').eq(prev_page_index).attr('value');
+                        let newLocation = window.location.href.split("?")[0] + "?pageId=" + prev_page;
                         window.location.href = newLocation;
                     }
                 });
 
-                $(".next-page").click(() => {
-                    var searchParams = new URLSearchParams(window.location.search);
-                    var pageidcoerce = (+searchParams.get("pageId")) + 1;
-                    var pageid = ("0000" + pageidcoerce).slice(-4);
-                    var newLocation = window.location.href.split("?")[0] + "?len=" + picListL.length + "&pageId=" + pageid;
-                    if (pageidcoerce !== (+searchParams.get("len")+1)){
+                $("#pn-next").click(() => {
+                    let searchParams = new URLSearchParams(window.location.search);
+                    let page_id = searchParams.get("pageId");
+                    let next_page_index  = $('#pages01>li').index($('#pages01>li[value=' + page_id + ']'))+1;
+
+                    if (next_page_index < $('#pages01>li').length){
+                        let next_page = $('#pages01>li').eq(next_page_index).attr('value');
+                        let newLocation = window.location.href.split("?")[0]  + "?pageId=" + next_page;
                         window.location.href = newLocation;
                     }
                 });
@@ -150,7 +156,7 @@
             <div class="section">
                         <div class="row">
                             <div class="prev-page col s4 prev-area">
-                                <button class="pn-button"><i class="material-icons pnicon">chevron_left</i> previous</button>
+                                <button id="pn-prev" class="pn-button"><i class="material-icons pnicon">chevron_left</i> previous</button>
                             </div>
                             <div class="input-field col s4">
                                 <a class="dropdown-button right" href="#" data-activates="pages01"><i class="material-icons prefix right" >details</i></a>
@@ -161,7 +167,7 @@
                                 </ul>
                             </div>
                             <div class="next-page col s4 next-area">
-                                <button class="pn-button">next <i class="material-icons pnicon">chevron_right</i></button>
+                                <button id="pn-next" class="pn-button">next <i class="material-icons pnicon">chevron_right</i></button>
                             </div>
                         </div>
             </div>

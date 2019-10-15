@@ -262,9 +262,17 @@ button[data-id="msRecModelAddOption"] {
   display: inline-flex;
   vertical-align: middle;
   line-height: 3vh;
+  padding: 10px;
+  margin: 20px 0px 0px 0px;
   color: #8c9eff;
-  padding-top: 30px;
-
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+.pn-button:active {
+  background-color: transparent !important;
+}
+.pn-button:focus {
+  background-color: transparent !important;
 }
 .prev-area{
   text-align: left;
@@ -274,6 +282,15 @@ button[data-id="msRecModelAddOption"] {
 }
 .input-field .prefix.right{
   right: 0;
+}
+#pn-prev > i {
+  padding-left: 0px;
+}
+#pn-next > i {
+  padding-right: 0px;
+}
+.pn-button:hover{
+  border-color: #8c9eff !important;
 }
 .dropdown-button .right{
   right: 0;

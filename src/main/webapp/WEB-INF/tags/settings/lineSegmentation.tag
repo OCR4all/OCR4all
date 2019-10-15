@@ -61,5 +61,218 @@
     </c:when>
     <%-- Advanced settings --%>
     <c:when test="${settingsType == 'advanced'}">
+        <ul class="collapsible" data-collapsible="accordion">
+            <li>
+                <div class="collapsible-header">Limits</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+                            <tr>
+                                <td><p>Minimum scale permitted</p></td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--minscale" data-setting="--minscale" type="number" step="1" />
+                                        <label for="lineSegmentation--minscale" data-type="int" data-error="Has to be integer">Default: 12</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><p>Maximum # lines permitted</p></td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--maxlines" data-setting="--maxlines" type="number" step="10" />
+                                        <label for="lineSegmentation--maxlines" data-type="int" data-error="Has to be integer">Default: 300</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">Scale parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+                            <tr>
+                                <td>
+                                	<p>
+                                		The basic scale of the document (roughly, xheight) 
+										<br />
+										<span class="userWarning">Will automatically be estimated if 0 or negative.</span>
+                                	</p>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                    <input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.1" />
+                                    <label for="lineSegmentation--scale" data-type="float" data-error="Has to be float">Default: 0</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><p>Non-standard scaling of horizontal parameters</p></td>
+                                <td>
+                                    <div class="input-field">
+                                    <input id="--hscale" data-setting="--hscale" type="number" step="0.1" />
+                                    <label for="--hscale" data-type="float" data-error="Has to be float">Default: 1</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><p>Non-standard scaling of vertical parameters</p></td>
+                                <td>
+                                    <div class="input-field">
+                                    <input id="lineSegmentation--vscale" data-setting="--vscale" type="number" step="0.1" />
+                                    <label for="lineSegmentation--vscale" data-type="float" data-error="Has to be float">Default: 1</label>
+                                    </div>
+                                </td>
+                            </tr>
+							<tr>
+								<td>
+									<p>
+										Filter strength for individual characters when creating a textline)
+										<br />
+										<span class="userWarning">Smaller values will filter out less characters (based on size)</span>
+									</p>
+									
+								</td>
+								<td>
+									<div class="input-field">
+										<input id="lineSegmentation--filter_strength" data-setting="--filter_strength" type="number" step="0.001"/>
+										<label for="lineSegmentation--filter_strength" data-type="float" data-error="Has to be a float">Default: 1</label>
+									</div>
+								</td>
+							</tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">Region skew estimate parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+						   <tr>
+								<td><p>Maximum estimated skew of a region</p></td>
+								<td>
+									<div class="input-field">
+										<input id="lineSegmentation--maxskew" data-setting="--maxskew" type="number" step="0.001"/>
+										<label for="lineSegmentation--maxskew" data-type="float" data-error="Has to be a float">Default: 2.0</label>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td><p>Steps between 0 and +/-maxskew to estimate the possible skew of a region.</p></td>
+								<td>
+									<div class="input-field">
+										<input id="lineSegmentation--skewsteps" data-setting="--skewsteps" type="number" step="1"/>
+										<label for="lineSegmentation--skewsteps" data-type="int" data-error="Has to be a float">Default: 8</label>
+									</div>
+								</td>
+							</tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">Line parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+                            <tr>
+                                <td><p>Baseline threshold </p></td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--threshold" data-setting="--threshold" type="number" step="0.1" />
+                                        <label for="lineSegmentation--threshold" data-type="float" data-error="Has to be float">Default: 0.2</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">Black column separators parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+                            <tr>
+                                <td><p>Maximum black column separators </p></td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--maxseps" data-setting="--maxseps" type="number" step="0.1" />
+                                        <label for="lineSegmentation--maxseps" data-type="float" data-error="Has to be float">Default: 0</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><p>Widen black separators (to account for warping)</p></td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--sepwiden" data-setting="--sepwiden" type="number" step="10" />
+                                        <label for="lineSegmentation--sepwiden" data-type="int" data-error="Has to be integer">Default: 10</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">White column separators parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+                            <tr>
+                                <td><p>Minimum column height (units=scale)</p></td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--csminheight" data-setting="--csminheight" type="number" step="1"/>
+                                        <label for=lineSegmentation--csminheight data-type="int" data-error="Has to be integer">Default: 10</label>
+                                    </div>
+                               </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">Output parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+							<tr>
+								<td><p>Use gaussian instead of uniform</p></td>
+								<td>
+									<p>
+										<input type="checkbox" class="filled-in" id="lineSegmentation--usegauss" data-setting="--usegauss"/>
+										<label for="lineSegmentation--usegauss"></label>
+									</p>
+								</td>
+							</tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">Other parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+						   <tr>
+                                <td><p>Remove ImageRegions from the image before processing TextRegions for TextLines</p></td>
+                                <td>
+                                        <p>
+                                            <input type="checkbox" data-setting="--remove_images" class="filled-in" id="lineSegmentation--remove_images"/>
+                                            <label for="lineSegmentation--remove_images"></label>
+                                        </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+        </ul>
     </c:when>
 </c:choose>

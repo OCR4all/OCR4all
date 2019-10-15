@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
+import de.uniwue.feature.ProcessStateCollector;
 
 /**
  * Helper class for training, which also calls the calamari-cross-fold-train program 
@@ -86,11 +88,10 @@ public class TrainingHelper {
 
     /** Lists all images that have an corresponding gt file
      * 
-     * @param projectImageType
      * @return
      * @throws IOException
      */
-    public List<String> getImagesWithGt(String projectImageType) throws IOException {
+    public List<String> getImagesWithGt() throws IOException {
         ArrayList<String> imagesWithGt = new ArrayList<String>();
         final String gtExt = projConf.CONF_EXT;
 
@@ -107,6 +108,14 @@ public class TrainingHelper {
         return imagesWithGt;
     }
 
+    public List<String> getPagesWithGt() throws IOException {
+		List<String> pageIds = new GenericHelper(projConf).getPageList(projectImageType);
+
+		ProcessStateCollector states = new ProcessStateCollector(projConf, projectImageType);
+        return pageIds.stream().filter(pageId -> states.groundTruthState(pageId))
+        		.collect(Collectors.toList());
+    }
+    
     /**
      * Finds next free training identifier
      * Only necessary if no identifier is specified by the user
@@ -154,9 +163,53 @@ public class TrainingHelper {
      * @param trainingId Custom identifier to name the training directory
      * @throws IOException
      */
-    public void execute(List<String> cmdArgs, String projectName, String trainingId) throws IOException {
+    public void execute(final List<String> cmdArgs, String projectName, String trainingId) throws IOException {
         trainingRunning = true;
         progress = 0;
+        List<String> cmdArgsWork = new ArrayList<>(cmdArgs);
+
+        //// Estimate Skew
+        if (cmdArgsWork.contains("--estimate_skew")) {
+        	// Calculate the skew of all regions where none was calculated before
+        	List<String> skewparams = new ArrayList<>();
+        	final int maxskewIndex = cmdArgsWork.indexOf("--maxskew");
+        	if(maxskewIndex > -1) {
+        		skewparams.add(cmdArgsWork.remove(maxskewIndex));
+        		skewparams.add(cmdArgsWork.remove(maxskewIndex));
+        	}
+        	final int skewstepsIndex = cmdArgsWork.indexOf("--skewsteps");
+        	if(skewstepsIndex > -1) {
+        		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
+        		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
+        	}
+        	
+			// Create temp json file with all segment images (to not overload parameter list)
+			// Temp file in a temp folder named "skew-<random numbers>.json"
+			File segmentListFile = File.createTempFile("skew-",".json");
+			skewparams.add(segmentListFile.toString());
+			segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
+			ObjectMapper mapper = new ObjectMapper();
+			ArrayNode dataList = mapper.createArrayNode();
+
+			for (String pageId : getPagesWithGt()) {
+				ArrayNode pageList = mapper.createArrayNode();
+				pageList.add(projConf.getImageDirectoryByType(projectImageType) + pageId +
+						projConf.getImageExtensionByType(projectImageType));
+				final String pageXML = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
+				pageList.add(pageXML);
+
+				// Add affected line segment images with their absolute path to the json file
+				dataList.add(pageList);
+			}
+			ObjectWriter writer = mapper.writer();
+			writer.writeValue(segmentListFile, dataList); 
+			
+            processHandler = new ProcessHandler();
+            processHandler.setFetchProcessConsole(true);
+            processHandler.startProcess("skewestimate", skewparams, false);
+
+        	cmdArgsWork.remove("--estimate_skew");
+        }
 
         // Create project specific model directory if not exists
         File projectModelDir = new File(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR + File.separator + projectName);
@@ -181,7 +234,7 @@ public class TrainingHelper {
         segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode gtList = mapper.createArrayNode();
-        for (String gtFile : getImagesWithGt(projectImageType)) {
+        for (String gtFile : getImagesWithGt()) {
             // Add affected line segment images with their absolute path to the json file
         	gtList.add(gtFile);
         }
@@ -193,7 +246,7 @@ public class TrainingHelper {
         System.out.println(segmentListFile);
         
         
-        command.addAll(cmdArgs);
+        command.addAll(cmdArgsWork);
         command.add("--best_models_dir");
         command.add(trainingDir.getAbsolutePath());
 
