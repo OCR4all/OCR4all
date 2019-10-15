@@ -172,10 +172,12 @@
                                                 var ajaxParams = {"completeDir" : completeDir, "pages" : pages, "binary" : binary, "gray" : gray};
                                                 $.post( "ajax/overview/exportGtc", ajaxParams )
                                                     .done(function( data ) {
-                                                        // Load datatable after the last process update is surely finished
                                                         setTimeout(function() {
                                                             datatable();
                                                         }, 2000);
+                                                        $('#gtc_spinner').addClass('hiddendiv');
+                                                        $('#zip_path').text("> " + data);
+                                                        $('#modal_export_finished').modal('open');
                                                     })
                                                     .fail(function( data ) {
                                                         $('#modal_exportgtc_failed').modal('open');
@@ -205,6 +207,7 @@
                         .fail(function( data ) {
                             $('#modal_checkDir_failed').modal('open');
                         });
+
                 }
 
                 $('button[data-id="loadProject"]').click(function() {
@@ -285,6 +288,7 @@
                 });
                 $('#exportAllPages, #exportPages').click(function() {
                     const $this = $(this);
+                    $('#gtc_spinner').removeClass('hiddendiv')
                     // Initialize process handler (wait time, due to delayed AJAX process start)
                     setTimeout(function() {
                         if( !isProcessRunning() ) {
@@ -389,6 +393,17 @@
                     Export GTD
                     <i class="material-icons right">arrow_downward</i>
                 </button>
+                <div class="preloader-wrapper small active" style="float:right; margin-right: 8px;">
+                    <div id="gtc_spinner" class="spinner-layer spinner-blue-only hiddendiv">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div><div class="gap-patch">
+                        <div class="circle"></div>
+                    </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                    </div>
+                </div>
 
                 <ul class="collapsible" data-collapsible="accordion">
                     <li>
@@ -609,5 +624,17 @@
                 <a href="#!" id='agree' class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
          </div>
+        <div id="modal_export_finished" class="modal">
+            <div class="modal-content">
+                <h4 class="blue-text">Ground Truth Export finished</h4>
+                <p>
+                    The zip file with the ground truth data and current timestamp can now be found in your current project folder:
+                </p>
+                <p id="zip_path"></p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Ok</a>
+            </div>
+        </div>
     </t:body>
 </t:html>
