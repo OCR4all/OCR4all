@@ -10,12 +10,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
@@ -115,14 +119,20 @@ public class ResultGenerationHelper {
     /**
      * Create necessary Result directories if they do not exist
      */
-    private void initializeResultDirectories() {
-        File resultDir = new File(projConf.RESULT_DIR);
+    private String initializeResultDirectories(String resultType) {
+        LocalDateTime localTime = LocalDateTime.now();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
+                .withLocale( Locale.getDefault() )
+                .withZone( ZoneId.systemDefault());
+        String time = localTime.format(timeFormatter);
+        File resultDir = new File(projConf.RESULT_DIR + time + "_" + resultType + File.separator);
         if (!resultDir.exists())
             resultDir.mkdir();
 
-        File resultPagesDir = new File(projConf.RESULT_PAGES_DIR);
+        File resultPagesDir = new File(resultDir.getPath() + File.separator + "pages" + File.separator);
         if (!resultPagesDir.exists())
             resultPagesDir.mkdir();
+        return time;
     }
 
     /**
@@ -136,12 +146,12 @@ public class ResultGenerationHelper {
         stopProcess = false;
         progress = 0;
 
-        initializeResultDirectories();
+        String initTime = initializeResultDirectories(resultType);
 
         if (resultType.equals("txt")) {
-            executeTextProcess(pageIds);
+            executeTextProcess(pageIds, initTime);
         } else if (resultType.equals("xml")) {
-            executeXmlProcess(pageIds);
+            executeXmlProcess(pageIds, initTime);
         }
 
         progress = 100;
@@ -153,9 +163,8 @@ public class ResultGenerationHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void executeXmlProcess(List<String> pageIds) throws IOException {
+    public void executeXmlProcess(List<String> pageIds, String time) throws IOException {
 		File dir = new File(projConf.OCR_DIR);
-		deleteOldFiles(pageIds, "xml");
 		if (!dir.exists())
 			return;
 		
@@ -163,7 +172,7 @@ public class ResultGenerationHelper {
         // Copy all xml files into output
         int processedPages = 0;
         for(File xmlFile : xmlFiles) {
-            File xmlOutFile = new File(projConf.RESULT_PAGES_DIR + xmlFile.getName());
+            File xmlOutFile = new File(projConf.RESULT_DIR + time + "_xml" + File.separator + "pages" + File.separator +  xmlFile.getName());
             Files.copy(xmlFile.toPath(),xmlOutFile.toPath());
             progress = (int) ((double) processedPages / xmlFiles.length * 100);
             processedPages++;
@@ -176,9 +185,8 @@ public class ResultGenerationHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void executeTextProcess(List<String> pageIds) throws IOException {
+    public void executeTextProcess(List<String> pageIds, String time) throws IOException {
         initialize(pageIds);
-        deleteOldFiles(pageIds, "txt");
 
 		TreeMap<String, String> pageResult = new TreeMap<String, String>();
 		int processElementCount = pageIds.size();
@@ -228,7 +236,9 @@ public class ResultGenerationHelper {
 			
 			
 			try (OutputStreamWriter writer =
-						 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_PAGES_DIR + pageId + ".txt"), StandardCharsets.UTF_8)) {
+						 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + time + "_txt" + File.separator
+                                 + "pages" + File.separator + pageId + ".txt"),
+                                 StandardCharsets.UTF_8)) {
 				writer.write(pageResult.get(pageId));
 			}
 		}
@@ -238,7 +248,7 @@ public class ResultGenerationHelper {
 			completeResult += pageResult.get(pageId) + "\n";
 		}
 		try (OutputStreamWriter writer =
-					 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + "complete" + ".txt"), StandardCharsets.UTF_8)) {
+					 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + time + "_txt" + File.separator + "complete" + ".txt"), StandardCharsets.UTF_8)) {
 			writer.write(completeResult);
 		}
     }
@@ -285,33 +295,6 @@ public class ResultGenerationHelper {
      */
     public int getProgress() {
         return progress;
-    }
-
-    /**
-     * Deletion of old process related files
-     *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     */
-    public void deleteOldFiles(List<String> pageIds, String type) {
-        // Delete result of each page
-        for (String pageId : pageIds) {
-            if (type.equals("txt")) {
-                File pageTxtResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
-                if (pageTxtResult.exists())
-                    pageTxtResult.delete();
-            }
-            if (type.equals("xml")) {
-                File pageXmlResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.CONF_EXT);
-                if (pageXmlResult.exists())
-                    pageXmlResult.delete();
-            }
-        }
-        if (type.equals("txt")) {
-            // delete the concatenated result of the pages
-            File completeResult = new File(projConf.RESULT_DIR + "complete" + projConf.REC_EXT);
-            if (completeResult.exists())
-                completeResult.delete();
-        }
     }
 
     /**
