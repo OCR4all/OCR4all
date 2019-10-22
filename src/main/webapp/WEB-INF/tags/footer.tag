@@ -26,7 +26,7 @@
             <div>
                 <h6 class="grey-text dev-statement center-align text-lighten-2">
                     <b>
-					Developed by the Chair of Artificial Intelligence and Applied Science (Prof. Dr. Frank Puppe) <br/>
+					Developed at the Chair of Artificial Intelligence and Applied Computer Science<br/>
 					in collaboration with the Center for Philology and Digitality "Kallimachos" at the University of Würzburg
                     </b>
                 </h6>
