@@ -46,9 +46,7 @@ public class PageConverter {
     public void run(String sourceFilename, String targetFilename) {
         //Load
         Page page = null;
-        System.out.println("source is: '"+sourceFilename+"'");
-
-        removeSeperatorsAndTables(sourceFilename);
+        //removeSeperatorsAndTables(sourceFilename);
 
         try {
             page = PageXmlInputOutput.readPage(sourceFilename);

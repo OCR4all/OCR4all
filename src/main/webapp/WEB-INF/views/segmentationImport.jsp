@@ -77,14 +77,29 @@
                     </li>
                 </ul>
 
-                <button data-id="execute" class="btn waves-effect waves-light">
-                    Import
-                    <i class="material-icons right">arrow_upward</i>
-                </button>
-                <button data-id="cancel" class="btn waves-effect waves-light">
-                    Cancel
-                    <i class="material-icons right">cancel</i>
-                </button>
+
+                    <button data-id="execute" class="btn waves-effect waves-light">
+                        Import
+                        <i class="material-icons right">arrow_upward</i>
+                    </button>
+                    <button data-id="cancel" class="btn waves-effect waves-light">
+                        Cancel
+                        <i class="material-icons right">cancel</i>
+                    </button>
+
+                <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
+                    <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}" />
+                    <input type="hidden" id="bookname" name="bookname" value="processing" />
+                    <input type="hidden" id="websave" name="websave" value="false" />
+                    <input type="hidden" id="localsave" name="localsave" value="bookpath" />
+                    <input type="hidden" id="imagefilter" name="imagefilter" value="bin" />
+                    <input type="hidden" id="title" name="title" value="Import Correction" />
+                    <input type="hidden" id="modes" name="modes" value="edit lines text" />
+                    <button data-id="openLarex" class="btn waves-effect waves-light" type="submit" name="action">
+                        Open LAREX
+                        <i class="material-icons right">chevron_right</i>
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -104,10 +119,12 @@
             <div class="modal-content blue-grey-text">
                 <h4>Import Instructions</h4>
                 <p>
-                    Currently only selected XML formats are supported: ABBYY FineReader 10 XML, ALTO XML and hOCR XML<br />
-                    Please be aware that only the official XML schemes can be converted.
+                    Currently only ABBYY FineReader 10 XML scheme is supported<br />
+                    Please be aware that only the official XML scheme can be converted.
                     <br />
                     To Import the OCR XML save the files in the Input folder and press the "IMPORT" button.
+                    After converting open LAREX and set the subtype in each region and confirm the
+                    Ground Truth Data (which can be done in the "Lines" section in LAREX).
                 </p>
             </div>
             <div class="modal-footer">
@@ -118,16 +135,15 @@
             <div class="modal-content blue-grey-text">
                 <h4>Please note:</h4>
                 <p>
-                    After converting the subtypes of each Region has to be set with Larex.
+                    After converting the subtypes of each Region has to be set and the Ground Truth has to be confirmed with Larex.
                     <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
                         <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}" />
                         <input type="hidden" id="bookname" name="bookname" value="processing" />
                         <input type="hidden" id="websave" name="websave" value="false" />
                         <input type="hidden" id="localsave" name="localsave" value="bookpath" />
                         <input type="hidden" id="imagefilter" name="imagefilter" value="bin" />
-                        <c:if test="${not empty modes}" >
-                            <input type="hidden" id="modes" name="modes" value="${modes}" />
-                        </c:if>
+                        <input type="hidden" id="title" name="title" value="Import Correction" />
+                        <input type="hidden" id="modes" name="modes" value="edit lines text" />
                         <button data-id="openLarex" class="btn waves-effect waves-light" type="submit" name="action">
                             Open LAREX
                             <i class="material-icons right">chevron_right</i>

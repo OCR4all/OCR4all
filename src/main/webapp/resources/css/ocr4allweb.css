@@ -309,6 +309,9 @@ button[data-id="msRecModelAddOption"] {
 .whitelist-button{
   margin: auto auto 21px;
 }
+#larexForm{
+  display: inline-block;
+}
 #whitelist-select{
   left: 0px !important;
   margin-top: 85px; /* #TODO Change this ugly hack asap*/

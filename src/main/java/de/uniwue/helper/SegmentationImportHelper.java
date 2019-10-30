@@ -70,8 +70,6 @@ public class SegmentationImportHelper {
      */
     public void execute(String sourceFilePath, String destFilePath) throws IOException, ParserConfigurationException, TransformerException {
         progress = 0;
-        System.out.println("source: " + sourceFilePath);
-        System.out.println("(unwichtig) output: " + destFilePath);
         renameFiles();
         PageConverter converter = new PageConverter();
 
