@@ -11,8 +11,11 @@
             var LAREX_VERSION = "UNKNOWN"
             $.get("ajax/team/sysenv")
                 .done(function getEnv(data) {
-                    OCR4ALL_VERSION = data;
-                    $("#version_number").html(OCR4ALL_VERSION);
+                    var env = data.split("\n");
+                    OCR4ALL_VERSION = env[0];
+                    LAREX_VERSION = env[1];
+                    $("#OCR4all_Version").html(OCR4ALL_VERSION);
+                    $("#LAREX_Version").html(LAREX_VERSION);
                 })
 
         })
@@ -88,7 +91,8 @@
         </div>
         <div class="row">
             <div class="col l12 s12">
-                <h6>Version = <span id="version_number"></span></h6>
+                <h6>OCR4all Version = <span id="OCR4all_Version"></span></h6>
+                <h6>  LAREX Version = <span id="LAREX_Version"></span></h6>
             </div>
         </div>
     </div>

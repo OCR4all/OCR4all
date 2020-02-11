@@ -11,8 +11,11 @@
             var LAREX_VERSION = "UNKNOWN"
             $.get("ajax/team/sysenv")
                 .done(function getEnv(data) {
-                    OCR4ALL_VERSION = data;
-                    $("#ocr4all_version").html("OCR4all Version: " + OCR4ALL_VERSION);
+                    var env = data.split("\n");
+                    OCR4ALL_VERSION = "OCR4all ver: " + env[0];
+                    LAREX_VERSION =   "  LAREX ver: " + env[1];
+                    $("#OCR4all_Version").html(OCR4ALL_VERSION);
+                    $("#LAREX_Version").html(LAREX_VERSION);
                 })
 
         })
@@ -38,13 +41,9 @@
             </div>
             <div>
                 <h6 class="grey-text dev-statement center-align text-lighten-2">
-                    <b>
+                    <br>
 					Developed at the Chair of Artificial Intelligence and Applied Computer Science<br/>
 					in collaboration with the Center for Philology and Digitality "Kallimachos" at the University of Würzburg
-                    <div class="row text-lighten-1">
-                        <div class="col l6 s6"><span id="ocr4all_version"></span></div>
-                        <div class="col l6 s6"><span id="larex_version"></span></div>
-                    </div>
                     </b>
                 </h6>
             </div>
@@ -61,5 +60,9 @@
                 </a>
             </div>
         </div>
+    </div>
+    <div class="row" style="font-size: 10px">
+        <div class="col l6 s6 left-align"><span id="OCR4all_Version"></span></div>
+        <div class="col l6 s6 right-align"><span id="LAREX_Version"></span></div>
     </div>
 </footer>

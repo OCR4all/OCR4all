@@ -310,7 +310,14 @@ button[data-id="msRecModelAddOption"] {
 }
 .footer-copyright{
   display: block !important;
-}
+  background-color: #283593 !important;
+  margin-bottom: 0px;
+  min-height: 20px !important;
+  }
+  .footer-copyright .row{
+    margin-bottom: 0px;
+  }
+
 .personList{
   width: 80%;
   margin: auto;
