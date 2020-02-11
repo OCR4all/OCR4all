@@ -23,4 +23,19 @@ public class TeamController {
         ModelAndView mv = new ModelAndView("team");
         return mv;
     }
+    /**
+     * Gets OCR4all from System Environment
+     * @return
+     */
+    @RequestMapping(value ="ajax/team/sysenv" , method = RequestMethod.GET)
+    public @ResponseBody String getSys(
+            HttpSession session, HttpServletResponse response
+    ) {
+        String sysEnvStr = System.getenv("OCR4ALL_VERSION");
+        if(sysEnvStr.equals("")) {
+            return "UNKNOWN";
+        } else {
+            return sysEnvStr;
+        }
+    }
 }

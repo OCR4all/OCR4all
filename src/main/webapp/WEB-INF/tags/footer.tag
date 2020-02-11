@@ -4,6 +4,19 @@
 <%@ attribute name="hideOnPageLoad" required="true" %>
 <jsp:useBean id="date" class="java.util.Date" />
 <footer class="page-footer" <c:if test="${hideOnPageLoad == true}">style="display:none;"</c:if>>
+    <script type="text/javascript">
+        $(document).ready(function()
+        {
+            var OCR4ALL_VERSION = "UNKNOWN";
+            var LAREX_VERSION = "UNKNOWN"
+            $.get("ajax/team/sysenv")
+                .done(function getEnv(data) {
+                    OCR4ALL_VERSION = data;
+                    $("#ocr4all_version").html("OCR4all Version: " + OCR4ALL_VERSION);
+                })
+
+        })
+    </script>
     <div class="container">
         <div>
             <div class="row center-align">
@@ -28,6 +41,10 @@
                     <b>
 					Developed at the Chair of Artificial Intelligence and Applied Computer Science<br/>
 					in collaboration with the Center for Philology and Digitality "Kallimachos" at the University of Würzburg
+                    <div class="row text-lighten-1">
+                        <div class="col l6 s6"><span id="ocr4all_version"></span></div>
+                        <div class="col l6 s6"><span id="larex_version"></span></div>
+                    </div>
                     </b>
                 </h6>
             </div>
