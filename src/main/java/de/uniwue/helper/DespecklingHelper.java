@@ -79,7 +79,7 @@ public class DespecklingHelper {
             mat.release();
             // Save if process is not stopped 
             // (despeckling can take a while, since the last stop test)
-            if(stop != false) {
+            if(stop == false) {
 				Imgcodecs.imwrite(projConf.DESP_IMG_DIR + File.separator + pageId + projConf.DESP_IMG_EXT, despeckled);
 				progress = (int) (i / totalPages * 100);
 				i = i + 1;
