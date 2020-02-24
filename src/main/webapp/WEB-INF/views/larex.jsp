@@ -11,9 +11,10 @@
                 // Prevent redirecting to Larex if image folder does not exist
                 $("#larexForm").submit(function(e){
                     $.ajax({
-                        url : "ajax/generic/checkDir",
+                        url : "ajax/generic/checkImgTypeExistence",
                         type: "GET",
                         data: { "imageType" : $('#imageType').val() },
+                        dataType: "json",
                         async : false,
                         success : function( dirExists ) {
                             if( dirExists === false){
