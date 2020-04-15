@@ -4,22 +4,6 @@
 <t:html>
     <t:head></t:head>
 <t:body heading="Team">
-    <script type="text/javascript">
-        $(document).ready(function()
-        {
-            var OCR4ALL_VERSION = "UNKNOWN";
-            var LAREX_VERSION = "UNKNOWN"
-            $.get("ajax/team/sysenv")
-                .done(function getEnv(data) {
-                    var env = data.split("\n");
-                    OCR4ALL_VERSION = env[0];
-                    LAREX_VERSION = env[1];
-                    $("#OCR4all_Version").html(OCR4ALL_VERSION);
-                    $("#LAREX_Version").html(LAREX_VERSION);
-                })
-
-        })
-    </script>
     <div class="personList center-align grey-text text-darken-1">
         <div class="row">
             <div class="col l12 s12">
@@ -42,13 +26,14 @@
         </div>
         <div class="row">
             <div class="col l12 s12">
-                <h5><b>Developer</b></h5>
+                <h5><b>Developers</b></h5>
             </div>
             <div class="col l12 s12">
                 <ul class="collection">
                     <li class="collection-item">Dr. Herbert Baier-Saip (lead)</li>
                     <li class="collection-item">Christoph Wick (Calamari)</li>
                     <li class="collection-item">Björn Eyselein (Distribution via Docker)</li>
+                    <li class="collection-item">Maximilian Nöth</li>
                     <li class="collection-item">Kevin Chadbourne</li>
                     <li class="collection-item">Yannik Herbst</li>
                 </ul>
@@ -87,12 +72,6 @@
             </div>
             <div class="col l12 s12">
                 Developed during the BMPF project <b>"Kallimachos"</b> at the <b>Chair of Artificial Intelligence and Applied Computer Science (Prof. Dr. Frank Puppe)</b> in collaboration with the <b>Center for Philology and Digitality "Kallimachos"</b> at the University of Würzburg
-            </div>
-        </div>
-        <div class="row">
-            <div class="col l12 s12">
-                <h6>OCR4all Version = <span id="OCR4all_Version"></span></h6>
-                <h6>  LAREX Version = <span id="LAREX_Version"></span></h6>
             </div>
         </div>
     </div>
