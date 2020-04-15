@@ -4,6 +4,22 @@
 <%@ attribute name="hideOnPageLoad" required="true" %>
 <jsp:useBean id="date" class="java.util.Date" />
 <footer class="page-footer" <c:if test="${hideOnPageLoad == true}">style="display:none;"</c:if>>
+    <script type="text/javascript">
+        $(document).ready(function()
+        {
+            var OCR4ALL_VERSION = "UNKNOWN";
+            var LAREX_VERSION = "UNKNOWN"
+            $.get("ajax/team/sysenv")
+                .done(function getEnv(data) {
+                    var env = data.split("\n");
+                    OCR4ALL_VERSION = "OCR4all ver: " + env[0];
+                    LAREX_VERSION =   "  LAREX ver: " + env[1];
+                    $("#OCR4all_Version").html(OCR4ALL_VERSION);
+                    $("#LAREX_Version").html(LAREX_VERSION);
+                })
+
+        })
+    </script>
     <div class="container">
         <div>
             <div class="row center-align">
@@ -44,5 +60,9 @@
                 </a>
             </div>
         </div>
+    </div>
+    <div class="row" style="font-size: 10px">
+        <div class="col l6 s6 left-align"><span id="OCR4all_Version"></span></div>
+        <div class="col l6 s6 right-align"><span id="LAREX_Version"></span></div>
     </div>
 </footer>
