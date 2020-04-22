@@ -35,8 +35,8 @@
             </tr>
             <tr>
                 <td>
-                	<p>
-                    Whitelist characters to keep in the model<br/>
+                	<p>Whitelist of characters<br/>
+                    <span class="userInfo">Will be kept even if they do not occur in the GT</span><br/>
                     <span class="userInfo">Example: ABCDEFGHIJ...012345</span>
                     </p>
                 </td>
