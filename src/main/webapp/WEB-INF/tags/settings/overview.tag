@@ -4,7 +4,7 @@
     <tbody>
         <%-- START project data selection selection (visibility of <tr> elements is done via JS) --%>
         <tr>
-            <td><p>Project selection</p></td>
+            <td><p>Project</p></td>
             <td>
                 <div class="input-field col s3">
                     <i class="material-icons prefix">library_books</i>
@@ -25,7 +25,7 @@
         </tr>
         <%-- END project data selection selection (visibility of <tr> elements is done via JS) --%>
         <tr>
-            <td><p>Project image type</p></td>
+            <td><p>Image type</p></td>
             <td>
                 <div class="input-field col s3">
                     <i class="material-icons prefix">image</i>
@@ -42,7 +42,7 @@
             </td>
         </tr>
         <tr>
-            <td><p>Project data selection type</p></td>
+            <td><p>Data selection</p></td>
             <td>
                 <div class="input-field col s3">
                     <i class="material-icons prefix">donut_small</i>
