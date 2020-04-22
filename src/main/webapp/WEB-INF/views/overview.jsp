@@ -390,7 +390,7 @@
                     <i class="material-icons right">cancel</i>
                 </button>
                 <button data-id="exportGTC" class="btn waves-effect waves-light secondary-btn" type="submit" name="action">
-                    Export GTD
+                    Export GT
                     <i class="material-icons right">arrow_downward</i>
                 </button>
                 <div class="preloader-wrapper small active" style="float:right; margin-right: 8px;">
@@ -522,7 +522,7 @@
         </div>
         <div id="modal_exportgtc" class="modal">
             <div class="modal-content">
-                <h4 class="red-text">Export GTC</h4>
+                <h4 class="red-text">Export GT</h4>
                 <table class="compact">
                     <tbody>
                     <tr>
