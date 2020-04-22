@@ -50,7 +50,7 @@
                 </td>
             </tr>
             <tr>
-                <td><p>Keep all characters loaded from the last model</p></td>
+                <td><p>Keep codec of the loaded model(s)</p></td>
                 <td>
                     <p>
                         <input type="checkbox" class="filled-in" data-setting="--keep_loaded_codec" id="training--keep_loaded_codec" />
