@@ -119,6 +119,49 @@
             <tr>
                 <td>
                     <p>
+                        Early stopping
+                        <br />
+                        <span class="userInfo">The number of models that must be worse than the current best model to stop</span>
+                    </p>
+                </td>
+                <td>
+                    <div class="input-field">
+                        <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" value="5"/>
+                        <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><p>
+                    Early stopping frequency
+                    <br />
+                    <span class="userInfo">Number of training steps between the evaluation of the current model</span>
+                </p></td>
+                <td>
+                    <div class="input-field">
+                        <input id="training--early_stopping_frequency" data-setting="--early_stopping_frequency" type="number"/>
+                        <label for="training--early_stopping_frequency" data-type="int" data-error="Has to be integer">Default: # GT lines / 2 (Integer value)</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>
+                        The number of iterations for training
+                        <br />
+                        <span class="userInfo">If using early stopping, this is the maximum number of iterations</span>
+                    </p>
+                </td>
+                <td>
+                    <div class="input-field">
+                        <input id="training--max_iters" data-setting="--max_iters" type="number" />
+                        <label for="training--max_iters" data-type="int" data-error="Has to be integer">Default: 1000000 (Integer value)</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>
                         Training identifier
                         <br />
                         <span class="userInfo">A custom name can be used as identifier as well</span>
@@ -163,21 +206,6 @@
                     <div class="input-field">
                         <input id="training--display" data-setting="--display" type="number" value="50"/>
                         <label for="training--display" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>
-                        The number of iterations for training
-                        <br />
-                        <span class="userInfo">If using early stopping, this is the maximum number of iterations</span>
-                    </p>
-                </td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--max_iters" data-setting="--max_iters" type="number" />
-                        <label for="training--max_iters" data-type="int" data-error="Has to be integer">Default: 1000000 (Integer value)</label>
                     </div>
                 </td>
             </tr>
@@ -282,34 +310,6 @@
                         <input type="checkbox" class="filled-in" data-setting="--no_skip_invalid_gt" id="training--no_skip_invalid_gt" />
                         <label for="training--no_skip_invalid_gt"></label>
                     </p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>
-                        Early stopping
-                        <br />
-                        <span class="userInfo">The number of models that must be worse than the current best model to stop</span>
-                    </p>
-                </td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" value="5"/>
-                        <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td><p>
-                    Early stopping frequency
-                    <br />
-                    <span class="userInfo">Number of training steps between the evaluation of the current model</span>
-                </p></td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--early_stopping_frequency" data-setting="--early_stopping_frequency" type="number"/>
-                        <label for="training--early_stopping_frequency" data-type="int" data-error="Has to be integer">Default: # GT lines / 2 (Integer value)</label>
-                    </div>
                 </td>
             </tr>
 
