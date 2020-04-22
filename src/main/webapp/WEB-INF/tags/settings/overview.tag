@@ -2,19 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <table class="compact">
     <tbody>
-        <tr>
-            <td><p>Project data selection type</p></td>
-            <td>
-                <div class="input-field col s3">
-                    <i class="material-icons prefix">donut_small</i>
-                    <select id="projectDataSelectionType" name="projectDataSelectionType" class="suffix" data-projdataseltype>
-                        <option value="fixedStructure">Use predefined project directory structure</option>
-                        <option value="freeTextInput">Use free text input to provide directory paths</option>
-                    </select>
-                    <label></label>
-                </div>
-            </td>
-        </tr>
         <%-- START project data selection selection (visibility of <tr> elements is done via JS) --%>
         <tr>
             <td><p>Project selection</p></td>
@@ -49,6 +36,19 @@
                     <select id="imageType" name="imageType" class="suffix">
                         <option value="Binary" ${binarySel}>Binary</option>
                         <option value="Gray" ${graySel}>Gray</option>
+                    </select>
+                    <label></label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><p>Project data selection type</p></td>
+            <td>
+                <div class="input-field col s3">
+                    <i class="material-icons prefix">donut_small</i>
+                    <select id="projectDataSelectionType" name="projectDataSelectionType" class="suffix" data-projdataseltype>
+                        <option value="fixedStructure">Use predefined project directory structure</option>
+                        <option value="freeTextInput">Use free text input to provide directory paths</option>
                     </select>
                     <label></label>
                 </div>
