@@ -34,15 +34,6 @@
                 </td>
             </tr>
             <tr>
-                <td><p>Keep all characters loaded from the last model</p></td>
-                <td>
-                    <p>
-                        <input type="checkbox" class="filled-in" data-setting="--keep_loaded_codec" id="training--keep_loaded_codec" />
-                        <label for="training--keep_loaded_codec"></label>
-                    </p>
-                </td>
-            </tr>
-            <tr>
                 <td>
                 	<p>
                     Whitelist characters to keep in the model<br/>
@@ -56,6 +47,15 @@
                         <a class="waves-effect waves-light dropdown-button btn whitelist-button" data-constrainWidth="false" href="#" data-activates="whitelist-select"><i class="material-icons">play_for_work</i></a>
                         <ul id="whitelist-select" class="dropdown-content"></ul>
                     </div>
+                </td>
+            </tr>
+            <tr>
+                <td><p>Keep all characters loaded from the last model</p></td>
+                <td>
+                    <p>
+                        <input type="checkbox" class="filled-in" data-setting="--keep_loaded_codec" id="training--keep_loaded_codec" />
+                        <label for="training--keep_loaded_codec"></label>
+                    </p>
                 </td>
             </tr>
             <tr>
