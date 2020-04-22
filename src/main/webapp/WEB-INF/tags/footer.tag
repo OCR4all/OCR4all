@@ -35,7 +35,7 @@
                 </div>
                 <div class="col l4 s12">
                     <a target="_blank"  class="grey-text text-lighten-2" href="https://lists.uni-wuerzburg.de/mailman/listinfo/ocr4all">
-                        <b>SUBSCRIBE</b>
+                        <b>MAILING LIST</b>
                     </a>
                 </div>
             </div>
