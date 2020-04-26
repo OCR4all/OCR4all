@@ -11,9 +11,10 @@
                 // Prevent redirecting to Larex if image folder does not exist
                 $("#larexForm").submit(function(e){
                     $.ajax({
-                        url : "ajax/generic/checkDir",
+                        url : "ajax/generic/checkImgTypeExistance",
                         type: "GET",
                         data: { "imageType" : $('#imageType').val() },
+                        dataType: "json",
                         async : false,
                         success : function( dirExists ) {
                             if( dirExists === false){
@@ -28,7 +29,7 @@
                     let imageSubExt = ""; 
                     switch($('#imageType').val()){
                         case "Binary": imageSubExt = "bin nrm"; break;
-                        case "Despeckled": imageSubExt = "desp nrm"; break;
+                        case "Despeckled": imageSubExt = "desp"; break;
                         default: imageSubExt = "";
                     }
                     $('#imagefilter').val(imageSubExt);
