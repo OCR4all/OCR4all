@@ -4,7 +4,7 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head>
-        <title>OCR4All - <c:out value='${title}'/> (LAREX)</title>
+        <title>OCR4all - <c:out value='${title}'/> (LAREX)</title>
 
         <script type="text/javascript">
             $(document).ready(function() {

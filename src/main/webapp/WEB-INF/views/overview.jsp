@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <t:html>
     <t:head projectDataSel="true" processHandler="true">
-        <title>OCR4All - Project Overview</title>
+        <title>OCR4all - Project Overview</title>
 
         <!-- jQuery DataTables -->
         <link rel="stylesheet" type="text/css" href="resources/css/datatables.min.css">

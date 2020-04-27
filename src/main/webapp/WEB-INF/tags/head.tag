@@ -20,7 +20,7 @@
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/materialize.min.js"></script>
 
-    <!--Project OCR4All_Web related-->
+    <!--Project OCR4all_Web related-->
     <link type="text/css" rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/ocr4allweb.css">
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-helper.js"></script>
 
