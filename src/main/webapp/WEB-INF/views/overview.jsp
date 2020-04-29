@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <t:html>
     <t:head projectDataSel="true" processHandler="true">
-        <title>OCR4All - Project Overview</title>
+        <title>OCR4all - Project Overview</title>
 
         <!-- jQuery DataTables -->
         <link rel="stylesheet" type="text/css" href="resources/css/datatables.min.css">
@@ -230,6 +230,9 @@
 
                 // Execute file rename only after the user agreed
                 $('#directConvert, #backupAndConvert').click(function() {
+                    // Enable Cancel Project Adjustment
+                    $('button[data-id="cancelProjectAdjustment"]').removeClass('disabled');
+
                     // Initialize process handler (wait time, due to delayed AJAX process start)
                     setTimeout(function() {
                         initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
@@ -239,12 +242,16 @@
                     var ajaxParams = {"backupImages" : ( $(this).attr('id') == 'backupAndConvert' )};
                     $.post( "ajax/overview/adjustProjectFiles", ajaxParams )
                     .done(function( data ) {
+                        // Disable Cancel Project Adjustment
+                        $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                         // Load datatable after the last process update is surely finished
                         setTimeout(function() {
                             datatable();
                         }, 2000);
                     })
                     .fail(function( data ) {
+                        // Disable Cancel Project Adjustment
+                        $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                         $('#modal_adjustImages_failed').modal('open');
                     });
                 });
@@ -385,7 +392,7 @@
                     Load Project
                     <i class="material-icons right">send</i>
                 </button>
-                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light" type="submit" name="action">
+                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light disabled" type="submit" name="action">
                     Cancel Project Adjustment
                     <i class="material-icons right">cancel</i>
                 </button>
@@ -433,7 +440,7 @@
                     Load Project
                     <i class="material-icons right">send</i>
                 </button>
-                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light" type="submit" name="action">
+                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light disabled" type="submit" name="action">
                     Cancel Project Adjustment
                     <i class="material-icons right">cancel</i>
                 </button>

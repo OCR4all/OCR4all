@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" inputParams="true" recModelSelect="true" processHandler="true">
-        <title>OCR4All - Recognition</title>
+        <title>OCR4all - Recognition</title>
 
         <script type="text/javascript">
             $(document).ready(function() {

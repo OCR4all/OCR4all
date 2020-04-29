@@ -11,7 +11,7 @@
             <div class="container">
                 <div class="nav-wrapper">
                     <a class="page-title">${heading}</a>
-                    <a class="page-title right">| OCR 4 All</a>
+                    <a class="page-title right">| OCR4all</a>
                     <a class="project-name right">${projectName}</a>
                 </div>
             </div>
@@ -21,7 +21,7 @@
             <a href="#" id="open_menu" data-activates="slide-out" class="button-collapse top-nav"><i class="material-icons">menu</i></a>
         </div>
         <ul id="slide-out" class="side-nav hiddendiv">
-            <li class="site-description">OCR 4 All</li>
+            <li class="site-description">OCR4all</li>
             <li class="nav-separator"></li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
             <li class="nav-separator"></li>

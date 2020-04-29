@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head processHandler="true" inputParams="true">
-        <title>OCR4All - Training</title>
+        <title>OCR4all - Training</title>
 
         <script type="text/javascript">
             $(document).ready(function() {

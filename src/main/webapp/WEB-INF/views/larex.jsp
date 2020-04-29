@@ -4,16 +4,17 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head>
-        <title>OCR4All - <c:out value='${title}'/> (LAREX)</title>
+        <title>OCR4all - <c:out value='${title}'/> (LAREX)</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 // Prevent redirecting to Larex if image folder does not exist
                 $("#larexForm").submit(function(e){
                     $.ajax({
-                        url : "ajax/generic/checkDir",
+                        url : "ajax/generic/checkImgTypeExistance",
                         type: "GET",
                         data: { "imageType" : $('#imageType').val() },
+                        dataType: "json",
                         async : false,
                         success : function( dirExists ) {
                             if( dirExists === false){
@@ -28,7 +29,7 @@
                     let imageSubExt = ""; 
                     switch($('#imageType').val()){
                         case "Binary": imageSubExt = "bin nrm"; break;
-                        case "Despeckled": imageSubExt = "desp nrm"; break;
+                        case "Despeckled": imageSubExt = "desp"; break;
                         default: imageSubExt = "";
                     }
                     $('#imagefilter').val(imageSubExt);
