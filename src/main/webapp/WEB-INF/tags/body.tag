@@ -113,7 +113,7 @@
                                     with earlier OCR4all versions will not work with this new version. A retraining of your old models is required.
                                     In order to do this, please load your current project, move to the "Training" submodule and use your current
                                     Ground Truth (as well as a default model for "Pretraining") for recreating operative OCR models. If there are any
-                                    questions, please do not hesitate to contact us by <a href="mailto:ocr4all@uni-wuerzburg.de">ocr4all@uni-wuerzburg.de</a>
+                                    questions, please do not hesitate to contact us at <a href="mailto:ocr4all@uni-wuerzburg.de">ocr4all@uni-wuerzburg.de</a>
                                 </p>
                             </div>
                             <div class="modal-footer">
