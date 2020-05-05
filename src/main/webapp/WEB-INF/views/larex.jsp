@@ -13,7 +13,7 @@
                     $.ajax({
                         url : "ajax/generic/checkImgTypeExistance",
                         type: "GET",
-                        data: { "imageType" : $('#imageType').val() },
+                        data: { "imageType" : "bin nrm desp" },
                         dataType: "json",
                         async : false,
                         success : function( dirExists ) {
@@ -24,18 +24,6 @@
                         },
                     });
                 });
-
-                $('#imageType').on('change', function() {
-                    let imageSubExt = ""; 
-                    switch($('#imageType').val()){
-                        case "Binary": imageSubExt = "bin nrm"; break;
-                        case "Despeckled": imageSubExt = "desp"; break;
-                        default: imageSubExt = "";
-                    }
-                    $('#imagefilter').val(imageSubExt);
-                });
-                // Initialize image list
-                $('#imageType').change();
             });
         </script>
     </t:head>
