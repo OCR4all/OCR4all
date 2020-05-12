@@ -19,6 +19,10 @@
                 })
 
         })
+
+        function openVersionWarning(){
+            $('#modal_version_warning').modal('open');
+        }
     </script>
     <div class="container">
         <div>
@@ -50,7 +54,7 @@
         </div>
     </div>
     <div class="col footer-version">
-        <div class="row"><span id="OCR4all_Version"></span></div>
+        <div class="row"><span onclick="openVersionWarning()" id="OCR4all_Version"></span><i class="material-icons" id="version_icon">report</i></div>
         <div class="row"><span id="LAREX_Version"></span></div>
     </div>
     <div class="container footer-copyright">

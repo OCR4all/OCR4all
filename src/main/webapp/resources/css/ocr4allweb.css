@@ -362,4 +362,8 @@ input[type=number]:invalid {
   border-bottom: 1px solid red !important;
   box-shadow: 0 1px 0 0 red !important;
 }
-
+#version_icon{
+    color: red;
+    font-size: 15px;
+    vertical-align: bottom;
+}
