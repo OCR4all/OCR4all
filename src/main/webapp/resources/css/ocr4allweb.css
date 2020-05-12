@@ -367,3 +367,7 @@ input[type=number]:invalid {
     font-size: 15px;
     vertical-align: bottom;
 }
+
+#OCR4all_Version_container{
+  cursor: pointer;
+}
