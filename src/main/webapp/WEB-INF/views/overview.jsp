@@ -285,6 +285,32 @@
                         .fail(function( data ) {
                         });
                 });
+
+                // Convert legacy project
+                $('#convertLegacy').click(function() {
+                    $("#legacy-convert-preloader").show();
+
+                    setTimeout(function() {
+                        initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
+                    }, 500);
+
+                    var ajaxParams = {"backupLegacy" : document.getElementById('backupCheckbox').checked};
+                    $.post("ajax/overview/convertLegacyProject", ajaxParams)
+                        .done(function() {
+                            $("#legacy-convert-preloader").hide();
+                            $("#modal_legacy_convert").modal("close");
+                            Materialize.toast("Project successfully converted!", 1000, "green");
+                            // Load datatable after the last process update is surely finished
+                            setTimeout(function() {
+                                datatable();
+                            }, 500);
+                        })
+                        .fail(function() {
+                            $("#legacy-convert-preloader").hide();
+                            Materialize.toast("Project can't be converted!", 2000, "red");
+                            $.get( "ajax/overview/invalidateSession" );
+                        });
+                })
                 $('#continueLegacy').click(function() {
                     setTimeout(function() {
                         // Unload project if user refuses the mandatory adjustments
@@ -446,7 +472,24 @@
                 </button>
             </div>
         </div>
-
+        <div id="modal_legacy_convert" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Convert legacy project</h4>
+                <p>The project you are about to load, includes files of an old version of OCR4all.</p>
+                <form action="#">
+                    <p>
+                        <input type="checkbox" id="backupCheckbox" class="filled-in" />
+                        <label for="backupCheckbox">Backup legacy project files.</label>
+                    </p>
+                </form>
+                <div id="legacy-convert-preloader" class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" id="convertLegacy" class="waves-effect waves-green btn">Convert</a>
+            </div>
+        </div>
         <div id="modal_imageAdjust" class="modal">
             <div class="modal-content">
                 <h4 class="red-text">Attention</h4>
@@ -482,9 +525,11 @@
                 <p>Opening and editing your project will not delete any legacy data from your project,
                     but existing legacy data from "Line Segmentations", "Recognitions" and "Ground Truth Productions" will not be accessible any more.</p>
                 <p>If you need this legacy data, please consider installing our OCR4all "legacy" version.</p>
+                <p>Selecting "Convert" will allow you to convert a "legacy" project to a "latest" project. The conversion process may have adverse impacts on existing line segmentation!</p>
                 <p>Selecting "Continue" will continue the loading of the project, but may not able to use every previously existing data.</p>
             </div>
             <div class="modal-footer">
+                <a href="#modal_legacy_convert" class="modal-close modal-trigger waves-effect waves-green btn">Convert</a>
                 <a href="#!" id="continueLegacy" class="modal-action modal-close waves-effect waves-green btn-flat">Continue</a>
             </div>
         </div>

@@ -375,6 +375,37 @@ public class OverviewController {
         }
     }
 
+    /**
+     * Response to the Request to convert a legacy to latest project
+     * @param backup flag to backup project
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="/ajax/overview/convertLegacyProject" , method = RequestMethod.POST)
+    @ResponseBody public void convertProject(
+            @RequestParam("backupLegacy") Boolean backup,
+            HttpSession session, HttpServletResponse response
+    ) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null)
+            return;
+        try {
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            overviewHelper.backupLegacy();
+            overviewHelper.convertLegacyToLatest();
+            if(!backup){
+                overviewHelper.cleanupLegacyBackup();
+            }
+            session.setAttribute("projectAdjustment", "");
+        } catch (Exception e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * Response to the Request to export Ground Truth Data from Project

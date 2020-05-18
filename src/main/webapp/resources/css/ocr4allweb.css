@@ -371,3 +371,11 @@ input[type=number]:invalid {
 #OCR4all_Version_container{
   cursor: pointer;
 }
+
+label[for*="backupCheckbox"]{
+  color: black;
+}
+
+#legacy-convert-preloader{
+  display: none;
+}
