@@ -37,6 +37,15 @@
                         </p>
                     </td>
                  </tr>
+                <tr>
+                    <td><p>Generate word level Page XML output</p></td>
+                    <td>
+                        <p>
+                            <input type="checkbox" class="filled-in" data-setting="--pagexml_word_level" id="recognition--word_level"/>
+                            <label for="recognition--word_level"></label>
+                        </p>
+                    </td>
+                </tr>
                  <tr>
                     <td><p>Number of lines to process in parallel (Batch size)</p></td>
                     <td>

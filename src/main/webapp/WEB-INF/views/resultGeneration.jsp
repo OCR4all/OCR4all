@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
-        <title>OCR4All - Result Generation</title>
+        <title>OCR4all - Result Generation</title>
 
         <script type="text/javascript">
             $(document).ready(function() {

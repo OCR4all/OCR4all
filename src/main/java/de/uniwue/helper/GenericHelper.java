@@ -76,6 +76,23 @@ public class GenericHelper {
     }
 
     /**
+     * Checks if images of given image type exit
+     *
+     * @param imageType Type of the image (original, gray, binary, despeckled, OCR)
+     * @return Information if the file type exists
+     */
+    public boolean checkIfImageTypeExists(String imageType) {
+        File imageDir = new File(projConf.PREPROC_DIR);
+        String imageTypeExt = projConf.getImageExtensionByType(imageType);
+
+        File[] files = imageDir.listFiles((d, name) -> name.endsWith(imageTypeExt));
+
+        if (files.length > 0)
+            return true;
+        return false;
+    }
+
+    /**
      * Gets the the number of logical thread of the system
      *
      * @return Number of logical threads

@@ -34,18 +34,9 @@
                 </td>
             </tr>
             <tr>
-                <td><p>Keep all characters loaded from the last model</p></td>
                 <td>
-                    <p>
-                        <input type="checkbox" class="filled-in" data-setting="--keep_loaded_codec" id="training--keep_loaded_codec" />
-                        <label for="training--keep_loaded_codec"></label>
-                    </p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                	<p>
-                    Whitelist characters to keep in the model<br/>
+                	<p>Whitelist of characters<br/>
+                    <span class="userInfo">Will be kept even if they do not occur in the GT</span><br/>
                     <span class="userInfo">Example: ABCDEFGHIJ...012345</span>
                     </p>
                 </td>
@@ -59,14 +50,23 @@
                 </td>
             </tr>
             <tr>
-                <td><p>Pre-Training</p></td>
+                <td><p>Keep codec of the loaded model(s)</p></td>
+                <td>
+                    <p>
+                        <input type="checkbox" class="filled-in" data-setting="--keep_loaded_codec" id="training--keep_loaded_codec" />
+                        <label for="training--keep_loaded_codec"></label>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td><p>Pretraining</p></td>
                 <td>
                     <div class="input-field">
                         <i class="material-icons prefix">queue_play_next</i>
                         <select id="pretrainingType" name="pretrainingType" class="suffix ignoreParam">
                             <option value="from_scratch">Train all models from scratch</option>
-                            <option value="single_model">Train all models based on one existing model</option>
-                            <option value="multiple_models">Train each model based on different existing models</option>
+                            <option value="single_model">Train all models based on one available model</option>
+                            <option value="multiple_models">Train each model based on different available models</option>
                         </select>
                         <label></label>
                     </div>
@@ -74,7 +74,7 @@
             </tr>
                 <%-- START Will be used to generate dropdown elements for each model --%>
             <tr id="pretrainingDummyTr" style="display: none;" data-id="pretrainingTr">
-                <td><p>Pre-Training for model: <span></span></p></td>
+                <td><p>Pretraining for model: <span></span></p></td>
                 <td>
                     <div class="input-field">
                         <select id="pretrainingDummySelect" name="pretrainingDummySelect" data-id="pretrainingModelSelect" class="ignoreParam">
@@ -116,6 +116,49 @@
     <c:when test="${settingsType == 'advanced'}">
         <table class="compact">
             <tbody>
+            <tr>
+                <td>
+                    <p>
+                        Early stopping
+                        <br />
+                        <span class="userInfo">The number of models that must be worse than the current best model to stop</span>
+                    </p>
+                </td>
+                <td>
+                    <div class="input-field">
+                        <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" value="5"/>
+                        <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><p>
+                    Early stopping frequency
+                    <br />
+                    <span class="userInfo">Number of training steps between the evaluation of the current model</span>
+                </p></td>
+                <td>
+                    <div class="input-field">
+                        <input id="training--early_stopping_frequency" data-setting="--early_stopping_frequency" type="number"/>
+                        <label for="training--early_stopping_frequency" data-type="int" data-error="Has to be integer">Default: # GT lines / 2 (Integer value)</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>
+                        The number of iterations for training
+                        <br />
+                        <span class="userInfo">If using early stopping, this is the maximum number of iterations</span>
+                    </p>
+                </td>
+                <td>
+                    <div class="input-field">
+                        <input id="training--max_iters" data-setting="--max_iters" type="number" />
+                        <label for="training--max_iters" data-type="int" data-error="Has to be integer">Default: 1000000 (Integer value)</label>
+                    </div>
+                </td>
+            </tr>
             <tr>
                 <td>
                     <p>
@@ -163,21 +206,6 @@
                     <div class="input-field">
                         <input id="training--display" data-setting="--display" type="number" value="50"/>
                         <label for="training--display" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>
-                        The number of iterations for training
-                        <br />
-                        <span class="userInfo">If using early stopping, this is the maximum number of iterations</span>
-                    </p>
-                </td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--max_iters" data-setting="--max_iters" type="number" />
-                        <label for="training--max_iters" data-type="int" data-error="Has to be integer">Default: 1000000 (Integer value)</label>
                     </div>
                 </td>
             </tr>
@@ -282,34 +310,6 @@
                         <input type="checkbox" class="filled-in" data-setting="--no_skip_invalid_gt" id="training--no_skip_invalid_gt" />
                         <label for="training--no_skip_invalid_gt"></label>
                     </p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>
-                        Early stopping
-                        <br />
-                        <span class="userInfo">The number of models that must be worse than the current best model to stop</span>
-                    </p>
-                </td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" value="5"/>
-                        <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td><p>
-                    Early stopping frequency
-                    <br />
-                    <span class="userInfo">Number of training steps between the evaluation of the current model</span>
-                </p></td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--early_stopping_frequency" data-setting="--early_stopping_frequency" type="number"/>
-                        <label for="training--early_stopping_frequency" data-type="int" data-error="Has to be integer">Default: # GT lines / 2 (Integer value)</label>
-                    </div>
                 </td>
             </tr>
 

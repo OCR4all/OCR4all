@@ -317,7 +317,16 @@ button[data-id="msRecModelAddOption"] {
   .footer-copyright .row{
     margin-bottom: 0px;
   }
+.footer-version{
+  margin-right: 5px;
+  font-size: 10px;
+  float: right;
+}
+  .footer-version .row{
+    margin-bottom: 2px;
+    margin-top: 2px;
 
+  }
 .personList{
   width: 80%;
   margin: auto;
@@ -353,4 +362,20 @@ input[type=number]:invalid {
   border-bottom: 1px solid red !important;
   box-shadow: 0 1px 0 0 red !important;
 }
+#version_icon{
+    color: red;
+    font-size: 15px;
+    vertical-align: bottom;
+}
 
+#OCR4all_Version_container{
+  cursor: pointer;
+}
+
+label[for*="backupCheckbox"]{
+  color: black;
+}
+
+#legacy-convert-preloader{
+  display: none;
+}

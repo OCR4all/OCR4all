@@ -216,6 +216,8 @@ public class ProcessHandler {
         env.put("PYTHONUNBUFFERED", "1");
         // Set PYTHONIOENCODING environment variable to ensure successful execution of calamari scripts
         env.put("PYTHONIOENCODING", "utf-8");
+        // SET AUTOGRAPH_VERBOSITY for TensorFlow2 execution in calamari.
+        env.put("TF_CPP_MIN_LOG_LEVEL", "3");
 
         process = processBuilder.start();
 

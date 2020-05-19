@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +27,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
+import de.uniwue.feature.ProcessHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -43,6 +45,7 @@ import org.opencv.imgproc.Imgproc;
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.model.PageOverview;
+import de.uniwue.feature.ProcessHandler;
 
 public class OverviewHelper {
     /**
@@ -62,6 +65,11 @@ public class OverviewHelper {
      * }
      */
     private Map<String, PageOverview> overview = new HashMap<String, PageOverview>();
+
+    /**
+     * Helper object for process handling
+     */
+    private ProcessHandler processHandler;
 
     /**
      * Image type of the project
@@ -367,6 +375,74 @@ public class OverviewHelper {
 			return false;
 		}
     }
+
+    /**
+     * Backups the whole processing directory of a legacy project before converting the project to latest
+     *
+     * @throws IOException
+     */
+    public void backupLegacy() throws IOException {
+        File source = new File(projConf.PREPROC_DIR);
+        File target = new File(projConf.PROJECT_DIR + File.separator + "legacy_backup");
+
+        FileUtils.copyDirectory(source, target);
+    }
+
+    /**
+     * Converts a legacy project to latest
+     *
+     * @throws IOException
+     */
+    public void convertLegacyToLatest() throws IOException {
+        String dir = projConf.PREPROC_DIR;
+
+        List<String> command = new ArrayList<String>();
+
+        command.add("-p");
+        command.add(dir);
+
+        try {
+            processHandler = new ProcessHandler();
+            processHandler.startProcess("legacy_convert", command, false);
+
+            cleanupLegacyFiles();
+        }catch (Exception e){
+            // Restore state before conversion in case of conversion error
+            File legacy_dir = new File(projConf.PROJECT_DIR + File.separator + "legacy_backup");
+            File proc_dir = new File(projConf.PREPROC_DIR);
+
+            if(legacy_dir.isDirectory()){
+                FileUtils.deleteDirectory(proc_dir);
+                FileUtils.copyDirectory(legacy_dir, proc_dir);
+                FileUtils.deleteDirectory(legacy_dir);
+            }
+        }
+    }
+
+    /**
+     * Removes directories from successfully converted legacy project which are no longer needed in latest
+     * @throws IOException
+     */
+    public void cleanupLegacyFiles() throws IOException {
+        File proj_dir = new File(projConf.PREPROC_DIR);
+        File[] legacy_dirs = proj_dir.listFiles(File::isDirectory);
+
+        assert legacy_dirs != null;
+        for(File dir: legacy_dirs){
+            FileUtils.deleteDirectory(dir);
+        }
+    }
+
+    /**
+     * Removes legacy backup project in case it exists
+     *
+     */
+    public void cleanupLegacyBackup() throws IOException {
+        File backup_dir = new File(projConf.PROJECT_DIR + File.separator + "legacy_backup");
+        if(backup_dir.isDirectory()) {
+            FileUtils.deleteDirectory(backup_dir);
+        }
+    };
 
     /**
      * Lists all available projects from the data directory

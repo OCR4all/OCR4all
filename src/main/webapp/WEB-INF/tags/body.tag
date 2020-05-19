@@ -11,7 +11,7 @@
             <div class="container">
                 <div class="nav-wrapper">
                     <a class="page-title">${heading}</a>
-                    <a class="page-title right">| OCR 4 All</a>
+                    <a class="page-title right">| OCR4all</a>
                     <a class="project-name right">${projectName}</a>
                 </div>
             </div>
@@ -21,7 +21,7 @@
             <a href="#" id="open_menu" data-activates="slide-out" class="button-collapse top-nav"><i class="material-icons">menu</i></a>
         </div>
         <ul id="slide-out" class="side-nav hiddendiv">
-            <li class="site-description">OCR 4 All</li>
+            <li class="site-description">OCR4all</li>
             <li class="nav-separator"></li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
             <li class="nav-separator"></li>
@@ -102,6 +102,22 @@
                             </div>
                             <div class="modal-footer">
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                        </div>
+                        <!-- Version models warning -->
+                        <div id="modal_version_warning" class="modal">
+                            <div class="modal-content ">
+                                <h4 class="red-text center-align">Important Advice!</h4>
+                                <p>
+                                    For efficient data processing OCR4all combines various components. Due to necessary updates, OCR models trained
+                                    with earlier OCR4all versions will not work with this new version. A retraining of your old models is required.
+                                    In order to do this, please load your current project, move to the "Training" submodule and use your current
+                                    Ground Truth (as well as a default model for "Pretraining") for recreating operative OCR models. If there are any
+                                    questions, please do not hesitate to contact us at <a href="mailto:ocr4all@uni-wuerzburg.de">ocr4all@uni-wuerzburg.de</a>
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                  <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
                         <!-- Execute failed -->

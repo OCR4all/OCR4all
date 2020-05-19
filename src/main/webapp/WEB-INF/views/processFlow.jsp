@@ -4,7 +4,7 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" inputParams="true" processHandler="true" recModelSelect="true">
-        <title>OCR4All - Centralized Process Flow</title>
+        <title>OCR4all - Centralized Process Flow</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
