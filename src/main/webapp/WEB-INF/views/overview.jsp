@@ -268,6 +268,7 @@
                     }, 500);
                 });
                 $('#convertToPdf, #convertToPdfWithBlanks').click(function() {
+                    $('button[data-id="cancelProjectAdjustment"]').removeClass('disabled');
                     // Initialize process handler (wait time, due to delayed AJAX process start)
                     setTimeout(function() {
                         initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
@@ -277,12 +278,14 @@
                     var ajaxParams = {"deleteBlank" : ( $(this).attr('id') == 'convertToPdf' ), "dpi" : document.getElementById('dpi').value};
                     $.post( "ajax/overview/convertProjectFiles", ajaxParams )
                         .done(function( data ) {
+                            $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                             // Load datatable after the last process update is surely finished
                             setTimeout(function() {
                                 datatable();
                             }, 2000);
                         })
                         .fail(function( data ) {
+                            $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                         });
                 });
 
@@ -337,6 +340,7 @@
                 });
 
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
+                    $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                     //cancel only in file conversion progress
                     if(globalInProgress) {
                         cancelProcess();
