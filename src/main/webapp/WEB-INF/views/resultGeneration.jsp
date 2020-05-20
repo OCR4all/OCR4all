@@ -13,10 +13,17 @@
                     initializeImageList("OCR", false, data);
                 });
 
+                function resetResultGeneration(){
+                    $(".determinate").width('0%');
+                    const status = $(".status");
+                    status.find("span").removeClass().addClass("grey-text").text("No Result process running")
+                }
+
                 // Initialize process update and set options
                 initializeProcessUpdate("resultGeneration", [ 0 ], [ 1 ], false);
 
                 $('button[data-id="execute"]').click(function() {
+                    resetResultGeneration();
                     var selectedPages = getSelectedPages();
                     var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() };
                     if( selectedPages.length === 0 ) {

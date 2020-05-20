@@ -169,11 +169,13 @@ public class ResultGenerationHelper {
 			return;
 		
 		File[] xmlFiles = dir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
+		File xmlDir = new File(projConf.RESULT_DIR + time + "_xml" + File.separator + "pages");
+        Files.createDirectories(Paths.get(xmlDir.getAbsolutePath()));
         // Copy all xml files into output
         int processedPages = 0;
         for(File xmlFile : xmlFiles) {
-            File xmlOutFile = new File(projConf.RESULT_DIR + time + "_xml" + File.separator + "pages" + File.separator +  xmlFile.getName());
-            Files.copy(xmlFile.toPath(),xmlOutFile.toPath());
+            File xmlOutFile = new File(xmlDir + File.separator +  xmlFile.getName());
+            Files.copy(xmlFile.toPath(), xmlOutFile.toPath());
             progress = (int) ((double) processedPages / xmlFiles.length * 100);
             processedPages++;
     	}
@@ -191,6 +193,10 @@ public class ResultGenerationHelper {
 		TreeMap<String, String> pageResult = new TreeMap<String, String>();
 		int processElementCount = pageIds.size();
 		int processedElements = 1;
+
+        File textDir = new File(projConf.RESULT_DIR + time + "_txt" + File.separator + "pages");
+        Files.createDirectories(Paths.get(textDir.getAbsolutePath()));
+
 		// For each page: Concatenation of the recognition/gt output of the linesegmentation of the page
 		//                Saving output to a txt file (located at /Results/Pages/)
 		for (String pageId : processState.keySet()) {
@@ -236,8 +242,7 @@ public class ResultGenerationHelper {
 			
 			
 			try (OutputStreamWriter writer =
-						 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + time + "_txt" + File.separator
-                                 + "pages" + File.separator + pageId + ".txt"),
+						 new OutputStreamWriter(new FileOutputStream(textDir + File.separator + pageId + ".txt"),
                                  StandardCharsets.UTF_8)) {
 				writer.write(pageResult.get(pageId));
 			}
