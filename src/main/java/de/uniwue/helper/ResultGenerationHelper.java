@@ -25,6 +25,14 @@ import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
 
 public class ResultGenerationHelper {
     /**
@@ -142,7 +150,7 @@ public class ResultGenerationHelper {
      * @param resultType specified resultType (txt, xml)
      * @throws IOException
      */
-    public void executeProcess(List<String> pageIds, String resultType) throws IOException {
+    public void executeProcess(List<String> pageIds, String resultType) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
         stopProcess = false;
         progress = 0;
 
@@ -187,7 +195,7 @@ public class ResultGenerationHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void executeTextProcess(List<String> pageIds, String time) throws IOException {
+    public void executeTextProcess(List<String> pageIds, String time) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
         initialize(pageIds);
 
 		TreeMap<String, String> pageResult = new TreeMap<String, String>();
@@ -200,43 +208,42 @@ public class ResultGenerationHelper {
 		// For each page: Concatenation of the recognition/gt output of the linesegmentation of the page
 		//                Saving output to a txt file (located at /Results/Pages/)
 		for (String pageId : processState.keySet()) {
-			pageResult.put(pageId, new String());
+			pageResult.put(pageId, "");
 
             // Retrieve every ground truth or recognition line in the page xmls and group them per page
-            Path path =  Paths.get(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
-            BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"));
-            StringBuilder contents = new StringBuilder();
-            while(reader.ready()) {
-                contents.append(reader.readLine());
-            }
-            final String xmlContent = contents.toString();
-            
-            // Find all textlines inside the file
+            File file =  new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
 
-            Pattern textlinePattern = Pattern.compile("\\<TextLine[^>]+?\\>(.*?)\\<\\/TextLine\\>");
-            Pattern gtPattern = Pattern.compile("\\<TextEquiv[^>]+?index=\"0\"[^>]*?\\>(.*?)\\<\\/TextEquiv\\>");
-            Pattern recPattern = Pattern.compile("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>(.*?)\\<\\/TextEquiv\\>");
-            Matcher matcher = textlinePattern.matcher(xmlContent);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(file);
 
-            while(matcher.find()) {
-                if (stopProcess == true)
-                    return;
-                String textlineContent = matcher.group(1);
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
 
-                Matcher gtMatcher = gtPattern.matcher(textlineContent);
-                // Check for ground truth text
-                if(gtMatcher.find()) {
-                    String currentLine = gtMatcher.group(1).replaceAll("\\<[^>]*?\\>", "");
-                    pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
-                } else {
-                    // Check for recognition text if gt text does not exist
-                    Matcher recMatcher = recPattern.matcher(textlineContent);
-                    if(recMatcher.find()) {
-                        String currentLine = recMatcher.group(1).replaceAll("\\<[^>]*?\\>", "");
-                        pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
-                    }
+            XPathExpression textLineExpr = xpath.compile(".//TextLine");
+
+            Object result = textLineExpr.evaluate(document, XPathConstants.NODESET);
+            NodeList textLines = (NodeList) result;
+
+            for (int i = 0; i < textLines.getLength(); i++) {
+                xpath.reset();
+                XPathExpression gtExpr = xpath.compile("./TextEquiv[@index=0]");
+                NodeList gt = (NodeList) gtExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
+
+                if(gt.getLength()>0){
+                    String gtContent = gt.item(0).getTextContent();
+                    pageResult.put(pageId, pageResult.get(pageId) + gtContent + "\n");
+                }else{
+                    xpath.reset();
+                    XPathExpression recExpr = xpath.compile("./TextEquiv[@index=1]");
+                    NodeList rec = (NodeList) recExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
+
+                    String recContent = rec.item(0).getTextContent();
+                    pageResult.put(pageId, pageResult.get(pageId) + recContent + "\n");
                 }
             }
+
+            // Find all textlines inside the file
             processedElements++;
             progress = (int) ((double) processedElements / processElementCount * 100);
 			
@@ -248,13 +255,13 @@ public class ResultGenerationHelper {
 			}
 		}
 		// The recognition/gt output of the the specified pages is concatenated
-		String completeResult = new String();
+		StringBuilder completeResult = new StringBuilder();
 		for (String pageId : pageResult.keySet()) {
-			completeResult += pageResult.get(pageId) + "\n";
+			completeResult.append(pageResult.get(pageId)).append("\n");
 		}
 		try (OutputStreamWriter writer =
 					 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + time + "_txt" + File.separator + "complete" + ".txt"), StandardCharsets.UTF_8)) {
-			writer.write(completeResult);
+			writer.write(completeResult.toString());
 		}
     }
 
