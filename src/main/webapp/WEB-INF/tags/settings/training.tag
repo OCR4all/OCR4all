@@ -42,7 +42,8 @@
                 </td>
                 <td>
                     <div class="input-field flex">
-                        <textarea id="training--whitelist" class="materialize-textarea" data-setting="--whitelist" type="text" spellcheck="false"></textarea>
+                        <!-- Temporary fix for faulty resizing of materialize-textarea -->
+                        <input id="training--whitelist" data-setting="--whitelist" type="text" spellcheck="false"/>
                         <label for="training--whitelist">Default: A-Za-z0-9</label>
                         <a class="waves-effect waves-light dropdown-button btn whitelist-button" data-constrainWidth="false" href="#" data-activates="whitelist-select"><i class="material-icons">play_for_work</i></a>
                         <ul id="whitelist-select" class="dropdown-content"></ul>
