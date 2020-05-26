@@ -197,7 +197,6 @@
                 $('ul[id=whitelist-select]').on("click", "li", function () {
                     // Update the Textarea with the selected preconfigured whitelist
                     $('#training--whitelist').val($(this).data("chars"));
-                    $('#training--whitelist').trigger('autoresize');
                     $('#training--whitelist').trigger('focus');
                 });
             });

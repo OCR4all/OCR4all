@@ -218,6 +218,8 @@ public class ProcessHandler {
         env.put("PYTHONIOENCODING", "utf-8");
         // SET AUTOGRAPH_VERBOSITY for TensorFlow2 execution in calamari.
         env.put("TF_CPP_MIN_LOG_LEVEL", "3");
+        // SET PYTHONWARNINGS to ignore to stop e.g. scipy rounding warnings from showing up in the UI.
+        env.put("PYTHONWARNINGS", "ignore");
 
         process = processBuilder.start();
 

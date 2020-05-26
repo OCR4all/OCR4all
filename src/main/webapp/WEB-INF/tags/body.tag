@@ -109,11 +109,14 @@
                             <div class="modal-content ">
                                 <h4 class="red-text center-align">Important Advice!</h4>
                                 <p>
-                                    For efficient data processing OCR4all combines various components. Due to necessary updates, OCR models trained
-                                    with earlier OCR4all versions will not work with this new version. A retraining of your old models is required.
-                                    In order to do this, please load your current project, move to the "Training" submodule and use your current
-                                    Ground Truth (as well as a default model for "Pretraining") for recreating operative OCR models. If there are any
-                                    questions, please do not hesitate to contact us at <a href="mailto:ocr4all@uni-wuerzburg.de">ocr4all@uni-wuerzburg.de</a>
+                                    For efficient data processing OCR4all combines various components. Due to necessary updates of our OCR engine Calamari, models trained with earlier OCR4all versions will not work with this new version. Please note that, in all likelihood, this will be a one-time issue and will not be the case for future updates.
+                                </p>
+                                <p>
+                                    The standard <a href="https://github.com/Calamari-OCR/calamari_models" target="_blank">mixed model ensembles</a> have already been retrained. Your self-trained models will have to be retrained using the "Training" submodule and your current Ground Truth (as well as an optional updated default model for "Pretraining").
+                                </p>
+                                <p>
+                                    If you need to retrain many models with extensive amounts of GT, thereby overstressing your own hardware, we are happy to help you out.
+                                    Please do not hesitate to contact us <a href="mailto:ocr4all@uni-wuerzburg.de">ocr4all@uni-wuerzburg.de</a> if you need help or have any further questions.
                                 </p>
                             </div>
                             <div class="modal-footer">

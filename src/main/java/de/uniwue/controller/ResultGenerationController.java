@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.ResultGenerationHelper;
+import org.xml.sax.SAXException;
 
 /**
  * Controller class for pages of result generation module
@@ -88,7 +91,7 @@ public class ResultGenerationController {
         GenericController.addToProcessList(session, "result");
         try {
             resultGenerationHelper.executeProcess(Arrays.asList(pageIds), resultType);
-        } catch (IOException e) {
+        } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resultGenerationHelper.resetProgress();
             e.printStackTrace();
