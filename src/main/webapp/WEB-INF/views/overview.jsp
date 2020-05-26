@@ -157,6 +157,28 @@
                     });
                 }
 
+                $("[data-id='exportGTC']").click(function(){
+                    localStorage.setItem('export_gt_clicked', 'True');
+                    $("[data-id='exportGTC']").removeClass("pulse");
+                    let export_gt_info_shown = localStorage.getItem('export_gt_info_shown');
+                    if(!export_gt_info_shown){
+                        $("#export_gt_info").modal("open");
+                        localStorage.setItem('export_gt_info_shown', 'True');
+                    }
+                })
+
+                function checkExportGTClicked(){
+                    let export_gt_clicked = localStorage.getItem("export_gt_clicked");
+                    if(!export_gt_clicked){
+                        $("[data-id='exportGTC']").addClass("pulse");
+                    }else{
+                        $("[data-id='exportGTC']").removeClass("pulse");
+                    }
+                }
+
+                checkExportGTClicked();
+
+
                 function exportData(newPageVisit, completeDir, pages, binary, gray) {
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val(), "processingMode" : $('#processingMode').val() };
                     // Check if directory exists
@@ -578,7 +600,14 @@
         </div>
         <div id="modal_exportgtc" class="modal">
             <div class="modal-content">
-                <h4 class="red-text">Export GT</h4>
+                <div class="row">
+                    <div class="col s11">
+                        <h4 class="red-text">Export GT</h4>
+                    </div>
+                    <div class="col s1">
+                        <a class="btn-floating waves-effect waves-light modal-trigger indigo darken-2" href="#export_gt_info"><i class="material-icons">info_outline</i></a>
+                    </div>
+                </div>
                 <table class="compact">
                     <tbody>
                     <tr>
@@ -622,13 +651,32 @@
         </div>
         <div id="modal_noGtcFound" class="modal">
             <div class="modal-content red-text">
-                <h4>No Ground Truth Data was found</h4>
+                <div class="row">
+                    <div class="col s11">
+                        <h4>No Ground Truth Data was found</h4>
+                    </div>
+                    <div class="col s1">
+                        <a class="btn-floating waves-effect waves-light modal-trigger indigo darken-2" href="#export_gt_info"><i class="material-icons">info_outline</i></a>
+                    </div>
+                </div>
                 <p>
                     Please be sure to load a project with Ground Truth Data before exporting.
                 </p>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+        <div id="export_gt_info" class="modal">
+            <div class="modal-content">
+                <h4>Export GT Information</h4>
+                <p>An important cornerstone of OCR4all are the <a href="https://github.com/Calamari-OCR/calamari_models" target="_blank">available mixed models</a> which can be used for pretraining or to perform OCR out of the box.
+                    These models heavily rely on extensive and diverse Ground Truth which is cumbersome to produce.<br/>
+                    If you consider contributing your GT to the training of mixed models please contact us at <a href="mailto:ocr4all@uni-wuerzburg.de">ocr4all@uni-wuerzburg.de</a>.
+                    Thank you very much!</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
         <div id="modal_adjustImages_failed" class="modal">
