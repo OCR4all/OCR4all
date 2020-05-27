@@ -20,7 +20,7 @@
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/materialize.min.js"></script>
 
-    <!--Project OCR4All_Web related-->
+    <!--Project OCR4all_Web related-->
     <link type="text/css" rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/ocr4allweb.css">
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-helper.js"></script>
 
@@ -97,7 +97,12 @@
             // Expand all side navigation collapsibles (to show nested elements)
             $('.side-nav .collapsible-header').addClass('active');
             $('.side-nav .collapsible').collapsible();
+
+            $('#open_menu').click(function() {
+                $('#slide-out').removeClass('hiddendiv');
+            });
         });
+
     </script>
 
     <jsp:doBody />

@@ -34,8 +34,7 @@ public class LarexController {
         if (larexHelper == null) {
             larexHelper = new LarexHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString(),
-                session.getAttribute("processingMode").toString()
+                session.getAttribute("imageType").toString()
             );
             session.setAttribute("larexHelper", larexHelper);
         }

@@ -10,19 +10,29 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
 
 public class ResultGenerationHelper {
     /**
@@ -45,11 +55,6 @@ public class ResultGenerationHelper {
      */
     private ProcessHandler processHandler;
 
-    /**
-     * Processing structure of the project
-     * Possible values: { Directory, Pagexml }
-     */
-    private String processingMode;
     
     /**
      * Progress of the result generation process
@@ -86,14 +91,12 @@ public class ResultGenerationHelper {
      *
      * @param projectDir       Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
-     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public ResultGenerationHelper(String projectDir, String projectImageType, String processingMode) {
+    public ResultGenerationHelper(String projectDir, String projectImageType) {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
-        procStateCol = new ProcessStateCollector(projConf, projectImageType, processingMode);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
         genericHelper = new GenericHelper(projConf);
-        this.processingMode = processingMode;
     }
 
     /**
@@ -117,31 +120,6 @@ public class ResultGenerationHelper {
 
 		for (String pageId : pageIds) {
 			TreeMap<String, TreeMap<String, Boolean>> segments = new TreeMap<String, TreeMap<String, Boolean>>();
-
-			if(processingMode.equals("Directory")) {
-				// File depth of 1 -> no recursive (file)listing
-				File[] lineSegmentDirectories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-				if (lineSegmentDirectories.length != 0) {
-					for (File dir : lineSegmentDirectories) {
-						TreeMap<String, Boolean> lineSegments = new TreeMap<String, Boolean>();
-						Files.walk(Paths.get(dir.getAbsolutePath()), 1)
-								.map(Path::toFile)
-								.filter(fileEntry -> fileEntry.isFile())
-								.filter(fileEntry -> fileEntry.getName().endsWith(projConf.REC_EXT))
-								.filter(fileEntry -> !fileEntry.getName().endsWith(projConf.GT_EXT))
-								.forEach(
-										fileEntry -> {
-											//.pred.txt is removed to get the id of the line segment
-											if (fileEntry.getName().contains(projConf.REC_EXT)) {
-												String lineSegmentId = fileEntry.getName().substring(0, fileEntry.getName().indexOf(projConf.REC_EXT));
-												lineSegments.put(lineSegmentId, false);
-											}
-										}
-								);
-						segments.put(dir.getName(), lineSegments);
-					}
-				}
-			}
 			processState.put(pageId, segments);
 		}
     }
@@ -149,14 +127,20 @@ public class ResultGenerationHelper {
     /**
      * Create necessary Result directories if they do not exist
      */
-    private void initializeResultDirectories() {
-        File resultDir = new File(projConf.RESULT_DIR);
+    private String initializeResultDirectories(String resultType) {
+        LocalDateTime localTime = LocalDateTime.now();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
+                .withLocale( Locale.getDefault() )
+                .withZone( ZoneId.systemDefault());
+        String time = localTime.format(timeFormatter);
+        File resultDir = new File(projConf.RESULT_DIR + time + "_" + resultType + File.separator);
         if (!resultDir.exists())
             resultDir.mkdir();
 
-        File resultPagesDir = new File(projConf.RESULT_PAGES_DIR);
+        File resultPagesDir = new File(resultDir.getPath() + File.separator + "pages" + File.separator);
         if (!resultPagesDir.exists())
             resultPagesDir.mkdir();
+        return time;
     }
 
     /**
@@ -166,16 +150,16 @@ public class ResultGenerationHelper {
      * @param resultType specified resultType (txt, xml)
      * @throws IOException
      */
-    public void executeProcess(List<String> pageIds, String resultType) throws IOException {
+    public void executeProcess(List<String> pageIds, String resultType) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
         stopProcess = false;
         progress = 0;
 
-        initializeResultDirectories();
+        String initTime = initializeResultDirectories(resultType);
 
         if (resultType.equals("txt")) {
-            executeTextProcess(pageIds);
+            executeTextProcess(pageIds, initTime);
         } else if (resultType.equals("xml")) {
-            executeXmlProcess(pageIds);
+            executeXmlProcess(pageIds, initTime);
         }
 
         progress = 100;
@@ -187,41 +171,21 @@ public class ResultGenerationHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void executeXmlProcess(List<String> pageIds) throws IOException {
+    public void executeXmlProcess(List<String> pageIds, String time) throws IOException {
 		File dir = new File(projConf.OCR_DIR);
-		deleteOldFiles(pageIds, "xml");
 		if (!dir.exists())
 			return;
 		
 		File[] xmlFiles = dir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
-    	if(processingMode.equals("Directory")) {
-			processHandler = new ProcessHandler();
-			processHandler.setFetchProcessConsole(true);
-
-			int processedPages = 1;
-			for (File xmlFile : xmlFiles) {
-				if (stopProcess == true)
-					return;
-				if (!pageIds.contains(FilenameUtils.removeExtension(xmlFile.getName())))
-					continue;
-				List<String> command = new ArrayList<String>();
-				command.add(xmlFile.getAbsolutePath());
-				command.add("--output");
-				command.add(projConf.RESULT_PAGES_DIR + xmlFile.getName());
-				processHandler.startProcess("pagedir2pagexml", command, false);
-
-				progress = (int) ((double) processedPages / xmlFiles.length * 100);
-				processedPages++;
-			}
-    	} else {
-    		// Copy all xml files into output
-    		int processedPages = 0;
-    		for(File xmlFile : xmlFiles) {
-    			File xmlOutFile = new File(projConf.RESULT_PAGES_DIR + xmlFile.getName());
-    			Files.copy(xmlFile.toPath(),xmlOutFile.toPath());
-				progress = (int) ((double) processedPages / xmlFiles.length * 100);
-				processedPages++;
-    		}
+		File xmlDir = new File(projConf.RESULT_DIR + time + "_xml" + File.separator + "pages");
+        Files.createDirectories(Paths.get(xmlDir.getAbsolutePath()));
+        // Copy all xml files into output
+        int processedPages = 0;
+        for(File xmlFile : xmlFiles) {
+            File xmlOutFile = new File(xmlDir + File.separator +  xmlFile.getName());
+            Files.copy(xmlFile.toPath(), xmlOutFile.toPath());
+            progress = (int) ((double) processedPages / xmlFiles.length * 100);
+            processedPages++;
     	}
     }
 
@@ -231,106 +195,73 @@ public class ResultGenerationHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void executeTextProcess(List<String> pageIds) throws IOException {
+    public void executeTextProcess(List<String> pageIds, String time) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
         initialize(pageIds);
-        deleteOldFiles(pageIds, "txt");
 
 		TreeMap<String, String> pageResult = new TreeMap<String, String>();
-		int processElementCount = 0;
-		if(processingMode.equals("Directory")){
-			for (String pageId : processState.keySet()) {
-				for (String segmentId : processState.get(pageId).keySet()) {
-					processElementCount += processState.get(pageId).get(segmentId).size();
-				}
-			}
-		} else {
-			processElementCount = pageIds.size();
-		}
-
+		int processElementCount = pageIds.size();
 		int processedElements = 1;
+
+        File textDir = new File(projConf.RESULT_DIR + time + "_txt" + File.separator + "pages");
+        Files.createDirectories(Paths.get(textDir.getAbsolutePath()));
+
 		// For each page: Concatenation of the recognition/gt output of the linesegmentation of the page
 		//                Saving output to a txt file (located at /Results/Pages/)
 		for (String pageId : processState.keySet()) {
-			pageResult.put(pageId, new String());
+			pageResult.put(pageId, "");
 
-			if(processingMode.equals("Directory")){
-				// Gather every ground truth or recognition txt and group them per page
-				for (String segmentId : processState.get(pageId).keySet()) {
-					for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
-						if (stopProcess == true)
-							return;
+            // Retrieve every ground truth or recognition line in the page xmls and group them per page
+            File file =  new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
 
-						String lineSegDir = projConf.PAGE_DIR + pageId + File.separator + segmentId + File.separator + lineSegmentId;
-						// Using the gt output when available otherwise the recognition output
-						Path path = Paths.get(lineSegDir + projConf.GT_EXT);
-						if (!Files.exists(path))
-							path = Paths.get(lineSegDir + projConf.REC_EXT);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(file);
 
-						BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"));
-						String currentLine = new String();
-						while ((currentLine = reader.readLine()) != null) {
-							pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
-						}
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
 
-					}
+            XPathExpression textLineExpr = xpath.compile(".//TextLine");
 
-					processedElements++;
-					progress = (int) ((double) processedElements / processElementCount * 100);
-				}
-			} else {
-				// Retrieve every ground truth or recognition line in the page xmls and group them per page
-				Path path =  Paths.get(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
-				BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"));
-				StringBuilder contents = new StringBuilder();
-				while(reader.ready()) {
-					contents.append(reader.readLine());
-				}
-				final String xmlContent = contents.toString();
-				
-				// Find all textlines inside the file
+            Object result = textLineExpr.evaluate(document, XPathConstants.NODESET);
+            NodeList textLines = (NodeList) result;
 
-				Pattern textlinePattern = Pattern.compile("\\<TextLine[^>]+?\\>(.*?)\\<\\/TextLine\\>");
-				Pattern gtPattern = Pattern.compile("\\<TextEquiv[^>]+?index=\"0\"[^>]*?\\>(.*?)\\<\\/TextEquiv\\>");
-				Pattern recPattern = Pattern.compile("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>(.*?)\\<\\/TextEquiv\\>");
-				Matcher matcher = textlinePattern.matcher(xmlContent);
+            for (int i = 0; i < textLines.getLength(); i++) {
+                xpath.reset();
+                XPathExpression gtExpr = xpath.compile("./TextEquiv[@index=0]");
+                NodeList gt = (NodeList) gtExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
 
-				while(matcher.find()) {
-					if (stopProcess == true)
-						return;
-					String textlineContent = matcher.group(1);
+                if(gt.getLength()>0){
+                    String gtContent = gt.item(0).getTextContent();
+                    pageResult.put(pageId, pageResult.get(pageId) + gtContent + "\n");
+                }else{
+                    xpath.reset();
+                    XPathExpression recExpr = xpath.compile("./TextEquiv[@index=1]");
+                    NodeList rec = (NodeList) recExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
 
-					Matcher gtMatcher = gtPattern.matcher(textlineContent);
-					// Check for ground truth text
-					if(gtMatcher.find()) {
-						String currentLine = gtMatcher.group(1).replaceAll("\\<[^>]*?\\>", "");
-						pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
-					} else {
-						// Check for recognition text if gt text does not exist
-						Matcher recMatcher = recPattern.matcher(textlineContent);
-						if(recMatcher.find()) {
-							String currentLine = recMatcher.group(1).replaceAll("\\<[^>]*?\\>", "");
-							pageResult.put(pageId, pageResult.get(pageId) + currentLine + "\n");
-						}
-					}
-				}
-				processedElements++;
-				progress = (int) ((double) processedElements / processElementCount * 100);
-			}
+                    String recContent = rec.item(0).getTextContent();
+                    pageResult.put(pageId, pageResult.get(pageId) + recContent + "\n");
+                }
+            }
+
+            // Find all textlines inside the file
+            processedElements++;
+            progress = (int) ((double) processedElements / processElementCount * 100);
 			
 			
 			try (OutputStreamWriter writer =
-						 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_PAGES_DIR + pageId + ".txt"), StandardCharsets.UTF_8)) {
+						 new OutputStreamWriter(new FileOutputStream(textDir + File.separator + pageId + ".txt"),
+                                 StandardCharsets.UTF_8)) {
 				writer.write(pageResult.get(pageId));
 			}
 		}
 		// The recognition/gt output of the the specified pages is concatenated
-		String completeResult = new String();
+		StringBuilder completeResult = new StringBuilder();
 		for (String pageId : pageResult.keySet()) {
-			completeResult += pageResult.get(pageId) + "\n";
+			completeResult.append(pageResult.get(pageId)).append("\n");
 		}
 		try (OutputStreamWriter writer =
-					 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + "complete" + ".txt"), StandardCharsets.UTF_8)) {
-			writer.write(completeResult);
+					 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + time + "_txt" + File.separator + "complete" + ".txt"), StandardCharsets.UTF_8)) {
+			writer.write(completeResult.toString());
 		}
     }
 
@@ -376,33 +307,6 @@ public class ResultGenerationHelper {
      */
     public int getProgress() {
         return progress;
-    }
-
-    /**
-     * Deletion of old process related files
-     *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     */
-    public void deleteOldFiles(List<String> pageIds, String type) {
-        // Delete result of each page
-        for (String pageId : pageIds) {
-            if (type.equals("txt")) {
-                File pageTxtResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.REC_EXT);
-                if (pageTxtResult.exists())
-                    pageTxtResult.delete();
-            }
-            if (type.equals("xml")) {
-                File pageXmlResult = new File(projConf.RESULT_PAGES_DIR + pageId + projConf.CONF_EXT);
-                if (pageXmlResult.exists())
-                    pageXmlResult.delete();
-            }
-        }
-        if (type.equals("txt")) {
-            // delete the concatenated result of the pages
-            File completeResult = new File(projConf.RESULT_DIR + "complete" + projConf.REC_EXT);
-            if (completeResult.exists())
-                completeResult.delete();
-        }
     }
 
     /**

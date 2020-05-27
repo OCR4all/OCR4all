@@ -2,22 +2,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <table class="compact">
     <tbody>
-        <tr>
-            <td><p>Project data selection type</p></td>
-            <td>
-                <div class="input-field col s3">
-                    <i class="material-icons prefix">donut_small</i>
-                    <select id="projectDataSelectionType" name="projectDataSelectionType" class="suffix" data-projdataseltype>
-                        <option value="fixedStructure">Use predefined project directory structure</option>
-                        <option value="freeTextInput">Use free text input to provide directory paths</option>
-                    </select>
-                    <label></label>
-                </div>
-            </td>
-        </tr>
         <%-- START project data selection selection (visibility of <tr> elements is done via JS) --%>
         <tr>
-            <td><p>Project selection</p></td>
+            <td><p>Project</p></td>
             <td>
                 <div class="input-field col s3">
                     <i class="material-icons prefix">library_books</i>
@@ -38,7 +25,7 @@
         </tr>
         <%-- END project data selection selection (visibility of <tr> elements is done via JS) --%>
         <tr>
-            <td><p>Project image type</p></td>
+            <td><p>Image type</p></td>
             <td>
                 <div class="input-field col s3">
                     <i class="material-icons prefix">image</i>
@@ -55,17 +42,13 @@
             </td>
         </tr>
         <tr>
-            <td><p>Project processing mode</p></td>
+            <td><p>Data selection</p></td>
             <td>
                 <div class="input-field col s3">
-                    <i class="material-icons prefix">folder</i>
-                    <c:choose>
-                        <c:when test='${processingMode == "Directory"}'><c:set value='selected="selected"' var="directorySel"></c:set></c:when>
-                        <c:otherwise><c:set value='selected="selected"' var="pagexmlSel"></c:set></c:otherwise>
-                    </c:choose>
-                    <select id="processingMode" name="processingMode" class="suffix">
-                        <option value="Pagexml" ${pagexmlSel}>Latest</option>
-                        <option value="Directory" ${directorySel}>Legacy</option>
+                    <i class="material-icons prefix">donut_small</i>
+                    <select id="projectDataSelectionType" name="projectDataSelectionType" class="suffix" data-projdataseltype>
+                        <option value="fixedStructure">Use predefined project directory structure</option>
+                        <option value="freeTextInput">Use free text input to provide directory paths</option>
                     </select>
                     <label></label>
                 </div>

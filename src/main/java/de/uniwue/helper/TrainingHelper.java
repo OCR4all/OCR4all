@@ -32,11 +32,6 @@ public class TrainingHelper {
      */
     private String projectImageType;
 
-    /**
-     * Processing structure of the project
-     * Possible values: { Directory, Pagexml }
-     */
-    private String processingMode;
     
     /**
      * Object to access project configuration
@@ -63,13 +58,11 @@ public class TrainingHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
-     * @param processingMode Processing structure of the project (Directory, Pagexml)
      */
-    public TrainingHelper(String projectDir, String projectImageType, String processingMode) {
+    public TrainingHelper(String projectDir, String projectImageType) {
         projConf = new ProjectConfiguration(projectDir);
         processHandler = new ProcessHandler();
         this.projectImageType = projectImageType;
-        this.processingMode = processingMode;
     }
 
     /**
@@ -100,7 +93,7 @@ public class TrainingHelper {
      */
     public List<String> getImagesWithGt() throws IOException {
         ArrayList<String> imagesWithGt = new ArrayList<String>();
-        final String gtExt = processingMode.equals("Pagexml") ? projConf.CONF_EXT : projConf.GT_EXT;
+        final String gtExt = projConf.CONF_EXT;
 
         // Add custom models to map
 		Files.walk(Paths.get(projConf.PAGE_DIR))
@@ -116,10 +109,9 @@ public class TrainingHelper {
     }
 
     public List<String> getPagesWithGt() throws IOException {
-        final String gtExt = processingMode.equals("Pagexml") ? projConf.CONF_EXT : projConf.GT_EXT;
 		List<String> pageIds = new GenericHelper(projConf).getPageList(projectImageType);
 
-		ProcessStateCollector states = new ProcessStateCollector(projConf, projectImageType, gtExt);
+		ProcessStateCollector states = new ProcessStateCollector(projConf, projectImageType);
         return pageIds.stream().filter(pageId -> states.groundTruthState(pageId))
         		.collect(Collectors.toList());
     }
@@ -260,10 +252,8 @@ public class TrainingHelper {
 
         command.add("--no_progress_bars");
 
-        if(processingMode.equals("Pagexml")) {
-        	command.add("--dataset");
-        	command.add("PAGEXML");
-        }
+        command.add("--dataset");
+        command.add("PAGEXML");
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);

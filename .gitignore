@@ -10,6 +10,7 @@ built_wars
 .idea/
 *.iml
 *.iws
+*.ipr
 
 # Mac
 .DS_Store
@@ -21,3 +22,8 @@ target/
 # Python
 .pynative
 .pydevproject
+
+# vim
+*~
+*.swp
+*.swo

@@ -39,8 +39,7 @@ public class TrainingController {
         if (trainingHelper == null) {
             trainingHelper = new TrainingHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString(),
-                session.getAttribute("processingMode").toString()
+                session.getAttribute("imageType").toString()
             );
             session.setAttribute("trainingHelper", trainingHelper);
         }

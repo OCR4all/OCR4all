@@ -4,7 +4,7 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" inputParams="true" processHandler="true" recModelSelect="true">
-        <title>OCR4All - Centralized Process Flow</title>
+        <title>OCR4all - Centralized Process Flow</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
@@ -280,21 +280,6 @@
                                             </p>
                                         </td>
                                     </tr>
-									<c:choose>
-										<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-										</c:when>
-										<c:otherwise>
-                                    <tr>
-                                        <td><p>Region Extraction</p></td>
-                                        <td>
-                                            <p>
-                                                <input type="checkbox" class="filled-in" id="runRegionExtractionProcess" data-id="regionExtraction" checked="checked" />
-                                                <label for="runRegionExtractionProcess"></label>
-                                            </p>
-                                        </td>
-                                    </tr>
-										</c:otherwise>
-									</c:choose>
                                     <tr>
                                         <td><p>Line Segmentation</p></td>
                                         <td>
@@ -366,18 +351,6 @@
                                         <s:segmentationDummy></s:segmentationDummy>
                                     </div>
                                 </li>
-									<c:choose>
-										<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-										</c:when>
-										<c:otherwise>
-                                <li data-id="regionExtraction">
-                                    <div class="collapsible-header"><i class="material-icons">settings</i>Region Extraction</div>
-                                    <div class="collapsible-body">
-                                        <s:regionExtraction></s:regionExtraction>
-                                    </div>
-                                </li>
-										</c:otherwise>
-									</c:choose>
                                 <li data-id="lineSegmentation">
                                     <div class="collapsible-header"><i class="material-icons">settings</i>Line Segmentation</div>
                                     <div class="collapsible-body">
@@ -450,21 +423,6 @@
                                         </div>
                                     </div>
                                 </li>
-								<c:choose>
-									<c:when test='${(not empty processingMode) && (processingMode == "Pagexml")}'>
-									</c:when>
-									<c:otherwise>
-                                <li data-id="regionExtraction">
-                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Region Extraction</div>
-                                    <div class="collapsible-body">
-                                        <div class="status"><p>Status: <span>No Region Extraction process running</span></p></div>
-                                        <div class="progress">
-                                            <div class="determinate"></div>
-                                        </div>
-                                    </div>
-                                </li>
-									</c:otherwise>
-								</c:choose>
                                 <li data-id="lineSegmentation">
                                     <div class="collapsible-header"><i class="material-icons">info_outline</i>Line Segmentation</div>
                                     <div class="collapsible-body">

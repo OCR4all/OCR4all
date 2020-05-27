@@ -34,16 +34,16 @@ public class OverviewController {
      * @return Returns the helper object of the process
      */
     public OverviewHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (GenericController.isSessionValid(session, response) == false)
+        if (GenericController.isSessionValid(session, response) == false) {
             return null;
+        }
 
         // Keep a single helper object in session
         OverviewHelper overviewHelper = (OverviewHelper) session.getAttribute("overviewHelper");
         if (overviewHelper == null) {
             overviewHelper = new OverviewHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString(),
-                session.getAttribute("processingMode").toString()
+                session.getAttribute("imageType").toString()
             );
             session.setAttribute("overviewHelper", overviewHelper);
         }
@@ -150,7 +150,6 @@ public class OverviewController {
     public @ResponseBody boolean checkDir(
                 @RequestParam("projectDir") String projectDir,
                 @RequestParam("imageType") String imageType,
-                @RequestParam("processingMode") String processingMode,
                 @RequestParam("resetSession") Boolean resetSession,
                 HttpSession session, HttpServletResponse response, HttpServletRequest request
             ) {
@@ -166,7 +165,6 @@ public class OverviewController {
         HttpSession newSession = request.getSession();
         newSession.setAttribute("projectDir", projectDir);
         newSession.setAttribute("imageType", imageType);
-        newSession.setAttribute("processingMode", processingMode);
         // Determine and add the name of the project to the session as well (to display on each page)
         String[] projectDirParts = projectDir.substring(0, projectDir.length() - 1).split(Pattern.quote(File.separator));
         newSession.setAttribute("projectName", projectDirParts[projectDirParts.length - 1]);
@@ -375,5 +373,101 @@ public class OverviewController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Response to the Request to convert a legacy to latest project
+     * @param backup flag to backup project
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="/ajax/overview/convertLegacyProject" , method = RequestMethod.POST)
+    @ResponseBody public void convertProject(
+            @RequestParam("backupLegacy") Boolean backup,
+            HttpSession session, HttpServletResponse response
+    ) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null)
+            return;
+        try {
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            overviewHelper.backupLegacy();
+            overviewHelper.convertLegacyToLatest();
+            if(!backup){
+                overviewHelper.cleanupLegacyBackup();
+            }
+            session.setAttribute("projectAdjustment", "");
+        } catch (Exception e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Response to the Request to export Ground Truth Data from Project
+     * @param completeDir determines if complete project GTD will be zipped
+     * @param pages selected pages to zip
+     * @param binary determines if binary images will be included
+     * @param gray determines if grayscale images will be included
+     * @param session Session of the user
+     * @param response Response to the Request
+     */
+    @RequestMapping(value ="ajax/overview/exportGtc" , method = RequestMethod.POST)
+    public @ResponseBody String exportGtc(
+            @RequestParam("completeDir") Boolean completeDir,
+            @RequestParam("pages") String pages,
+            @RequestParam("binary") Boolean binary,
+            @RequestParam("gray") Boolean gray,
+            HttpSession session, HttpServletResponse response
+    ) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null) {
+            return null;
+        }
+
+        try {
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+
+            if(completeDir) {
+                overviewHelper.zipDir(binary, gray);
+            } else {
+                overviewHelper.zipPages(pages, binary, gray);
+            }
+            session.setAttribute("projectAdjustment", "");
+        } catch (Exception e) {
+            // Prevent loading an invalid project
+            session.invalidate();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+        return overviewHelper.getProjDir();
+    }
+
+    /**
+     * Response to the Request to check for exportable Ground Truth Data
+     * @param session Session of the user
+     * @param response Response to the Request
+     * @return
+     */
+    @RequestMapping(value ="ajax/overview/checkGtc" , method = RequestMethod.GET)
+    public @ResponseBody boolean checkGtcExportable(
+            HttpSession session, HttpServletResponse response
+    ) {
+        OverviewHelper overviewHelper = provideHelper(session, response);
+        if (overviewHelper == null) {
+            return false;
+        }
+        try {
+            session.setAttribute("projectAdjustment", "Please wait until the project adjustment is finished.");
+            session.setAttribute("projectAdjustment", "");
+            return overviewHelper.checkGtcExportable();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

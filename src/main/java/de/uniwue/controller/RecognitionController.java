@@ -40,8 +40,7 @@ public class RecognitionController {
         if (recognitionHelper == null) {
             recognitionHelper = new RecognitionHelper(
                 session.getAttribute("projectDir").toString(),
-                session.getAttribute("imageType").toString(),
-                session.getAttribute("processingMode").toString()
+                session.getAttribute("imageType").toString()
             );
             session.setAttribute("recognitionHelper", recognitionHelper);
         }

@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" inputParams="true" processHandler="true">
-        <title>OCR4All - Segmentation Pixel Classifier</title>
+        <title>OCR4all - Segmentation Pixel Classifier</title>
 
         <script type="text/javascript">
             $(document).ready(function() {

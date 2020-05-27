@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -22,5 +24,19 @@ public class TeamController {
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("team");
         return mv;
+    }
+    /**
+     * Gets OCR4all from System Environment
+     * @return
+     */
+    @RequestMapping(value ="ajax/team/sysenv" , method = RequestMethod.GET)
+    public @ResponseBody String getSys(
+            HttpSession session, HttpServletResponse response
+    ) {
+        String ocr4all_version  = System.getenv("OCR4ALL_VERSION");
+        String larex_version = System.getenv("LAREX_VERSION");
+        if(ocr4all_version.equals("")) { ocr4all_version = "UNKNOWN"; }
+        if(larex_version.equals("")) { larex_version = "UNKNOWN"; }
+        return ocr4all_version + "\n" + larex_version;
     }
 }
