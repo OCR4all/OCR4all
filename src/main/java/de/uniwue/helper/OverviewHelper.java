@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -26,8 +27,11 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
+import de.uniwue.feature.ProcessHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.ImageType;
@@ -43,6 +47,7 @@ import org.opencv.imgproc.Imgproc;
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessStateCollector;
 import de.uniwue.model.PageOverview;
+import de.uniwue.feature.ProcessHandler;
 
 public class OverviewHelper {
     /**
@@ -62,6 +67,11 @@ public class OverviewHelper {
      * }
      */
     private Map<String, PageOverview> overview = new HashMap<String, PageOverview>();
+
+    /**
+     * Helper object for process handling
+     */
+    private ProcessHandler processHandler;
 
     /**
      * Image type of the project
@@ -351,7 +361,7 @@ public class OverviewHelper {
      * Checks if the project structure of this project is a legacy project (Directory)
      *
      * @return Project validation status
-     * @throws IOException 
+     * @throws IOException
      */
     public boolean isLegacy() {
 		File project = Paths.get(projConf.OCR_DIR).toFile();
@@ -367,6 +377,74 @@ public class OverviewHelper {
 			return false;
 		}
     }
+
+    /**
+     * Backups the whole processing directory of a legacy project before converting the project to latest
+     *
+     * @throws IOException
+     */
+    public void backupLegacy() throws IOException {
+        File source = new File(projConf.PREPROC_DIR);
+        File target = new File(projConf.PROJECT_DIR + File.separator + "legacy_backup");
+
+        FileUtils.copyDirectory(source, target);
+    }
+
+    /**
+     * Converts a legacy project to latest
+     *
+     * @throws IOException
+     */
+    public void convertLegacyToLatest() throws IOException {
+        String dir = projConf.PREPROC_DIR;
+
+        List<String> command = new ArrayList<String>();
+
+        command.add("-p");
+        command.add(dir);
+
+        try {
+            processHandler = new ProcessHandler();
+            processHandler.startProcess("legacy_convert", command, false);
+
+            cleanupLegacyFiles();
+        }catch (Exception e){
+            // Restore state before conversion in case of conversion error
+            File legacy_dir = new File(projConf.PROJECT_DIR + File.separator + "legacy_backup");
+            File proc_dir = new File(projConf.PREPROC_DIR);
+
+            if(legacy_dir.isDirectory()){
+                FileUtils.deleteDirectory(proc_dir);
+                FileUtils.copyDirectory(legacy_dir, proc_dir);
+                FileUtils.deleteDirectory(legacy_dir);
+            }
+        }
+    }
+
+    /**
+     * Removes directories from successfully converted legacy project which are no longer needed in latest
+     * @throws IOException
+     */
+    public void cleanupLegacyFiles() throws IOException {
+        File proj_dir = new File(projConf.PREPROC_DIR);
+        File[] legacy_dirs = proj_dir.listFiles(File::isDirectory);
+
+        assert legacy_dirs != null;
+        for(File dir: legacy_dirs){
+            FileUtils.deleteDirectory(dir);
+        }
+    }
+
+    /**
+     * Removes legacy backup project in case it exists
+     *
+     */
+    public void cleanupLegacyBackup() throws IOException {
+        File backup_dir = new File(projConf.PROJECT_DIR + File.separator + "legacy_backup");
+        if(backup_dir.isDirectory()) {
+            FileUtils.deleteDirectory(backup_dir);
+        }
+    };
 
     /**
      * Lists all available projects from the data directory
@@ -619,55 +697,68 @@ public class OverviewHelper {
      */
     public void convertPDF(String sourceDir, boolean deleteBlank) throws FileNotFoundException {
         File dir = new File(sourceDir);
+        //Listing all .pdf-Files in Folder
         File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith("pdf"));
         List<File> sortedPDFs = Arrays.stream(pdfInDir)
                 .sorted((f1,f2) -> f1.getName().compareTo(f2.getName())).collect(Collectors.toList());
 
-        if(dir.exists()) {
+        if (dir.exists()) {
+            Splitter splitter = new Splitter();
+            splitter.setMemoryUsageSetting(MemoryUsageSetting.setupTempFileOnly());
+            List<PDDocument> docs= new ArrayList<PDDocument>();
+            List<PDDocument> pages = new ArrayList<PDDocument>();
             try {
-                for(File pdf : sortedPDFs) {
-                    PDDocument document = PDDocument.load(pdf);
-                    pagesToConvert += document.getNumberOfPages();
-                    document.close();
+                for (File pdf : sortedPDFs) {
+                    //using temp files to conserve memory usage, at the cost of increasing processing time
+                    docs.add(PDDocument.load(pdf, MemoryUsageSetting.setupTempFileOnly()));
                 }
+                //splitting every pdf in single page pdf to conserve memory usage
+                for(PDDocument doc : docs) {
+                    pages.addAll(splitter.split(doc));
+                }
+                pagesToConvert = pages.size();
                 int pageCounter = 0;
-                for(File pdf : sortedPDFs) {
-                    PDDocument document = PDDocument.load(pdf);
-                    PDFRenderer renderer = new PDFRenderer(document);
-                    int docPages = 0;
-                    for(PDPage page : document.getPages()) {
-                        if(stopProcess) {
-                            break;
-                        }
+
+                //rendering every page to png
+                for (PDDocument page : pages) {
+                    try {
+                        PDFRenderer renderer = new PDFRenderer(page);
                         //page number parameter is zero based
-                        BufferedImage img = renderer.renderImageWithDPI(docPages++, pdfdpi, ImageType.RGB);
+                        BufferedImage img = renderer.renderImageWithDPI(0, pdfdpi, ImageType.RGB);
 
-                        if(deleteBlank) {
+                        if (deleteBlank) {
                             //check if image is blank page
-                            if (!isBlank(bufferedImageToMat(img),0.99,0.99)) {
+                            if (!isBlank(bufferedImageToMat(img), 0.99, 0.99)) {
                                 //suffix in filename will be used as file format
-                                try {
-                                    ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", ++pageCounter) + ".png", pdfdpi);
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", ++pageCounter) + ".png", pdfdpi);
                             }
-                        }else {
+                        } else {
                             ImageIOUtil.writeImage(img, dir.getPath() + File.separator + String.format("%04d", ++pageCounter) + ".png", pdfdpi);
                         }
+                        page.close();
                         pagesConverted = pageCounter;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        page.close();
                     }
-                    document.close();
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                for (PDDocument doc : docs) {
+                    try {
+                        doc.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-
         } else {
             throw new FileNotFoundException(dir.getName() + " Folder does not exist");
         }
-
+        sortedPDFs.clear();
     }
 
     /**

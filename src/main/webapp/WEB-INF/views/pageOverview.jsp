@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <t:html>
     <t:head>
-        <title>OCR4All - Page Overview</title>
+        <title>OCR4all - Page Overview</title>
 
         <script type="text/javascript">
             $(document).ready(function() {

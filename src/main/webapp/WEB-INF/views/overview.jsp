@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <t:html>
     <t:head projectDataSel="true" processHandler="true">
-        <title>OCR4All - Project Overview</title>
+        <title>OCR4all - Project Overview</title>
 
         <!-- jQuery DataTables -->
         <link rel="stylesheet" type="text/css" href="resources/css/datatables.min.css">
@@ -157,6 +157,28 @@
                     });
                 }
 
+                $("[data-id='exportGTC']").click(function(){
+                    localStorage.setItem('export_gt_clicked', 'True');
+                    $("[data-id='exportGTC']").removeClass("pulse");
+                    let export_gt_info_shown = localStorage.getItem('export_gt_info_shown');
+                    if(!export_gt_info_shown){
+                        $("#export_gt_info").modal("open");
+                        localStorage.setItem('export_gt_info_shown', 'True');
+                    }
+                })
+
+                function checkExportGTClicked(){
+                    let export_gt_clicked = localStorage.getItem("export_gt_clicked");
+                    if(!export_gt_clicked){
+                        $("[data-id='exportGTC']").addClass("pulse");
+                    }else{
+                        $("[data-id='exportGTC']").removeClass("pulse");
+                    }
+                }
+
+                checkExportGTClicked();
+
+
                 function exportData(newPageVisit, completeDir, pages, binary, gray) {
                     var ajaxParams = { "projectDir" : $('#projectDir').val(), "imageType" : $('#imageType').val(), "processingMode" : $('#processingMode').val() };
                     // Check if directory exists
@@ -230,6 +252,9 @@
 
                 // Execute file rename only after the user agreed
                 $('#directConvert, #backupAndConvert').click(function() {
+                    // Enable Cancel Project Adjustment
+                    $('button[data-id="cancelProjectAdjustment"]').removeClass('disabled');
+
                     // Initialize process handler (wait time, due to delayed AJAX process start)
                     setTimeout(function() {
                         initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
@@ -239,12 +264,16 @@
                     var ajaxParams = {"backupImages" : ( $(this).attr('id') == 'backupAndConvert' )};
                     $.post( "ajax/overview/adjustProjectFiles", ajaxParams )
                     .done(function( data ) {
+                        // Disable Cancel Project Adjustment
+                        $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                         // Load datatable after the last process update is surely finished
                         setTimeout(function() {
                             datatable();
                         }, 2000);
                     })
                     .fail(function( data ) {
+                        // Disable Cancel Project Adjustment
+                        $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                         $('#modal_adjustImages_failed').modal('open');
                     });
                 });
@@ -261,6 +290,7 @@
                     }, 500);
                 });
                 $('#convertToPdf, #convertToPdfWithBlanks').click(function() {
+                    $('button[data-id="cancelProjectAdjustment"]').removeClass('disabled');
                     // Initialize process handler (wait time, due to delayed AJAX process start)
                     setTimeout(function() {
                         initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
@@ -270,14 +300,42 @@
                     var ajaxParams = {"deleteBlank" : ( $(this).attr('id') == 'convertToPdf' ), "dpi" : document.getElementById('dpi').value};
                     $.post( "ajax/overview/convertProjectFiles", ajaxParams )
                         .done(function( data ) {
+                            $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                             // Load datatable after the last process update is surely finished
                             setTimeout(function() {
                                 datatable();
                             }, 2000);
                         })
                         .fail(function( data ) {
+                            $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                         });
                 });
+
+                // Convert legacy project
+                $('#convertLegacy').click(function() {
+                    $("#legacy-convert-preloader").show();
+
+                    setTimeout(function() {
+                        initializeProcessUpdate("overview", [ 0 ], [ 1 ], false);
+                    }, 500);
+
+                    var ajaxParams = {"backupLegacy" : document.getElementById('backupCheckbox').checked};
+                    $.post("ajax/overview/convertLegacyProject", ajaxParams)
+                        .done(function() {
+                            $("#legacy-convert-preloader").hide();
+                            $("#modal_legacy_convert").modal("close");
+                            Materialize.toast("Project successfully converted!", 1000, "green");
+                            // Load datatable after the last process update is surely finished
+                            setTimeout(function() {
+                                datatable();
+                            }, 500);
+                        })
+                        .fail(function() {
+                            $("#legacy-convert-preloader").hide();
+                            Materialize.toast("Project can't be converted!", 2000, "red");
+                            $.get( "ajax/overview/invalidateSession" );
+                        });
+                })
                 $('#continueLegacy').click(function() {
                     setTimeout(function() {
                         // Unload project if user refuses the mandatory adjustments
@@ -304,6 +362,7 @@
                 });
 
                 $('button[data-id="cancelProjectAdjustment"]').click(function() {
+                    $('button[data-id="cancelProjectAdjustment"]').addClass('disabled');
                     //cancel only in file conversion progress
                     if(globalInProgress) {
                         cancelProcess();
@@ -385,12 +444,12 @@
                     Load Project
                     <i class="material-icons right">send</i>
                 </button>
-                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light" type="submit" name="action">
+                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light disabled" type="submit" name="action">
                     Cancel Project Adjustment
                     <i class="material-icons right">cancel</i>
                 </button>
                 <button data-id="exportGTC" class="btn waves-effect waves-light secondary-btn" type="submit" name="action">
-                    Export GTD
+                    Export GT
                     <i class="material-icons right">arrow_downward</i>
                 </button>
                 <div class="preloader-wrapper small active" style="float:right; margin-right: 8px;">
@@ -433,13 +492,30 @@
                     Load Project
                     <i class="material-icons right">send</i>
                 </button>
-                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light" type="submit" name="action">
+                <button data-id="cancelProjectAdjustment" class="btn waves-effect waves-light disabled" type="submit" name="action">
                     Cancel Project Adjustment
                     <i class="material-icons right">cancel</i>
                 </button>
             </div>
         </div>
-
+        <div id="modal_legacy_convert" class="modal">
+            <div class="modal-content">
+                <h4 class="red-text">Convert legacy project</h4>
+                <p>The project you are about to load, includes files of an old version of OCR4all.</p>
+                <form action="#">
+                    <p>
+                        <input type="checkbox" id="backupCheckbox" class="filled-in" />
+                        <label for="backupCheckbox">Backup legacy project files.</label>
+                    </p>
+                </form>
+                <div id="legacy-convert-preloader" class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" id="convertLegacy" class="waves-effect waves-green btn">Convert</a>
+            </div>
+        </div>
         <div id="modal_imageAdjust" class="modal">
             <div class="modal-content">
                 <h4 class="red-text">Attention</h4>
@@ -475,9 +551,11 @@
                 <p>Opening and editing your project will not delete any legacy data from your project,
                     but existing legacy data from "Line Segmentations", "Recognitions" and "Ground Truth Productions" will not be accessible any more.</p>
                 <p>If you need this legacy data, please consider installing our OCR4all "legacy" version.</p>
+                <p>Selecting "Convert" will allow you to convert a "legacy" project to a "latest" project. The conversion process may have adverse impacts on existing line segmentation!</p>
                 <p>Selecting "Continue" will continue the loading of the project, but may not able to use every previously existing data.</p>
             </div>
             <div class="modal-footer">
+                <a href="#modal_legacy_convert" class="modal-close modal-trigger waves-effect waves-green btn">Convert</a>
                 <a href="#!" id="continueLegacy" class="modal-action modal-close waves-effect waves-green btn-flat">Continue</a>
             </div>
         </div>
@@ -522,7 +600,14 @@
         </div>
         <div id="modal_exportgtc" class="modal">
             <div class="modal-content">
-                <h4 class="red-text">Export GTC</h4>
+                <div class="row">
+                    <div class="col s11">
+                        <h4 class="red-text">Export GT</h4>
+                    </div>
+                    <div class="col s1">
+                        <a class="btn-floating waves-effect waves-light modal-trigger indigo darken-2" href="#export_gt_info"><i class="material-icons">info_outline</i></a>
+                    </div>
+                </div>
                 <table class="compact">
                     <tbody>
                     <tr>
@@ -566,13 +651,32 @@
         </div>
         <div id="modal_noGtcFound" class="modal">
             <div class="modal-content red-text">
-                <h4>No Ground Truth Data was found</h4>
+                <div class="row">
+                    <div class="col s11">
+                        <h4>No Ground Truth Data was found</h4>
+                    </div>
+                    <div class="col s1">
+                        <a class="btn-floating waves-effect waves-light modal-trigger indigo darken-2" href="#export_gt_info"><i class="material-icons">info_outline</i></a>
+                    </div>
+                </div>
                 <p>
                     Please be sure to load a project with Ground Truth Data before exporting.
                 </p>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+        <div id="export_gt_info" class="modal">
+            <div class="modal-content">
+                <h4>Export GT Information</h4>
+                <p>An important cornerstone of OCR4all are the <a href="https://github.com/Calamari-OCR/calamari_models" target="_blank">available mixed models</a> which can be used for pretraining or to perform OCR out of the box.
+                    These models heavily rely on extensive and diverse Ground Truth which is cumbersome to produce.<br/>
+                    If you consider contributing your GT to the training of mixed models please contact us at <a href="mailto:ocr4all@uni-wuerzburg.de">ocr4all@uni-wuerzburg.de</a>.
+                    Thank you very much!</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
         <div id="modal_adjustImages_failed" class="modal">

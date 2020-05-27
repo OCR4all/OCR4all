@@ -19,6 +19,10 @@
                 })
 
         })
+
+        function openVersionWarning(){
+            $('#modal_version_warning').modal('open');
+        }
     </script>
     <div class="container">
         <div>
@@ -35,7 +39,7 @@
                 </div>
                 <div class="col l4 s12">
                     <a target="_blank"  class="grey-text text-lighten-2" href="https://lists.uni-wuerzburg.de/mailman/listinfo/ocr4all">
-                        <b>SUBSCRIBE</b>
+                        <b>MAILING LIST</b>
                     </a>
                 </div>
             </div>
@@ -49,20 +53,20 @@
             </div>
         </div>
     </div>
+    <div class="col footer-version">
+        <div class="row" id="OCR4all_Version_container" onclick="openVersionWarning()"><span id="OCR4all_Version"></span><i class="material-icons" id="version_icon">report</i></div>
+        <div class="row"><span id="LAREX_Version"></span></div>
+    </div>
     <div class="container footer-copyright">
         <div class="row">
-            <div class="col l3 s6 center-align">
+            <div class="col l3 s6 offset-l1 center-align">
                 © 2017 - <fmt:formatDate value="${date}" pattern="yyyy" />
             </div>
-            <div class="col l3 s6 offset-l6 center-align grey-text text-lighten-2">
+            <div class="col l1 s6 offset-l6 center-align grey-text text-lighten-2">
                 <a target="_blank" href="https://www.uni-wuerzburg.de/en/sonstiges/imprint-privacy-policy/">
                     Imprint
                 </a>
             </div>
         </div>
-    </div>
-    <div class="row" style="font-size: 10px">
-        <div class="col l6 s6 left-align"><span id="OCR4all_Version"></span></div>
-        <div class="col l6 s6 right-align"><span id="LAREX_Version"></span></div>
     </div>
 </footer>

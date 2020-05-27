@@ -31,23 +31,24 @@
             <div class="col l12 s12">
                 <ul class="collection">
                     <li class="collection-item">Dr. Herbert Baier-Saip (lead)</li>
+                    <li class="collection-item">Maximilian Nöth (OCR4all and LAREX)</li>
+                    <li class="collection-item">Kevin Chadbourne (OCR4all)</li>
+                    <li class="collection-item">Yannik Herbst (OCR4all and distribution via VirtualBox)</li>
                     <li class="collection-item">Christoph Wick (Calamari)</li>
-                    <li class="collection-item">Björn Eyselein (Distribution via Docker)</li>
-                    <li class="collection-item">Maximilian Nöth</li>
-                    <li class="collection-item">Kevin Chadbourne</li>
-                    <li class="collection-item">Yannik Herbst</li>
+                    <li class="collection-item">Björn Eyselein (Artifactory and distribution via Docker)</li>
                 </ul>
             </div>
         </div>
         <div class="row">
             <div class="col l12 s12">
-                <h5><b>Ideas and feedback</b></h5>
+                <h5><b>Miscellaneous</b></h5>
             </div>
             <div class="col l12 s12">
                 <ul class="collection">
-                    <li class="collection-item">Prof. Dr. Frank Puppe</li>
-                    <li class="collection-item">Jonathan Gaede (OCR4all Wiki)</li>
-                    <li class="collection-item">Raphaelle Jung (guides and artwork)</li>
+                    <li class="collection-item">Raphaëlle Jung (guides and artwork)</li>
+                    <li class="collection-item">Jonathan Gaede (Semantic MediaWiki)</li>
+                    <li class="collection-item">Dr. Uwe Springmann (ideas and feedback)</li>
+                    <li class="collection-item">Prof. Dr. Frank Puppe (funding)</li>
                 </ul>
             </div>
         </div>
@@ -57,11 +58,10 @@
             </div>
             <div class="col l12 s12">
                 <ul class="collection">
-                    <li class="collection-item">Nico Balbach (LAREX and OCR4all)</li>
+                    <li class="collection-item">Nico Balbach (OCR4all and LAREX)</li>
                     <li class="collection-item">Dennis Christ (OCR4all)</li>
                     <li class="collection-item">Alexander Hartelt (OCR4all)</li>
                     <li class="collection-item">Andreas Büttner (nashi)</li>
-                    <li class="collection-item">Dr. Uwe Springmann (ideas and feedback)</li>
                     <li class="collection-item">Christine Grundig (ideas and feedback)</li>
                 </ul>
             </div>
@@ -71,7 +71,11 @@
                 <h5><b>Funding</b></h5>
             </div>
             <div class="col l12 s12">
-                Developed during the BMPF project <b>"Kallimachos"</b> at the <b>Chair of Artificial Intelligence and Applied Computer Science (Prof. Dr. Frank Puppe)</b> in collaboration with the <b>Center for Philology and Digitality "Kallimachos"</b> at the University of Würzburg
+                <ul class="collection">
+                    <li class="collection-item">BMBF Project “Kallimachos“</li>
+                    <li class="collection-item">Centre for Philology and Digitality (University of Würzburg)</li>
+                    <li class="collection-item">Chair of Artificial Intelligence (University of Würzburg)</li>
+                </ul>
             </div>
         </div>
     </div>

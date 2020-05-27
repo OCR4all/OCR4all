@@ -11,7 +11,7 @@
             <div class="container">
                 <div class="nav-wrapper">
                     <a class="page-title">${heading}</a>
-                    <a class="page-title right">| OCR 4 All</a>
+                    <a class="page-title right">| OCR4all</a>
                     <a class="project-name right">${projectName}</a>
                 </div>
             </div>
@@ -21,7 +21,7 @@
             <a href="#" id="open_menu" data-activates="slide-out" class="button-collapse top-nav"><i class="material-icons">menu</i></a>
         </div>
         <ul id="slide-out" class="side-nav hiddendiv">
-            <li class="site-description">OCR 4 All</li>
+            <li class="site-description">OCR4all</li>
             <li class="nav-separator"></li>
             <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
             <li class="nav-separator"></li>
@@ -102,6 +102,25 @@
                             </div>
                             <div class="modal-footer">
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                        </div>
+                        <!-- Version models warning -->
+                        <div id="modal_version_warning" class="modal">
+                            <div class="modal-content ">
+                                <h4 class="red-text center-align">Important Advice!</h4>
+                                <p>
+                                    For efficient data processing OCR4all combines various components. Due to necessary updates of our OCR engine Calamari, models trained with earlier OCR4all versions will not work with this new version. Please note that, in all likelihood, this will be a one-time issue and will not be the case for future updates.
+                                </p>
+                                <p>
+                                    The standard <a href="https://github.com/Calamari-OCR/calamari_models" target="_blank">mixed model ensembles</a> have already been retrained. Your self-trained models will have to be retrained using the "Training" submodule and your current Ground Truth (as well as an optional updated default model for "Pretraining").
+                                </p>
+                                <p>
+                                    If you need to retrain many models with extensive amounts of GT, thereby overstressing your own hardware, we are happy to help you out.
+                                    Please do not hesitate to contact us <a href="mailto:ocr4all@uni-wuerzburg.de">ocr4all@uni-wuerzburg.de</a> if you need help or have any further questions.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                  <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
                         <!-- Execute failed -->

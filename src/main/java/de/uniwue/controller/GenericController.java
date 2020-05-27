@@ -185,6 +185,26 @@ import de.uniwue.helper.GenericHelper;
     }
 
     /**
+     * Response to the request to check if any image of the imageType exists
+     *
+     * @param imageType Type of the image (original, gray, binary, despeckled, OCR)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Status of the check
+     */
+    @RequestMapping(value = "/ajax/generic/checkImgTypeExistance", method = RequestMethod.GET)
+    public @ResponseBody boolean checkIfImageTypeExists(
+            @RequestParam("imageType") String imageType,
+            HttpSession session, HttpServletResponse response
+    ) {
+        GenericHelper genericHelper = provideHelper(session, response);
+        if (genericHelper == null)
+            return false;
+
+        return genericHelper.checkIfImageTypeExists(imageType);
+    }
+
+    /**
      * Response to the request to return the number of logical threads of the system
      *
      * @param session Session of the user
