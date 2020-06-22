@@ -2,10 +2,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.uniwue</groupId>
-    <artifactId>OCR4all_Web</artifactId>
+    <artifactId>ocr4all</artifactId>
     <packaging>war</packaging>
     <version>0.4-SNAPSHOT</version>
-    <name>OCR4all_Web Maven Webapp</name>
+    <name>OCR4all Maven Webapp</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -148,6 +148,6 @@
     </distributionManagement>
 
     <build>
-        <finalName>OCR4all_Web</finalName>
+        <finalName>ocr4all</finalName>
     </build>
 </project>
