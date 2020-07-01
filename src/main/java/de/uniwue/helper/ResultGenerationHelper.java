@@ -200,7 +200,7 @@ public class ResultGenerationHelper {
 
 		TreeMap<String, String> pageResult = new TreeMap<String, String>();
 		int processElementCount = pageIds.size();
-		int processedElements = 1;
+		int processedElements = 0;
 
         File textDir = new File(projConf.RESULT_DIR + time + "_txt" + File.separator + "pages");
         Files.createDirectories(Paths.get(textDir.getAbsolutePath()));
@@ -209,7 +209,6 @@ public class ResultGenerationHelper {
 		//                Saving output to a txt file (located at /Results/Pages/)
 		for (String pageId : processState.keySet()) {
 			pageResult.put(pageId, "");
-
             // Retrieve every ground truth or recognition line in the page xmls and group them per page
             File file =  new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
 
@@ -238,6 +237,9 @@ public class ResultGenerationHelper {
                     XPathExpression recExpr = xpath.compile("./TextEquiv[@index=1]");
                     NodeList rec = (NodeList) recExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
 
+                    if(rec.getLength()==0){
+                        continue;
+                    }
                     String recContent = rec.item(0).getTextContent();
                     pageResult.put(pageId, pageResult.get(pageId) + recContent + "\n");
                 }
@@ -292,7 +294,7 @@ public class ResultGenerationHelper {
         ArrayList<String> validPageIds = new ArrayList<String>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");
         for (String pageId : allPageIds) {
-            if (procStateCol.recognitionState(pageId) == true)
+            if (procStateCol.recognitionState(pageId))
                 validPageIds.add(pageId);
         }
 
@@ -318,7 +320,7 @@ public class ResultGenerationHelper {
      */
     public boolean doOldFilesExist(String[] pageIds, String resultType) {
         for (String pageId : pageIds) {
-            if (procStateCol.resultGenerationState(pageId, resultType) == true)
+            if (procStateCol.resultGenerationState(pageId, resultType))
                 return true;
         }
         return false;
