@@ -13,7 +13,7 @@ var globalImageType = "";
 
 function getSelectedPages() {
     var selectedPages = [];
-    $.each($('#imageList input[type="checkbox"]').not('#selectAll'), function() {
+    $.each($('#imageList input[type="checkbox"]').not('#selectFilter'), function() {
         if( $(this).is(':checked') )
             selectedPages.push($(this).attr('data-pageid'));
     });
@@ -46,7 +46,7 @@ function initializeMultiCheckboxSelection() {
         }
 
         if( event.shiftKey ) {
-            var checkBoxes = $('#imageList input[type="checkbox"]').not('#selectAll');
+            var checkBoxes = $('#imageList input[type="checkbox"]').not('#selectFilter');
             var start = $(checkBoxes).index($(checkbox));
             var end =   $(checkBoxes).index($(lastChecked));
 
@@ -82,11 +82,11 @@ function buildImageList(pageIds) {
     initializeMultiCheckboxSelection();
 
     // In case of reload, reset selectAll checkbox first
-    if( $('#selectAll').prop('indeterminate') === true || $('#selectAll').prop('checked') === true )
-        $('#selectAll').click();
+    if( $('#selectFilter').prop('indeterminate') === true || $('#selectFilter').prop('checked') === true )
+        $('#selectFilter').click();
 
     // Select all pages (e.g. as default on page load)
-    $('#selectAll').click();
+    $('#selectFilter').click();
 
     // In case of reload and shown images, restore this setting after image list switch is finished
     var imageListTrigger = $('.image-list-trigger');
@@ -188,30 +188,62 @@ $(document).ready(function() {
         setTimeout(resizeImageList, 500);
     });
 
-    // Checkbox handling (select all functioanlity)
-    $('#selectAll').on('change', function() {
-        var checked = false;
+    // Checkbox handling (select all functionality)
+    $('#selectFilter').on('change', function() {
+        let selectMode = $("#select-filter-option").val();
+
+        let checked = false;
+
         if( $(this).is(':checked') )
             checked = true;
 
-        $('#imageList input[type="checkbox"]').prop('checked', checked);
-    });
-    $('#imageList').on('change', $('input[type="checkbox"]').not('#selectAll'), function() {
-        var checkedCount  = 0;
-        var checkBoxCount = 0;
-        $.each($('#imageList input[type="checkbox"]').not('#selectAll'), function(index, el) {
-            if( $(el).is(':checked') )
-                checkedCount++;
-            checkBoxCount++;
-        });
-
-        $('#selectAll').prop('indeterminate', false);
-        $('#selectAll').prop('checked', false);
-        if( checkedCount === checkBoxCount ) {
-            $('#selectAll').prop('checked', true);
+        switch (selectMode) {
+            case "all":
+                $('#imageList input[type="checkbox"]').not("#selectFilter").prop('checked', checked);
+                break;
+            case "even":
+                $('#imageList input[type="checkbox"]:even').not("#selectFilter").prop('checked', checked);
+                break;
+            case "odd":
+                $('#imageList input[type="checkbox"]:odd').not("#selectFilter").prop('checked', checked);
+                break;
         }
-        else if( checkedCount > 0 ) {
-            $('#selectAll').prop('indeterminate', true);
+    });
+
+    $('#imageList').on('change', $('input[type="checkbox"]').not('#selectFilter'), function() {
+        let selectMode = $("#select-filter-option").val();
+
+        $('#selectFilter').prop('indeterminate', false);
+        $('#selectFilter').prop('checked', false);
+
+        switch (selectMode) {
+            case "all":
+                let all_items = $('#imageList input[type="checkbox"]').not('#selectFilter');
+                let all_checked = $('#imageList input[type="checkbox"]:checked').not('#selectFilter');
+
+                if(all_items.length === all_checked.length)
+                    $('#selectFilter').prop('checked', true);
+                else if(all_checked.length > 0)
+                    $('#selectFilter').prop('indeterminate', true);
+                break;
+            case "even":
+                let even_items = $('#imageList input[type="checkbox"]:even').not('#selectFilter');
+                let even_checked = $('#imageList input[type="checkbox"]:even:checked').not('#selectFilter');
+
+                if(even_items.length === even_checked.length)
+                    $('#selectFilter').prop('checked', true);
+                else if(even_checked.length > 0)
+                    $('#selectFilter').prop('indeterminate', true);
+                break;
+            case "odd":
+                let odd_items = $('#imageList input[type="checkbox"]:odd').not('#selectFilter');
+                let odd_checked = $('#imageList input[type="checkbox"]:odd:checked').not('#selectFilter');
+
+                if(odd_items.length === odd_checked.length)
+                    $('#selectFilter').prop('checked', true);
+                else if(odd_checked.length > 0)
+                    $('#selectFilter').prop('indeterminate', true);
+                break;
         }
     });
 

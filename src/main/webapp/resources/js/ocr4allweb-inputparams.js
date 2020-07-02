@@ -14,7 +14,7 @@ function getInputParams(settingsEl) {
     // If no specific settings element is passed search in all collapsible elements
     settingsEl = settingsEl || $('.collapsible-body');
     // Exclude checkboxes in pagelist (will be passed separately)
-    $.each($(settingsEl).find('input[type="checkbox"]').not('[data-pageid]').not('#selectAll').not(".ignoreParam"), function() {
+    $.each($(settingsEl).find('input[type="checkbox"]').not('[data-pageid]').not('#selectFilter').not(".ignoreParam"), function() {
         if( $(this).prop('checked') === true )
             params['cmdArgs'].push($(this).attr('data-setting'));
     });
