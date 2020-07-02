@@ -216,33 +216,31 @@ $(document).ready(function() {
         $('#selectFilter').prop('indeterminate', false);
         $('#selectFilter').prop('checked', false);
 
+        function compareItemToChecked(items, checked){
+            if(items.length === checked.length)
+                $('#selectFilter').prop('checked', true);
+            else if(checked.length > 0)
+                $('#selectFilter').prop('indeterminate', true);
+        }
+
         switch (selectMode) {
             case "all":
                 let all_items = $('#imageList input[type="checkbox"]').not('#selectFilter');
                 let all_checked = $('#imageList input[type="checkbox"]:checked').not('#selectFilter');
 
-                if(all_items.length === all_checked.length)
-                    $('#selectFilter').prop('checked', true);
-                else if(all_checked.length > 0)
-                    $('#selectFilter').prop('indeterminate', true);
+                compareItemToChecked(all_items, all_checked);
                 break;
             case "even":
                 let even_items = $('#imageList input[type="checkbox"]:even').not('#selectFilter');
                 let even_checked = $('#imageList input[type="checkbox"]:even:checked').not('#selectFilter');
 
-                if(even_items.length === even_checked.length)
-                    $('#selectFilter').prop('checked', true);
-                else if(even_checked.length > 0)
-                    $('#selectFilter').prop('indeterminate', true);
+                compareItemToChecked(even_items, even_checked);
                 break;
             case "odd":
                 let odd_items = $('#imageList input[type="checkbox"]:odd').not('#selectFilter');
                 let odd_checked = $('#imageList input[type="checkbox"]:odd:checked').not('#selectFilter');
 
-                if(odd_items.length === odd_checked.length)
-                    $('#selectFilter').prop('checked', true);
-                else if(odd_checked.length > 0)
-                    $('#selectFilter').prop('indeterminate', true);
+                compareItemToChecked(odd_items, odd_checked);
                 break;
         }
     });
