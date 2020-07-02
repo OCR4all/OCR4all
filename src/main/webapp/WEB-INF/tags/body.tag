@@ -78,9 +78,23 @@
                         <ul id="imageList" class="side-nav image-list">
                             <li class="heading"><i class="material-icons image-list-trigger">remove_red_eye</i>Pages</li>
                             <li class="select-all">
-                                <input type="checkbox" class="" id="selectAll" />
-                                <label for="selectAll"></label>
-                                Select all
+                                <div class="row" id="filter-option-row">
+                                    <div class="col s1">
+                                        <input type="checkbox" class="" id="selectFilter" style="position: relative !important"/>
+                                        <label for="selectFilter"></label>
+                                    </div>
+                                    <div class="col s3">
+                                        Select
+                                    </div>
+                                    <div class="col s4">
+                                        <select id="select-filter-option">
+                                            <option value="all">all</option>
+                                            <option value="even">even</option>
+                                            <option value="odd">odd</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                             </li>
                         </ul>
                     </c:when>

@@ -368,6 +368,21 @@ input[type=number]:invalid {
     vertical-align: bottom;
 }
 
+#filter-option-row{
+  margin-left: 25% !important;
+  margin-bottom: 0 !important;
+}
+
+#filter-option-row div .select-wrapper input{
+  margin-bottom: 0;
+  line-height: 1rem;
+
+}
+
+#selectFilter{
+  position: relative !important;
+}
+
 #OCR4all_Version_container{
   cursor: pointer;
 }
