@@ -1,21 +1,16 @@
 package de.uniwue.helper;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -198,64 +193,29 @@ public class ResultGenerationHelper {
     public void executeTextProcess(List<String> pageIds, String time) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
         initialize(pageIds);
 
-		TreeMap<String, String> pageResult = new TreeMap<String, String>();
-		int processElementCount = pageIds.size();
-		int processedElements = 0;
+        TreeMap<String, String> pageResult = new TreeMap<>();
+        int processElementCount = pageIds.size();
+        int processedElements = 0;
 
         File textDir = new File(projConf.RESULT_DIR + time + "_txt" + File.separator + "pages");
         Files.createDirectories(Paths.get(textDir.getAbsolutePath()));
 
-		// For each page: Concatenation of the recognition/gt output of the linesegmentation of the page
-		//                Saving output to a txt file (located at /Results/Pages/)
-		for (String pageId : processState.keySet()) {
-			pageResult.put(pageId, "");
-            // Retrieve every ground truth or recognition line in the page xmls and group them per page
-            File file =  new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
-
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(file);
-
-            XPathFactory xPathfactory = XPathFactory.newInstance();
-            XPath xpath = xPathfactory.newXPath();
-
-            XPathExpression textLineExpr = xpath.compile(".//TextLine");
-
-            Object result = textLineExpr.evaluate(document, XPathConstants.NODESET);
-            NodeList textLines = (NodeList) result;
-
-            for (int i = 0; i < textLines.getLength(); i++) {
-                xpath.reset();
-                XPathExpression gtExpr = xpath.compile("./TextEquiv[@index=0]");
-                NodeList gt = (NodeList) gtExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
-
-                if(gt.getLength()>0){
-                    String gtContent = gt.item(0).getTextContent();
-                    pageResult.put(pageId, pageResult.get(pageId) + gtContent + "\n");
-                }else{
-                    xpath.reset();
-                    XPathExpression recExpr = xpath.compile("./TextEquiv[@index=1]");
-                    NodeList rec = (NodeList) recExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
-
-                    if(rec.getLength()==0){
-                        continue;
-                    }
-                    String recContent = rec.item(0).getTextContent();
-                    pageResult.put(pageId, pageResult.get(pageId) + recContent + "\n");
-                }
-            }
+        // For each page: Concatenation of the recognition/gt output of the line segmentation of the page
+        //                Saving output to a txt file (located at /Results/Pages/)
+        for (String pageId : processState.keySet()) {
+            populatePageResult(pageId, pageResult);
 
             // Find all textlines inside the file
             processedElements++;
             progress = (int) ((double) processedElements / processElementCount * 100);
-			
-			
-			try (OutputStreamWriter writer =
-						 new OutputStreamWriter(new FileOutputStream(textDir + File.separator + pageId + ".txt"),
+
+            try (OutputStreamWriter writer =
+                         new OutputStreamWriter(new FileOutputStream(textDir + File.separator + pageId + ".txt"),
                                  StandardCharsets.UTF_8)) {
-				writer.write(pageResult.get(pageId));
-			}
+                writer.write(pageResult.get(pageId));
+            }
 		}
+
 		// The recognition/gt output of the the specified pages is concatenated
 		StringBuilder completeResult = new StringBuilder();
 		for (String pageId : pageResult.keySet()) {
@@ -266,6 +226,53 @@ public class ResultGenerationHelper {
 			writer.write(completeResult.toString());
 		}
     }
+
+    private HashMap<Integer, String> extractReadingOrder(){
+        HashMap<Integer, String> readingOrder = new HashMap<>();
+
+
+        return readingOrder;
+    }
+
+    private void populatePageResult(String pageId, TreeMap<String, String> pageResult) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
+        pageResult.put(pageId, "");
+
+        // Retrieve every ground truth or recognition line in the page xmls and group them per page
+        File file = new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(file);
+
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+        XPathExpression textLineExpr = xpath.compile(".//TextLine");
+
+        Object result = textLineExpr.evaluate(document, XPathConstants.NODESET);
+        NodeList textLines = (NodeList) result;
+
+        for (int i = 0; i < textLines.getLength(); i++) {
+            xpath.reset();
+            XPathExpression gtExpr = xpath.compile("./TextEquiv[@index=0]");
+            NodeList gt = (NodeList) gtExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
+
+            if(gt.getLength()>0){
+                String gtContent = gt.item(0).getTextContent();
+                pageResult.put(pageId, pageResult.get(pageId) + gtContent + "\n");
+            }else{
+                xpath.reset();
+                XPathExpression recExpr = xpath.compile("./TextEquiv[@index=1]");
+                NodeList rec = (NodeList) recExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
+
+                if(rec.getLength()==0){
+                    continue;
+                }
+                String recContent = rec.item(0).getTextContent();
+                pageResult.put(pageId, pageResult.get(pageId) + recContent + "\n");
+            }
+        }
+    };
+
 
     /**
      * Resets the progress (use if an error occurs)
