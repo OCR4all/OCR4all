@@ -32,7 +32,7 @@ public class ResultGenerationController {
      * @return Returns the helper object of the process
      */
     public ResultGenerationHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (GenericController.isSessionValid(session, response) == false)
+        if (!GenericController.isSessionValid(session, response))
             return null;
 
         // Keep a single helper object in session
