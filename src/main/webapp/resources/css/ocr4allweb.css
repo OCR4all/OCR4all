@@ -369,8 +369,17 @@ input[type=number]:invalid {
 }
 
 #filter-option-row{
-  margin-left: 25% !important;
+  margin-left: 27% !important;
   margin-bottom: 0 !important;
+}
+
+#filter-select-text{
+  margin-left: 5%;
+  margin-right: 10%;
+}
+
+#filter-select-input input{
+  padding-top: 2%;
 }
 
 #filter-option-row div .select-wrapper input{

@@ -83,10 +83,10 @@
                                         <input type="checkbox" class="" id="selectFilter" style="position: relative !important"/>
                                         <label for="selectFilter"></label>
                                     </div>
-                                    <div class="col s3">
+                                    <div class="col s2" id="filter-select-text">
                                         Select
                                     </div>
-                                    <div class="col s4">
+                                    <div class="col s5" id="filter-select-input">
                                         <select id="select-filter-option">
                                             <option value="all">all</option>
                                             <option value="even">even</option>
