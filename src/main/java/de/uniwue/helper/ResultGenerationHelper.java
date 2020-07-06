@@ -20,14 +20,20 @@ import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
+import org.primaresearch.dla.page.Page;
+import org.primaresearch.dla.page.io.FileInput;
+import org.primaresearch.dla.page.io.xml.DefaultXmlNames;
+import org.primaresearch.dla.page.io.xml.XmlPageReader;
+import org.primaresearch.dla.page.layout.physical.Region;
+import org.primaresearch.dla.page.layout.physical.shared.RegionType;
+import org.primaresearch.dla.page.layout.physical.text.LowLevelTextObject;
+import org.primaresearch.dla.page.layout.physical.text.impl.TextContentVariants;
+import org.primaresearch.dla.page.layout.physical.text.impl.TextLine;
+import org.primaresearch.dla.page.layout.physical.text.impl.TextRegion;
+import org.primaresearch.io.UnsupportedFormatVersionException;
+import org.primaresearch.shared.variable.IntegerValue;
+import org.primaresearch.shared.variable.IntegerVariable;
+import org.primaresearch.shared.variable.Variable;
 
 public class ResultGenerationHelper {
     /**
@@ -145,7 +151,7 @@ public class ResultGenerationHelper {
      * @param resultType specified resultType (txt, xml)
      * @throws IOException
      */
-    public void executeProcess(List<String> pageIds, String resultType) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
+    public void executeProcess(List<String> pageIds, String resultType) throws IOException, UnsupportedFormatVersionException {
         stopProcess = false;
         progress = 0;
 
@@ -184,13 +190,73 @@ public class ResultGenerationHelper {
     	}
     }
 
+    private void populatePageResult(String pageId, TreeMap<String, String> pageResult) throws UnsupportedFormatVersionException {
+        XmlPageReader reader = new XmlPageReader(null); // null ^= without validation
+        Page page = reader.read(new FileInput(new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT)));
+
+        for (Region region : page.getLayout().getRegionsSorted()) {
+            RegionType type = (RegionType) region.getType();
+
+            if (type.equals(RegionType.TextRegion)) {
+                TextRegion textRegion = (TextRegion) region;
+
+                for (LowLevelTextObject text : textRegion.getTextObjectsSorted()) {
+                    if (text instanceof TextLine) {
+                        final TextLine textLine = (TextLine) text;
+
+                        //// TextLine text content
+                        final Map<Integer,String> content = new HashMap<>();
+
+                        // List of all unindexed text contents
+                        final List<String> unindexedContent = new ArrayList<>();
+                        int highestIndex = -1;
+                        for(int i = 0; i < textLine.getTextContentVariantCount(); i++) {
+                            TextContentVariants.TextContentVariant textContent = (TextContentVariants.TextContentVariant) textLine.getTextContentVariant(i);
+
+                            if(textContent.getText() != null) {
+                                Variable indexVariable = textContent.getAttributes().get(DefaultXmlNames.ATTR_index);
+                                if(indexVariable instanceof IntegerVariable) {
+                                    final int index = ((IntegerValue)(indexVariable).getValue()).val;
+                                    content.put(index, textContent.getText());
+                                    highestIndex = Math.max(index, highestIndex);
+                                } else {
+                                    unindexedContent.add(textContent.getText());
+                                }
+                            };
+                        }
+
+                        if(content.size() == 0 && unindexedContent.size() == 1) {
+                            content.put(1, unindexedContent.get(0));
+                        } else {
+                            // Give all unindexed content an index starting above the highest recorded index in the bunch (min 0)
+                            for(String contentString : unindexedContent) {
+                                content.put(++highestIndex, contentString);
+                            }
+                        }
+
+                        if(content.containsKey(0)){
+                            pageResult.put(pageId, pageResult.get(pageId) + content.get(0) + "\n");
+                        }else if(content.containsKey(1)){
+                            pageResult.put(pageId, pageResult.get(pageId) + content.get(1) + "\n");
+                        }
+
+
+                    }
+
+                }
+
+            }
+        }
+
+    };
+
     /**
      * Executes result TXT generation process on all specified pages
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void executeTextProcess(List<String> pageIds, String time) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
+    public void executeTextProcess(List<String> pageIds, String time) throws IOException, UnsupportedFormatVersionException {
         initialize(pageIds);
 
         TreeMap<String, String> pageResult = new TreeMap<>();
@@ -203,6 +269,9 @@ public class ResultGenerationHelper {
         // For each page: Concatenation of the recognition/gt output of the line segmentation of the page
         //                Saving output to a txt file (located at /Results/Pages/)
         for (String pageId : processState.keySet()) {
+            pageResult.put(pageId, "");
+
+            // Retrieve every ground truth or recognition line in the page xmls and group them per page
             populatePageResult(pageId, pageResult);
 
             // Find all textlines inside the file
@@ -226,52 +295,6 @@ public class ResultGenerationHelper {
 			writer.write(completeResult.toString());
 		}
     }
-
-    private HashMap<Integer, String> extractReadingOrder(){
-        HashMap<Integer, String> readingOrder = new HashMap<>();
-
-
-        return readingOrder;
-    }
-
-    private void populatePageResult(String pageId, TreeMap<String, String> pageResult) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
-        pageResult.put(pageId, "");
-
-        // Retrieve every ground truth or recognition line in the page xmls and group them per page
-        File file = new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT);
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(file);
-
-        XPathFactory xPathfactory = XPathFactory.newInstance();
-        XPath xpath = xPathfactory.newXPath();
-        XPathExpression textLineExpr = xpath.compile(".//TextLine");
-
-        Object result = textLineExpr.evaluate(document, XPathConstants.NODESET);
-        NodeList textLines = (NodeList) result;
-
-        for (int i = 0; i < textLines.getLength(); i++) {
-            xpath.reset();
-            XPathExpression gtExpr = xpath.compile("./TextEquiv[@index=0]");
-            NodeList gt = (NodeList) gtExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
-
-            if(gt.getLength()>0){
-                String gtContent = gt.item(0).getTextContent();
-                pageResult.put(pageId, pageResult.get(pageId) + gtContent + "\n");
-            }else{
-                xpath.reset();
-                XPathExpression recExpr = xpath.compile("./TextEquiv[@index=1]");
-                NodeList rec = (NodeList) recExpr.evaluate(textLines.item(i), XPathConstants.NODESET);
-
-                if(rec.getLength()==0){
-                    continue;
-                }
-                String recContent = rec.item(0).getTextContent();
-                pageResult.put(pageId, pageResult.get(pageId) + recContent + "\n");
-            }
-        }
-    };
 
 
     /**
