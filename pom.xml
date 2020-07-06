@@ -128,11 +128,37 @@
             <artifactId>jai-imageio-jpeg2000</artifactId>
             <version>1.3.0</version>
         </dependency>
+        <!-- PAGE XML -->
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>basic</artifactId>
+            <version>1.4.02</version>
+        </dependency>
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>Dla</artifactId>
+            <version>1.4.02</version>
+        </dependency>
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>Io</artifactId>
+            <version>1.4.02</version>
+        </dependency>
+        <dependency>
+            <groupId>org.primaresearch</groupId>
+            <artifactId>Maths</artifactId>
+            <version>1.4.02</version>
+        </dependency>
 
     </dependencies>
 
 
-
+    <repositories>
+        <repository>
+            <id>Internal project repository</id>
+            <url>file://${basedir}/src/lib/repository</url>
+        </repository>
+    </repositories>
 
     <distributionManagement>
         <repository>

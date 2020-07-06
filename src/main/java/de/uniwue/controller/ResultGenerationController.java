@@ -6,9 +6,8 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 
+import org.primaresearch.io.UnsupportedFormatVersionException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.uniwue.helper.ResultGenerationHelper;
-import org.xml.sax.SAXException;
 
 /**
  * Controller class for pages of result generation module
@@ -33,7 +31,7 @@ public class ResultGenerationController {
      * @return Returns the helper object of the process
      */
     public ResultGenerationHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (GenericController.isSessionValid(session, response) == false)
+        if (!GenericController.isSessionValid(session, response))
             return null;
 
         // Keep a single helper object in session
@@ -69,8 +67,8 @@ public class ResultGenerationController {
     /**
      * Response to the request to return the result generation status and output information
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs[] Command line arguments for result generation process
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param resultType Command line arguments for result generation process
      * @param session Session of the user
      * @param response Response to the request
      */
@@ -91,7 +89,7 @@ public class ResultGenerationController {
         GenericController.addToProcessList(session, "result");
         try {
             resultGenerationHelper.executeProcess(Arrays.asList(pageIds), resultType);
-        } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException e) {
+        } catch (IOException | UnsupportedFormatVersionException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resultGenerationHelper.resetProgress();
             e.printStackTrace();
@@ -155,7 +153,7 @@ public class ResultGenerationController {
     /**
      * Response to the request to check if old process related files exist
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param resultType Type of the result, which should be checked (xml, txt) 
      * @param session Session of the user
      * @param response Response to the request
