@@ -2,10 +2,12 @@ package de.uniwue.feature;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
 /**
  * Class to load shared libraries
  */
+@WebListener
 public class LibraryLoader implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent arg0) { }
