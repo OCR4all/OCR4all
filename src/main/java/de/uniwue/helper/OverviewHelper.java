@@ -994,7 +994,7 @@ public class OverviewHelper {
         ImageIO.write(bufferedimage, "png", byteArrayOutputStream);
         byteArrayOutputStream.flush();
         final MatOfByte bytes = new MatOfByte(byteArrayOutputStream.toByteArray());
-        final Mat image = Imgcodecs.imdecode(bytes, Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+        final Mat image = Imgcodecs.imdecode(bytes, Imgcodecs.IMREAD_UNCHANGED);
         bytes.release();
         return image;
     }
