@@ -1,12 +1,12 @@
 package de.uniwue.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import de.uniwue.helper.RecognitionHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -68,27 +68,27 @@ public class SegmentationPixelClassifierController {
      * Response to the request to execute the process
      *
      * @param pageIds Ids of specified pages
-     * @param imageType Type of the images (binary,despeckled)
-     * @param replace If true, replaces the existing image files
+     * @param cmdArgs Additional parameters for the pixel classifier
+     * @param segmentationImageType Type of the images (binary,despeckled)
      * @param session Session of the user
      * @param response Response to the request
      * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
+     * @param modelId Model for the pixelclassifier to use. See {@link SegmentationPixelClassifierHelper#listModels()} for format.
      */
     @RequestMapping(value = "/ajax/segmentationPixelClassifier/execute", method = RequestMethod.POST)
     public @ResponseBody void execute(
                @RequestParam("pageIds[]") String[] pageIds,
-               @RequestParam(value = "cmdArgs[]", required = false) String[] cmdArgs,
+               @RequestParam(value = "cmdArgs[]") Optional<String[]> cmdArgs,
                @RequestParam("imageType") String segmentationImageType,
                HttpSession session, HttpServletResponse response,
-               @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow
+               @RequestParam(value = "inProcessFlow", required = false, defaultValue = "false") boolean inProcessFlow,
+               @RequestParam(value = "model") Optional<String> modelId
            ) {
         SegmentationPixelClassifierHelper segmentationPixelClassifierHelper = provideHelper(session, response);
         if (segmentationPixelClassifierHelper == null)
             return;
 
-        List<String> cmdArgList = new ArrayList<String>();
-        if (cmdArgs != null)
-            cmdArgList = Arrays.asList(cmdArgs);
+        List<String> cmdArgList = cmdArgs.map(Arrays::asList).orElseGet(ArrayList::new);
 
         int conflictType = segmentationPixelClassifierHelper.getConflictType(GenericController.getProcessList(session), inProcessFlow);
         if (GenericController.hasProcessConflict(session, response, conflictType))
@@ -96,7 +96,9 @@ public class SegmentationPixelClassifierController {
 
         GenericController.addToProcessList(session, "segmentationPixelClassifier");
         try {
-            segmentationPixelClassifierHelper.execute(Arrays.asList(pageIds), cmdArgList, segmentationImageType);
+            segmentationPixelClassifierHelper.execute(
+                    Arrays.asList(pageIds), cmdArgList, segmentationImageType, modelId.orElse("default")
+            );
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             segmentationPixelClassifierHelper.resetProgress();
@@ -133,6 +135,46 @@ public class SegmentationPixelClassifierController {
             return;
 
         segmentationPixelClassifierHelper.cancelProcess();
+    }
+
+    /**
+     * Response to the request to return the output of the recognition process
+     *
+     * @param streamType Type of the console output (out | err)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Console output
+     */
+    @RequestMapping(value = "/ajax/segmentationPixelClassifier/console" , produces = "text/plain;charset=UTF-8", method = RequestMethod.GET)
+    public @ResponseBody String console(
+            @RequestParam("streamType") String streamType,
+            HttpSession session, HttpServletResponse response
+    ) {
+        SegmentationPixelClassifierHelper helper = provideHelper(session, response);
+        if (helper == null)
+            return "";
+
+        if (streamType.equals("err"))
+            return helper.getProcessHandler().getConsoleErr();
+        return helper.getProcessHandler().getConsoleOut();
+    }
+
+    /**
+     * Response to list the models
+     *
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value ="/ajax/segmentationPixelClassifier/listModels" , method = RequestMethod.GET)
+    public @ResponseBody
+    TreeMap<String, String> listModels(HttpSession session, HttpServletResponse response) {
+        try {
+            return SegmentationPixelClassifierHelper.listModels();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

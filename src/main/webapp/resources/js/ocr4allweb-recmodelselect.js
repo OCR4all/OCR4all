@@ -69,8 +69,8 @@ function validateCheckpoints() {
     }
 };
 
-function initializeRecModelSelect(multiSelectId) {
-    $.get( 'ajax/recognition/listModels' )
+function initializeRecModelSelect(multiSelectId, listModelPath = "ajax/recognition/listModels") {
+    $.get( listModelPath )
     .done(function( data ) {
         $.each(data, function(key, value) {
             var optionEl = $("<option></option>").attr("value", value).text(key);

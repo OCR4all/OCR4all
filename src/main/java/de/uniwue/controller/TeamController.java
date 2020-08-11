@@ -35,8 +35,8 @@ public class TeamController {
     ) {
         String ocr4all_version  = System.getenv("OCR4ALL_VERSION");
         String larex_version = System.getenv("LAREX_VERSION");
-        if(ocr4all_version.equals("")) { ocr4all_version = "UNKNOWN"; }
-        if(larex_version.equals("")) { larex_version = "UNKNOWN"; }
+        if(ocr4all_version == null || ocr4all_version.equals("")) { ocr4all_version = "UNKNOWN"; }
+        if(larex_version == null || larex_version.equals("")) { larex_version = "UNKNOWN"; }
         return ocr4all_version + "\n" + larex_version;
     }
 }

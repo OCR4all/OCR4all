@@ -53,6 +53,10 @@ public final class ProjectConfiguration {
      * Model directory of the project containing custom models
      */
     public static final String PROJ_MODEL_CUSTOM_DIR = PROJ_MODEL_DIR + "custom/";
+    /**
+     * Model directory of the project containing pixel classifier models
+     */
+    public static final String PROJ_MODEL_PIXELCLASSIFIER_DIR = PROJ_MODEL_DIR + "pixelclassifier/";
 
     /**** Extensions ****/
 
@@ -96,6 +100,10 @@ public final class ProjectConfiguration {
      * Default Model extension
      */
     public static final String MODEL_EXT = ".ckpt.json";
+    /**
+     * Tensorflow Model extension
+     */
+    public static final String TENSORFLOW_MODEL_EXT = ".h5";
     /**
      * Returns the file extension of the given image type
      *

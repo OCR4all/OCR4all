@@ -20,12 +20,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><p>Todo</p></td>
+                    <td><p>Pixel Classifier Model</p></td>
                     <td>
-                        <div class="input-field">
-                            <input id="Todo" />
-                            <label for="Todo" data-type="Todo" data-error="Todo">Todo</label>
-                        </div>
+                        <select id="pixelclassifier--model" name="model"></select>
                     </td>
                 </tr>
             </tbody>
@@ -35,15 +32,18 @@
     <c:when test="${settingsType == 'advanced'}">
         <table class="compact">
             <tbody>
-                <tr>
-                    <td><p>Todo</p></td>
-                    <td>
-                        <div class="input-field">
-                            <input id="Todo" />
-                            <label for="Todo" data-type="Todo" data-error="Todo">Todo</label>
-                        </div>
-                    </td>
-                </tr>
+            <tr>
+                <td><p>Segmentation method to use on classifier result</p></td>
+                <td>
+                    <div class="input-field">
+                        <select id="pixelclassifier--method" data-setting="--method" name="voter">
+                            <option value="xycut">XY-Cut</option>
+                            <option value="morph">Morphological segmentation</option>
+                        </select>
+                        <label for="pixelclassifier--method">Method</label>
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
     </c:when>

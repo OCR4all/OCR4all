@@ -2,7 +2,12 @@ package de.uniwue.helper;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -130,23 +135,30 @@ public class SegmentationPixelClassifierHelper {
      * @param cmdArgs Command line arguments for "TODO"
      * @throws IOException
      */
-    public void execute(List<String> pageIds, List<String> cmdArgs, String segmentationImageType) throws IOException {
+    public void execute(List<String> pageIds, List<String> cmdArgs, String segmentationImageType, String modelId) throws IOException {
         SegmentationRunning = true;
 
         progress = 0;
 
         initializeProcessState(pageIds);
         // TODO : Run pixel classifier script with passed arguments
-        List<String> command = new ArrayList<String>();
-        for (String pageId : pageIds) {
-            // Add affected pages with their absolute path to the command list
-            command.add(projConf.getImageDirectoryByType(segmentationImageType) + pageId + projConf.IMG_EXT);
-        }
+
+        String imageExt = projConf.getImageExtensionByType(segmentationImageType);
+        String pagePathFormat = projConf.getImageDirectoryByType(segmentationImageType) + "%s" + imageExt;
+
+        List<String> command = new ArrayList<>();
+        command.add("find-segments");
+        command.add("--model");
+        command.add(listModels().get(modelId));
+        command.add("--strip-extension");
+        command.add(imageExt);
+        command.add("-b");
+        pageIds.stream().map(pageId -> String.format(pagePathFormat, pageId)).forEachOrdered(command::add);
         command.addAll(cmdArgs);
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        processHandler.startProcess("TODO", command, false);
+        processHandler.startProcess("ocr4all-pixel-classifier", command, false);
 
         getProgress();
         SegmentationRunning = false;
@@ -177,5 +189,42 @@ public class SegmentationPixelClassifierHelper {
      */
     public int getConflictType(List<String> currentProcesses, boolean inProcessFlow) {
         return ProcessConflictDetector.segmentationPixelClassifierConflict(currentProcesses, inProcessFlow );
+    }
+
+    /**
+     * Lists all available Models from the model directory
+     *
+     * Model location directory:
+     * ProjectConfiguration.PROJ_MODEL_PIXELCLASSIFIER_DIR
+     *
+     * Example: /var/ocr4all/models/pixelclassifier/default.h5
+     * Display: default
+     * Example: /var/ocr4all/models/pixelclassifier/book/foo.h5
+     * Display: book/foo
+     *
+     * @return Map of models (key = modelName | value = path)
+     * @throws IOException
+     */
+    public static TreeMap<String, String> listModels() throws IOException{
+        TreeMap<String, String> models = new TreeMap<>();
+
+        File modelsDir = new File(ProjectConfiguration.PROJ_MODEL_PIXELCLASSIFIER_DIR);
+        if (!modelsDir.exists())
+            return models;
+
+        // Add all models to map (follow symbolic links on the filesystem due to Docker container)
+        Files.walk(Paths.get(ProjectConfiguration.PROJ_MODEL_PIXELCLASSIFIER_DIR), FileVisitOption.FOLLOW_LINKS)
+                .filter(path -> path.toString().toLowerCase().endsWith(ProjectConfiguration.TENSORFLOW_MODEL_EXT))
+                .forEach(
+                        modelPath -> {
+                            // Remove OS path and model extension from display string (only display significant information)
+                            String modelPathAbs= modelPath.toAbsolutePath().toString();
+                            String modelName = modelPathAbs
+                                    .replace(ProjectConfiguration.PROJ_MODEL_PIXELCLASSIFIER_DIR, "")
+                                    .replace(ProjectConfiguration.TENSORFLOW_MODEL_EXT, "");
+                            models.put(modelName, modelPathAbs);
+                        });
+
+        return models;
     }
 }

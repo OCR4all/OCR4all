@@ -2,11 +2,22 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
-    <t:head imageList="true" inputParams="true" processHandler="true">
+    <t:head imageList="true" inputParams="true" recModelSelect="true" processHandler="true">
         <title>OCR4all - Segmentation Pixel Classifier</title>
 
         <script type="text/javascript">
+            function collectParamsAndExecute(selectedPages) {
+                var ajaxParams = $.extend(
+                    {
+                        "pageIds[]" : selectedPages,
+                        "imageType": $('#imageType').val()
+                    },
+                    getInputParams() );
+                // Execute Segmentation process
+                executeProcess(ajaxParams);
+            }
             $(document).ready(function() {
+                initializeRecModelSelect('#pixelclassifier--model', 'ajax/segmentationPixelClassifier/listModels');
                 // Initialize process update and set options
                 initializeProcessUpdate("segmentationPixelClassifier", [ 0 ], [ 2 ], true);
 
@@ -42,9 +53,7 @@
                     $.post( "ajax/segmentation/exists", { "pageIds[]" : selectedPages } )
                     .done(function( data ){
                         if(data === false){
-                            var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
-                            // Execute Segmentation process
-                            executeProcess(ajaxParams);
+                            collectParamsAndExecute(selectedPages)
                         }
                         else{
                             $('#modal_exists').modal('open');
@@ -60,10 +69,7 @@
                     cancelProcess();
                 });
                 $('#agree').click(function() {
-                    var selectedPages = getSelectedPages();
-                    var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
-                    // Execute Segmentation process
-                    executeProcess(ajaxParams);
+                    collectParamsAndExecute(getSelectedPages())
                 });
             });
         </script>
@@ -96,7 +102,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
                         <div class="collapsible-body">
-                            <div class="status"><p>Status: <span>No Segmentation Pixel Classifier process running</span></p></div>
+                            <div class="status"><p>Status: <span>No Pixel Classifier process running</span></p></div>
                             <div class="progress">
                                 <div class="determinate"></div>
                             </div>
@@ -120,6 +126,35 @@
                     Cancel
                     <i class="material-icons right">cancel</i>
                 </button>
+            </div>
+        </div>
+        <div id="modal_recaddmodel" class="modal">
+            <div class="modal-content">
+                <h4>Add new model</h4>
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td>
+                            <div class="input-field">
+                                <input type="text" id="recModelName" name="recModelName" class="validate" />
+                                <label for="recModelName" data-error="Model name is empty or already exists"></label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Absolute file system path:</td>
+                        <td>
+                            <div class="input-field">
+                                <input type="text" id="recModelPath" name="recModelPath" class="validate" />
+                                <label for="recModelPath" data-error="Model path is empty or already exists"></label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+                <a href="#!" id="addRecModel" class="modal-action waves-effect waves-green btn-flat">Add</a>
             </div>
         </div>
     </t:body>
