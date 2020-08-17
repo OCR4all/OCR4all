@@ -407,13 +407,27 @@ public class OverviewHelper {
         .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
         .sorted()
         .forEach(
-            fileEntry -> { 
+            fileEntry -> {
                 if (stopProcess == true)
                     return;
-
-                final Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
+                Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
+                /*
+                    Failure to read results in an empty Mat which must be checked.
+                    This happens because opencv can't read FillOrder: msb-to-lsb.
+                 */
+                if(image.empty()) {
+                    System.out.println("opencv could not read +" + fileEntry.getAbsolutePath());
+                    try {
+                        // Read with JAI ImageIO
+                        BufferedImage img=ImageIO.read(fileEntry.getAbsoluteFile());
+                        image = bufferedImageToMat(img);
+                    }catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 // Convert and save as new image file
                 Imgcodecs.imwrite(FilenameUtils.removeExtension(fileEntry.getAbsolutePath()) + projConf.IMG_EXT, image);
+
                 // Remove old image file (project needs to be valid for the loading process)
                 try {
                     Files.delete(Paths.get(fileEntry.getAbsolutePath()));
