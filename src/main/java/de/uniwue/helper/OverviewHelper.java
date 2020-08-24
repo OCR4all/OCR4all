@@ -416,7 +416,6 @@ public class OverviewHelper {
                     This happens because opencv can't read FillOrder: msb-to-lsb.
                  */
                 if(image.empty()) {
-                    System.out.println("opencv could not read +" + fileEntry.getAbsolutePath());
                     try {
                         // Read with JAI ImageIO
                         BufferedImage img=ImageIO.read(fileEntry.getAbsoluteFile());
