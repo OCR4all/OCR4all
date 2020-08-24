@@ -151,14 +151,14 @@ public class ResultGenerationHelper {
      * @param resultType specified resultType (txt, xml)
      * @throws IOException
      */
-    public void executeProcess(List<String> pageIds, String resultType) throws IOException, UnsupportedFormatVersionException {
+    public void executeProcess(List<String> pageIds, String resultType, String resultStrategy) throws IOException, UnsupportedFormatVersionException {
         stopProcess = false;
         progress = 0;
 
         String initTime = initializeResultDirectories(resultType);
 
         if (resultType.equals("txt")) {
-            executeTextProcess(pageIds, initTime);
+            executeTextProcess(pageIds, initTime, resultStrategy);
         } else if (resultType.equals("xml")) {
             executeXmlProcess(pageIds, initTime);
         }
@@ -190,7 +190,7 @@ public class ResultGenerationHelper {
     	}
     }
 
-    private void populatePageResult(String pageId, TreeMap<String, String> pageResult) throws UnsupportedFormatVersionException {
+    private void populatePageResult(String pageId, TreeMap<String, String> pageResult, String strategy) throws UnsupportedFormatVersionException {
         XmlPageReader reader = new XmlPageReader(null); // null ^= without validation
         Page page = reader.read(new FileInput(new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT)));
 
@@ -222,7 +222,7 @@ public class ResultGenerationHelper {
                                 } else {
                                     unindexedContent.add(textContent.getText());
                                 }
-                            };
+                            }
                         }
 
                         if(content.size() == 0 && unindexedContent.size() == 1) {
@@ -234,20 +234,29 @@ public class ResultGenerationHelper {
                             }
                         }
 
-                        if(content.containsKey(0)){
-                            pageResult.put(pageId, pageResult.get(pageId) + content.get(0) + "\n");
-                        }else if(content.containsKey(1)){
-                            pageResult.put(pageId, pageResult.get(pageId) + content.get(1) + "\n");
+                        switch(strategy){
+                            case "fillUp":
+                                if(content.containsKey(0)){
+                                    pageResult.put(pageId, pageResult.get(pageId) + content.get(0) + "\n");
+                                }else if(content.containsKey(1)){
+                                    pageResult.put(pageId, pageResult.get(pageId) + content.get(1) + "\n");
+                                }
+                                break;
+                            case "gt":
+                                if(content.containsKey(0)){
+                                    pageResult.put(pageId, pageResult.get(pageId) + content.get(0) + "\n");
+                                }
+                                break;
+                            case "pred":
+                                if(content.containsKey(1)){
+                                    pageResult.put(pageId, pageResult.get(pageId) + content.get(1) + "\n");
+                                }
+                                break;
                         }
-
-
                     }
-
                 }
-
             }
         }
-
     };
 
     /**
@@ -256,7 +265,7 @@ public class ResultGenerationHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void executeTextProcess(List<String> pageIds, String time) throws IOException, UnsupportedFormatVersionException {
+    public void executeTextProcess(List<String> pageIds, String time, String strategy) throws IOException, UnsupportedFormatVersionException {
         initialize(pageIds);
 
         TreeMap<String, String> pageResult = new TreeMap<>();
@@ -272,7 +281,7 @@ public class ResultGenerationHelper {
             pageResult.put(pageId, "");
 
             // Retrieve every ground truth or recognition line in the page xmls and group them per page
-            populatePageResult(pageId, pageResult);
+            populatePageResult(pageId, pageResult, strategy);
 
             // Find all textlines inside the file
             processedElements++;

@@ -14,5 +14,19 @@
                 </div>
             </td>
         </tr>
+        <tr id="strategy-row">
+            <td><p>Strategy</p></td>
+            <td>
+                <div class="input-field">
+                    <i class="material-icons prefix">extension</i>
+                    <select id="resultStrategy" name="resultStrategy" class="suffix">
+                        <option value="fillUp">Default</option>
+                        <option value="gt">Ground Truth only</option>
+                        <option value="pred">Prediction only</option>
+                    </select>
+                    <label></label>
+                </div>
+            </td>
+        </tr>
     </tbody>
 </table>
