@@ -28,5 +28,20 @@
                 </div>
             </td>
         </tr>
+        <tr id="emptyLines-row">
+            <td><p>
+                Preserve empty lines
+                <br />
+                <span class="userInfo">If activated lines without text will get preserved</span>
+                </p></td>
+            <td>
+                <form action="#">
+                    <p>
+                        <input type="checkbox" id="preserveEmptyLines" />
+                        <label for="preserveEmptyLines"></label>
+                    </p>
+                </form>
+            </td>
+        </tr>
     </tbody>
 </table>

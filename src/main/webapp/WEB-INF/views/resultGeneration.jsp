@@ -25,7 +25,8 @@
                 $('button[data-id="execute"]').click(function() {
                     resetResultGeneration();
                     var selectedPages = getSelectedPages();
-                    var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val(), "resultStrategy": $('#resultStrategy').val() };
+                    var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val(),
+                        "resultStrategy": $('#resultStrategy').val(), "preserveEmptyLines": $("#preserveEmptyLines").prop('checked') };
                     if( selectedPages.length === 0 ) {
                         $('#modal_errorhandling').modal('open');
                         return;
@@ -55,8 +56,8 @@
 
                 $('#resultType').change(function() {
                     const resultType = $(this).val();
-                    const $strategyRow = $("#strategy-row");
-                    resultType === "xml" ? $strategyRow.hide() : $strategyRow.show();
+                    const $rows = $("#strategy-row, #emptyLines-row");
+                    resultType === "xml" ? $rows.hide() : $rows.show();
                 })
             });
         </script>

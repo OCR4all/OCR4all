@@ -77,6 +77,7 @@ public class ResultGenerationController {
                @RequestParam("pageIds[]") String[] pageIds,
                @RequestParam(value = "resultType", required = true) String resultType,
                @RequestParam(value = "resultStrategy", required = true) String resultStrategy,
+               @RequestParam(value = "preserveEmptyLines", required = true) Boolean preserveEmptyLines,
                HttpSession session, HttpServletResponse response
            ) {
         ResultGenerationHelper resultGenerationHelper = provideHelper(session, response);
@@ -89,7 +90,7 @@ public class ResultGenerationController {
 
         GenericController.addToProcessList(session, "result");
         try {
-            resultGenerationHelper.executeProcess(Arrays.asList(pageIds), resultType, resultStrategy);
+            resultGenerationHelper.executeProcess(Arrays.asList(pageIds), resultType, resultStrategy, preserveEmptyLines);
         } catch (IOException | UnsupportedFormatVersionException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resultGenerationHelper.resetProgress();
