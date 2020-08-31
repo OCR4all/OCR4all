@@ -97,7 +97,7 @@ public class ProcessStateCollector {
 			fis.close();
 			String pageXMLContent = new String(data, "UTF-8");
 			
-			Pattern p = Pattern.compile("\\</(.+:)?TextLine(.+)?\\>");
+			Pattern p = Pattern.compile("\\</(.+:)?TextLine\\>");
 			Matcher matcher = p.matcher(pageXMLContent);
 
 			return matcher.find();
