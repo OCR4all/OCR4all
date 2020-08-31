@@ -1,14 +1,8 @@
 package de.uniwue.feature;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
 
@@ -31,7 +25,6 @@ public class ProcessStateCollector {
      * Constructor
      *
      * @param projConf Project configuration object
-     * @param projectImageType Type of the project (gray, binary)
      * @param imageType Image type of the project
      */
     public ProcessStateCollector(ProjectConfiguration projConf, String imageType) {
@@ -42,7 +35,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "Preprocessing" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "Preprocessing" state of the page
      */
     public boolean preprocessingState(String pageId) {
@@ -55,7 +48,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "Despeckling" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "Despeckling" state of the page
      */
     public boolean despecklingState(String pageId) {
@@ -67,7 +60,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "Segmentation" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "Segmentation" state of the page
      */
     public boolean segmentationState(String pageId) {
@@ -82,7 +75,7 @@ public class ProcessStateCollector {
      * Checks whether the required textlines for the image files exist or not.
      * Also checks for binary/grayscale images to extract the lines from. 
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return Information if the required image files exist
      */
     public boolean existLines(String pageId) {
@@ -104,14 +97,10 @@ public class ProcessStateCollector {
 			fis.close();
 			String pageXMLContent = new String(data, "UTF-8");
 			
-			Pattern p = Pattern.compile("\\</TextLine\\>");
+			Pattern p = Pattern.compile("\\</(.+:)?TextLine\\>");
 			Matcher matcher = p.matcher(pageXMLContent);
 
 			return matcher.find();
-		} catch (UnsupportedEncodingException e) {
-			return false;
-		} catch (FileNotFoundException e) {
-			return false;
 		} catch (IOException e) {
 			return false;
 		}
@@ -120,7 +109,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "LineSegmentation" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "LineSegmentation" state of the page
      */
     public boolean lineSegmentationState(String pageId) {
@@ -131,7 +120,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "Recognition" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @return "Recognition" state of the page
      */
     public boolean recognitionState(String pageId) {
@@ -148,14 +137,10 @@ public class ProcessStateCollector {
             fis.close();
             String pageXMLContent = new String(data, "UTF-8");
             // Test for TextEquiv with index higher 0 (GT)
-            Pattern p = Pattern.compile("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>");
+            Pattern p = Pattern.compile("\\<(.+:)?TextEquiv[^>]+?index=\"[^0]\"[^>]*?(.+)?\\>");
             Matcher matcher = p.matcher(pageXMLContent);
 
             return matcher.find();
-        } catch (UnsupportedEncodingException e) {
-            return false;
-        } catch (FileNotFoundException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }
@@ -181,16 +166,12 @@ public class ProcessStateCollector {
             fis.close();
             String pageXMLContent = new String(data, "UTF-8");
             
-            Pattern p = Pattern.compile("\\<TextEquiv[^>]+?index=\"0\"");
+            Pattern p = Pattern.compile("\\<(.+:)?TextEquiv[^>]+?index=\"0\"(.+)?\\>");
             Matcher matcher = p.matcher(pageXMLContent);
 
             if(matcher.find()) {
                 return true;
             }
-        } catch (UnsupportedEncodingException e) {
-            return false;
-        } catch (FileNotFoundException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }
@@ -200,7 +181,7 @@ public class ProcessStateCollector {
     /**
      * Determines the "ResultGeneration" process state of a given page
      *
-     * @param pageID Identifier of the page (e.g 0002,0003)
+     * @param pageId Identifier of the page (e.g 0002,0003)
      * @param resultType Type of the result, which should be checked (xml, txt) 
      * @return "result" state of the page
      */
