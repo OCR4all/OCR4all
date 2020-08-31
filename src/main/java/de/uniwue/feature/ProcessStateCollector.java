@@ -1,14 +1,8 @@
 package de.uniwue.feature;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.FilenameUtils;
 
 import de.uniwue.config.ProjectConfiguration;
 
@@ -104,14 +98,10 @@ public class ProcessStateCollector {
 			fis.close();
 			String pageXMLContent = new String(data, "UTF-8");
 			
-			Pattern p = Pattern.compile("\\</TextLine\\>");
+			Pattern p = Pattern.compile("\\</(.+:)?TextLine(.+)?\\>");
 			Matcher matcher = p.matcher(pageXMLContent);
 
 			return matcher.find();
-		} catch (UnsupportedEncodingException e) {
-			return false;
-		} catch (FileNotFoundException e) {
-			return false;
 		} catch (IOException e) {
 			return false;
 		}
@@ -148,14 +138,10 @@ public class ProcessStateCollector {
             fis.close();
             String pageXMLContent = new String(data, "UTF-8");
             // Test for TextEquiv with index higher 0 (GT)
-            Pattern p = Pattern.compile("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>");
+            Pattern p = Pattern.compile("\\<(.+:)?TextEquiv[^>]+?index=\"[^0]\"[^>]*?(.+)?\\>");
             Matcher matcher = p.matcher(pageXMLContent);
 
             return matcher.find();
-        } catch (UnsupportedEncodingException e) {
-            return false;
-        } catch (FileNotFoundException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }
@@ -181,16 +167,12 @@ public class ProcessStateCollector {
             fis.close();
             String pageXMLContent = new String(data, "UTF-8");
             
-            Pattern p = Pattern.compile("\\<TextEquiv[^>]+?index=\"0\"");
+            Pattern p = Pattern.compile("\\<(.+:)?TextEquiv[^>]+?index=\"0\"(.+)?\\>");
             Matcher matcher = p.matcher(pageXMLContent);
 
             if(matcher.find()) {
                 return true;
             }
-        } catch (UnsupportedEncodingException e) {
-            return false;
-        } catch (FileNotFoundException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }
