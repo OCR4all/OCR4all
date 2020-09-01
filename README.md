@@ -41,12 +41,12 @@ Plans for the (very) near future:
 
 ## Authors and Helping Hands
 
-* **Christian Reul** (*project lead*) - Email: christian.reul@uni-wuerzburg.de
+* **Dr. Christian Reul** (*project lead*) - Email: christian.reul@uni-wuerzburg.de
 * **Dennis Christ** and **Alexander Hartelt** (*OCR4all web development*) 
 * **Christoph Wick** (*calamari*)
 * **Nico Balbach** (*LAREX web GUI*)
 * **Andreas Büttner** (*nashi*)
 * **Björn Eyselein** (*distribution via Docker*)
 * **Maximilan Wehner** (*tireless testing, guides, and non-technical user support*)
-* **Christine Grundig, Frank Puppe, and Uwe Springmann** (*ideas and feedback*)
+* **Christine Grundig, Prof. Dr. Frank Puppe, and Dr. Uwe Springmann** (*ideas and feedback*)
 * ...
