@@ -68,7 +68,7 @@ public class PageXMLWriter {
      * @throws ParserConfigurationException 
      */
     public static Document getPageXML(final Mat image, String imageFilename, String pageXMLVersion) throws ParserConfigurationException {
-        if (!pageXMLVersion.equals("2017-07-15") && !pageXMLVersion.equals("2010-03-19")) {
+        if (!pageXMLVersion.equals("2019-07-15") && !pageXMLVersion.equals("2017-07-15") && !pageXMLVersion.equals("2010-03-19")) {
             pageXMLVersion = "2010-03-19";
         }
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -128,13 +128,14 @@ public class PageXMLWriter {
         points[3] = new Point(1, image.height() - 2);
 
         switch (pageXMLVersion) {
-        case "2017-07-15":
-            addPoints2017(document, coordsElement, points);
-            break;
-        case "2010-03-19":
-        default:
-            addPoints2010(document, coordsElement, points);
-            break;
+            case "2019-07-15":
+            case "2017-07-15":
+                addPoints2017(document, coordsElement, points);
+                break;
+            case "2010-03-19":
+            default:
+                addPoints2010(document, coordsElement, points);
+                break;
         }
         regionElement.appendChild(coordsElement);
         pageElement.appendChild(regionElement);
