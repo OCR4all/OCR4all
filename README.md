@@ -4,8 +4,9 @@
 
 As suggested by the name one of the main goals of OCR4all is to allow basically any given user to independently perform OCR on a wide variety of historical printings and obtain high quality results with reasonable time expenditure. Therefore, **OCR4all is explicitly geared towards users with no technical background. If you are one of those users (or if you just want to use the tool and are not interested in the code), please go to the** [getting started project where you will find guides and test data](https://github.com/OCR4all/getting_started).
 
-Please note that OCR4all main focus is a **semi-automatic workflow** allowing users to perform OCR even on the earliest printed books, which is a very challenging task that often requires a significant amount of **manual interaction**, especially when almost perfect quality is desired.
-If you are looking for mass digitization of historical material the [OCR-D project](https://github.com/ocr-d) (in progress) might be worth a look.
+Please note that OCR4all current main focus is a **semi-automatic workflow** allowing users to perform OCR even on the earliest printed books, which is a very challenging task that often requires a significant amount of **manual interaction**, especially when almost perfect quality is desired.
+Nevertheless, we are working towards increasing robustness and the degree of automation of the tool.
+An important cornerstone for this is the recently agreed cooperation with the [OCR-D project](https://github.com/ocr-d) which focuses on the mass full-text recognition of historical materials.
 
 This repository contains the code for the main interface and server of the OCR4all project, 
 while the repositories [OCR4all/docker_image](https://github.com/OCR4all/docker_image) and [OCR4all/docker_base_image](https://github.com/OCR4all/docker_base_image) are about the creation of a preconfigurated docker image.
@@ -15,13 +16,6 @@ For installing the complete project with a docker image, please follow the instr
 ## Mailing List
 
 OCR4all is under active development and consequently, frequent releases containing bug fixes and further functionality can be expected. In order to always be up to date, we highly recommend subscribing to our [mailing list](https://lists.uni-wuerzburg.de/mailman/listinfo/ocr4all) where we will always announce notable enhancements.
-
-## Current Developments
-
-Plans for the (very) near future:
-* Enabling a second project management approach solely based on PageXML allowing for a more flexible workflow.
-* Integrating Tesseract for recognition.
-* Many minor bug fixes and improvements.
 
 ## Built With
 
@@ -36,17 +30,44 @@ Plans for the (very) near future:
 * [OCRopus](https://github.com/tmbdev/ocropy) - Collection of document analysis programs
 * [calamari](https://github.com/ChWick/calamari) - OCR Engine based on OCRopy and Kraken
 * [LAREX](https://github.com/chreul/LAREX) - Layout analysis on early printed books
+
+### Formerly included / inspired by
+
 * [Kraken](https://github.com/mittagessen/kraken) - OCR engine for all the languages
 * [nashi](https://github.com/andbue/nashi) - Some bits of javascript to transcribe scanned pages using PageXML
 
-## Authors and Helping Hands
 
-* **Dr. Christian Reul** (*project lead*) - Email: christian.reul@uni-wuerzburg.de
-* **Dennis Christ** and **Alexander Hartelt** (*OCR4all web development*) 
-* **Christoph Wick** (*calamari*)
-* **Nico Balbach** (*LAREX web GUI*)
-* **Andreas Büttner** (*nashi*)
-* **Björn Eyselein** (*distribution via Docker*)
-* **Maximilan Wehner** (*tireless testing, guides, and non-technical user support*)
-* **Christine Grundig, Prof. Dr. Frank Puppe, and Dr. Uwe Springmann** (*ideas and feedback*)
+## Contact, Authors, and Helping Hands
+
+* **Dr. Christian Reul** (*project lead*) - mail: christian.reul@uni-wuerzburg.de
+* **Maximilan Wehner** (*user support and guides*) - mail: maximilian.wehner@uni-wuerzburg.de
+
+### Developers
+
+* **Dr. Herbert Baier Saip** (*lead*)
+* **Maximilian Nöth** (*OCR4all, LAREX, and Calamari*)
+* **Christoph Wick** (*Calamari*)
+* **Andreas Büttner** (*Calamari and nashi*)
+* **Kevin Chadbourne** (*OCR4all and LAREX*)
+* **Yannik Herbst** (*OCR4all, LAREX, and distribution via VirtualBox*)
+* **Björn Eyselein** (*Artifactory and distribution via Docker*)
+
+### Miscellaneous
+
+* **Raphaëlle Jung** (*guides and artwork*)
+* **Dr. Uwe Springmann** (*ideas and feedback*)
+* **Prof. Dr. Frank Puppe** (*funding*)
+
+### Former Project Members
+
+* **Dennis Christ** (*OCR4all*)
+* **Alexander Hartelt** (*OCR4all*)
+* **Nico Balbach** (*OCR4all and LAREX*)
+* **Christine Grundig** (*ideas and feedback*)
 * ...
+
+
+## Funding
+* [BMBF Project “Kallimachos“](http://www.kallimachos.de/)
+* [Centre for Philology and Digitality (University of Würzburg)](https://www.uni-wuerzburg.de/zpd)
+* [Chair of Artificial Intelligence (University of Würzburg)](https://www.informatik.uni-wuerzburg.de/en/is)
