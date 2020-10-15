@@ -403,3 +403,7 @@ label[for*="backupCheckbox"]{
 #legacy-convert-preloader{
   display: none;
 }
+
+#emptyLines-row form {
+  padding-left: 50px;
+}

@@ -12,7 +12,7 @@
             <div class="col l12 s12">
                 <ul class="collection">
                     <li class="collection-item">
-                        <h6>Christian Reul</h6>
+                        <h6>Dr. Christian Reul</h6>
                         <h6><i>Project lead</i></h6>
                         <a href="mailto:christian.reul@uni-wuerzburg.de">christian.reul@uni-wuerzburg.de</a>
                     </li>
