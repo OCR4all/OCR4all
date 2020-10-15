@@ -177,17 +177,21 @@ public class ResultGenerationHelper {
 		File dir = new File(projConf.OCR_DIR);
 		if (!dir.exists())
 			return;
-		
-		File[] xmlFiles = dir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
+
+		initialize(pageIds);
+        int processElementCount = pageIds.size();
+        int processedElements = 0;
+
 		File xmlDir = new File(projConf.RESULT_DIR + time + "_xml" + File.separator + "pages");
         Files.createDirectories(Paths.get(xmlDir.getAbsolutePath()));
-        // Copy all xml files into output
-        int processedPages = 0;
-        for(File xmlFile : xmlFiles) {
-            File xmlOutFile = new File(xmlDir + File.separator +  xmlFile.getName());
-            Files.copy(xmlFile.toPath(), xmlOutFile.toPath());
-            progress = (int) ((double) processedPages / xmlFiles.length * 100);
-            processedPages++;
+
+        for(String xmlId : processState.keySet()) {
+            File xmlInFile = new File(dir + File.separator + xmlId + projConf.CONF_EXT);
+            File xmlOutFile = new File(xmlDir + File.separator +  xmlId + projConf.CONF_EXT);
+            Files.copy(xmlInFile.toPath(), xmlOutFile.toPath());
+
+            processedElements++;
+            progress = (int) ((double) processedElements / processElementCount * 100);
     	}
     }
 
