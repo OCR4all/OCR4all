@@ -3,10 +3,10 @@
   <groupId>org.primaresearch</groupId>
   <artifactId>Dla</artifactId>
   <versioning>
-    <release>1.4.02</release>
+    <release>1.5a</release>
     <versions>
-      <version>1.4</version>
-      <version>1.4.02</version>
+      <version>1.5</version>
+      <version>1.5a</version>
     </versions>
     <lastUpdated>20190604152400</lastUpdated>
   </versioning>
