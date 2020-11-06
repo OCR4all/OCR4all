@@ -96,8 +96,8 @@ public class ProcessStateCollector {
 			fis.read(data);
 			fis.close();
 			String pageXMLContent = new String(data, "UTF-8");
-			
-			Pattern p = Pattern.compile("\\</(.+:)?TextLine\\>");
+
+            Pattern p = Pattern.compile("\\</TextLine\\>");
 			Matcher matcher = p.matcher(pageXMLContent);
 
 			return matcher.find();
@@ -137,7 +137,7 @@ public class ProcessStateCollector {
             fis.close();
             String pageXMLContent = new String(data, "UTF-8");
             // Test for TextEquiv with index higher 0 (GT)
-            Pattern p = Pattern.compile("\\<(.+:)?TextEquiv[^>]+?index=\"[^0]\"[^>]*?(.+)?\\>");
+            Pattern p = Pattern.compile("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>");
             Matcher matcher = p.matcher(pageXMLContent);
 
             return matcher.find();
@@ -165,8 +165,8 @@ public class ProcessStateCollector {
             fis.read(data);
             fis.close();
             String pageXMLContent = new String(data, "UTF-8");
-            
-            Pattern p = Pattern.compile("\\<(.+:)?TextEquiv[^>]+?index=\"0\"(.+)?\\>");
+
+            Pattern p = Pattern.compile("\\<TextEquiv[^>]+?index=\"0\"");
             Matcher matcher = p.matcher(pageXMLContent);
 
             if(matcher.find()) {
