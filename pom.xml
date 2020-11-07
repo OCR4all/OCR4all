@@ -4,7 +4,7 @@
     <groupId>de.uniwue</groupId>
     <artifactId>ocr4all</artifactId>
     <packaging>war</packaging>
-    <version>0.5.0</version>
+    <version>0.6-SNAPSHOT</version>
     <name>OCR4all Maven Webapp</name>
     <url>http://maven.apache.org</url>
 
