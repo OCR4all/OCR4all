@@ -3,11 +3,11 @@
   <groupId>org.primaresearch</groupId>
   <artifactId>basic</artifactId>
   <versioning>
-    <release>1.5a</release>
+    <release>1.5b</release>
     <versions>
       <version>1.5</version>
-      <version>1.5a</version>
+      <version>1.5b</version>
     </versions>
-    <lastUpdated>20190604152334</lastUpdated>
+    <lastUpdated>20201113123556</lastUpdated>
   </versioning>
 </metadata>

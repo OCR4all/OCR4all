@@ -4,6 +4,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.primaresearch</groupId>
   <artifactId>basic</artifactId>
-  <version>1.5a</version>
+  <version>1.5b</version>
   <description>POM was created from install:install-file</description>
 </project>
