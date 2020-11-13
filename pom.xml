@@ -132,22 +132,22 @@
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>basic</artifactId>
-            <version>1.5a</version>
+            <version>1.5b</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Dla</artifactId>
-            <version>1.5a</version>
+            <version>1.5b</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Io</artifactId>
-            <version>1.5a</version>
+            <version>1.5b</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Maths</artifactId>
-            <version>1.5a</version>
+            <version>1.5b</version>
         </dependency>
 
     </dependencies>
