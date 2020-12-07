@@ -14,5 +14,37 @@
                 </div>
             </td>
         </tr>
+        <tr id="strategy-row">
+            <td style="width: 500px;"><p>
+                Strategy
+                <br />
+                <span class="userInfo">Default prefers ground truth but falls back to prediction if the former doesn't exist</span>
+            </p></td>
+            <td>
+                <div class="input-field">
+                    <select id="resultStrategy" name="resultStrategy" class="suffix">
+                        <option value="fillUp">Default</option>
+                        <option value="gt">Ground Truth only</option>
+                        <option value="pred">Prediction only</option>
+                    </select>
+                    <label></label>
+                </div>
+            </td>
+        </tr>
+        <tr id="emptyLines-row">
+            <td><p>
+                Preserve empty lines
+                <br />
+                <span class="userInfo">If activated lines without text will get preserved</span>
+                </p></td>
+            <td>
+                <form action="#">
+                    <p>
+                        <input type="checkbox" id="preserveEmptyLines" />
+                        <label for="preserveEmptyLines"></label>
+                    </p>
+                </form>
+            </td>
+        </tr>
     </tbody>
 </table>

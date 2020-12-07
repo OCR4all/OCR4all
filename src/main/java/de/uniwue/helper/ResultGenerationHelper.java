@@ -151,14 +151,15 @@ public class ResultGenerationHelper {
      * @param resultType specified resultType (txt, xml)
      * @throws IOException
      */
-    public void executeProcess(List<String> pageIds, String resultType) throws IOException, UnsupportedFormatVersionException {
+    public void executeProcess(List<String> pageIds, String resultType, String resultStrategy,
+                               Boolean preserveEmptyLines) throws IOException, UnsupportedFormatVersionException {
         stopProcess = false;
         progress = 0;
 
         String initTime = initializeResultDirectories(resultType);
 
         if (resultType.equals("txt")) {
-            executeTextProcess(pageIds, initTime);
+            executeTextProcess(pageIds, initTime, resultStrategy, preserveEmptyLines);
         } else if (resultType.equals("xml")) {
             executeXmlProcess(pageIds, initTime);
         }
@@ -176,23 +177,29 @@ public class ResultGenerationHelper {
 		File dir = new File(projConf.OCR_DIR);
 		if (!dir.exists())
 			return;
-		
-		File[] xmlFiles = dir.listFiles((d, name) -> name.endsWith(projConf.CONF_EXT));
+
+		initialize(pageIds);
+        int processElementCount = pageIds.size();
+        int processedElements = 0;
+
 		File xmlDir = new File(projConf.RESULT_DIR + time + "_xml" + File.separator + "pages");
         Files.createDirectories(Paths.get(xmlDir.getAbsolutePath()));
-        // Copy all xml files into output
-        int processedPages = 0;
-        for(File xmlFile : xmlFiles) {
-            File xmlOutFile = new File(xmlDir + File.separator +  xmlFile.getName());
-            Files.copy(xmlFile.toPath(), xmlOutFile.toPath());
-            progress = (int) ((double) processedPages / xmlFiles.length * 100);
-            processedPages++;
+
+        for(String xmlId : processState.keySet()) {
+            File xmlInFile = new File(dir + File.separator + xmlId + projConf.CONF_EXT);
+            File xmlOutFile = new File(xmlDir + File.separator +  xmlId + projConf.CONF_EXT);
+            Files.copy(xmlInFile.toPath(), xmlOutFile.toPath());
+
+            processedElements++;
+            progress = (int) ((double) processedElements / processElementCount * 100);
     	}
     }
 
-    private void populatePageResult(String pageId, TreeMap<String, String> pageResult) throws UnsupportedFormatVersionException {
+    private void populatePageResult(String pageId, TreeMap<String, String> pageResult, String strategy,
+                                    Boolean preserveEmptyLines) throws UnsupportedFormatVersionException {
         XmlPageReader reader = new XmlPageReader(null); // null ^= without validation
         Page page = reader.read(new FileInput(new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT)));
+        List<String> pageString = new ArrayList<>();
 
         for (Region region : page.getLayout().getRegionsSorted()) {
             RegionType type = (RegionType) region.getType();
@@ -222,7 +229,7 @@ public class ResultGenerationHelper {
                                 } else {
                                     unindexedContent.add(textContent.getText());
                                 }
-                            };
+                            }
                         }
 
                         if(content.size() == 0 && unindexedContent.size() == 1) {
@@ -234,20 +241,40 @@ public class ResultGenerationHelper {
                             }
                         }
 
-                        if(content.containsKey(0)){
-                            pageResult.put(pageId, pageResult.get(pageId) + content.get(0) + "\n");
-                        }else if(content.containsKey(1)){
-                            pageResult.put(pageId, pageResult.get(pageId) + content.get(1) + "\n");
+                        switch(strategy){
+                            case "fillUp":
+                                if(content.containsKey(0)){
+                                    pageString.add(content.get(0));
+                                }else if(content.containsKey(1)){
+                                    pageString.add(content.get(1));
+                                }else{
+                                    if(preserveEmptyLines)
+                                        pageString.add("");
+                                }
+                                break;
+                            case "gt":
+                                if(content.containsKey(0)){
+                                    pageString.add(content.get(0));
+                                }else{
+                                    if(preserveEmptyLines)
+                                        pageString.add("");
+                                }
+                                break;
+                            case "pred":
+                                if(content.containsKey(1)){
+                                    pageString.add(content.get(1));
+                                }else{
+                                    if(preserveEmptyLines)
+                                        pageString.add("");
+                                }
+                                break;
                         }
-
-
                     }
-
                 }
-
             }
         }
 
+        pageResult.put(pageId, String.join("\n", pageString));
     };
 
     /**
@@ -256,7 +283,8 @@ public class ResultGenerationHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void executeTextProcess(List<String> pageIds, String time) throws IOException, UnsupportedFormatVersionException {
+    public void executeTextProcess(List<String> pageIds, String time, String strategy, Boolean preserveEmptyLines)
+            throws IOException, UnsupportedFormatVersionException {
         initialize(pageIds);
 
         TreeMap<String, String> pageResult = new TreeMap<>();
@@ -272,7 +300,7 @@ public class ResultGenerationHelper {
             pageResult.put(pageId, "");
 
             // Retrieve every ground truth or recognition line in the page xmls and group them per page
-            populatePageResult(pageId, pageResult);
+            populatePageResult(pageId, pageResult, strategy, preserveEmptyLines);
 
             // Find all textlines inside the file
             processedElements++;

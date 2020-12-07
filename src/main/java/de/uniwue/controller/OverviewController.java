@@ -157,6 +157,11 @@ public class OverviewController {
         if (!projectDir.endsWith(File.separator))
             projectDir = projectDir + File.separator;
 
+        // Create processing dir if it doesn't exist
+        File procDir = new File(projectDir + File.separator + "processing");
+        if (!procDir.exists())
+            procDir.mkdir();
+
         // Resets the session, so that all previous moduleHelper attributes are discarded
         if (resetSession == true)
             session.invalidate();
