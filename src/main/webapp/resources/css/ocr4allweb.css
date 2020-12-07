@@ -86,6 +86,14 @@ nav.top-nav a.project-name {
   padding-right: 10px;
   font-size: 24px;
 }
+nav.top-nav a.help-icon {
+ margin-left: 80px;
+}
+nav.top-nav a.help-icon i{
+  line-height: 122px;
+  font-size: 48px;
+  height: auto;
+}
 
 /* Image helper */
 img.centered {

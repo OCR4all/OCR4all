@@ -11,6 +11,7 @@
             <div class="container">
                 <div class="nav-wrapper">
                     <a class="page-title">${heading}</a>
+                    <a class="help-icon right"><i class="material-icons">help_outline</i></a>
                     <a class="page-title right">| OCR4all</a>
                     <a class="project-name right">${projectName}</a>
                 </div>
