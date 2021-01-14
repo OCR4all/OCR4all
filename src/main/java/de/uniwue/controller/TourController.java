@@ -1,0 +1,60 @@
+package de.uniwue.controller;
+
+import de.uniwue.db.config.HibernateUtil;
+import de.uniwue.db.entity.Tour;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+@Controller
+public class TourController {
+
+    public static String findRootCause(Throwable throwable) {
+        Objects.requireNonNull(throwable);
+        Throwable rootCause = throwable;
+        while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+            rootCause = rootCause.getCause();
+        }
+        return rootCause.getMessage();
+    }
+
+    /**
+     * Test
+     *
+     * @return A list of ids from the database
+     */
+    @RequestMapping(value = "/ajax/toursForCurrentUrl", method = RequestMethod.GET)
+    public ResponseEntity<?> getAllToursForUrl(
+            @RequestParam("url") String url,
+            @CookieValue(value = "completedTours", defaultValue = "") String completedToursCookie
+    ) {
+        try (Session session = HibernateUtil.getFactory().openSession()) {
+
+            Query<Tour> query = session.createQuery("from Tour where relativeUrl = :url", Tour.class);
+            query.setParameter("url", url);
+            List<Tour> toursForCurrentUrl = query.list();
+
+            if (!completedToursCookie.isEmpty()) {
+                Stream<Integer> completedTourIds = Stream.of(completedToursCookie.split(";")).map(Integer::valueOf);
+                toursForCurrentUrl.forEach(tour -> tour.setHasCompletedOnce(completedTourIds.anyMatch(completedId -> completedId.equals(tour.id))));
+            }
+
+            return ResponseEntity.ok(toursForCurrentUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+            String rootCause = findRootCause(e);
+            return ResponseEntity.status(500).body(rootCause);
+        }
+    }
+
+}

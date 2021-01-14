@@ -415,3 +415,7 @@ label[for*="backupCheckbox"]{
 #emptyLines-row form {
   padding-left: 50px;
 }
+
+.darkblue {
+  color: #283593;
+}

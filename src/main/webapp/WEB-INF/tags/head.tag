@@ -24,13 +24,16 @@
     <link type="text/css" rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/ocr4allweb.css">
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-helper.js"></script>
 
+    <link type="text/css" rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/helpmenu.css">
+    <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-helpmenu.js"></script>
+
     <!-- Hot fix patches -->
     <script type="text/javascript">
         /* Fix Chrome select drop down close on first click.
          * Needed for materialize css v0.100.2 (fixed in v1.0.0 and higher)
          * https://github.com/InfomediaLtd/angular2-materialize/issues/444#issuecomment-497063955
          */
-        $(document).on("click",".select-wrapper",(e) => e.stopPropagation()); 
+        $(document).on("click",".select-wrapper",(e) => e.stopPropagation());
     </script>
     <c:choose>
         <%-- Include JS files to provide image list functionality --%>

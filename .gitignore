@@ -27,3 +27,6 @@ target/
 *~
 *.swp
 *.swo
+
+# Build command
+build.sh

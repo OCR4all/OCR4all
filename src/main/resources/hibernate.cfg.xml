@@ -1,0 +1,33 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+
+        <property name = "hibernate.dialect">
+            org.hibernate.dialect.PostgreSQL10Dialect
+        </property>
+
+        <property name = "hibernate.connection.driver_class">
+            org.postgresql.Driver
+        </property>
+
+        <property name = "hibernate.connection.url">
+            ${db_url}
+        </property>
+
+        <property name = "hibernate.connection.username">
+            ${db_username}
+        </property>
+
+        <property name = "hibernate.connection.password">
+            ${db_password}
+        </property>
+
+        <property name="show_sql">true</property>
+
+        <mapping class = "de.uniwue.db.entity.Hotspot" />
+        <mapping class = "de.uniwue.db.entity.OverviewSlide" />
+        <mapping class = "de.uniwue.db.entity.Tour" />
+
+    </session-factory>
+</hibernate-configuration>
