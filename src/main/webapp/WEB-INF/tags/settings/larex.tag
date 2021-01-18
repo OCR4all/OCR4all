@@ -4,10 +4,11 @@
     <tbody>
         <tr>
             <td>
-                <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
-                    <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}" />
+                <form id="larexForm" action="/Larex/direct2" method="POST" target="_blank">
+                    <input type="hidden" id="imageMap" name="imageMap" value="" />
+                    <input type="hidden" id="xmlMap" name="xmlMap" value="" />
                     <input type="hidden" id="bookname" name="bookname" value="processing" />
-                    <input type="hidden" id="websave" name="websave" value="false" />
+                    <input type="hidden" id="websave" name="websave" value="true" />
                     <input type="hidden" id="localsave" name="localsave" value="bookpath" />
                     <input type="hidden" id="imagefilter" name="imagefilter" value="bin nrm desp" />
 					<c:if test="${not empty modes}" >
@@ -19,6 +20,11 @@
                     </button>
                 </form>
             </td>
+            <td>
+                <button id="openLarexDirect" class="btn waves-effect waves-light" type="submitDirect" name="action">
+                Open LAREX Direct
+                <i class="material-icons right">chevron_right</i>
+            </button></td>
         </tr>
     </tbody>
 </table>

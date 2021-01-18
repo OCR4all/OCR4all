@@ -8,6 +8,30 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
+                var imageMap;
+                var xmlMap;
+                $.ajax({
+                    url : "ajax/generic/getDirectImageMap",
+                    type: "GET",
+                    dataType: "json",
+                    async : false,
+                    success : function( data ) {
+                        imageMap = JSON.stringify(data);
+                        console.log(imageMap)
+                        document.getElementById("imageMap").value = imageMap;
+                    },
+                });
+                $.ajax({
+                    url : "ajax/generic/getDirectXmlMap",
+                    type: "GET",
+                    dataType: "json",
+                    async : false,
+                    success : function( data ) {
+                        xmlMap = JSON.stringify(data);
+                        console.log(xmlMap);
+                        document.getElementById("xmlMap").value = xmlMap;
+                    },
+                });
                 // Prevent redirecting to Larex if image folder does not exist
                 $("#larexForm").submit(function(e){
                     $.ajax({
@@ -21,6 +45,18 @@
                                 $('#modal_alert').modal('open');
                                 e.preventDefault();
                             }
+                        },
+                    });
+                });
+                $("#openLarexDirect").click(function(e){
+                    $.ajax({
+                        url : "/Larex/direct2",
+                        type: "POST",
+                        data: { "imageMap" : imageMap, "xmlMap" : xmlMap, "bookname" : "ocr4allDIRECT", "websave" : "false", "localsave" : "bookpath", "imagefilter" : "bin nrm desp"},
+                        dataType: "json",
+                        async : false,
+                        success : function( data ) {
+                            console.log("Direct request successful!")
                         },
                     });
                 });

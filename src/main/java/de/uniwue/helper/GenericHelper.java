@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 
 import de.uniwue.config.ProjectConfiguration;
 
@@ -99,5 +101,30 @@ public class GenericHelper {
      */
     public static int getLogicalThreadCount() {
         return Runtime.getRuntime().availableProcessors();
+    }
+
+
+    public Map<String, String> getImageMap() {
+        System.out.println("I AM IN HELPER(IMAGE)");
+        Map<String, String> imageMap = new Hashtable<String, String>();
+        File directImageFolder = new File(projConf.PROJECT_DIR + File.separator + "directTest" + File.separator + "images" + File.separator);
+        System.out.println("directImageFolder: " + directImageFolder.getAbsolutePath());
+        File[] images = directImageFolder.listFiles();
+        for (File image : images) {
+            System.out.println(image.getAbsolutePath());
+            imageMap.put(image.getName(), image.getAbsolutePath());
+        }
+        return imageMap;
+    }
+
+    public Map<String, String> getXmlMap() {
+        System.out.println("I AM IN HELPER(XML)");
+        Map<String, String> xmlMap = new Hashtable<String, String>();
+        File directXmlFolder = new File(projConf.PROJECT_DIR + File.separator + "directTest" + File.separator + "xml" + File.separator);
+        File[] xmls = directXmlFolder.listFiles();
+        for (File xml : xmls) {
+            xmlMap.put(xml.getName(), xml.getAbsolutePath());
+        }
+        return xmlMap;
     }
 }

@@ -3,10 +3,15 @@ package de.uniwue.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import de.uniwue.helper.LarexHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -202,6 +207,48 @@ import de.uniwue.helper.GenericHelper;
             return false;
 
         return genericHelper.checkIfImageTypeExists(imageType);
+    }
+
+    /**
+     * Response to the request to get a map containing all image paths
+     * ### THIS IS ONLY FOR TESTING PURPOSES ###
+     * ### THIS IS NOT FUNCTIONAL IN A WORKING OCR4ALL ENVIRONMENT ###
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value = "/ajax/generic/getDirectImageMap", method = RequestMethod.GET)
+    public @ResponseBody String getImageMap(HttpSession session, HttpServletResponse response) {
+        System.out.println("getIMAGEMAP");
+        GenericHelper genericHelper = provideHelper(session, response);
+        if (genericHelper == null)
+            return null;
+        try {
+            return new ObjectMapper().writeValueAsString(genericHelper.getImageMap());
+                    } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * Response to the request to get a map containing all xml paths
+     * ### THIS IS ONLY FOR TESTING PURPOSES ###
+     * ### THIS IS NOT FUNCTIONAL IN A WORKING OCR4ALL ENVIRONMENT ###
+     * @param session Session of the user
+     * @param response Response to the request
+     */
+    @RequestMapping(value = "/ajax/generic/getDirectXmlMap", method = RequestMethod.GET)
+    public @ResponseBody String getXmlMap(HttpSession session, HttpServletResponse response) {
+        System.out.println("getXMLMAP");
+        GenericHelper genericHelper = provideHelper(session, response);
+        if (genericHelper == null)
+            return null;
+        try {
+            return new ObjectMapper().writeValueAsString(genericHelper.getXmlMap());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     /**
