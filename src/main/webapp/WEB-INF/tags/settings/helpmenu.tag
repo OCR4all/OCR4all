@@ -2,6 +2,87 @@
 <%@ attribute name="heading" required="true" %>
 
 <script type="text/javascript">
+
+    const initTour = () => {
+        const tour = new Shepherd.Tour({
+            defaultStepOptions: {
+                cancelIcon: {
+                    enabled: true
+                },
+                classes: 'tour',
+                scrollTo: {behavior: 'smooth', block: 'center'}
+            }
+        });
+
+        Shepherd.on('cancel', showHelpMenuHint);
+
+        return tour;
+    }
+
+    const createProgressBar = (progressInPercent) => {
+        const adaptedProgress = progressInPercent === 0 ? progressInPercent + 1 : progressInPercent;
+        return $(`
+            <div class="tour-progress">
+                <div class="tour-progress__filler" style="width: \${adaptedProgress}%" />
+                \${progressInPercent}%
+            </div>
+        `);
+    }
+
+    const showHelpMenuHint = () => {
+        if (!getCookie("hasSeenHelpMenuHint")) {
+            setCookie("hasSeenHelpMenuHint", true, 365);
+            alert("help menu hint!");
+        }
+    }
+
+    const createOverviewSlide = (tourId, tour, topic, textContent, hotspot) => {
+
+        const content = `
+            \${textContent}
+            <div class="mascot">
+                <img alt="OCR4all mascot" src="${pageContext.servletContext.contextPath}/resources/img/mascot.svg">
+            </div>
+            <div class="learnings-overview" >
+                What you will learn: <br/>
+                <span class="learnings-overview__topic">\${topic}</span>
+            </div>`
+
+        tour.addStep({
+            title: '',
+            text: content,
+            attachTo: {
+                element: hotspot,
+                on: 'auto'
+            },
+            buttons: [
+                {
+                    action() {
+                        return this.cancel();
+                    },
+                    classes: 'button-red',
+                    text: 'Dismiss'
+                },
+                {
+                    action() {
+                        hideHotspot(hotspot, tourId);
+                        return this.next();
+                    },
+                    classes: 'button-green',
+                    text: 'Start Tour'
+                }
+            ],
+            when: {
+                show() {
+                    const $this = $(Shepherd.activeTour.currentStep.el);
+                    const footer = $this.find('.shepherd-footer');
+                    createProgressBar(0).insertBefore(footer);
+                }
+            },
+            id: 'overview',
+        });
+    }
+
     $(document).ready(() => {
         $('button[data-id="redirectToExternalHelp"]').click(function () {
             window.open('https://github.com/OCR4all/getting_started', '_blank');
@@ -14,24 +95,6 @@
         $.get('ajax/toursForCurrentUrl', {url: relativeUrlWithoutTrailingSlash}).done(function (tours) {
             console.log(tours);
             const tourContainer = $('.help-item__tours');
-
-            /*const tours = [
-                {
-                    id: 1,
-                    topic: "A very very long Dummy Tour 1",
-                    hasCompletedOnce: false,
-                },
-                {
-                    id: 2,
-                    topic: "A very very long Dummy Tour 2",
-                    hasCompletedOnce: false,
-                },
-                {
-                    id: 3,
-                    topic: "A very very long Dummy Tour 3",
-                    hasCompletedOnce: true,
-                }
-            ];*/
 
             tours.forEach(function (tour) {
                 const {id, topic, hasCompletedOnce, hotspot, overviewSlide} = tour;
@@ -59,9 +122,10 @@
                     `)
                 );
 
-                const {selectorToAttach, xSelectorOffsetInPx, attachFallback} = hotspot;
+                if (!hotspot.isHidden) {
+                    const {selectorToAttach, xSelectorOffsetInPx, attachFallback} = hotspot;
 
-                const hotspotHtml = $(
+                    const hotspotHtml = $(
                     `<button data-id="offerTour\${id}" class="hotspot">
                         <div class="hotspot__inner">
                             Tour
@@ -69,18 +133,30 @@
                     </button>
                     `)
 
-                if (selectorToAttach) {
-                    const attachTo = $(selectorToAttach);
-                    attachTo.css('position', 'relative').append(hotspotHtml);
-                    $(".hotspot").css('left', (xSelectorOffsetInPx || 0) + "px");
-                } else {
-                    // ...
-                }
+                    if (selectorToAttach) {
+                        const attachTo = $(selectorToAttach);
+                        attachTo.css('position', 'relative').append(hotspotHtml);
+                        if (xSelectorOffsetInPx) {
+                            $(".hotspot").css('left', xSelectorOffsetInPx + "px");
+                        }
+                    } else {
+                        // ...
+                    }
 
-                $(`button[data-id="offerTour\${id}"]`).click(function () {
-                    // with overview slide
-                    const {textContent} = overviewSlide;
-                });
+                    $(`button[data-id="offerTour\${id}"]`).click(function () {
+                        // with overview slide
+                        const tour = initTour();
+
+                        createOverviewSlide(id, tour, topic, overviewSlide.textContent, this);
+
+                        tour.on('cancel', () => {
+                            hideHotspot(this, id);
+                        });
+
+                        tour.start();
+
+                    });
+                }
 
                 $(`button[data-id="startTour\${id}"]`).click(function () {
                     // without overview slide

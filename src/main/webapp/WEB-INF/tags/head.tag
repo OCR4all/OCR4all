@@ -20,6 +20,10 @@
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/materialize.min.js"></script>
 
+    <!-- Import Shepherd for the guided tours -->
+    <link type="text/css" rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/shepherd.css">
+    <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/shepherd.min.js"></script>
+
     <!--Project ocr4all related-->
     <link type="text/css" rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/ocr4allweb.css">
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/ocr4allweb-helper.js"></script>

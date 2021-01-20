@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Controller
@@ -36,7 +36,8 @@ public class TourController {
     @RequestMapping(value = "/ajax/toursForCurrentUrl", method = RequestMethod.GET)
     public ResponseEntity<?> getAllToursForUrl(
             @RequestParam("url") String url,
-            @CookieValue(value = "completedTours", defaultValue = "") String completedToursCookie
+            @CookieValue(value = "completedTours", defaultValue = "") String completedToursCookie,
+            @CookieValue(value = "hiddenHotspots", defaultValue = "") String hiddenHotspotsCookie
     ) {
         try (Session session = HibernateUtil.getFactory().openSession()) {
 
@@ -45,15 +46,20 @@ public class TourController {
             List<Tour> toursForCurrentUrl = query.list();
 
             if (!completedToursCookie.isEmpty()) {
-                Stream<Integer> completedTourIds = Stream.of(completedToursCookie.split(";")).map(Integer::valueOf);
-                toursForCurrentUrl.forEach(tour -> tour.setHasCompletedOnce(completedTourIds.anyMatch(completedId -> completedId.equals(tour.id))));
+                Stream<Integer> completedTourIds = Stream.of(completedToursCookie.split("---")).map(Integer::valueOf);
+                toursForCurrentUrl.forEach(tour -> tour.hasCompletedOnce = completedTourIds.anyMatch(completedId -> completedId.equals(tour.id)));
+            }
+
+            if (!hiddenHotspotsCookie.isEmpty()) {
+                Stream<Integer> hiddenHotspotIds = Stream.of(hiddenHotspotsCookie.split("---")).map(Integer::valueOf);
+                toursForCurrentUrl.forEach(tour -> tour.hotspot.isHidden = hiddenHotspotIds.anyMatch(hiddenId -> hiddenId.equals(tour.id)));
             }
 
             return ResponseEntity.ok(toursForCurrentUrl);
         } catch (Exception e) {
             e.printStackTrace();
-            String rootCause = findRootCause(e);
-            return ResponseEntity.status(500).body(rootCause);
+            // String rootCause = findRootCause(e);
+            return ResponseEntity.status(500).body(e);
         }
     }
 

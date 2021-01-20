@@ -179,5 +179,88 @@
     margin: 0 !important;
 }
 
+.tour .button-red {
+    background: #cc0505;
+}
+
+.tour .button-red:hover {
+    background:  #e90505;
+}
+
+.tour .button-green {
+    background: #0fcc0b;
+}
+
+.tour .button-green:hover {
+    background: #11e70c;
+}
+
+.learnings-overview {
+    font-weight: bold;
+    text-align: center;
+    font-size: 18px;
+    margin-left: -100px;
+    padding-top: 10px;
+}
+
+.learnings-overview__topic {
+    font-weight: normal;
+    color: #283593;
+}
+
+#overview-description {
+    padding-top: 0;
+    padding-left: calc(70px + calc(2 * 0.75em));
+    position: relative;
+    min-height: 125px;
+}
+
+#overview-description .mascot {
+    position: absolute;
+    width: 70px;
+    left: 0.75em;
+    top: 0;
+}
+
+#overview-description .mascot img {
+    width: 100%;
+}
+
+.tour-progress {
+    width: calc(100% - calc(2*0.75em));
+    height: 30px;
+    position: relative;
+    color: #283593;
+    border: 1px solid #283593;
+    text-align: center;
+    z-index: 0;
+    margin: 0 0.75em 0.75em;
+}
+
+.tour-progress__filler {
+    background: #11e70c;
+    position: absolute;
+    height: 28px;
+    z-index: -1;
+}
+
+.tour[data-popper-placement^='top'] {
+   margin-bottom: 20px !important;
+}
+
+.tour[data-popper-placement^='left'] {
+    margin-right: 20px !important;
+}
+
+.tour[data-popper-placement^='right'] {
+    margin-left: 20px !important;
+}
+
+.tour[data-popper-placement^='bottom'] {
+    margin-top: 20px !important;
+}
+
+
+
 
 

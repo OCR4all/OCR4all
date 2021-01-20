@@ -29,9 +29,4 @@ public class Tour {
 
     @Transient
     public boolean hasCompletedOnce = false;
-
-    public void setHasCompletedOnce(boolean hasCompletedOnce){
-        this.hasCompletedOnce = hasCompletedOnce;
-    }
-
 }

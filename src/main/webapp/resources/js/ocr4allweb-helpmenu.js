@@ -35,6 +35,18 @@ function closeHelpMenu() {
     fadeOutBackgroundOverlay();
 }
 
+function hideHotspot(hotspot, tourId) {
+    $(hotspot).fadeOut();
+    const oldHotspotCookie = getCookie("hiddenHotspots");
+
+    if (!oldHotspotCookie) {
+        setCookie("hiddenHotspots", tourId, 365)
+    } else {
+        const oldCookieAlreadyContainsCurrentId = oldHotspotCookie.split("---").map(Number).includes(tourId);
+        if (!oldCookieAlreadyContainsCurrentId) setCookie("hiddenHotspots", oldHotspotCookie + "---" + tourId, 365)
+    }
+}
+
 $(document).ready(() => {
     $helpMenu = $('.help-menu');
 

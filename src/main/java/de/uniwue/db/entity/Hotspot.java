@@ -18,4 +18,7 @@ public class Hotspot {
     @Column(name="attachfallback")
     @Enumerated(EnumType.STRING)
     public PositionFallback attachFallback;
+
+    @Transient()
+    public boolean isHidden = false;
 }
