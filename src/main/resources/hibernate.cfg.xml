@@ -27,6 +27,7 @@
 
         <mapping class = "de.uniwue.db.entity.Hotspot" />
         <mapping class = "de.uniwue.db.entity.OverviewSlide" />
+        <mapping class = "de.uniwue.db.entity.NormalSlide" />
         <mapping class = "de.uniwue.db.entity.Tour" />
 
     </session-factory>

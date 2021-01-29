@@ -1,5 +1,5 @@
 .help-menu {
-    height: 100vh;
+    height: 100%;
     width: 700px;
     max-width: 100%;
     position: fixed;
@@ -60,7 +60,7 @@
     margin: 0
 }
 
-.help-item__header.--with-icon img{
+.help-item__header.--with-icon img {
     position: absolute;
     right: 0;
     width: 50px;
@@ -127,7 +127,7 @@
 
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(105,114,179, 0.7);
+        box-shadow: 0 0 0 0 rgba(105, 114, 179, 0.7);
     }
 
     70% {
@@ -140,7 +140,7 @@
 }
 
 .hotspot {
-    background: rgb(105,114,179);
+    background: rgb(105, 114, 179);
     border-radius: 50%;
     height: 70px;
     width: 70px;
@@ -148,7 +148,7 @@
     top: 50%;
     transform: translateY(-50%);
 
-    box-shadow: 0 0 0 0 rgb(105,114,179);
+    box-shadow: 0 0 0 0 rgb(105, 114, 179);
     animation: pulse 2s infinite;
 
     border: none !important;
@@ -179,19 +179,19 @@
     margin: 0 !important;
 }
 
-.tour .button-red {
+.slide .button-red {
     background: #cc0505;
 }
 
-.tour .button-red:hover {
-    background:  #e90505;
+.slide .button-red:hover {
+    background: #e90505;
 }
 
-.tour .button-green {
+.slide .button-green {
     background: #0fcc0b;
 }
 
-.tour .button-green:hover {
+.slide .button-green:hover {
     background: #11e70c;
 }
 
@@ -208,26 +208,12 @@
     color: #283593;
 }
 
-#overview-description {
-    padding-top: 0;
-    padding-left: calc(70px + calc(2 * 0.75em));
-    position: relative;
-    min-height: 125px;
-}
-
-#overview-description .mascot {
-    position: absolute;
-    width: 70px;
-    left: 0.75em;
-    top: 0;
-}
-
-#overview-description .mascot img {
-    width: 100%;
+.slide.--single-button .shepherd-footer {
+    justify-content: flex-end;
 }
 
 .tour-progress {
-    width: calc(100% - calc(2*0.75em));
+    width: calc(100% - calc(2 * 0.75em));
     height: 30px;
     position: relative;
     color: #283593;
@@ -244,21 +230,33 @@
     z-index: -1;
 }
 
-.tour[data-popper-placement^='top'] {
-   margin-bottom: 20px !important;
+.slide.--with-icon .shepherd-text {
+    padding-left: calc(70px + calc(2 * 0.75em));
+    position: relative;
+    min-height: calc(105px + calc(2 * 0.75em));
 }
 
-.tour[data-popper-placement^='left'] {
-    margin-right: 20px !important;
+.slide.--with-icon .mascot {
+    position: absolute;
+    width: 70px;
+    left: 0.75em;
+    top: 0.75em;
 }
 
-.tour[data-popper-placement^='right'] {
-    margin-left: 20px !important;
+.slide.--with-icon .mascot img {
+    width: 100%;
 }
 
-.tour[data-popper-placement^='bottom'] {
-    margin-top: 20px !important;
+.slide.--with-icon:not(.shepherd-has-title) .shepherd-text {
+    padding-top: 0;
+    min-height: calc(105px + 0.75em);
 }
+
+.slide.--with-icon:not(.shepherd-has-title) .mascot {
+    top: 0;
+}
+
+
 
 
 

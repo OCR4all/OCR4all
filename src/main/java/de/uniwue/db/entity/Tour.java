@@ -1,6 +1,9 @@
 package de.uniwue.db.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="tour")
@@ -26,6 +29,10 @@ public class Tour {
     @OneToOne()
     @JoinColumn(name = "overview_slide_id", referencedColumnName = "id")
     public OverviewSlide overviewSlide;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy="tour", fetch = FetchType.EAGER)
+    public List<NormalSlide> normalSlides;
 
     @Transient
     public boolean hasCompletedOnce = false;

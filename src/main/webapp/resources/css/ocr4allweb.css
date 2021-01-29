@@ -87,10 +87,12 @@ nav.top-nav a.project-name {
   font-size: 24px;
 }
 nav.top-nav a.help-icon {
- margin-left: 80px;
+  margin-left: 80px;
+  height: 122px;
+  display: flex;
+  align-items: center;
 }
 nav.top-nav a.help-icon i{
-  line-height: 122px;
   font-size: 48px;
   height: auto;
 }
@@ -418,4 +420,5 @@ label[for*="backupCheckbox"]{
 
 .darkblue {
   color: #283593;
+  font-weight: bold;
 }

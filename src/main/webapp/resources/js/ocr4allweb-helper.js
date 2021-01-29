@@ -59,3 +59,15 @@ function getCookie(name) {
 function eraseCookie(name) {
     document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
+
+function deepMerge(target, source) {
+    Object.entries(source).forEach(([key, value]) => {
+        if (value && typeof value === 'object') {
+            deepMerge(target[key] = target[key] || {}, value);
+            return;
+        }
+        target[key] = value;
+    });
+    return target;
+}
+
