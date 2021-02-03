@@ -4,7 +4,7 @@
     <groupId>de.uniwue</groupId>
     <artifactId>ocr4all</artifactId>
     <packaging>war</packaging>
-    <version>0.5.0</version>
+    <version>0.6-SNAPSHOT</version>
     <name>OCR4all Maven Webapp</name>
     <url>http://maven.apache.org</url>
 
@@ -148,22 +148,22 @@
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>basic</artifactId>
-            <version>1.5a</version>
+            <version>1.5b</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Dla</artifactId>
-            <version>1.5a</version>
+            <version>1.5b</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Io</artifactId>
-            <version>1.5a</version>
+            <version>1.5b</version>
         </dependency>
         <dependency>
             <groupId>org.primaresearch</groupId>
             <artifactId>Maths</artifactId>
-            <version>1.5a</version>
+            <version>1.5b</version>
         </dependency>
 
     </dependencies>
