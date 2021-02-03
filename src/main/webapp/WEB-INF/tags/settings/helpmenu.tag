@@ -49,7 +49,7 @@
                     $hotspot = addHotspot(hotspot, id);
                     $hotspot.on('click', () => {
                         // with overview slide
-                        const tour = initializeTour();
+                        const tour = initializeTour(id);
 
                         tour.addOverviewSlide(id, topic, overviewSlide.textContent, $hotspot);
 
@@ -65,7 +65,7 @@
                     // without overview slide
                     if ($hotspot) removeHotspot($hotspot, id);
 
-                    const tour = initializeTour();
+                    const tour = initializeTour(id);
 
                     tour.addNormalSlides(id, topic, additionalHelpUrl, normalSlides, false);
 

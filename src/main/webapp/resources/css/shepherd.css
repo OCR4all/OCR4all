@@ -139,6 +139,10 @@
     margin-top: 0
 }
 
+.shepherd-text i {
+    vertical-align: bottom;
+}
+
 .shepherd-text p:last-child {
     margin-bottom: 0
 }

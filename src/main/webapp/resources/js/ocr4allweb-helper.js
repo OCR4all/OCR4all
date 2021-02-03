@@ -60,6 +60,16 @@ function eraseCookie(name) {
     document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
+function appendToCookie(cookieName, seperator, numberToAppend) {
+    const oldCookie = getCookie(cookieName);
+    if (!oldCookie) {
+        setCookie(cookieName, numberToAppend, 365)
+    } else {
+        const oldCookieAlreadyContainsNumber = oldCookie.split(seperator).map(Number).includes(numberToAppend);
+        if (!oldCookieAlreadyContainsNumber) setCookie(cookieName, oldCookie + seperator + numberToAppend, 365)
+    }
+}
+
 function deepMerge(target, source) {
     Object.entries(source).forEach(([key, value]) => {
         if (value && typeof value === 'object') {

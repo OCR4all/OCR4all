@@ -18,7 +18,7 @@
 
     <!--Import jQuery before materialize.js-->
     <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/materialize.min.js"></script>
+    <script type="text/javascript" src="${pageContext.servletContext.contextPath}/resources/js/materialize.js"></script>
 
     <!-- Import Shepherd for the guided tours -->
     <link type="text/css" rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/shepherd.css">

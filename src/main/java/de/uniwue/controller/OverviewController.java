@@ -242,7 +242,7 @@ public class OverviewController {
     /**
      * Response to adjust the files according to the project standard
      *
-     * @param backupImages Determines if a backup of the image folder is required 
+     * @param backupImages Determines if a backup of the image folder is required
      * @param session Session of the user
      * @param response Response to the request
      */
@@ -270,7 +270,7 @@ public class OverviewController {
 
     /**
      * Response to invalidate the session of the user
-     * 
+     *
      * @param session Session of the user
      * @param response Response to the request
      */
@@ -474,5 +474,16 @@ public class OverviewController {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Response to the Request to get the current project name
+     *
+     * @param session Session of the user
+     * @return the current project's name
+     */
+    @RequestMapping(value = "/ajax/overview/getProjectName", method = RequestMethod.GET)
+    public @ResponseBody String getProjectName(HttpSession session) {
+        return session.getAttribute("projectName").toString();
     }
 }

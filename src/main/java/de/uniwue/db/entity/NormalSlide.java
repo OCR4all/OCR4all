@@ -23,6 +23,9 @@ public class NormalSlide {
     @Column(name = "attachto")
     private String attachTo;
 
+    @Column(name = "showifclassonattachto")
+    private String showIfClass;
+
     @Column(name = "hideifclassonattachto")
     private String hideIfClass;
 
@@ -54,6 +57,10 @@ public class NormalSlide {
         return attachTo;
     }
 
+    public String getShowIfClass() {
+        return showIfClass;
+    }
+
     public String getHideIfClass() {
         return hideIfClass;
     }
@@ -81,4 +88,5 @@ public class NormalSlide {
     public MediaPlacement getMediaPlacement() {
         return mediaPlacement;
     }
+
 }
