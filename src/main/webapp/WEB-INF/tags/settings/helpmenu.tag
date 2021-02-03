@@ -18,7 +18,7 @@
             console.log(tours);
 
             tours.forEach(function (tour) {
-                const {id, topic, hasCompletedOnce, hotspot, overviewSlide} = tour;
+                const {id, topic, hasCompletedOnce, hotspot, overviewSlide, normalSlides, additionalHelpUrl} = tour;
 
                 const buttonLabel = (hasCompletedOnce ? "Restart" : "Start") + " Tour";
                 const buttonIcon = hasCompletedOnce ? "replay" : "play_arrow";
@@ -43,24 +43,34 @@
                     `)
                 );
 
-                if (!hotspot.isHidden) addHotspot(hotspot, id);
+                let $hotspot;
 
-                $(`button[data-id="offerTour\${id}"]`).click(function () {
-                    // with overview slide
-                    const tour = initializeTour();
+                if (!hotspot.isHidden) {
+                    $hotspot = addHotspot(hotspot, id);
+                    $hotspot.on('click', () => {
+                        // with overview slide
+                        const tour = initializeTour();
 
-                    tour.addOverviewSlide(id, topic, overviewSlide.textContent, this);
+                        tour.addOverviewSlide(id, topic, overviewSlide.textContent, $hotspot);
 
-                    tour.on('cancel', () => {
-                        removeHotspot(this, id);
+                        tour.addNormalSlides(id, topic, additionalHelpUrl, normalSlides, true);
+
+                        tour.on('cancel', removeHotspot.bind(null, $hotspot, id));
+
+                        tour.start();
                     });
-
-                    tour.start();
-
-                });
+                }
 
                 $(`button[data-id="startTour\${id}"]`).click(function () {
                     // without overview slide
+                    if ($hotspot) removeHotspot($hotspot, id);
+
+                    const tour = initializeTour();
+
+                    tour.addNormalSlides(id, topic, additionalHelpUrl, normalSlides, false);
+
+                    closeHelpMenu();
+                    tour.start();
                 });
             })
         })

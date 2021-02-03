@@ -35,6 +35,29 @@ function closeHelpMenu() {
     fadeOutBackgroundOverlay();
 }
 
+function ensureRightTabIsOpen(attachTo) {
+    return new Promise((resolve) => {
+        const $attachTo = $(attachTo);
+        if (!$attachTo.length) return resolve();
+        const parentAccordion = $attachTo.closest('.collapsible');
+        if (!parentAccordion.length) return resolve();
+        parentAccordion.children().each((idx, tab) => {
+            const $tab = $(tab)
+            if ($tab.find($attachTo).length) {
+                if ($tab.hasClass('active')) return resolve();
+                /*parentAccordion.collapsible({
+                    onOpen: function() {
+                        console.log("opened?")
+                        return resolve();
+                    }
+                });*/
+                parentAccordion.collapsible('open', idx);
+                setTimeout(resolve, 400)
+            }
+        })
+    })
+}
+
 function createTour(defaultOptionOverwrites = {}) {
     const defaultOptions = {
         useModalOverlay: true,
@@ -68,12 +91,26 @@ function createTour(defaultOptionOverwrites = {}) {
     return new Shepherd.Tour(deepMerge(defaultOptions, defaultOptionOverwrites));
 }
 
-function initializeTour() {
-    const tour = createTour();
+function checkClassConstantly(className, $attachTo, step) {
+    const interval = setInterval(() => {
+        if (!Shepherd.activeTour || !$(Shepherd.activeTour.currentStep.el).is(step.el)) {
+            clearInterval(interval);
+            return;
+        }
 
-    Shepherd.Tour.prototype.addOverviewSlide = function (tourId, topic, textContent, hotspot) {
+        const hasClass = $attachTo.hasClass(className);
 
-        const content = `
+        if (hasClass) {
+            step.hide();
+        } else if (!hasClass && !step.isOpen()) {
+            step.show();
+        }
+    }, 500)
+}
+
+Shepherd.Tour.prototype.addOverviewSlide = function (tourId, topic, textContent, $hotspot) {
+
+    const content = `
             ${textContent}
             <div class="mascot">
                 <img alt="OCR4all mascot" src=${mascotPath}>
@@ -83,39 +120,114 @@ function initializeTour() {
                 <span class="learnings-overview__topic">${topic}</span>
             </div>`
 
-        this.addStep({
-            title: '',
-            text: content,
+    this.addStep({
+        title: '',
+        text: content,
+        attachTo: {
+            element: $hotspot[0],
+            on: 'auto'
+        },
+        canClickTarget: false,
+        buttons: [
+            {
+                action() {
+                    return this.cancel();
+                },
+                classes: 'button-red',
+                text: 'Dismiss'
+            },
+            {
+                action() {
+                    removeHotspot($hotspot, tourId);
+                    return this.next();
+                },
+                classes: 'button-green',
+                text: 'Start Tour'
+            }
+        ],
+        when: {
+            show() {
+                addProgressBar($(Shepherd.activeTour.currentStep.el), 0);
+            }
+        },
+        classes: '--with-icon',
+    });
+}
+
+Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHelpUrl, normalSlides, hasOverviewSlide) {
+    normalSlides.forEach((normalSlide, idx) => {
+        const {attachTo, textContent, hideIfClass, endIfEvent, endIfHint} = normalSlide;
+
+        const isFirst = idx === 0;
+        const isLast = idx === normalSlides.length - 1;
+        const $attachTo = $(attachTo);
+
+        const nextSlideIfEvent = $attachTo.length && endIfEvent;
+        const hideSlideIfClassName = $attachTo.length && hideIfClass;
+
+        const step = this.addStep({
+            title: topic,
+            text: textContent,
             attachTo: {
-                element: hotspot,
+                element: attachTo,
                 on: 'auto'
             },
-            canClickTarget: false,
+            canClickTarget: true,
             buttons: [
                 {
                     action() {
-                        return this.cancel();
+                        return this.back();
                     },
-                    classes: 'button-red',
-                    text: 'Dismiss'
+                    classes: `button-red ${isFirst ? ' button-hidden' : ''}`,
+                    text: 'Back'
                 },
                 {
                     action() {
-                        removeHotspot(hotspot, tourId);
-                        return this.next();
+                        window.open(additionalHelpUrl, '_blank');
                     },
-                    classes: 'button-green',
-                    text: 'Start Tour'
+                    classes: 'button-blue',
+                    text: "Additional Help",
+                },
+                {
+                    action() {
+                        if (nextSlideIfEvent) {
+                            alert(endIfHint);
+                        } else return this.next();
+                    },
+                    classes: `button-green ${nextSlideIfEvent ? ' button-greyed-out' : ''}`,
+                    text: isLast ? "Close tour" : "Next",
                 }
             ],
             when: {
                 show() {
-                    addProgressBar($(Shepherd.activeTour.currentStep.el), 0);
+                    const activeTour = Shepherd.activeTour;
+                    const currentStep = activeTour.currentStep;
+                    const $currentStep = $(currentStep.el);
+
+                    const currentProgress = hasOverviewSlide ?
+                        Math.round(activeTour.steps.indexOf(activeTour.currentStep) / (activeTour.steps.length - 1) * 100) :
+                        Math.round((activeTour.steps.indexOf(activeTour.currentStep) + 1) / activeTour.steps.length * 100);
+
+                    addProgressBar($currentStep, currentProgress);
+
+                    if (hideSlideIfClassName) checkClassConstantly(hideIfClass, $attachTo, step);
+                    if (nextSlideIfEvent) {
+                        $attachTo.on(endIfEvent, () => this.next())
+                    }
                 }
             },
-            classes: '--with-icon',
+            beforeShowPromise: ensureRightTabIsOpen.bind(null, attachTo),
+            classes: '',
         });
-    }
+
+        $(document).on("click", (e) => {
+            console.log(e.target);
+        })
+    })
+}
+
+function initializeTour() {
+    const tour = createTour();
 
     Shepherd.on('cancel', function () {
         // show help menu hint on first cancel
@@ -133,11 +245,13 @@ function initializeTour() {
 
             const content = `
                 That's no problem!<br/>
-                In case you change your mind, you can 
-                <span class="darkblue">always find all available tours for the current page in this menu!</span>
-                <div class="mascot">
-                    <img alt="OCR4all mascot" src=${mascotPath}>
-                </div>`
+                In case you change your
+                mind, you can <span class="darkblue"> always find all
+                available tours for the current page in this menu! </span>
+            <div class="mascot">
+                <img alt="OCR4all mascot" src=${mascotPath}>
+            </div>
+    `
 
             helpMenuTour.addStep({
                 title: 'Important hint',
@@ -190,19 +304,21 @@ function addHotspot(hotspot, tourId) {
 
     let attachTo;
     if (selectorToAttach && (attachTo = $(selectorToAttach)).length) {
-        attachTo.css('position', 'relative').append(hotspotHtml);
         if (leftValue) {
-            $(".hotspot").css('left', leftValue);
+            hotspotHtml.css('left', leftValue);
         }
+        attachTo.css('position', 'relative').append(hotspotHtml);
     } else {
         // put the hotspot in the left lane, vertically centered
+        hotspotHtml.css('left', '30px');
         $('body').append(hotspotHtml);
-        $(".hotspot").css("left", "30px");
     }
+
+    return $(`button[data-id="offerTour${tourId}`);
 }
 
-function removeHotspot(hotspot, tourId) {
-    $(hotspot).fadeOut();
+function removeHotspot($hotspot, tourId) {
+    $hotspot.fadeOut();
     const oldHotspotCookie = getCookie("hiddenHotspots");
 
     if (!oldHotspotCookie) {

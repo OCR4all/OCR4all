@@ -156,9 +156,8 @@
 }
 
 .shepherd-button:not(:disabled):hover {
-    background: #196fcc;
     color: white;
-    font-weight: 500;
+    transform: scale(1.05);
 }
 
 .shepherd-button.shepherd-button-secondary {

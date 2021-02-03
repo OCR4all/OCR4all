@@ -3,18 +3,35 @@ package de.uniwue.db.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name="hotspot")
+@Table(name = "hotspot")
 public class Hotspot {
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     private int id;
 
-    @Column(name="attachto")
-    public String selectorToAttach;
+    @Column(name = "attachto")
+    private String selectorToAttach;
 
-    @Column(name="leftvalue")
-    public String leftValue;
+    @Column(name = "leftvalue")
+    private String leftValue;
 
     @Transient()
-    public boolean isHidden = false;
+    private boolean isHidden = false;
+
+    public void setIsHidden(boolean hidden) {
+        isHidden = hidden;
+    }
+
+    // start getters
+    public String getSelectorToAttach() {
+        return selectorToAttach;
+    }
+
+    public String getLeftValue() {
+        return leftValue;
+    }
+
+    public boolean getIsHidden() {
+        return isHidden;
+    }
 }

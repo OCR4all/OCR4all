@@ -195,6 +195,22 @@
     background: #11e70c;
 }
 
+.slide .button-blue {
+    background: #283593;
+}
+
+.slide .button-blue:hover {
+    background: #2e3eac;
+}
+
+.slide .button-hidden {
+    visibility: hidden;
+}
+
+.slide .button-greyed-out {
+    opacity: .3;
+}
+
 .learnings-overview {
     font-weight: bold;
     text-align: center;

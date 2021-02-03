@@ -21,38 +21,64 @@ public class NormalSlide {
     private Integer ordinalPosition;
 
     @Column(name = "attachto")
-    public String attachTo;
+    private String attachTo;
 
-    @Column(name = "hideif")
-    public String hideIf;
+    @Column(name = "hideifclassonattachto")
+    private String hideIfClass;
 
-    @Column(name = "endif")
-    public String endIf;
+    @Column(name = "endifeventonattachto")
+    private String endIfEvent;
 
-    @Column(name = "endeventhint")
-    public String endIfHint;
+    @Column(name = "endifhint")
+    private String endIfHint;
 
     @Column(name = "textcontent")
-    public String textContent;
+    private String textContent;
 
     @Column(name = "mediatype")
     @Enumerated(EnumType.STRING)
-    public MediaType mediaType;
+    private MediaType mediaType;
 
     @Column(name = "mediaurl")
-    public String mediaUrl;
+    private String mediaUrl;
 
     @Column(name = "mediaplacement")
     @Enumerated(EnumType.STRING)
-    public MediaPlacement mediaPlacement;
+    private MediaPlacement mediaPlacement;
 
     @Transient
-    boolean hasMedia = false;
+    public static Comparator<NormalSlide> normalSlideComparator = Comparator.comparing(normalSlide -> normalSlide.ordinalPosition);
 
-    public Integer getOrdinalPosition() {
-        return this.ordinalPosition;
+    // start getters
+    public String getAttachTo() {
+        return attachTo;
     }
 
-    @Transient
-    public static Comparator<NormalSlide> normalSlideComparator = Comparator.comparing(NormalSlide::getOrdinalPosition);
+    public String getHideIfClass() {
+        return hideIfClass;
+    }
+
+    public String getEndIfEvent() {
+        return endIfEvent;
+    }
+
+    public String getEndIfHint() {
+        return endIfHint;
+    }
+
+    public String getTextContent() {
+        return textContent;
+    }
+
+    public MediaType getMediaType() {
+        return mediaType;
+    }
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
+    public MediaPlacement getMediaPlacement() {
+        return mediaPlacement;
+    }
 }

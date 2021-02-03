@@ -6,34 +6,71 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="tour")
+@Table(name = "tour")
 public class Tour {
 
     @Id
-    @Column(name="id")
-    public int id;
+    @Column(name = "id")
+    private int id;
 
-    @Column(name="relativeurl")
-    public String relativeUrl;
+    @Column(name = "relativeurl")
+    private String relativeUrl;
 
-    @Column(name="topic")
-    public String topic;
+    @Column(name = "topic")
+    private String topic;
 
-    @Column(name="additionalhelpurl")
-    public String additionalHelpUrl;
+    @Column(name = "additionalhelpurl")
+    private String additionalHelpUrl;
 
     @OneToOne()
     @JoinColumn(name = "hotspot_id", referencedColumnName = "id")
-    public Hotspot hotspot;
+    private Hotspot hotspot;
 
     @OneToOne()
     @JoinColumn(name = "overview_slide_id", referencedColumnName = "id")
-    public OverviewSlide overviewSlide;
+    private OverviewSlide overviewSlide;
 
     @JsonManagedReference
-    @OneToMany(mappedBy="tour", fetch = FetchType.EAGER)
-    public List<NormalSlide> normalSlides;
+    @OneToMany(mappedBy = "tour", fetch = FetchType.EAGER)
+    private List<NormalSlide> normalSlides;
 
     @Transient
-    public boolean hasCompletedOnce = false;
+    private boolean hasCompletedOnce = false;
+
+    public void setHasCompletedOnce(boolean hasCompletedOnce) {
+        this.hasCompletedOnce = hasCompletedOnce;
+    }
+
+    // start getters
+    public int getId() {
+        return id;
+    }
+
+    public String getRelativeUrl() {
+        return relativeUrl;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public String getAdditionalHelpUrl() {
+        return additionalHelpUrl;
+    }
+
+    public Hotspot getHotspot() {
+        return hotspot;
+    }
+
+    public OverviewSlide getOverviewSlide() {
+        return overviewSlide;
+    }
+
+    public List<NormalSlide> getNormalSlides() {
+        return normalSlides;
+    }
+
+    public boolean getHasCompletedOnce() {
+        return hasCompletedOnce;
+    }
 }

@@ -46,16 +46,16 @@ public class TourController {
 
             if (!completedToursCookie.isEmpty()) {
                 Stream<Integer> completedTourIds = Stream.of(completedToursCookie.split("---")).map(Integer::valueOf);
-                toursForCurrentUrl.forEach(tour -> tour.hasCompletedOnce = completedTourIds.anyMatch(completedId -> completedId.equals(tour.id)));
+                toursForCurrentUrl.forEach(tour -> tour.setHasCompletedOnce(completedTourIds.anyMatch(completedId -> completedId.equals(tour.getId()))));
             }
 
             if (!hiddenHotspotsCookie.isEmpty()) {
                 Stream<Integer> hiddenHotspotIds = Stream.of(hiddenHotspotsCookie.split("---")).map(Integer::valueOf);
-                toursForCurrentUrl.forEach(tour -> tour.hotspot.isHidden = hiddenHotspotIds.anyMatch(hiddenId -> hiddenId.equals(tour.id)));
+                toursForCurrentUrl.forEach(tour -> tour.getHotspot().setIsHidden(hiddenHotspotIds.anyMatch(hiddenId -> hiddenId.equals(tour.getId()))));
             }
 
             toursForCurrentUrl.forEach(tour -> {
-                tour.normalSlides.sort(NormalSlide.normalSlideComparator);
+                tour.getNormalSlides().sort(NormalSlide.normalSlideComparator);
             });
 
             return ResponseEntity.ok(toursForCurrentUrl);
