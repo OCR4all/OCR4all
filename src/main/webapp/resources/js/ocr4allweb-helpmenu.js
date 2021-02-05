@@ -226,14 +226,14 @@ function initializeTour(tourId, normalSlides) {
 Shepherd.Tour.prototype.addOverviewSlide = function (tourId, topic, textContent, $hotspot) {
 
     const content = `
-            ${textContent}
-            <div class="mascot">
-                <img alt="OCR4all mascot" src=${mascotPath}>
-            </div>
-            <div class="learnings-overview" >
-                What you will learn: <br/>
-                <span class="learnings-overview__topic">${topic}</span>
-            </div>`
+        ${textContent}
+        <div class="mascot">
+            <img alt="OCR4all mascot" src=${mascotPath}>
+        </div>
+        <div class="learnings-overview" >
+            What you will learn: <br/>
+            <span class="learnings-overview__topic">${topic}</span>
+        </div>`
 
     this.addStep({
         title: '',
@@ -271,18 +271,23 @@ Shepherd.Tour.prototype.addOverviewSlide = function (tourId, topic, textContent,
 
 Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHelpUrl, normalSlides, hasOverviewSlide) {
     normalSlides.forEach((slide, idx) => {
-        const {attachTo, textContent, showIfClass, hideIfClass, endIfEvent, endIfHint} = slide;
+        const {attachTo, showIfEvent, endIfEvent, endIfHint, textContent, mediaPlacement, mediaUrl, mediaType} = slide;
 
         const isFirst = idx === 0;
         const isLast = idx === normalSlides.length - 1;
 
         const attachToExists = $(attachTo).length;
-        const showSlideIfClassName = attachToExists && showIfClass;
+        const showSlideIfClassName = attachToExists && showIfEvent;
         const nextSlideIfEvent = attachToExists && endIfEvent;
+
+        const slideHasMedia = mediaPlacement && mediaUrl && mediaType;
 
         const step = this.addStep({
             title: topic,
-            text: textContent,
+            text: slideHasMedia ? `
+                <span class="text">${textContent}</span>
+                <${mediaType.toLowerCase()} class="media" src="${mediaUrl}" controls></${mediaType.toLowerCase()}>
+            ` : textContent,
             attachTo: {
                 element: attachTo,
                 on: 'auto'
@@ -337,7 +342,7 @@ Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHel
 
                     if (showSlideIfClassName) {
                         const showIfEventHasAlreadyBeenFired = firedShowIfEvents[tourId][idx];
-                        $(attachTo).on(showIfClass, () => {
+                        $(attachTo).on(showIfEvent, () => {
                             firedShowIfEvents[tourId][idx] = true;
                             return resolve();
                         })
@@ -347,7 +352,7 @@ Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHel
                     } else return resolve();
                 })
             },
-            classes: '',
+            classes: slideHasMedia ? `--with-media --${mediaPlacement.toLowerCase()}` : '',
         });
     })
 }

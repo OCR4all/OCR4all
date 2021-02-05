@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "tour")
@@ -32,7 +33,7 @@ public class Tour {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "tour", fetch = FetchType.EAGER)
-    private List<NormalSlide> normalSlides;
+    private List<NormalSlide> rawSlides;
 
     @Transient
     private boolean hasCompletedOnce = false;
@@ -67,7 +68,11 @@ public class Tour {
     }
 
     public List<NormalSlide> getNormalSlides() {
-        return normalSlides;
+        return rawSlides
+                .stream()
+                .filter(slide -> !slide.getIsInactive())
+                .sorted(NormalSlide.normalSlideComparator)
+                .collect(Collectors.toList());
     }
 
     public boolean getHasCompletedOnce() {

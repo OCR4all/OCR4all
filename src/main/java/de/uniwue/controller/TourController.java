@@ -1,7 +1,6 @@
 package de.uniwue.controller;
 
 import de.uniwue.db.config.HibernateUtil;
-import de.uniwue.db.entity.NormalSlide;
 import de.uniwue.db.entity.Tour;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -18,19 +17,10 @@ import java.util.stream.Stream;
 @Controller
 public class TourController {
 
-    public static String findRootCause(Throwable throwable) {
-        Objects.requireNonNull(throwable);
-        Throwable rootCause = throwable;
-        while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
-            rootCause = rootCause.getCause();
-        }
-        return rootCause.getMessage();
-    }
-
     /**
-     * Test
+     * Will fetch all the tours for the current url from the database and return them
      *
-     * @return A list of ids from the database
+     * @return An array of all tour objects for the current url
      */
     @RequestMapping(value = "/ajax/toursForCurrentUrl", method = RequestMethod.GET)
     public ResponseEntity<?> getAllToursForUrl(
@@ -54,10 +44,35 @@ public class TourController {
                 toursForCurrentUrl.forEach(tour -> tour.getHotspot().setIsHidden(hiddenHotspotIds.anyMatch(hiddenId -> hiddenId.equals(tour.getId()))));
             }
 
-            toursForCurrentUrl.forEach(tour -> {
-                tour.getNormalSlides().sort(NormalSlide.normalSlideComparator);
-            });
+             /*
+                Spring will convert all public fields (including getters) to JSON automatically.
+                Example:
 
+                Java List toursForCurrentUrl = List(
+                    NormalSlide({
+                        public getId(),
+                        public getRelativeUrl(),
+                        ...
+                    }),
+                    NormalSlide({...})
+                )
+
+                        |
+                  will convert to
+                       v
+
+                Javascript Array = [
+                    {
+                        id: <output of getId()>
+                        relativeUrl: <output of getRelativeUrl()>
+                        ...
+                    },
+                    {...}
+                ]
+
+                That's why it's important to define a public getter in the entities, while keeping the fields private.
+                Spring will automatically call all the getters and name the JS-Fields accordingly (getId() --> id)
+             }*/
             return ResponseEntity.ok(toursForCurrentUrl);
         } catch (Exception e) {
             e.printStackTrace();

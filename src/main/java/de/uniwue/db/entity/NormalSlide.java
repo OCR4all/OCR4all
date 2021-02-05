@@ -23,11 +23,8 @@ public class NormalSlide {
     @Column(name = "attachto")
     private String attachTo;
 
-    @Column(name = "showifclassonattachto")
-    private String showIfClass;
-
-    @Column(name = "hideifclassonattachto")
-    private String hideIfClass;
+    @Column(name = "showifeventonattachto")
+    private String showIfEvent;
 
     @Column(name = "endifeventonattachto")
     private String endIfEvent;
@@ -49,6 +46,9 @@ public class NormalSlide {
     @Enumerated(EnumType.STRING)
     private MediaPlacement mediaPlacement;
 
+    @Column(name = "inactive")
+    private boolean isInactive;
+
     @Transient
     public static Comparator<NormalSlide> normalSlideComparator = Comparator.comparing(normalSlide -> normalSlide.ordinalPosition);
 
@@ -57,12 +57,8 @@ public class NormalSlide {
         return attachTo;
     }
 
-    public String getShowIfClass() {
-        return showIfClass;
-    }
-
-    public String getHideIfClass() {
-        return hideIfClass;
+    public String getShowIfEvent() {
+        return showIfEvent;
     }
 
     public String getEndIfEvent() {
@@ -89,4 +85,7 @@ public class NormalSlide {
         return mediaPlacement;
     }
 
+    public boolean getIsInactive() {
+        return isInactive;
+    }
 }
