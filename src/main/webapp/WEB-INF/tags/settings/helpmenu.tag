@@ -15,7 +15,8 @@
 
         const relativeUrlWithoutTrailingSlash = window.location.pathname.replace(/\/+$/, '');
         $.get('ajax/toursForCurrentUrl', {url: relativeUrlWithoutTrailingSlash}).done(function (tours) {
-            console.log(tours);
+
+            firedEvents = new Array(tours.length);
 
             tours.forEach(function (tour) {
                 const {id, topic, hasCompletedOnce, hotspot, overviewSlide, normalSlides, additionalHelpUrl} = tour;
@@ -49,7 +50,7 @@
                     $hotspot = addHotspot(hotspot, id);
                     $hotspot.on('click', () => {
                         // with overview slide
-                        const tour = initializeTour(id);
+                        const tour = initializeTour(id, normalSlides);
 
                         tour.addOverviewSlide(id, topic, overviewSlide.textContent, $hotspot);
 
@@ -65,7 +66,7 @@
                     // without overview slide
                     if ($hotspot) removeHotspot($hotspot, id);
 
-                    const tour = initializeTour(id);
+                    const tour = initializeTour(id, normalSlides);
 
                     tour.addNormalSlides(id, topic, additionalHelpUrl, normalSlides, false);
 

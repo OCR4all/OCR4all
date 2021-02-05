@@ -1,5 +1,6 @@
 var $helpMenu;
 var $overlay;
+var firedEvents;
 
 function fadeInBackgroundOverlay() {
     $overlay = $('<div id="sidenav-overlay" style="opacity: 0"></div>');
@@ -80,7 +81,7 @@ function ensureEndEventListener(slide, cleanup) {
     })
 }
 
-function ensureHideWhileDropdownIsOpenListener(slide, cleanup, step) {
+function ensureHideSlideWhileDropdownIsOpenListener(slide, cleanup, step) {
     const thisSpecificOpenEvent = 'open.shepherd'; // namespace the event for jQuery on and off listeners
     const thisSpecificCloseEvent = 'close.shepherd'; // namespace the event for jQuery on and off listeners
     return new Promise((resolve) => {
@@ -89,8 +90,10 @@ function ensureHideWhileDropdownIsOpenListener(slide, cleanup, step) {
         const $attachTo = $(attachTo);
         if (!$attachTo.length) return resolve();
         if (cleanup) {
+            console.log("detach ", $attachTo);
             $attachTo.off(thisSpecificOpenEvent).off(thisSpecificCloseEvent);
         } else {
+            console.log("attach ", $attachTo);
             $attachTo.off(thisSpecificOpenEvent).on(thisSpecificOpenEvent, () => {
                 step.hide();
             });
@@ -102,9 +105,14 @@ function ensureHideWhileDropdownIsOpenListener(slide, cleanup, step) {
     })
 }
 
+function getActiveSlide(slides) {
+    const activeSlideIdx = Shepherd.activeTour.steps.indexOf(Shepherd.activeTour.currentStep);
+    return slides[activeSlideIdx];
+}
+
 function createTour(defaultOptionOverwrites = {}) {
     const defaultOptions = {
-        useModalOverlay: true,
+        useModalOverlay: !isChrome(),
         defaultStepOptions: {
             cancelIcon: {
                 enabled: true
@@ -133,6 +141,82 @@ function createTour(defaultOptionOverwrites = {}) {
     };
 
     return new Shepherd.Tour(deepMerge(defaultOptions, defaultOptionOverwrites));
+}
+
+function initializeTour(tourId, normalSlides) {
+    const tour = createTour();
+
+    firedEvents[tourId] = new Array(normalSlides.length).fill(false);
+
+    Shepherd.on('cancel', async function () {
+        await removeListeners(getActiveSlide(normalSlides));
+        // show help menu hint on first cancel
+        if (!getCookie("hasSeenHelpMenuHint")) {
+            setCookie("hasSeenHelpMenuHint", true, 365);
+
+            // start help menu hint tour
+            const helpMenuTour = createTour({
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: false
+                    }
+                }
+            });
+
+            const content = `
+                That's no problem!<br/>
+                In case you change your
+                mind, you can <b> always find all
+                available tours for the respective page in this menu! </b>
+            <div class="mascot">
+                <img alt="OCR4all mascot" src=${mascotPath}>
+            </div>
+    `
+
+            helpMenuTour.addStep({
+                title: 'Important hint',
+                text: content,
+                attachTo: {
+                    element: $('.help-icon .material-icons')[0],
+                    on: 'auto'
+                },
+                buttons: [
+                    {
+                        action() {
+                            // we have to cancel it, otherwise Shepherd.on('complete') will fire unintentionally
+                            return this.cancel();
+                        },
+                        classes: 'button-green',
+                        text: 'Got it!'
+                    }
+                ],
+                classes: '--with-icon --single-button',
+            });
+
+            helpMenuTour.start();
+        }
+    });
+
+    Shepherd.on('complete', async function () {
+        await removeListeners(getActiveSlide(normalSlides));
+        appendToCookie("completedTours", "---", tourId);
+    })
+
+    return tour;
+}
+
+function addListeners(slide, step) {
+    return Promise.all([
+        ensureHideSlideWhileDropdownIsOpenListener(slide, false, step),
+        ensureEndEventListener(slide, false)
+    ])
+}
+
+function removeListeners(slide) {
+    return Promise.all([
+        ensureHideSlideWhileDropdownIsOpenListener(slide, true),
+        ensureEndEventListener(slide, true)
+    ])
 }
 
 function withCompoundSelect($attachTo) {
@@ -206,7 +290,6 @@ Shepherd.Tour.prototype.addOverviewSlide = function (tourId, topic, textContent,
 }
 
 Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHelpUrl, normalSlides, hasOverviewSlide) {
-
     normalSlides.forEach((slide, idx) => {
         const {attachTo, textContent, showIfClass, hideIfClass, endIfEvent, endIfHint} = slide;
 
@@ -216,7 +299,6 @@ Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHel
         const attachToExists = $(attachTo).length;
         const showSlideIfClassName = attachToExists && showIfClass;
         const nextSlideIfEvent = attachToExists && endIfEvent;
-        // const hideSlideIfClassName = attachToExists && hideIfClass;
 
         const step = this.addStep({
             title: topic,
@@ -228,13 +310,9 @@ Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHel
             canClickTarget: true,
             buttons: [
                 {
-                    action() {
-                        return Promise.all([
-                            ensureEndEventListener(slide, true),
-                            ensureHideWhileDropdownIsOpenListener(slide, true)
-                        ]).then(() => {
-                            return this.back();
-                        })
+                    async action() {
+                        await removeListeners(slide);
+                        return this.back();
                     },
                     classes: `button-red ${isFirst ? ' button-hidden' : ''}`,
                     text: 'Back'
@@ -247,10 +325,11 @@ Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHel
                     text: "Additional Help",
                 },
                 {
-                    action() {
+                    async action() {
                         if (nextSlideIfEvent) {
                             return alert(endIfHint);
                         }
+                        await removeListeners(slide);
                         return this.next();
                     },
                     classes: `button-green ${nextSlideIfEvent ? ' button-greyed-out' : ''}`,
@@ -268,37 +347,34 @@ Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHel
                         Math.round((activeTour.steps.indexOf(activeTour.currentStep) + 1) / activeTour.steps.length * 100);
 
                     addProgressBar($currentStep, currentProgress);
-
-                    /*$(attachTo).off('open.hide').on('open.hide', () => {
-                        step.hide();
-                    })
-                    $(attachTo).off('close.show').on('close.show', () => {
-                        step.show();
-                    })*/
-
-                    // if (hideSlideIfClassName) checkClassConstantly(hideIfClass, $(attachTo), step);
                 }
             },
             beforeShowPromise: function () {
                 return new Promise((resolve) => {
-                    const prevSlide = normalSlides[idx - 1];
 
-                    const beforeShow = [
-                        ensureEndEventListener(prevSlide, true),
+                    /*const setupListeners = [
                         ensureEndEventListener(slide, false),
-                        ensureHideWhileDropdownIsOpenListener(prevSlide, true),
-                        ensureHideWhileDropdownIsOpenListener(slide, false, step)
-                    ]
+                        ensureHideSlideWhileDropdownIsOpenListener(slide, false, step)
+                    ];*/
 
                     return ensureRightTabIsOpen(attachTo).then(() => {
-                        return Promise.all(beforeShow).then(() => {
+                        return addListeners(slide, step).then(() => {
                             if (showSlideIfClassName) {
-                                // $(attachTo).on(showIfClass, resolve)
-                                const checkForClassName = () => {
+                                console.log(firedEvents[tourId]);
+                                $(attachTo).on(showIfClass, () => {
+                                    if (!firedEvents[tourId][idx]){
+                                        firedEvents[tourId][idx] = true;
+                                    }
+                                    return resolve();
+                                })
+                                if (firedEvents[tourId][idx]) {
+                                    return resolve();
+                                }
+                                /*const checkForClassName = () => {
                                     if ($(attachTo).hasClass(showIfClass)) return resolve();
                                 }
                                 checkForClassName();
-                                setInterval(checkForClassName, 500)
+                                setInterval(checkForClassName, 500)*/
                             } else return resolve();
                         });
                     })
@@ -307,64 +383,6 @@ Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHel
             classes: '',
         });
     })
-}
-
-function initializeTour(tourId) {
-    const tour = createTour();
-
-    Shepherd.on('cancel', function () {
-        // show help menu hint on first cancel
-        if (!getCookie("hasSeenHelpMenuHint")) {
-            setCookie("hasSeenHelpMenuHint", true, 365);
-
-            // start help menu hint tour
-            const helpMenuTour = createTour({
-                defaultStepOptions: {
-                    cancelIcon: {
-                        enabled: false
-                    }
-                }
-            });
-
-            const content = `
-                That's no problem!<br/>
-                In case you change your
-                mind, you can <b> always find all
-                available tours for the respective page in this menu! </b>
-            <div class="mascot">
-                <img alt="OCR4all mascot" src=${mascotPath}>
-            </div>
-    `
-
-            helpMenuTour.addStep({
-                title: 'Important hint',
-                text: content,
-                attachTo: {
-                    element: $('.help-icon .material-icons')[0],
-                    on: 'auto'
-                },
-                buttons: [
-                    {
-                        action() {
-                            // we have to cancel it, otherwise Shepherd.on('complete') will fire unintentionally
-                            return this.cancel();
-                        },
-                        classes: 'button-green',
-                        text: 'Got it!'
-                    }
-                ],
-                classes: '--with-icon --single-button',
-            });
-
-            helpMenuTour.start();
-        }
-    });
-
-    Shepherd.on('complete', function () {
-        appendToCookie("completedTours", "---", tourId);
-    })
-
-    return tour;
 }
 
 function addProgressBar(current, progressInPercent) {
