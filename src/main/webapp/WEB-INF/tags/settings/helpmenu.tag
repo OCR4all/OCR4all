@@ -4,6 +4,7 @@
 <script type="text/javascript">
 
     var mascotPath = "${pageContext.servletContext.contextPath}/resources/img/mascot.svg";
+    var firedShowIfEvents;
 
     $(document).ready(() => {
         $('button[data-id="redirectToExternalHelp"]').click(function () {
@@ -16,7 +17,7 @@
         const relativeUrlWithoutTrailingSlash = window.location.pathname.replace(/\/+$/, '');
         $.get('ajax/toursForCurrentUrl', {url: relativeUrlWithoutTrailingSlash}).done(function (tours) {
 
-            firedEvents = new Array(tours.length);
+            firedShowIfEvents = new Array(tours.length);
 
             tours.forEach(function (tour) {
                 const {id, topic, hasCompletedOnce, hotspot, overviewSlide, normalSlides, additionalHelpUrl} = tour;
@@ -71,6 +72,7 @@
                     tour.addNormalSlides(id, topic, additionalHelpUrl, normalSlides, false);
 
                     closeHelpMenu();
+
                     tour.start();
                 });
             })

@@ -1,6 +1,5 @@
 var $helpMenu;
 var $overlay;
-var firedEvents;
 
 function fadeInBackgroundOverlay() {
     $overlay = $('<div id="sidenav-overlay" style="opacity: 0"></div>');
@@ -34,6 +33,27 @@ function openHelpMenu(event) {
 function closeHelpMenu() {
     $helpMenu.css('transform', 'translateX(100%)');
     fadeOutBackgroundOverlay();
+}
+
+function addListeners(slide, step) {
+    return Promise.all([
+        ensureHideSlideWhileDropdownIsOpenListener(slide, false, step),
+        ensureEndEventListener(slide, false)
+    ])
+}
+
+function removeListeners(slide) {
+    return Promise.all([
+        ensureHideSlideWhileDropdownIsOpenListener(slide, true),
+        ensureEndEventListener(slide, true)
+    ])
+}
+
+function withCompoundSelect($attachTo) {
+    const compoundSelectId = $attachTo.attr('data-activates')?.replace('select-options-', '');
+    const $compoundSelect = $(`select[data-select-id="${compoundSelectId}"]`);
+
+    return [$attachTo, $compoundSelect].filter(el => el.length);
 }
 
 function ensureRightTabIsOpen(attachTo) {
@@ -90,10 +110,8 @@ function ensureHideSlideWhileDropdownIsOpenListener(slide, cleanup, step) {
         const $attachTo = $(attachTo);
         if (!$attachTo.length) return resolve();
         if (cleanup) {
-            console.log("detach ", $attachTo);
             $attachTo.off(thisSpecificOpenEvent).off(thisSpecificCloseEvent);
         } else {
-            console.log("attach ", $attachTo);
             $attachTo.off(thisSpecificOpenEvent).on(thisSpecificOpenEvent, () => {
                 step.hide();
             });
@@ -103,11 +121,6 @@ function ensureHideSlideWhileDropdownIsOpenListener(slide, cleanup, step) {
         }
         return resolve();
     })
-}
-
-function getActiveSlide(slides) {
-    const activeSlideIdx = Shepherd.activeTour.steps.indexOf(Shepherd.activeTour.currentStep);
-    return slides[activeSlideIdx];
 }
 
 function createTour(defaultOptionOverwrites = {}) {
@@ -144,9 +157,14 @@ function createTour(defaultOptionOverwrites = {}) {
 }
 
 function initializeTour(tourId, normalSlides) {
+    function getActiveSlide(slides) {
+        const activeSlideIdx = Shepherd.activeTour.steps.indexOf(Shepherd.activeTour.currentStep);
+        return slides[activeSlideIdx];
+    }
+
     const tour = createTour();
 
-    firedEvents[tourId] = new Array(normalSlides.length).fill(false);
+    firedShowIfEvents[tourId] = new Array(normalSlides.length).fill(false);
 
     Shepherd.on('cancel', async function () {
         await removeListeners(getActiveSlide(normalSlides));
@@ -204,44 +222,6 @@ function initializeTour(tourId, normalSlides) {
 
     return tour;
 }
-
-function addListeners(slide, step) {
-    return Promise.all([
-        ensureHideSlideWhileDropdownIsOpenListener(slide, false, step),
-        ensureEndEventListener(slide, false)
-    ])
-}
-
-function removeListeners(slide) {
-    return Promise.all([
-        ensureHideSlideWhileDropdownIsOpenListener(slide, true),
-        ensureEndEventListener(slide, true)
-    ])
-}
-
-function withCompoundSelect($attachTo) {
-    const compoundSelectId = $attachTo.attr('data-activates')?.replace('select-options-', '');
-    const $compoundSelect = $(`select[data-select-id="${compoundSelectId}"]`);
-
-    return [$attachTo, $compoundSelect].filter(el => el.length);
-}
-
-/*function checkClassConstantly(className, $attachTo, step) {
-    const interval = setInterval(() => {
-        if (!Shepherd.activeTour || !$(Shepherd.activeTour.currentStep.el).is(step.el)) {
-            clearInterval(interval);
-            return;
-        }
-
-        const hasClass = $attachTo.hasClass(className);
-
-        if (hasClass) {
-            step.hide();
-        } else if (!hasClass && !step.isOpen()) {
-            step.show();
-        }
-    }, 500)
-}*/
 
 Shepherd.Tour.prototype.addOverviewSlide = function (tourId, topic, textContent, $hotspot) {
 
@@ -350,34 +330,21 @@ Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHel
                 }
             },
             beforeShowPromise: function () {
-                return new Promise((resolve) => {
+                return new Promise(async (resolve) => {
 
-                    /*const setupListeners = [
-                        ensureEndEventListener(slide, false),
-                        ensureHideSlideWhileDropdownIsOpenListener(slide, false, step)
-                    ];*/
+                    await ensureRightTabIsOpen(attachTo);
+                    await addListeners(slide, step);
 
-                    return ensureRightTabIsOpen(attachTo).then(() => {
-                        return addListeners(slide, step).then(() => {
-                            if (showSlideIfClassName) {
-                                console.log(firedEvents[tourId]);
-                                $(attachTo).on(showIfClass, () => {
-                                    if (!firedEvents[tourId][idx]){
-                                        firedEvents[tourId][idx] = true;
-                                    }
-                                    return resolve();
-                                })
-                                if (firedEvents[tourId][idx]) {
-                                    return resolve();
-                                }
-                                /*const checkForClassName = () => {
-                                    if ($(attachTo).hasClass(showIfClass)) return resolve();
-                                }
-                                checkForClassName();
-                                setInterval(checkForClassName, 500)*/
-                            } else return resolve();
-                        });
-                    })
+                    if (showSlideIfClassName) {
+                        const showIfEventHasAlreadyBeenFired = firedShowIfEvents[tourId][idx];
+                        $(attachTo).on(showIfClass, () => {
+                            firedShowIfEvents[tourId][idx] = true;
+                            return resolve();
+                        })
+                        if (showIfEventHasAlreadyBeenFired) {
+                            return resolve();
+                        }
+                    } else return resolve();
                 })
             },
             classes: '',
