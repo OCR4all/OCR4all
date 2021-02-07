@@ -106,18 +106,8 @@
                                                             $('#modal_convertpdf').modal('open');
                                                         }
                                                         else {
-                                                            // Two scenarios for loading overview page:
-                                                            // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
-                                                            // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
-                                                            if( newPageVisit == false ) {
-                                                                location.reload();
-                                                            }
-                                                            else {
-                                                                // Load datatable after the last process update is surely finished
-                                                                datatable();
-                                                                // Load image list
-                                                                initializeImageList("OCR", false, data);
-                                                            }
+                                                            // Load datatable after the last process update is surely finished
+                                                            datatable();
                                                         }
                                                     });
                                                 }
