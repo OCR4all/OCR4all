@@ -108,6 +108,10 @@
                                                         else {
                                                             // Load datatable after the last process update is surely finished
                                                             datatable();
+
+                                                            // Dynamically change loaded project display as site isn't getting reloaded after project loading anymore
+                                                            let proj_name = $('#projectDir').val().split("/").splice(-2)[0]
+                                                            $('.project-name').text(proj_name)
                                                         }
                                                     });
                                                 }
