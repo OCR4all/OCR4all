@@ -116,12 +116,11 @@
                                                                         const $projectName = $('.project-name span');
 
                                                                         $projectName.text(projectName);
-                                                                        // $projectName.addClass("project-loaded");
 
-                                                                        const projectLoaded = new CustomEvent("projectLoaded", {
+                                                                        const projectLoadedEvent = new CustomEvent("projectLoaded", {
                                                                             bubbles: true
                                                                         });
-                                                                        $projectName[0].dispatchEvent(projectLoaded);
+                                                                        $projectName[0].dispatchEvent(projectLoadedEvent);
 
                                                                         // Load datatable after the last process update is surely finished
                                                                         datatable();

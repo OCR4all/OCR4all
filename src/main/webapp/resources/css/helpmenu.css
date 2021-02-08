@@ -301,6 +301,10 @@
     order: 1;
 }
 
+.slide.--is-last .shepherd-cancel-icon{
+    visibility: hidden;
+}
+
 
 
 

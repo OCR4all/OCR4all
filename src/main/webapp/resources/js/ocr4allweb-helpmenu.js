@@ -1,40 +1,47 @@
 var $helpMenu;
 var $overlay;
 
-function fadeInBackgroundOverlay() {
-    $overlay = $('<div id="sidenav-overlay" style="opacity: 0"></div>');
-    $('body').append($overlay);
-    $overlay.velocity({opacity: 1}, {
-        duration: 300,
-        queue: false,
-        easing: 'easeOutQuad'
-    });
-    $overlay.on('click', closeHelpMenu);
-}
-
-function fadeOutBackgroundOverlay() {
-    $overlay = $('#sidenav-overlay');
-    $overlay.velocity({opacity: 0}, {
-        duration: 200,
-        queue: false,
-        easing: 'easeOutQuad',
-        complete: function () {
-            $(this).remove();
-        }
-    });
-}
-
+/*
+    Opens the helpmenu by sliding it out and adding a background overlay
+ */
 function openHelpMenu(event) {
+    function fadeInBackgroundOverlay() {
+        $overlay = $('<div id="sidenav-overlay" style="opacity: 0"></div>');
+        $('body').append($overlay);
+        $overlay.velocity({opacity: 1}, {
+            duration: 300,
+            queue: false,
+            easing: 'easeOutQuad'
+        });
+        $overlay.on('click', closeHelpMenu);
+    }
     event.stopPropagation();
     $helpMenu.css('transform', 'translateX(0)');
     fadeInBackgroundOverlay();
 }
 
+/*
+    Closes the helpmenu by sliding it back in and removing the background overlay
+ */
 function closeHelpMenu() {
+    function fadeOutBackgroundOverlay() {
+        $overlay = $('#sidenav-overlay');
+        $overlay.velocity({opacity: 0}, {
+            duration: 200,
+            queue: false,
+            easing: 'easeOutQuad',
+            complete: function () {
+                $(this).remove();
+            }
+        });
+    }
     $helpMenu.css('transform', 'translateX(100%)');
     fadeOutBackgroundOverlay();
 }
 
+/*
+    Adds all relevant listeners to the current open slide
+ */
 function addListeners(slide, step) {
     return Promise.all([
         ensureHideSlideWhileDropdownIsOpenListener(slide, false, step),
@@ -42,6 +49,9 @@ function addListeners(slide, step) {
     ])
 }
 
+/*
+    Removes all added listeners from the open slide whenever it becomes inactive (next, back, cancel)
+ */
 function removeListeners(slide) {
     return Promise.all([
         ensureHideSlideWhileDropdownIsOpenListener(slide, true),
@@ -49,6 +59,10 @@ function removeListeners(slide) {
     ])
 }
 
+/*
+    Returns $attachTo together with the underlying select element, in case $attachTo is the wrapping input for a select.
+    If $attachTo is not a wrapper element for a material select, an array with only $attachTo is returned
+ */
 function withCompoundSelect($attachTo) {
     const compoundSelectId = $attachTo.attr('data-activates')?.replace('select-options-', '');
     const $compoundSelect = $(`select[data-select-id="${compoundSelectId}"]`);
@@ -56,6 +70,10 @@ function withCompoundSelect($attachTo) {
     return [$attachTo, $compoundSelect].filter(el => el.length);
 }
 
+/*
+    In case there are multiple tabs on the page (e.g. Settings, Status and Overview), ensures that the tab that contains
+    attachTo is opened before a slide gets active
+ */
 function ensureRightTabIsOpen(attachTo) {
     return new Promise((resolve) => {
         const $attachTo = $(attachTo);
@@ -79,6 +97,10 @@ function ensureRightTabIsOpen(attachTo) {
     })
 }
 
+/*
+    Helper function for addListener/removeListener. Ensures that the listener for manually showing the next slide on
+    a certain event is added (cleanup = false) or removed (cleanup = true)
+ */
 function ensureEndEventListener(slide, cleanup) {
     return new Promise((resolve) => {
         if (!slide) return resolve();
@@ -101,6 +123,10 @@ function ensureEndEventListener(slide, cleanup) {
     })
 }
 
+/*
+    Helper function for addListener/removeListener. Ensures that the current slide gets hidden whenever a dropdown is open,
+    and gets shown whenever the dropdown is closed again. Adds the listener on cleanup = false and removes it on cleanup = true
+ */
 function ensureHideSlideWhileDropdownIsOpenListener(slide, cleanup, step) {
     const thisSpecificOpenEvent = 'open.shepherd'; // namespace the event for jQuery on and off listeners
     const thisSpecificCloseEvent = 'close.shepherd'; // namespace the event for jQuery on and off listeners
@@ -123,6 +149,9 @@ function ensureHideSlideWhileDropdownIsOpenListener(slide, cleanup, step) {
     })
 }
 
+/*
+    Creates the shepherd tour object
+ */
 function createTour(defaultOptionOverwrites = {}) {
     const defaultOptions = {
         useModalOverlay: !isChrome(),
@@ -156,7 +185,51 @@ function createTour(defaultOptionOverwrites = {}) {
     return new Shepherd.Tour(deepMerge(defaultOptions, defaultOptionOverwrites));
 }
 
+/*
+    Creates the shepherd tour object and sets up relevant listeners (on tour cancel, on tour complete)
+ */
 function initializeTour(tourId, normalSlides) {
+    function showHelpMenuHintTour() {
+        const helpMenuTour = createTour({
+            defaultStepOptions: {
+                cancelIcon: {
+                    enabled: false
+                }
+            }
+        });
+
+        const content = `
+                That's no problem!<br/>
+                In case you change your
+                mind, you can <b> always find all
+                available tours for the respective page in this menu! </b>
+            <div class="mascot">
+                <img alt="OCR4all mascot" src=${mascotPath}>
+            </div>
+    `
+
+        helpMenuTour.addStep({
+            title: 'Important hint',
+            text: content,
+            attachTo: {
+                element: $('.help-icon .material-icons')[0],
+                on: 'auto'
+            },
+            buttons: [
+                {
+                    action() {
+                        // we have to cancel it, otherwise Shepherd.on('complete') will fire unintentionally
+                        return this.cancel();
+                    },
+                    classes: 'button-green',
+                    text: 'Got it!'
+                }
+            ],
+            classes: '--with-icon --single-button',
+        });
+
+        helpMenuTour.start();
+    }
     function getActiveSlide(slides) {
         const activeSlideIdx = Shepherd.activeTour.steps.indexOf(Shepherd.activeTour.currentStep);
         return slides[activeSlideIdx];
@@ -170,48 +243,8 @@ function initializeTour(tourId, normalSlides) {
         await removeListeners(getActiveSlide(normalSlides));
         // show help menu hint on first cancel
         if (!getCookie("hasSeenHelpMenuHint")) {
-            setCookie("hasSeenHelpMenuHint", true, 365);
-
-            // start help menu hint tour
-            const helpMenuTour = createTour({
-                defaultStepOptions: {
-                    cancelIcon: {
-                        enabled: false
-                    }
-                }
-            });
-
-            const content = `
-                That's no problem!<br/>
-                In case you change your
-                mind, you can <b> always find all
-                available tours for the respective page in this menu! </b>
-            <div class="mascot">
-                <img alt="OCR4all mascot" src=${mascotPath}>
-            </div>
-    `
-
-            helpMenuTour.addStep({
-                title: 'Important hint',
-                text: content,
-                attachTo: {
-                    element: $('.help-icon .material-icons')[0],
-                    on: 'auto'
-                },
-                buttons: [
-                    {
-                        action() {
-                            // we have to cancel it, otherwise Shepherd.on('complete') will fire unintentionally
-                            return this.cancel();
-                        },
-                        classes: 'button-green',
-                        text: 'Got it!'
-                    }
-                ],
-                classes: '--with-icon --single-button',
-            });
-
-            helpMenuTour.start();
+            setCookie("hasSeenHelpMenuHint", true);
+            showHelpMenuHintTour();
         }
     });
 
@@ -223,6 +256,9 @@ function initializeTour(tourId, normalSlides) {
     return tour;
 }
 
+/*
+    Adds an overview slide to the tour that calls this function
+ */
 Shepherd.Tour.prototype.addOverviewSlide = function (tourId, topic, textContent, $hotspot) {
 
     const content = `
@@ -269,6 +305,9 @@ Shepherd.Tour.prototype.addOverviewSlide = function (tourId, topic, textContent,
     });
 }
 
+/*
+    Adds normal slides to the tour that calls this function
+ */
 Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHelpUrl, normalSlides, hasOverviewSlide) {
     normalSlides.forEach((slide, idx) => {
         const {attachTo, showIfEvent, endIfEvent, endIfHint, textContent, mediaPlacement, mediaUrl, mediaType} = slide;
@@ -352,11 +391,14 @@ Shepherd.Tour.prototype.addNormalSlides = function (tourId, topic, additionalHel
                     } else return resolve();
                 })
             },
-            classes: slideHasMedia ? `--with-media --${mediaPlacement.toLowerCase()}` : '',
+            classes: getClasses(slideHasMedia, mediaPlacement, isLast)
         });
     })
 }
 
+/*
+    Adds a progress bar to the current slide
+ */
 function addProgressBar(current, progressInPercent) {
     const adaptedProgress = progressInPercent === 0 ? progressInPercent + 1 : progressInPercent;
     const progressBar = $(`
@@ -369,6 +411,24 @@ function addProgressBar(current, progressInPercent) {
     progressBar.insertBefore(footer);
 }
 
+/*
+    Gets the classes to add to the normal slide
+ */
+function getClasses(slideHasMedia, mediaPlacement, isLast) {
+    let classes = [];
+    if (slideHasMedia) {
+        classes.push("--with-media");
+        classes.push(`--${mediaPlacement.toLowerCase()}`)
+    }
+    if (isLast) {
+        classes.push("--is-last");
+    }
+    return classes.join(" ");
+}
+
+/*
+    Adds a hotspot to the desired position and returns the jQuery object for it
+ */
 function addHotspot(hotspot, tourId) {
     const {selectorToAttach, leftValue} = hotspot;
 
@@ -395,6 +455,9 @@ function addHotspot(hotspot, tourId) {
     return $(`button[data-id="offerTour${tourId}`);
 }
 
+/*
+    Removes a hotspot and sets a cookie that indicates, that the hotspot should be hidden from now on
+ */
 function removeHotspot($hotspot, tourId) {
     $hotspot.fadeOut();
     appendToCookie("hiddenHotspots", "---", tourId);

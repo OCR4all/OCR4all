@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Controller
@@ -35,13 +36,13 @@ public class TourController {
             List<Tour> toursForCurrentUrl = query.list();
 
             if (!completedToursCookie.isEmpty()) {
-                Stream<Integer> completedTourIds = Stream.of(completedToursCookie.split("---")).map(Integer::valueOf);
-                toursForCurrentUrl.forEach(tour -> tour.setHasCompletedOnce(completedTourIds.anyMatch(completedId -> completedId.equals(tour.getId()))));
+                Supplier<Stream<Integer>> completedTourIdsSupplier = () -> Stream.of(completedToursCookie.split("---")).map(Integer::valueOf);
+                toursForCurrentUrl.forEach(tour -> tour.setHasCompletedOnce(completedTourIdsSupplier.get().anyMatch(completedId -> completedId.equals(tour.getId()))));
             }
 
             if (!hiddenHotspotsCookie.isEmpty()) {
-                Stream<Integer> hiddenHotspotIds = Stream.of(hiddenHotspotsCookie.split("---")).map(Integer::valueOf);
-                toursForCurrentUrl.forEach(tour -> tour.getHotspot().setIsHidden(hiddenHotspotIds.anyMatch(hiddenId -> hiddenId.equals(tour.getId()))));
+                Supplier<Stream<Integer>> hiddenHotspotIdsSupplier = () -> Stream.of(hiddenHotspotsCookie.split("---")).map(Integer::valueOf);
+                toursForCurrentUrl.forEach(tour -> tour.getHotspot().setIsHidden(hiddenHotspotIdsSupplier.get().anyMatch(hiddenId -> hiddenId.equals(tour.getId()))));
             }
 
              /*
@@ -76,7 +77,6 @@ public class TourController {
             return ResponseEntity.ok(toursForCurrentUrl);
         } catch (Exception e) {
             e.printStackTrace();
-            // String rootCause = findRootCause(e);
             return ResponseEntity.status(500).body(e);
         }
     }
