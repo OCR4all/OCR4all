@@ -4,6 +4,16 @@
     <tbody>
         <tr>
             <td>
+                <form action="#">
+                    <p>
+                        <input type="checkbox" id="includeOriginals" />
+                        <label for="includeOriginals">Include original images</label>
+                    </p>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
                     <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}" />
                     <input type="hidden" id="bookname" name="bookname" value="processing" />
