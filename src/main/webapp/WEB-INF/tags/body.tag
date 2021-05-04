@@ -23,7 +23,7 @@
         <ul id="slide-out" class="side-nav hiddendiv">
             <li class="site-description">OCR4all</li>
             <li class="nav-separator"></li>
-            <li><a href="${pageContext.request.contextPath}">Project Overview</a></li>
+            <li><a href="${pageContext.request.contextPath}/">Project Overview</a></li>
             <li class="nav-separator"></li>
             <li><a href="ProcessFlow">Process Flow</a></li>
             <li class="nav-separator"></li>
