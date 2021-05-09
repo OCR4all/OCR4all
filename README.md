@@ -28,7 +28,7 @@ OCR4all is under active development and consequently, frequent releases containi
 ## Included Projects
 
 * [OCRopus](https://github.com/tmbdev/ocropy) - Collection of document analysis programs
-* [calamari](https://github.com/ChWick/calamari) - OCR Engine based on OCRopy and Kraken
+* [Calamari](https://github.com/ChWick/calamari) - OCR Engine based on OCRopy and Kraken
 * [LAREX](https://github.com/chreul/LAREX) - Layout analysis on early printed books
 
 ### Formerly included / inspired by
@@ -46,17 +46,17 @@ OCR4all is under active development and consequently, frequent releases containi
 
 * **Dr. Herbert Baier Saip** (*lead*)
 * **Maximilian Nöth** (*OCR4all, LAREX, and Calamari*)
-* **Christoph Wick** (*Calamari*)
+* **Dr. Christoph Wick** (*Calamari*)
 * **Andreas Büttner** (*Calamari and nashi*)
-* **Kevin Chadbourne** (*OCR4all and LAREX*)
-* **Yannik Herbst** (*OCR4all, LAREX, and distribution via VirtualBox*)
+* **Kevin Chadbourne** (*LAREX*)
+* **Yannik Herbst** (*distribution via VirtualBox*)
 * **Björn Eyselein** (*Artifactory and distribution via Docker*)
 
 ### Miscellaneous
 
 * **Raphaëlle Jung** (*guides and artwork*)
 * **Dr. Uwe Springmann** (*ideas and feedback*)
-* **Prof. Dr. Frank Puppe** (*funding*)
+* **Prof. Dr. Frank Puppe** (*ideas and feedback*)
 
 ### Former Project Members
 
@@ -68,6 +68,7 @@ OCR4all is under active development and consequently, frequent releases containi
 
 
 ## Funding
+* [DFG-funded Initiative "OCR-D" (Phase 2 and 3)](https://ocr-d.de/en/)
 * [BMBF Project “Kallimachos“](http://www.kallimachos.de/)
 * [Centre for Philology and Digitality (University of Würzburg)](https://www.uni-wuerzburg.de/zpd)
 * [Chair of Artificial Intelligence (University of Würzburg)](https://www.informatik.uni-wuerzburg.de/en/is)
