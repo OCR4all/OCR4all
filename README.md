@@ -71,3 +71,23 @@ OCR4all is under active development and consequently, frequent releases containi
 * [BMBF Project “Kallimachos“](http://www.kallimachos.de/)
 * [Centre for Philology and Digitality (University of Würzburg)](https://www.uni-wuerzburg.de/zpd)
 * [Chair of Artificial Intelligence (University of Würzburg)](https://www.informatik.uni-wuerzburg.de/en/is)
+
+
+## Citing OCR4all
+
+If you are using OCR4all please cite:
+
+> Reul, C., Christ, D., Hartelt, A., Balbach, N., Wehner, M., Springmann, U., Wick, C., Grundig, Büttner, A., C., Puppe, F.: *OCR4all — An open-source tool providing a (semi-) automatic OCR workflow for historical printings* Applied Sciences **9**(22) (2019)
+
+```
+@article{reul2019ocr4all,
+  title={OCR4all—An open-source tool providing a (semi-) automatic OCR workflow for historical printings},
+  author={Reul, Christian and Christ, Dennis and Hartelt, Alexander and Balbach, Nico and Wehner, Maximilian and Springmann, Uwe and Wick, Christoph and Grundig, Christine and B{\"u}ttner, Andreas and Puppe, Frank},
+  journal={Applied Sciences},
+  volume={9},
+  number={22},
+  pages={4853},
+  year={2019},
+  publisher={Multidisciplinary Digital Publishing Institute}
+}
+```
