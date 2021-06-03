@@ -84,7 +84,7 @@ public class BatchProcessOverview {
 	 * Creates a batch process overview.
 	 * 
 	 * @param step          The step.
-	 * @param configuration
+	 * @param processWorker The associated ProcessWorker instance
 	 * @since 1.8
 	 */
 	public BatchProcessOverview(int step, BatchWorkflow.ProcessWorker processWorker) {
