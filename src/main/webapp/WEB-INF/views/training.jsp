@@ -16,18 +16,21 @@
                 $.get( 'ajax/recognition/listModels' )
                 .done(function( data ) {
                     $.each(data, function(key, value) {
-                        var optionEl = $("<option></option>").attr("value", value).text(key);
+                        let optionEl = $("<option></option>").attr("value", value).text(key);
                         $("#pretrainingDummySelect").append(optionEl);
                     });
                     // Update select with newly added values
                     $("#pretrainingDummySelect").material_select();
                 });
 
+                $('tr[data-id="pretrainingTr"]').not('#pretrainingDummyTr').remove();
+                clonePretrainingElement("", $('#pretrainingDummyTr'), "All");
 
-                var currentHardwareType = "";
+
+                let currentHardwareType = "";
                 // Handle hardware type dropdown menu including default settings
                 $('#hardwareType').on('change', function() {
-                    var type = $(this).val();
+                    let type = $(this).val();
                     // Prevent further actions if the type did not change
                     if( type == currentHardwareType )
                         return;
@@ -45,15 +48,15 @@
 
                 // Helper function to get current amount of folds (uses default value as fallback)
                 function getCurrentFolds() {
-                    var folds = parseInt($('#training--n_folds').val()) || 0;
+                    let folds = parseInt($('#training--n_folds').val()) || 0;
                     if( folds <= 0 ) folds = parseInt($('#defaultFolds').val()) || 0;
                     return folds;
                 }
 
                 // Helper functions for dynamic generation of pretraining selection elements
                 function clonePretrainingElement(idSuffix, addAfterElement, spanText) {
-                    var newElementId = 'pretrainingTr' + idSuffix;
-                    var modelEl = $('#pretrainingDummyTr').clone().prop('id', newElementId);
+                    let newElementId = 'pretrainingTr' + idSuffix;
+                    let modelEl = $('#pretrainingDummyTr').clone().prop('id', newElementId);
                     $(addAfterElement).after(modelEl);
                     $('#' + newElementId).find('select').prop('id', 'pretrainingModelSelect' + idSuffix);
                     $('#' + newElementId).find('span').first().html(spanText);
@@ -63,10 +66,10 @@
                     $('select[data-id="pretrainingModelSelect"]').material_select();
                 }
 
-                var currentPretrainingType = "";
+                let currentPretrainingType = "";
                 // Handle pretraining dropdown menus for the new models
                 $('#pretrainingType').on('change', function() {
-                    var type = $(this).val();
+                    let type = $(this).val();
                     // Prevent further actions if the type did not change
                     if( type == currentPretrainingType )
                         return;
@@ -78,7 +81,7 @@
                         clonePretrainingElement("", $('#pretrainingDummyTr'), "All");
                     }
                     else if( type == "multiple_models" ) {
-                        var folds = getCurrentFolds();
+                        let folds = getCurrentFolds();
                         if( folds <= 0 ) return;
 
                         for(; folds > 0; folds--) {
@@ -90,13 +93,13 @@
 
                 // Adjust pretraining dropdown menu count if folds change
                 $('#training--n_folds').on('change', function() {
-                    var pretrainingType = $('#pretrainingType').val();
+                    let pretrainingType = $('#pretrainingType').val();
                     if( pretrainingType != "multiple_models" )
                         return;
 
-                    var newFolds = getCurrentFolds();
+                    let newFolds = getCurrentFolds();
                     if( newFolds <= 0 ) return;
-                    var currentFolds = $('tr[data-id="pretrainingTr"]').not('#pretrainingDummyTr').length;
+                    let currentFolds = $('tr[data-id="pretrainingTr"]').not('#pretrainingDummyTr').length;
 
                     if( newFolds < currentFolds ) {
                         // Remove unnecessary pretraining elements
@@ -135,13 +138,13 @@
                 // Module specufic function to get the input parameters
                 function getExtendedInputParams() {
                     // Fetch basic input parameters
-                    var ajaxParams = getInputParams();
+                    let ajaxParams = getInputParams();
 
                     // Add the specific training identifier
                     ajaxParams = $.extend(ajaxParams, { "trainingId" : $('#trainingId').val() });
 
                     // Check if pretraining arguments need to be added
-                    var pretrainingType = $('#pretrainingType').val();
+                    let pretrainingType = $('#pretrainingType').val();
                     if( pretrainingType == "from_scratch" )
                         return ajaxParams;
 
@@ -149,7 +152,7 @@
                         return ajaxParams;
 
                     // Build new weights parameter out of dyamically created select elements
-                    var params = ['--weights'];
+                    let params = ['--weights'];
                     $.each($('tr[data-id="pretrainingTr"]').not('#pretrainingDummyTr').find('select'), function(index, element) {
                         params.push($(this).val());
                     });
