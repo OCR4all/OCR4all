@@ -106,32 +106,24 @@
                                                             $('#modal_convertpdf').modal('open');
                                                         }
                                                         else {
-                                                            // Two scenarios for loading overview page:
-                                                            // 1. Load or reload new project: Page needs reload to update GTC_Web link in navigation
-                                                            // 2. Load project due to revisiting overview page: Only datatable needs to be initialized
-                                                            if( newPageVisit == false ) {
-                                                                // location.reload();
-                                                                $.get("ajax/overview/getProjectName")
-                                                                    .done(function(projectName){
-                                                                        const $projectName = $('.project-name span');
+                                                            // Load datatable after the last process update is surely finished
+                                                            datatable();
 
-                                                                        $projectName.text(projectName);
+                                                            // Dynamically change loaded project display as site isn't getting reloaded after project loading anymore
+                                                            $.get("ajax/overview/getProjectName")
+                                                                .done(function(projectName){
+                                                                    const $projectName = $('.project-name span');
 
-                                                                        const projectLoadedEvent = new CustomEvent("projectLoaded", {
-                                                                            bubbles: true
-                                                                        });
-                                                                        $projectName[0].dispatchEvent(projectLoadedEvent);
+                                                                    $projectName.text(projectName);
 
-                                                                        // Load datatable after the last process update is surely finished
-                                                                        datatable();
-                                                                    })
-                                                            }
-                                                            else {
-                                                                // Load datatable after the last process update is surely finished
-                                                                datatable();
-                                                                // Load image list
-                                                                initializeImageList("OCR", false, data);
-                                                            }
+                                                                    const projectLoadedEvent = new CustomEvent("projectLoaded", {
+                                                                        bubbles: true
+                                                                    });
+                                                                    $projectName[0].dispatchEvent(projectLoadedEvent);
+
+                                                                    // Load datatable after the last process update is surely finished
+                                                                    datatable();
+                                                                })
                                                         }
                                                     });
                                                 }

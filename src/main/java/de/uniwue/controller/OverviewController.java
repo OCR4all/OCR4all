@@ -34,7 +34,7 @@ public class OverviewController {
      * @return Returns the helper object of the process
      */
     public OverviewHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (GenericController.isSessionValid(session, response) == false) {
+        if (!GenericController.isSessionValid(session, response)) {
             return null;
         }
 
@@ -57,8 +57,7 @@ public class OverviewController {
      */
     @RequestMapping("/")
     public ModelAndView showOverview() {
-        ModelAndView mv = new ModelAndView("overview");
-        return mv;
+        return new ModelAndView("overview");
     }
 
     /**
