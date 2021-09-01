@@ -8,6 +8,35 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
+                let imageMap;
+                $.ajax({
+                    url : "ajax/generic/getDirectImageMap",
+                    type: "GET",
+                    dataType: "json",
+                    async : false,
+                    success : function( data ) {
+                        imageMap = JSON.stringify(data);
+                        document.getElementById("imageMap").value = imageMap;
+                    },
+                });
+
+                // create mimeType for each File
+                let mimeTypeMap = {};
+                let imap = JSON.parse(imageMap);
+                for (const [key, value] of Object.entries(imap)) {
+                    if(value instanceof Array) {
+                        for(let s of value) {
+                            let path = s;
+                            if(typeof path === 'string'){
+                                let imgExt = path.split('.').pop();
+                                mimeTypeMap[path] = ("image/" + imgExt);
+                            }
+                        }
+                    }
+                }
+                // Fill Form Data
+                document.getElementById('fileMap').value = imageMap;
+                document.getElementById('mimeMap').value = JSON.stringify(mimeTypeMap);
                 // Prevent redirecting to Larex if image folder does not exist
                 $("#larexForm").submit(function(e){
                     $.ajax({

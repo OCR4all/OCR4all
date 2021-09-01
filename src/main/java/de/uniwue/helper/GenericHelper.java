@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.*;
 
 import de.uniwue.config.ProjectConfiguration;
 
@@ -99,5 +99,24 @@ public class GenericHelper {
      */
     public static int getLogicalThreadCount() {
         return Runtime.getRuntime().availableProcessors();
+    }
+
+    /**
+     * Builds a map containing all imgExt for each image in /processing
+     *
+     * @return Number of logical threads
+     */
+    public Map<String, List<String>> getImageMap() {
+        Map<String, List<String>> imageMap = new TreeMap<>();
+        File directImageFolder = new File(projConf.PREPROC_DIR);
+        File[] images = directImageFolder.listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
+        for (File image : images) {
+            String imageName = image.getName().split("\\.")[0];
+            List<String> imagePathList = new ArrayList<>();
+            if(imageMap.containsKey(imageName)) { imagePathList = imageMap.get(imageName); }
+            imagePathList.add(image.getAbsolutePath());
+            imageMap.put(imageName, imagePathList);
+        }
+        return imageMap;
     }
 }

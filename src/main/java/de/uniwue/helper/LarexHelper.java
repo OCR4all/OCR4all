@@ -1,7 +1,9 @@
 package de.uniwue.helper;
 
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
@@ -34,7 +36,7 @@ public class LarexHelper {
     /**
      * Constructor
      *
-     * @param projectDir Path to the project directory
+     * @param projDir Path to the project directory
      * @param projectImageType Type of the project (binary,gray)
      */
     public LarexHelper(String projDir, String projectImageType) {
