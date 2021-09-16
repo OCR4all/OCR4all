@@ -221,7 +221,7 @@ public class OverviewHelper {
      *
      * @param pageId Identifiers of the pages (e.g 0002,0003)
      * @return Sorted map of page content
-     * @throws IOException 
+     * @throws IOException
      */
     public Map<String, String[]> pageContent(String pageId) throws IOException {
         Map<String, String[]> pageContent = new TreeMap<String, String[]>();
@@ -263,7 +263,7 @@ public class OverviewHelper {
 
             pageContent.put(segmentDir.getName(), segmentIds.toArray(new String[segmentIds.size()]));
         }
- 
+
         return pageContent;
     }
 
@@ -324,7 +324,7 @@ public class OverviewHelper {
      * Checks if all filenames have the correct IMG_EXT and the project file naming e.g (0001, 0002 ... XXXX)
      *
      * @return Project validation status
-     * @throws IOException 
+     * @throws IOException
      */
     public boolean isProjectValid() throws IOException {
         ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
@@ -339,7 +339,7 @@ public class OverviewHelper {
         .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
         .sorted()
         .forEach(
-            fileEntry -> { 
+            fileEntry -> {
                 imagesToConvert.add(fileEntry);
             }
         );
@@ -351,7 +351,7 @@ public class OverviewHelper {
         File[] imagesWithCorrectNaming = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}" + projConf.IMG_EXT);
         File[] imagesAll = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
         // Check for images with incorrect naming
-        if (imagesWithCorrectNaming.length != imagesAll.length) 
+        if (imagesWithCorrectNaming.length != imagesAll.length)
             return false;
 
         return true;
@@ -365,7 +365,7 @@ public class OverviewHelper {
      */
     public boolean isLegacy() {
 		File project = Paths.get(projConf.OCR_DIR).toFile();
-		// Check for every folder inside the inputs folder that consists of 
+		// Check for every folder inside the inputs folder that consists of
 		// numbers and may therefore be legacy data
 		if(project.exists()) {
 			long numberDirectories = Arrays.stream(project.listFiles())
@@ -399,13 +399,14 @@ public class OverviewHelper {
         String dir = projConf.PREPROC_DIR;
 
         List<String> command = new ArrayList<String>();
+        command.add("legacy-convert");
 
         command.add("-p");
         command.add(dir);
 
         try {
             processHandler = new ProcessHandler();
-            processHandler.startProcess("legacy_convert", command, false);
+            processHandler.startProcess("ocr4all-helper-scripts", command, false);
 
             cleanupLegacyFiles();
         }catch (Exception e){
@@ -469,13 +470,13 @@ public class OverviewHelper {
     /**
      * Converts all images to PNG Extension
      *
-     * @throws IOException 
+     * @throws IOException
      */
     public void convertImagesToPNG() throws IOException {
         if (stopProcess == true)
             return;
         ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
-        for (String ext : projConf.CONVERT_IMG_EXTS) 
+        for (String ext : projConf.CONVERT_IMG_EXTS)
             allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
 
         // File depth of 1 -> no recursive (file)listing
@@ -519,7 +520,7 @@ public class OverviewHelper {
     /**
      * Renames all files in the 'original' folder to names that consists of an ascending number of digits (e.g 0001, 0002 ...)
      *
-     * @throws IOException 
+     * @throws IOException
      */
     public void renameFiles() throws IOException {
         if (stopProcess == true)
@@ -559,8 +560,8 @@ public class OverviewHelper {
     }
 
     /**
-     * Adjustments to files so that they correspond to the project standard 
-     * 
+     * Adjustments to files so that they correspond to the project standard
+     *
      * @param backupDelete Determines if a backup of the image folder is required when
      *                     TRUE => backup folder containing old images will be created
      *                     FALSE => no backup of old images will be created
@@ -603,7 +604,7 @@ public class OverviewHelper {
         // Initialize the status structure
         processState = new TreeMap<String, TreeMap<String, Boolean>>();
         ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
-        for (String ext : projConf.CONVERT_IMG_EXTS) 
+        for (String ext : projConf.CONVERT_IMG_EXTS)
             allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
         allPredicates.add(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT));
         // File depth of 1 -> no recursive (file)listing
@@ -613,7 +614,7 @@ public class OverviewHelper {
         .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
         .sorted()
         .forEach(
-            fileEntry -> { 
+            fileEntry -> {
                 TreeMap<String, Boolean> status = new TreeMap<String, Boolean>();
                 status.put("backup", false);
                 status.put("pngConversion", false);

@@ -9,15 +9,15 @@
 				<tr>
                     <td>
                         <p>
-                            Maximum # whitespace column separators 
+                            Maximum # whitespace column separators
                             <br />
                             <span class="userWarning">Should be set to '-1' if no column separation is desired/required.</span>
                         </p>
-                        
+
                     </td>
                     <td>
                         <div class="input-field">
-                            <input id="lineSegmentation--maxcolseps" data-setting="--maxcolseps" type="number" step="1" value="-1" />
+                            <input id="lineSegmentation--maxcolseps" data-setting="--max-whiteseps" type="number" step="1" value="-1" />
                             <label for="lineSegmentation--maxcolseps" data-type="int" data-error="Has to be int">Default: -1</label>
                         </div>
                     </td>
@@ -25,11 +25,10 @@
                 <tr>
                     <td>
                         <p>
-                            Image processing scale 
+                            Image processing scale
                             <br />
                             <span class="userWarning">Will be estimated from the image if left empty</span>
                         </p>
-                        
                     </td>
                     <td>
                         <div class="input-field">
@@ -39,12 +38,16 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><p>Precision of the polygon surrounding the textline. (Smaller values result in better precision)</p></td>
                     <td>
-                         <div class="input-field">
-                             <input id="lineSegmentation--tolerance" data-setting="--tolerance" type="number" step="0.001" />
-                             <label for="lineSegmentation--tolerance" data-type="float" data-error="Has to be float">Default: 1.0</label>
-                        </div>
+                        <p>
+                            Bounding rectangle
+                        </p>
+                    </td>
+                    <td>
+                        <p>
+                            <input type="checkbox" id="lineSegmentation--bounding-rectangle" data-setting="--bounding-rectangle"/>
+                            <label for="lineSegmentation--bounding-rectangle"></label>
+                        </p>
                     </td>
                 </tr>
                 <tr>
@@ -97,16 +100,10 @@
                             <tr>
                                 <td>
                                 	<p>
-                                		The basic scale of the document (roughly, xheight) 
+                                		The basic scale of the document (roughly, xheight)
 										<br />
 										<span class="userWarning">Will automatically be estimated if 0 or negative.</span>
                                 	</p>
-                                </td>
-                                <td>
-                                    <div class="input-field">
-                                    <input id="lineSegmentation--scale" data-setting="--scale" type="number" step="0.1" />
-                                    <label for="lineSegmentation--scale" data-type="float" data-error="Has to be float">Default: 0</label>
-                                    </div>
                                 </td>
                             </tr>
                             <tr>
@@ -134,12 +131,12 @@
 										<br />
 										<span class="userWarning">Smaller values will filter out less characters (based on size)</span>
 									</p>
-									
+
 								</td>
 								<td>
 									<div class="input-field">
-										<input id="lineSegmentation--filter_strength" data-setting="--filter_strength" type="number" step="0.001"/>
-										<label for="lineSegmentation--filter_strength" data-type="float" data-error="Has to be a float">Default: 1</label>
+										<input id="lineSegmentation--filter-strength" data-setting="--filter-strength" type="number" step="0.001"/>
+										<label for="lineSegmentation--filter-strength" data-type="float" data-error="Has to be a float">Default: 1</label>
 									</div>
 								</td>
 							</tr>
@@ -201,7 +198,7 @@
                                 <td><p>Maximum black column separators </p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="lineSegmentation--maxseps" data-setting="--maxseps" type="number" step="0.1" />
+                                        <input id="lineSegmentation--maxseps" data-setting="--max-blackseps" type="number" step="0.1" />
                                         <label for="lineSegmentation--maxseps" data-type="float" data-error="Has to be float">Default: 0</label>
                                     </div>
                                 </td>
@@ -210,7 +207,7 @@
                                 <td><p>Widen black separators (to account for warping)</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="lineSegmentation--sepwiden" data-setting="--sepwiden" type="number" step="10" />
+                                        <input id="lineSegmentation--sepwiden" data-setting="--widen-blackseps" type="number" step="10" />
                                         <label for="lineSegmentation--sepwiden" data-type="int" data-error="Has to be integer">Default: 10</label>
                                     </div>
                                 </td>
@@ -228,7 +225,7 @@
                                 <td><p>Minimum column height (units=scale)</p></td>
                                 <td>
                                     <div class="input-field">
-                                        <input id="lineSegmentation--csminheight" data-setting="--csminheight" type="number" step="1"/>
+                                        <input id="lineSegmentation--csminheight" data-setting="--minheight-whiteseps" type="number" step="1"/>
                                         <label for=lineSegmentation--csminheight data-type="int" data-error="Has to be integer">Default: 10</label>
                                     </div>
                                </td>
@@ -264,7 +261,7 @@
                                 <td><p>Remove ImageRegions from the image before processing TextRegions for TextLines</p></td>
                                 <td>
                                         <p>
-                                            <input type="checkbox" data-setting="--remove_images" class="filled-in" id="lineSegmentation--remove_images"/>
+                                            <input type="checkbox" data-setting="--remove-images" class="filled-in" id="lineSegmentation--remove_images"/>
                                             <label for="lineSegmentation--remove_images"></label>
                                         </p>
                                 </td>

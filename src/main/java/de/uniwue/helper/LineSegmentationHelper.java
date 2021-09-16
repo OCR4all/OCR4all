@@ -106,7 +106,7 @@ public class LineSegmentationHelper {
      * Returns the progress of the process
      *
      * @return Progress percentage
-     * @throws IOException 
+     * @throws IOException
      */
     public int getProgress() throws IOException {
     	int modifiedCount = 0;
@@ -120,7 +120,7 @@ public class LineSegmentationHelper {
     	} else {
     		progress = -1;
     	}
-    	
+
         return progress;
     }
 
@@ -141,8 +141,9 @@ public class LineSegmentationHelper {
         // Reset line segment data
         deleteOldFiles(pageIds);
         initializeProcessState(pageIds);
-        
+
         List<String> command = new ArrayList<String>();
+        command.add("pagelineseg");
         // Create temp json file with all segment images (to not overload parameter list)
 		// Temp file in a temp folder named "lineseg-<random numbers>.json"
         File segmentListFile = File.createTempFile("lineseg-",".json");
@@ -159,13 +160,14 @@ public class LineSegmentationHelper {
         	dataList.add(pageList);
         }
         ObjectWriter writer = mapper.writer();
-        writer.writeValue(segmentListFile, dataList); 
-        
+        writer.writeValue(segmentListFile, dataList);
+
+        command.add("--dataset");
         command.add(segmentListFile.toString());
         command.addAll(cmdArgs);
         processHandler.setFetchProcessConsole(true);
-        processHandler.startProcess("pagelineseg", command, false);
-        
+        processHandler.startProcess("ocr4all-helper-scripts", command, false);
+
 
         // Execute progress update to fill data structure with correct values
         getProgress();
@@ -195,7 +197,7 @@ public class LineSegmentationHelper {
      * Returns the Ids of the pages, for which segmentation was already executed
      *
      * @return List of valid page Ids
-     * @throws IOException 
+     * @throws IOException
      */
     public ArrayList<String> getValidPageIds() throws IOException {
         // Get all pages and check which ones are segmented and have a image of type project image type (Gray | Binary)
@@ -215,18 +217,18 @@ public class LineSegmentationHelper {
      * Deletion of old process related data
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @throws IOException 
+     * @throws IOException
      */
     public void deleteOldFiles(List<String> pageIds) throws IOException {
         for(String pageId : pageIds) {
             File pageXML = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
             if (!pageXML.exists())
                 return;
-           
+
             // Load pageXML and replace/delete all TextLines
 			String pageXMLContent = new String(Files.readAllBytes(pageXML.toPath()));
 			pageXMLContent = pageXMLContent.replaceAll("<TextLine[^>]*>.*?<\\/TextLine>", "");
-			
+
 			// Save new pageXML
 			try (FileWriter fileWriter = new FileWriter(pageXML)) {
 				fileWriter.write(pageXMLContent);

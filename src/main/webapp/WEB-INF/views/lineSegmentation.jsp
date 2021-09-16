@@ -13,7 +13,7 @@
                     initializeImageList("OCR", false, data);
                 });
 
-                // Set available threads as default 
+                // Set available threads as default
                 $.get( "ajax/generic/threads" )
                 .done(function( data ) {
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
@@ -31,7 +31,7 @@
                         return;
                     }
 
-                    var selectedPages = getSelectedPages();
+                    let selectedPages = getSelectedPages();
                     if( selectedPages.length === 0 ) {
                         $('#modal_errorhandling').modal('open');
                         return;
@@ -39,7 +39,7 @@
                     $.post( "ajax/lineSegmentation/exists", { "pageIds[]" : selectedPages } )
                     .done(function( data ){
                         if(data === false){
-                            var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                            let ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
                             // Execute lineSegmentation process
                             executeProcess(ajaxParams);
                         }
@@ -56,13 +56,13 @@
                     cancelProcess();
                 });
                 $('#agree').click(function() {
-                    var selectedPages = getSelectedPages();
-                    var ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
+                    let selectedPages = getSelectedPages();
+                    let ajaxParams = $.extend( { "pageIds[]" : selectedPages }, getInputParams() );
                     // Execute lineSegmentation process
                     executeProcess(ajaxParams);
                 });
             });
-                
+
         </script>
     </t:head>
     <t:body heading="Line Segmentation" imageList="true" processModals="true">

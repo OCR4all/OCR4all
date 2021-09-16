@@ -100,7 +100,7 @@ public class RecognitionHelper {
      *
      * @param projectDir Path to the project directory
      * @param projectImageType Type of the project (binary, gray)
-     * 
+     *
      */
     public RecognitionHelper(String projectDir, String projectImageType) {
         this.projectImageType = projectImageType;
@@ -139,7 +139,7 @@ public class RecognitionHelper {
      *
      * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
      * @return List of line segment images
-     * @throws IOException 
+     * @throws IOException
      */
     public List<String> getLineSegmentImagesForCurrentProcess(List<String> pageIds) throws IOException {
         List<String> LineSegmentsOfPage = new ArrayList<String>();
@@ -158,7 +158,7 @@ public class RecognitionHelper {
      * Returns the progress of the process
      *
      * @return Progress percentage
-     * @throws IOException 
+     * @throws IOException
      */
     public int getProgress() throws IOException {
         // Prevent function from calculation progress if process is not running
@@ -183,9 +183,9 @@ public class RecognitionHelper {
      * Extracts checkpoints of a String joined by a whitespace
      *
      * @return List of checkpoints
-     * @throws IOException 
+     * @throws IOException
      */
-    public List<String> extractModelsOfJoinedString(String joinedckptString){ 
+    public List<String> extractModelsOfJoinedString(String joinedckptString){
         String [] checkpoints = joinedckptString.split(ProjectConfiguration.MODEL_EXT + " ");
         List<String> ckptList = new ArrayList<String>();
         Iterator <String> ckptIterator= Arrays.asList(checkpoints).iterator();
@@ -195,7 +195,7 @@ public class RecognitionHelper {
                 ckpt = ckpt + ProjectConfiguration.MODEL_EXT;
             ckptList.add(ckpt);
         }
-        return ckptList;	
+        return ckptList;
     }
     /**
      * Executes OCR on a list of pages
@@ -210,11 +210,12 @@ public class RecognitionHelper {
         progress = 0;
 
         List<String> cmdArgsWork = new ArrayList<>(cmdArgs);
-        
+
         //// Estimate Skew
         if (cmdArgsWork.contains("--estimate_skew")) {
         	// Calculate the skew of all regions where none was calculated before
         	List<String> skewparams = new ArrayList<>();
+            skewparams.add("skewestimate");
         	final int maxskewIndex = cmdArgsWork.indexOf("--maxskew");
         	if(maxskewIndex > -1) {
         		skewparams.add(cmdArgsWork.remove(maxskewIndex));
@@ -225,7 +226,7 @@ public class RecognitionHelper {
         		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
         		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
         	}
-        	
+
 			// Create temp json file with all segment images (to not overload parameter list)
 			// Temp file in a temp folder named "skew-<random numbers>.json"
 			File segmentListFile = File.createTempFile("skew-",".json");
@@ -244,16 +245,16 @@ public class RecognitionHelper {
 				dataList.add(pageList);
 			}
 			ObjectWriter writer = mapper.writer();
-			writer.writeValue(segmentListFile, dataList); 
-			
+			writer.writeValue(segmentListFile, dataList);
+
             processHandler = new ProcessHandler();
             processHandler.setFetchProcessConsole(true);
-            processHandler.startProcess("skewestimate", skewparams, false);
+            processHandler.startProcess("ocr4all-helper-scripts", skewparams, false);
 
         	cmdArgsWork.remove("--estimate_skew");
         }
-        
-        
+
+
         //// Recognize
 		// Reset recognition data
 		deleteOldFiles(pageIds);
@@ -279,16 +280,16 @@ public class RecognitionHelper {
         ArrayNode segmentList = mapper.createArrayNode();
         for (String pageId : pageIds) {
             // Add affected images with their absolute path to the json file
-            segmentList.add(projConf.getImageDirectoryByType(projectImageType) + pageId + 
+            segmentList.add(projConf.getImageDirectoryByType(projectImageType) + pageId +
                                 projConf.getImageExtensionByType(projectImageType));
         }
         ObjectNode segmentObj = mapper.createObjectNode();
         segmentObj.set("files", segmentList);
         ObjectWriter writer = mapper.writer();
-        writer.writeValue(segmentListFile, segmentObj); 
+        writer.writeValue(segmentListFile, segmentObj);
         command.add(segmentListFile.toString());
-        
-        
+
+
         //Add checkpoints
         Iterator<String> cmdArgsIterator = cmdArgsWork.iterator();
         while (cmdArgsIterator.hasNext()) {
@@ -319,7 +320,7 @@ public class RecognitionHelper {
 
         progress = 100;
         RecognitionRunning = false;
-        
+
         // Clean up temp segmentListFile
         segmentListFile.delete();
     }
@@ -345,7 +346,7 @@ public class RecognitionHelper {
      * Returns the Ids of the pages, for which line segmentation was already executed
      *
      * @return List with page ids
-     * @throws IOException 
+     * @throws IOException
      */
     public ArrayList<String> getValidPageIds() throws IOException {
         // Get all pages and check which ones are already line segmented
@@ -371,11 +372,11 @@ public class RecognitionHelper {
             File pageXML = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
             if (!pageXML.exists())
                 return;
-            
+
             // Load pageXML and replace/delete all Textline text content
             String pageXMLContent = new String(Files.readAllBytes(pageXML.toPath()));
             pageXMLContent = pageXMLContent.replaceAll("\\<TextEquiv[^>]+?index=\"[^0]\"[^>]*?\\>[^<]*?\\<\\/TextEquiv\\>", "");
-            
+
             // Save new pageXML
             try (FileWriter fileWriter = new FileWriter(pageXML)) {
                 fileWriter.write(pageXMLContent);
@@ -441,7 +442,7 @@ public class RecognitionHelper {
      * ANY_PATH/{MODEL_NAME}/ANY_NAME.ckpt.json
      *
      * @return Map of models (key = modelName | value = path)
-     * @throws IOException 
+     * @throws IOException
      */
     public static TreeMap<String, String> listModels() throws IOException{
         TreeMap<String, String> models = new TreeMap<String, String>();

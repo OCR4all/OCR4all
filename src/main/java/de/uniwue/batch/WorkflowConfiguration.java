@@ -1,7 +1,7 @@
 /**
  * File:     WorkflowConfiguration.java
  * Package:  de.uniwue.batch
- * 
+ *
  * Author:   Herbert Baier
  * Date:     22.09.2020
  */
@@ -83,7 +83,7 @@ public class WorkflowConfiguration {
 
 	/**
 	 * Default constructor for a batch workflow configuration.
-	 * 
+	 *
 	 * @since 1.8
 	 */
 	public WorkflowConfiguration() {
@@ -92,7 +92,7 @@ public class WorkflowConfiguration {
 
 	/**
 	 * Creates a batch workflow configuration.
-	 * 
+	 *
 	 * @param project    The project.
 	 * @param type       The project type.
 	 * @param processing The processing mode.
@@ -235,7 +235,7 @@ public class WorkflowConfiguration {
 
 	/**
 	 * Returns the names of the enumeration values in csv format.
-	 * 
+	 *
 	 * @param <T>    The enumeration type.
 	 * @param values The enumeration values.
 	 * @return The names of the enumeration values in csv format.
@@ -255,7 +255,7 @@ public class WorkflowConfiguration {
 
 	/**
 	 * Validates the workflow configuration.
-	 * 
+	 *
 	 * @param configuration The workflow configuration.
 	 * @throws IllegalArgumentException Throws on workflow configuration troubles.
 	 * @since 1.8
@@ -333,7 +333,7 @@ public class WorkflowConfiguration {
 
 	/**
 	 * Returns a template for a batch workflow configuration.
-	 * 
+	 *
 	 * @return A template for a batch workflow configuration.
 	 * @throws InternalError Throws on workflow configuration troubles.
 	 * @since 1.8
@@ -358,17 +358,17 @@ public class WorkflowConfiguration {
 		// TODO: line segmentation argument troubles
 		// "--scale", "-1" OR "--scale", "0"
 		// UNKNOWN "--tolerance", "1.0"
-//		configuration.getProcesses()
-//				.add(new ProcessConfiguration("step3", Process.lineSegmentation, "--usegauss", "--remove_images",
-//						"--maxcolseps", "-1", "--scale", "-1", "--tolerance", "1.0", "--parallel", "12", "--minscale",
-//						"12", "--maxlines", "300", "--scale", "0", "--hscale", "1", "--vscale", "1",
-//						"--filter_strength", "1", "--maxskew", "2.0", "--skewsteps", "8", "--threshold", "0.2",
-//						"--maxseps", "0", "--sepwiden", "10", "--csminheight", "10"));
+		//		configuration.getProcesses()
+		//				.add(new ProcessConfiguration("step3", Process.lineSegmentation, "--usegauss", "--remove_images",
+		//						"--maxcolseps", "-1", "--scale", "-1", "--tolerance", "1.0", "--parallel", "12", "--minscale",
+		//						"12", "--maxlines", "300", "--scale", "0", "--hscale", "1", "--vscale", "1",
+		//						"--filter_strength", "1", "--maxskew", "2.0", "--skewsteps", "8", "--threshold", "0.2",
+		//						"--maxseps", "0", "--sepwiden", "10", "--csminheight", "10"));
 
 		configuration.getProcesses().add(new ProcessConfiguration("step3", Process.lineSegmentation, "--usegauss",
-				"--remove_images", "--maxcolseps", "-1", "--parallel", "12", "--minscale", "12", "--maxlines", "300",
-				"--scale", "0", "--hscale", "1", "--vscale", "1", "--filter_strength", "1", "--maxskew", "2.0",
-				"--skewsteps", "8", "--threshold", "0.2", "--maxseps", "0", "--sepwiden", "10", "--csminheight", "10"));
+				"--remove-images", "--maxcolseps", "-1", "--parallel", "12", "--minscale", "12", "--maxlines", "300",
+				"--scale", "0", "--hscale", "1", "--vscale", "1", "--filter-strength", "1", "--maxskew", "2.0",
+				"--skewsteps", "8", "--threshold", "0.2", "--maxseps", "0"));
 
 		configuration.getProcesses()
 				.add(new ProcessConfiguration("step4", Process.recognition, "--verbose", "--pagexml_word_level",
@@ -410,7 +410,7 @@ public class WorkflowConfiguration {
 
 		/**
 		 * Default constructor for a process configuration for batch workflow.
-		 * 
+		 *
 		 * @since 1.8
 		 */
 		public ProcessConfiguration() {
@@ -419,7 +419,7 @@ public class WorkflowConfiguration {
 
 		/**
 		 * Creates a process configuration for batch workflow.
-		 * 
+		 *
 		 * @param id        The process configuration identifier.
 		 * @param process   The process.
 		 * @param arguments The process arguments.

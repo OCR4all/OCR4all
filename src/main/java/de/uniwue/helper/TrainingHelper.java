@@ -24,7 +24,7 @@ import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
 
 /**
- * Helper class for training, which also calls the calamari-cross-fold-train program 
+ * Helper class for training, which also calls the calamari-cross-fold-train program
  */
 public class TrainingHelper {
     /**
@@ -32,7 +32,7 @@ public class TrainingHelper {
      */
     private String projectImageType;
 
-    
+
     /**
      * Object to access project configuration
      */
@@ -87,7 +87,7 @@ public class TrainingHelper {
     }
 
     /** Lists all images that have an corresponding gt file
-     * 
+     *
      * @return
      * @throws IOException
      */
@@ -115,7 +115,7 @@ public class TrainingHelper {
         return pageIds.stream().filter(pageId -> states.groundTruthState(pageId))
         		.collect(Collectors.toList());
     }
-    
+
     /**
      * Finds next free training identifier
      * Only necessary if no identifier is specified by the user
@@ -172,6 +172,7 @@ public class TrainingHelper {
         if (cmdArgsWork.contains("--estimate_skew")) {
         	// Calculate the skew of all regions where none was calculated before
         	List<String> skewparams = new ArrayList<>();
+            skewparams.add("skewestimate");
         	final int maxskewIndex = cmdArgsWork.indexOf("--maxskew");
         	if(maxskewIndex > -1) {
         		skewparams.add(cmdArgsWork.remove(maxskewIndex));
@@ -182,7 +183,7 @@ public class TrainingHelper {
         		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
         		skewparams.add(cmdArgsWork.remove(skewstepsIndex));
         	}
-        	
+
 			// Create temp json file with all segment images (to not overload parameter list)
 			// Temp file in a temp folder named "skew-<random numbers>.json"
 			File segmentListFile = File.createTempFile("skew-",".json");
@@ -202,11 +203,11 @@ public class TrainingHelper {
 				dataList.add(pageList);
 			}
 			ObjectWriter writer = mapper.writer();
-			writer.writeValue(segmentListFile, dataList); 
-			
+			writer.writeValue(segmentListFile, dataList);
+
             processHandler = new ProcessHandler();
             processHandler.setFetchProcessConsole(true);
-            processHandler.startProcess("skewestimate", skewparams, false);
+            processHandler.startProcess("ocr4all-helper-scripts", skewparams, false);
 
         	cmdArgsWork.remove("--estimate_skew");
         }
@@ -241,11 +242,11 @@ public class TrainingHelper {
         ObjectNode segmentObj = mapper.createObjectNode();
         segmentObj.set("files", gtList);
         ObjectWriter writer = mapper.writer();
-        writer.writeValue(segmentListFile, segmentObj); 
+        writer.writeValue(segmentListFile, segmentObj);
         command.add(segmentListFile.toString());
         System.out.println(segmentListFile);
-        
-        
+
+
         command.addAll(cmdArgsWork);
         command.add("--best_models_dir");
         command.add(trainingDir.getAbsolutePath());
@@ -272,7 +273,7 @@ public class TrainingHelper {
     }
 
     /** Checks if process related files already exist
-     * 
+     *
      * @param projectName
      * @param trainingId
      * @return
