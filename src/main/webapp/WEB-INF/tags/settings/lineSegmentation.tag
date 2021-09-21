@@ -266,6 +266,15 @@
                                         </p>
                                 </td>
                             </tr>
+                            <tr>
+                                <td><p>Max iterations for smearing mask to polygon</p></td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--fail-save" data-setting="--fail-save" type="number" step="1"/>
+                                        <label for=lineSegmentation--fail-save data-type="int" data-error="Has to be integer">Default: 50</label>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
