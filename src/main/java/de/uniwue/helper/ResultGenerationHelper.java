@@ -322,12 +322,17 @@ public class ResultGenerationHelper {
 
         int idx = 0;
 		for (String pageId : pageResult.keySet()) {
-            if(addPageDelimiter)
-                if(idx == 0) {
+            if(addPageDelimiter) {
+                if (idx == 0) {
                     completeResult.append("### ").append(pageId).append("\n\n");
-                }else{
+                } else {
                     completeResult.append("\n\n\n").append("### ").append(pageId).append("\n\n");
                 }
+            }else{
+                if(idx != 0){
+                    completeResult.append("\n\n\n");
+                }
+            }
             String currentPageResult = pageResult.get(pageId);
 			completeResult.append(currentPageResult);
             idx++;
