@@ -56,7 +56,7 @@ public class ResultGenerationHelper {
      */
     private ProcessHandler processHandler;
 
-    
+
     /**
      * Progress of the result generation process
      */
@@ -352,7 +352,7 @@ public class ResultGenerationHelper {
         ArrayList<String> validPageIds = new ArrayList<String>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");
         for (String pageId : allPageIds) {
-            if (procStateCol.recognitionState(pageId))
+            if (procStateCol.recognitionState(pageId) || procStateCol.groundTruthState(pageId))
                 validPageIds.add(pageId);
         }
 
