@@ -407,3 +407,7 @@ label[for*="backupCheckbox"]{
 #emptyLines-row form {
   padding-left: 50px;
 }
+
+#pageDelimiter-row form {
+  padding-left: 50px;
+}

@@ -152,14 +152,14 @@ public class ResultGenerationHelper {
      * @throws IOException
      */
     public void executeProcess(List<String> pageIds, String resultType, String resultStrategy,
-                               Boolean preserveEmptyLines) throws IOException, UnsupportedFormatVersionException {
+                               Boolean preserveEmptyLines, Boolean addPageDelimiter) throws IOException, UnsupportedFormatVersionException {
         stopProcess = false;
         progress = 0;
 
         String initTime = initializeResultDirectories(resultType);
 
         if (resultType.equals("txt")) {
-            executeTextProcess(pageIds, initTime, resultStrategy, preserveEmptyLines);
+            executeTextProcess(pageIds, initTime, resultStrategy, preserveEmptyLines, addPageDelimiter);
         } else if (resultType.equals("xml")) {
             executeXmlProcess(pageIds, initTime);
         }
@@ -196,7 +196,7 @@ public class ResultGenerationHelper {
     }
 
     private void populatePageResult(String pageId, TreeMap<String, String> pageResult, String strategy,
-                                    Boolean preserveEmptyLines) throws UnsupportedFormatVersionException {
+                                    Boolean preserveEmptyLines, Boolean addPageDelimiter) throws UnsupportedFormatVersionException {
         XmlPageReader reader = new XmlPageReader(null); // null ^= without validation
         Page page = reader.read(new FileInput(new File(projConf.PAGE_DIR + pageId + projConf.CONF_EXT)));
         List<String> pageString = new ArrayList<>();
@@ -283,7 +283,11 @@ public class ResultGenerationHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
-    public void executeTextProcess(List<String> pageIds, String time, String strategy, Boolean preserveEmptyLines)
+    public void executeTextProcess(List<String> pageIds,
+                                   String time,
+                                   String strategy,
+                                   Boolean preserveEmptyLines,
+                                   Boolean addPageDelimiter)
             throws IOException, UnsupportedFormatVersionException {
         initialize(pageIds);
 
@@ -300,7 +304,7 @@ public class ResultGenerationHelper {
             pageResult.put(pageId, "");
 
             // Retrieve every ground truth or recognition line in the page xmls and group them per page
-            populatePageResult(pageId, pageResult, strategy, preserveEmptyLines);
+            populatePageResult(pageId, pageResult, strategy, preserveEmptyLines, addPageDelimiter);
 
             // Find all textlines inside the file
             processedElements++;
@@ -313,10 +317,20 @@ public class ResultGenerationHelper {
             }
 		}
 
-		// The recognition/gt output of the the specified pages is concatenated
+		// The recognition/gt output of the specified pages is concatenated
 		StringBuilder completeResult = new StringBuilder();
+
+        int idx = 0;
 		for (String pageId : pageResult.keySet()) {
-			completeResult.append(pageResult.get(pageId)).append("\n");
+            if(addPageDelimiter)
+                if(idx == 0) {
+                    completeResult.append("### ").append(pageId).append("\n\n");
+                }else{
+                    completeResult.append("\n\n\n").append("### ").append(pageId).append("\n\n");
+                }
+            String currentPageResult = pageResult.get(pageId);
+			completeResult.append(currentPageResult);
+            idx++;
 		}
 		try (OutputStreamWriter writer =
 					 new OutputStreamWriter(new FileOutputStream(projConf.RESULT_DIR + time + "_txt" + File.separator + "complete" + ".txt"), StandardCharsets.UTF_8)) {

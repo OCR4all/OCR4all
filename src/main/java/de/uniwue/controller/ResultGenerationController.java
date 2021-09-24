@@ -78,6 +78,7 @@ public class ResultGenerationController {
                @RequestParam(value = "resultType", required = true) String resultType,
                @RequestParam(value = "resultStrategy", required = true) String resultStrategy,
                @RequestParam(value = "preserveEmptyLines", required = true) Boolean preserveEmptyLines,
+               @RequestParam(value = "addPageDelimiter", required = true) Boolean addPageDelimiter,
                HttpSession session, HttpServletResponse response
            ) {
         ResultGenerationHelper resultGenerationHelper = provideHelper(session, response);
@@ -90,7 +91,11 @@ public class ResultGenerationController {
 
         GenericController.addToProcessList(session, "result");
         try {
-            resultGenerationHelper.executeProcess(Arrays.asList(pageIds), resultType, resultStrategy, preserveEmptyLines);
+            resultGenerationHelper.executeProcess(Arrays.asList(pageIds),
+                    resultType,
+                    resultStrategy,
+                    preserveEmptyLines,
+                    addPageDelimiter);
         } catch (IOException | UnsupportedFormatVersionException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resultGenerationHelper.resetProgress();
@@ -156,7 +161,7 @@ public class ResultGenerationController {
      * Response to the request to check if old process related files exist
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
-     * @param resultType Type of the result, which should be checked (xml, txt) 
+     * @param resultType Type of the result, which should be checked (xml, txt)
      * @param session Session of the user
      * @param response Response to the request
      * @return Information if files exist

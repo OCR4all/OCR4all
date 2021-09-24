@@ -32,16 +32,35 @@
             </td>
         </tr>
         <tr id="emptyLines-row">
-            <td><p>
-                Preserve empty lines
-                <br />
-                <span class="userInfo">If activated lines without text will get preserved</span>
-                </p></td>
+            <td>
+                <p>
+                    Preserve empty lines
+                    <br />
+                    <span class="userInfo">If activated lines without text will get preserved</span>
+                </p>
+            </td>
             <td>
                 <form action="#">
                     <p>
                         <input type="checkbox" id="preserveEmptyLines" />
                         <label for="preserveEmptyLines"></label>
+                    </p>
+                </form>
+            </td>
+        </tr>
+        <tr id="pageDelimiter-row">
+            <td>
+                <p>
+                    Add page delimiter
+                    <br />
+                    <span class="userInfo">If activated page delimiter of the format '### PageId' are inserted.</span>
+                </p>
+            </td>
+            <td>
+                <form action="#">
+                    <p>
+                        <input type="checkbox" checked="checked" id="addPageDelimiter" />
+                        <label for="addPageDelimiter"></label>
                     </p>
                 </form>
             </td>

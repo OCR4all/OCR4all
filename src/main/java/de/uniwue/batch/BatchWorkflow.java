@@ -1,7 +1,7 @@
 /**
  * File:     BatchWorkflow.java
  * Package:  de.uniwue.batch
- * 
+ *
  * Author:   Herbert Baier
  * Date:     21.09.2020
  */
@@ -56,6 +56,11 @@ public class BatchWorkflow {
 	 * The preserve empty lines argument for result generation.
 	 */
 	public static final String resultGenerationPreserveEmptyLinesArgument = "--preserve-empty-lines";
+
+	/**
+	 * The addPageDelimiter argument for result generation
+	 */
+	public static final String resultGenerationAddPageDelimiter = "--add-page-delimiter";
 
 	/**
 	 * The backup argument for adjustment.
@@ -156,7 +161,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Creates a batch workflow.
-	 * 
+	 *
 	 * @param configuration The configuration.
 	 * @throws IllegalArgumentException Throws on workflow configuration troubles.
 	 * @throws IllegalStateException    Throws if the input folder of project does
@@ -183,7 +188,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Initializes the batch workflow.
-	 * 
+	 *
 	 * @param projectFolder The project folder.
 	 * @throws IllegalStateException Throws if the input folder of project does not
 	 *                               exist.
@@ -204,7 +209,7 @@ public class BatchWorkflow {
 	 * all pages, this means, its pages field is null. Furthermore, cross check if
 	 * the project input folder is available. The pages ids will be sorted
 	 * lexicographically, ignoring case differences.
-	 * 
+	 *
 	 * @param projectFolder The project folder.
 	 * @throws IllegalStateException Throws if the input folder of project does not
 	 *                               exist.
@@ -253,7 +258,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Returns true if the process is done.
-	 * 
+	 *
 	 * @return True if the process is done.
 	 * @since 1.8
 	 */
@@ -353,7 +358,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Returns the batch workflow details.
-	 * 
+	 *
 	 * @return The batch workflow details.
 	 * @since 1.8
 	 */
@@ -371,7 +376,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Starts the workflow in a new thread if it is in scheduled state.
-	 * 
+	 *
 	 * @param callback The callback method when the batch workflow finishes. If
 	 *                 null, no callback is performed.
 	 * @since 1.8
@@ -384,7 +389,7 @@ public class BatchWorkflow {
 			new Thread(new Runnable() {
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see java.lang.Runnable#run()
 				 */
 				@Override
@@ -441,7 +446,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Cancels the workflow if it is in scheduled or running state.
-	 * 
+	 *
 	 * @since 1.8
 	 */
 	public synchronized void cancel() {
@@ -469,7 +474,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Performs the workflow adjustment.
-	 * 
+	 *
 	 * @param processConfiguration The process configuration.
 	 * @since 1.8
 	 */
@@ -487,7 +492,7 @@ public class BatchWorkflow {
 			worker = new ProcessWorker(processConfiguration, (id) -> true, new ProcessWrapper() {
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getHandler()
 				 */
 				@Override
@@ -497,7 +502,7 @@ public class BatchWorkflow {
 
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getProgress()
 				 */
 				@Override
@@ -512,7 +517,7 @@ public class BatchWorkflow {
 
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#cancelProcess()
 				 */
 				@Override
@@ -574,7 +579,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Performs the workflow preprocessing.
-	 * 
+	 *
 	 * @param processConfiguration The process configuration.
 	 * @since 1.8
 	 */
@@ -591,7 +596,7 @@ public class BatchWorkflow {
 			worker = new ProcessWorker(processConfiguration, null, new ProcessWrapper() {
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getHandler()
 				 */
 				@Override
@@ -601,7 +606,7 @@ public class BatchWorkflow {
 
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getProgress()
 				 */
 				@Override
@@ -611,7 +616,7 @@ public class BatchWorkflow {
 
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#cancelProcess()
 				 */
 				@Override
@@ -632,7 +637,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Performs the workflow dummy segmentation.
-	 * 
+	 *
 	 * @param processConfiguration The process configuration.
 	 * @since 1.8
 	 */
@@ -650,7 +655,7 @@ public class BatchWorkflow {
 					new ProcessWrapper() {
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getHandler()
 						 */
 						@Override
@@ -660,7 +665,7 @@ public class BatchWorkflow {
 
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getProgress()
 						 */
 						@Override
@@ -670,7 +675,7 @@ public class BatchWorkflow {
 
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#cancelProcess()
 						 */
 						@Override
@@ -691,7 +696,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Performs the workflow line segmentation.
-	 * 
+	 *
 	 * @param processConfiguration The process configuration.
 	 * @since 1.8
 	 */
@@ -709,7 +714,7 @@ public class BatchWorkflow {
 					new ProcessWrapper() {
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getHandler()
 						 */
 						@Override
@@ -719,7 +724,7 @@ public class BatchWorkflow {
 
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getProgress()
 						 */
 						@Override
@@ -734,7 +739,7 @@ public class BatchWorkflow {
 
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#cancelProcess()
 						 */
 						@Override
@@ -755,7 +760,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Performs the workflow recognition.
-	 * 
+	 *
 	 * @param processConfiguration The process configuration.
 	 * @since 1.8
 	 */
@@ -773,7 +778,7 @@ public class BatchWorkflow {
 					new ProcessWrapper() {
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getHandler()
 						 */
 						@Override
@@ -783,7 +788,7 @@ public class BatchWorkflow {
 
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getProgress()
 						 */
 						@Override
@@ -798,7 +803,7 @@ public class BatchWorkflow {
 
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#cancelProcess()
 						 */
 						@Override
@@ -868,7 +873,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Performs the workflow result generation.
-	 * 
+	 *
 	 * @param processConfiguration The process configuration.
 	 * @since 1.8
 	 */
@@ -887,7 +892,7 @@ public class BatchWorkflow {
 					new ProcessWrapper() {
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getHandler()
 						 */
 						@Override
@@ -897,7 +902,7 @@ public class BatchWorkflow {
 
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#getProgress()
 						 */
 						@Override
@@ -912,7 +917,7 @@ public class BatchWorkflow {
 
 						/*
 						 * (non-Javadoc)
-						 * 
+						 *
 						 * @see de.uniwue.batch.BatchWorkflow.ProcessWrapper#cancelProcess()
 						 */
 						@Override
@@ -946,6 +951,7 @@ public class BatchWorkflow {
 			// strategy and preserve empty lines are only required for txt type
 			ResultGenerationStrategy strategy = ResultGenerationStrategy.defaultStrategy;
 			boolean isPreserveEmptyLines = false;
+			boolean isAddPageDelimiter = true;
 			if (ResultGenerationType.txt.equals(type)) {
 				index = arguments.indexOf(ResultGenerationStrategy.argument);
 				if (index >= 0) {
@@ -961,10 +967,11 @@ public class BatchWorkflow {
 				}
 
 				isPreserveEmptyLines = arguments.contains(resultGenerationPreserveEmptyLinesArgument);
+				isAddPageDelimiter = arguments.contains(resultGenerationAddPageDelimiter);
 			}
 
 			helper.executeProcess(worker.getAvailablePageIds(), type.name(), strategy.getProcessName(),
-					isPreserveEmptyLines);
+					isPreserveEmptyLines, isAddPageDelimiter);
 		});
 	}
 
@@ -979,7 +986,7 @@ public class BatchWorkflow {
 	private interface ExecuteProcess {
 		/**
 		 * Executes the process.
-		 * 
+		 *
 		 * @throws Exception Throws on execution troubles.
 		 * @since 1.8
 		 */
@@ -988,7 +995,7 @@ public class BatchWorkflow {
 
 	/**
 	 * Executes the process for given worker.
-	 * 
+	 *
 	 * @param worker         The process worker.
 	 * @param executeProcess The process to execute.
 	 * @since 1.8
@@ -1029,7 +1036,7 @@ public class BatchWorkflow {
 	public interface Callback {
 		/**
 		 * Callback method when the batch workflow finishes.
-		 * 
+		 *
 		 * @param batchWorkflow The batch workflow that finish.
 		 * @since 1.8
 		 */
@@ -1047,7 +1054,7 @@ public class BatchWorkflow {
 	private interface ProcessPageValidator {
 		/**
 		 * Returns true if the page is available for the process.
-		 * 
+		 *
 		 * @param id The page id.
 		 * @return True if the page is available for the process.
 		 * @since 1.8
@@ -1065,7 +1072,7 @@ public class BatchWorkflow {
 	public interface ProcessWrapper {
 		/**
 		 * Returns the handler. Null if not available.
-		 * 
+		 *
 		 * @return The handler.
 		 * @since 1.8
 		 */
@@ -1073,7 +1080,7 @@ public class BatchWorkflow {
 
 		/**
 		 * Returns the progress. This is a value between 0 and 1 inclusive.
-		 * 
+		 *
 		 * @return The progress.
 		 * @since 1.8
 		 */
@@ -1081,7 +1088,7 @@ public class BatchWorkflow {
 
 		/**
 		 * Cancels the process.
-		 * 
+		 *
 		 * @since 1.8
 		 */
 		public void cancelProcess();
@@ -1137,7 +1144,7 @@ public class BatchWorkflow {
 
 		/**
 		 * Creates a process worker.
-		 * 
+		 *
 		 * @param configuration The configuration.
 		 * @param validator     The page validator.
 		 * @param wrapper       The wrapper.
@@ -1261,7 +1268,7 @@ public class BatchWorkflow {
 
 		/**
 		 * Returns true if the process worker is running.
-		 * 
+		 *
 		 * @return True if the process worker is running.
 		 * @since 1.8
 		 */

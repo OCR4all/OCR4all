@@ -377,7 +377,8 @@ public class WorkflowConfiguration {
 
 		configuration.getProcesses().add(new ProcessConfiguration("step5", Process.resultGeneration,
 				ResultGenerationType.argument, ResultGenerationType.txt.name(), ResultGenerationStrategy.argument,
-				ResultGenerationStrategy.combine.name(), BatchWorkflow.resultGenerationPreserveEmptyLinesArgument));
+				ResultGenerationStrategy.combine.name(), BatchWorkflow.resultGenerationPreserveEmptyLinesArgument,
+				BatchWorkflow.resultGenerationAddPageDelimiter));
 
 		configuration.getProcesses().add(new ProcessConfiguration("step6", Process.resultGeneration,
 				ResultGenerationType.argument, ResultGenerationType.xml.name()));
