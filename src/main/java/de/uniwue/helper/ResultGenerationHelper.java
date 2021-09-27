@@ -20,6 +20,12 @@ import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
 import de.uniwue.feature.ProcessStateCollector;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.docx4j.wml.Br;
+import org.docx4j.wml.P;
+import org.docx4j.wml.STBrType;
 import org.primaresearch.dla.page.Page;
 import org.primaresearch.dla.page.io.FileInput;
 import org.primaresearch.dla.page.io.xml.DefaultXmlNames;
@@ -34,6 +40,8 @@ import org.primaresearch.io.UnsupportedFormatVersionException;
 import org.primaresearch.shared.variable.IntegerValue;
 import org.primaresearch.shared.variable.IntegerVariable;
 import org.primaresearch.shared.variable.Variable;
+
+import javax.xml.bind.JAXBException;
 
 public class ResultGenerationHelper {
     /**
@@ -138,9 +146,11 @@ public class ResultGenerationHelper {
         if (!resultDir.exists())
             resultDir.mkdir();
 
-        File resultPagesDir = new File(resultDir.getPath() + File.separator + "pages" + File.separator);
-        if (!resultPagesDir.exists())
-            resultPagesDir.mkdir();
+        if(!resultType.equals("docx")){
+            File resultPagesDir = new File(resultDir.getPath() + File.separator + "pages" + File.separator);
+            if (!resultPagesDir.exists())
+                resultPagesDir.mkdir();
+        }
         return time;
     }
 
@@ -152,19 +162,72 @@ public class ResultGenerationHelper {
      * @throws IOException
      */
     public void executeProcess(List<String> pageIds, String resultType, String resultStrategy,
-                               Boolean preserveEmptyLines, Boolean addPageDelimiter) throws IOException, UnsupportedFormatVersionException {
+                               Boolean preserveEmptyLines, Boolean addPageDelimiter) throws IOException, UnsupportedFormatVersionException, Docx4JException, JAXBException {
         stopProcess = false;
         progress = 0;
 
         String initTime = initializeResultDirectories(resultType);
 
-        if (resultType.equals("txt")) {
-            executeTextProcess(pageIds, initTime, resultStrategy, preserveEmptyLines, addPageDelimiter);
-        } else if (resultType.equals("xml")) {
-            executeXmlProcess(pageIds, initTime);
+        switch(resultType){
+            case "txt":
+                executeTextProcess(pageIds, initTime, resultStrategy, preserveEmptyLines, addPageDelimiter);
+                break;
+            case "xml":
+                executeXmlProcess(pageIds, initTime);
+                break;
+            case "docx":
+                executeDocxProcess(pageIds, initTime, resultStrategy, preserveEmptyLines, addPageDelimiter);
+                break;
         }
 
         progress = 100;
+    }
+
+    /**
+     * Exectues result DOCX generation process on all specified pages
+     */
+    public void executeDocxProcess(List<String> pageIds,
+                                   String time,
+                                   String strategy,
+                                   Boolean preserveEmptyLines,
+                                   Boolean addPageDelimiter) throws Docx4JException, IOException, UnsupportedFormatVersionException {
+        initialize(pageIds);
+
+        TreeMap<String, String> pageResult = new TreeMap<>();
+        int processElementCount = pageIds.size();
+        int processedElements = 0;
+
+        File docxDir = new File(projConf.RESULT_DIR + time + "_docx");
+        Files.createDirectories(Paths.get(docxDir.getAbsolutePath()));
+
+        for (String pageId : processState.keySet()) {
+            pageResult.put(pageId, "");
+
+            // Retrieve every ground truth or recognition line in the page xmls and group them per page
+            populatePageResult(pageId, pageResult, strategy, preserveEmptyLines, addPageDelimiter);
+
+            // Find all textlines inside the file
+            processedElements++;
+            progress = (int) ((double) processedElements / processElementCount * 100);
+        }
+
+        WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.createPackage();
+
+        for (String pageId : pageResult.keySet()) {
+            String currentPageResult = pageResult.get(pageId);
+            wordMLPackage.getMainDocumentPart().addStyledParagraphOfText("Title", pageId);
+            wordMLPackage.getMainDocumentPart().addParagraphOfText(currentPageResult);
+
+            // Add page break
+            Br objBr = new Br();
+            objBr.setType(STBrType.PAGE);
+            wordMLPackage.getMainDocumentPart().getContent().add(objBr);
+
+        }
+
+        File docxOutFile = new File(docxDir + File.separator + "complete" + ".docx");
+        wordMLPackage.save(docxOutFile);
+
     }
 
     /**

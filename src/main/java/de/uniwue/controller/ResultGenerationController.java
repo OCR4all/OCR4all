@@ -6,7 +6,10 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.bind.JAXBException;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.primaresearch.io.UnsupportedFormatVersionException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -96,7 +99,7 @@ public class ResultGenerationController {
                     resultStrategy,
                     preserveEmptyLines,
                     addPageDelimiter);
-        } catch (IOException | UnsupportedFormatVersionException e) {
+        } catch (IOException | UnsupportedFormatVersionException | Docx4JException | JAXBException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resultGenerationHelper.resetProgress();
             e.printStackTrace();
