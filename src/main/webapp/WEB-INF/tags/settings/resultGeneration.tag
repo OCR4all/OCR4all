@@ -9,6 +9,7 @@
                     <select id="resultType" name="resultType" class="suffix">
                         <option value="txt">Text files</option>
                         <option value="xml">XML files</option>
+                        <option value="docx">DOCX files</option>
                     </select>
                     <label></label>
                 </div>

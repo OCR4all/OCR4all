@@ -53,16 +53,25 @@
                 });
 
                 $('#agree').click(function() {
-                    var selectedPages = getSelectedPages();
-                    var ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() };
+                    let selectedPages = getSelectedPages();
+                    let ajaxParams = { "pageIds[]" : selectedPages, "resultType" : $('#resultType').val() };
                     // Execute result process
                     executeProcess(ajaxParams);
                 });
 
                 $('#resultType').change(function() {
                     const resultType = $(this).val();
-                    const $rows = $("#strategy-row, #emptyLines-row, #pageDelimiter-row");
-                    resultType === "xml" ? $rows.hide() : $rows.show();
+                    switch(resultType){
+                        case "xml":
+                            $("#strategy-row, #emptyLines-row, #pageDelimiter-row").hide();
+                            break;
+                        case "docx":
+                            $("#strategy-row").show();
+                            $("#emptyLines-row, #pageDelimiter-row").hide();
+                            break;
+                        case "txt":
+                            $("#strategy-row, #emptyLines-row, #pageDelimiter-row").show();
+                    }
                 })
             });
         </script>
