@@ -253,19 +253,10 @@
                 </div>
             </li>
             <li>
-                <div class="collapsible-header">Other parameters</div>
+                <div class="collapsible-header">Polygonization parameters</div>
                 <div class="collapsible-body">
                     <table class="compact">
                         <tbody>
-						   <tr>
-                                <td><p>Remove ImageRegions from the image before processing TextRegions for TextLines</p></td>
-                                <td>
-                                        <p>
-                                            <input type="checkbox" data-setting="--remove-images" class="filled-in" id="lineSegmentation--remove_images"/>
-                                            <label for="lineSegmentation--remove_images"></label>
-                                        </p>
-                                </td>
-                            </tr>
                             <tr>
                                 <td><p>Max iterations for smearing mask to polygon</p></td>
                                 <td>
@@ -273,6 +264,72 @@
                                         <input id="lineSegmentation--fail-save" data-setting="--fail-save" type="number" step="1"/>
                                         <label for=lineSegmentation--fail-save data-type="int" data-error="Has to be integer">Default: 50</label>
                                     </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Growth in X direction for every iteration of the polygonization.</p>
+                                    <br/>
+                                    <span class="userWarning">Will speed up the algorithm at the cost of precision.</span>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--growth-x" data-setting="--growth-x" type="number" step="0.1"/>
+                                        <label for=lineSegmentation--growth-x data-type="int" data-error="Has to be integer">Default: 1.1</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Growth in Y direction for every iteration of the polygonization.</p>
+                                    <br/>
+                                    <span class="userWarning">Will speed up the algorithm at the cost of precision.</span>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--growth-y" data-setting="--growth-y" type="number" step="0.1"/>
+                                        <label for=lineSegmentation--growth-y data-type="int" data-error="Has to be integer">Default: 1.1</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Smearing strength in X direction for the algorithm calculating the textline polygon wrapping all contents.</p>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--smear-x" data-setting="--smear-x" type="number" step="0.1"/>
+                                        <label for=lineSegmentation--smear-x data-type="int" data-error="Has to be integer">Default: 2.0</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Smearing strength in Y direction for the algorithm calculating the textline polygon wrapping all contents.</p>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input id="lineSegmentation--smear-y" data-setting="--smear-y" type="number" step="0.1"/>
+                                        <label for=lineSegmentation--smear-y data-type="int" data-error="Has to be integer">Default: 2.0</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">Other parameters</div>
+                <div class="collapsible-body">
+                    <table class="compact">
+                        <tbody>
+						   <tr>
+                                <td><p>Remove ImageRegions from the image before processing TextRegions for TextLines</p></td>
+                                <td>
+                                    <p>
+                                        <input type="checkbox" data-setting="--remove-images" class="filled-in" id="lineSegmentation--remove_images"/>
+                                        <label for="lineSegmentation--remove_images"></label>
+                                    </p>
                                 </td>
                             </tr>
                         </tbody>
