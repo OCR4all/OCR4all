@@ -85,11 +85,15 @@
     <!--Collapsible elements (e.g. side navigation)-->
     <script type="text/javascript">
         $(document).ready(function() {
+            setInterval(function(){
+                $.get('/');
+            }, 8400);
+
             // Navigation button (used if screen size is too small)
             $(".button-collapse").sideNav();
 
             // Sidebar active handler
-            var pageTitle = $('.page-title').first().text();
+            let pageTitle = $('.page-title').first().text();
             $(".side-nav li a").each(function() {
                 if( $(this).text() == pageTitle )
                     $(this).parent().addClass("selected");
