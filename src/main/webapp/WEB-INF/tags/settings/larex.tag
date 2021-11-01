@@ -4,12 +4,12 @@
     <tbody>
         <tr>
             <td>
-                <form id="larexForm" action="/Larex/direct" method="POST" target="_blank">
-                    <input type="hidden" id="bookpath" name="bookpath" value="${projectDir}" />
-                    <input type="hidden" id="bookname" name="bookname" value="processing" />
-                    <input type="hidden" id="websave" name="websave" value="false" />
-                    <input type="hidden" id="localsave" name="localsave" value="bookpath" />
-                    <input type="hidden" id="imagefilter" name="imagefilter" value="bin nrm desp" />
+                <form id="larexForm" action="/Larex/directLibrary" method="POST" target="_blank">
+                    <input type="hidden" id="fileMap" name="fileMap" value="" />
+                    <input type="hidden" id="mimeMap" name="mimeMap" value="" />
+                    <input type="hidden" id="metsFilePath" name="metsFilePath" value="" />
+                    <input type="hidden" id="customFlag" name="customFlag" value="false" />
+                    <input type="hidden" id="customFolder" name="customFolder" value="" />
 					<c:if test="${not empty modes}" >
                     <input type="hidden" id="modes" name="modes" value="${modes}" />
 					</c:if>
