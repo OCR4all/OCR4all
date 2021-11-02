@@ -161,8 +161,12 @@ public class ResultGenerationHelper {
      * @param resultType specified resultType (txt, xml)
      * @throws IOException
      */
-    public void executeProcess(List<String> pageIds, String resultType, String resultStrategy,
-                               Boolean preserveEmptyLines, Boolean addPageDelimiter) throws IOException, UnsupportedFormatVersionException, Docx4JException, JAXBException {
+    public void executeProcess(List<String> pageIds,
+                               String resultType,
+                               String resultStrategy,
+                               Boolean preserveEmptyLines,
+                               Boolean addPageDelimiter,
+                               String customPageDelimiter) throws IOException, UnsupportedFormatVersionException, Docx4JException, JAXBException {
         stopProcess = false;
         progress = 0;
 
@@ -170,7 +174,7 @@ public class ResultGenerationHelper {
 
         switch(resultType){
             case "txt":
-                executeTextProcess(pageIds, initTime, resultStrategy, preserveEmptyLines, addPageDelimiter);
+                executeTextProcess(pageIds, initTime, resultStrategy, preserveEmptyLines, addPageDelimiter, customPageDelimiter);
                 break;
             case "xml":
                 executeXmlProcess(pageIds, initTime);
@@ -350,13 +354,16 @@ public class ResultGenerationHelper {
                                    String time,
                                    String strategy,
                                    Boolean preserveEmptyLines,
-                                   Boolean addPageDelimiter)
+                                   Boolean addPageDelimiter,
+                                   String customPageDelimiter)
             throws IOException, UnsupportedFormatVersionException {
         initialize(pageIds);
 
         TreeMap<String, String> pageResult = new TreeMap<>();
         int processElementCount = pageIds.size();
         int processedElements = 0;
+
+        String delimiter = !customPageDelimiter.isEmpty() ? customPageDelimiter.concat(" ") : "### ";
 
         File textDir = new File(projConf.RESULT_DIR + time + "_txt" + File.separator + "pages");
         Files.createDirectories(Paths.get(textDir.getAbsolutePath()));
@@ -387,9 +394,9 @@ public class ResultGenerationHelper {
 		for (String pageId : pageResult.keySet()) {
             if(addPageDelimiter) {
                 if (idx == 0) {
-                    completeResult.append("### ").append(pageId).append("\n\n");
+                    completeResult.append(delimiter).append(pageId).append("\n\n");
                 } else {
-                    completeResult.append("\n\n\n").append("### ").append(pageId).append("\n\n");
+                    completeResult.append("\n\n\n").append(delimiter).append(pageId).append("\n\n");
                 }
             }else{
                 if(idx != 0){

@@ -30,7 +30,8 @@
                         "resultType" : $('#resultType').val(),
                         "resultStrategy": $('#resultStrategy').val(),
                         "preserveEmptyLines": $("#preserveEmptyLines").prop('checked'),
-                        "addPageDelimiter": $("#addPageDelimiter").prop("checked")
+                        "addPageDelimiter": $("#addPageDelimiter").prop("checked"),
+                        "customPageDelimiter": $("#custom_page_delimiter").val()
                     };
                     if( selectedPages.length === 0 ) {
                         $('#modal_errorhandling').modal('open');
@@ -63,14 +64,14 @@
                     const resultType = $(this).val();
                     switch(resultType){
                         case "xml":
-                            $("#strategy-row, #emptyLines-row, #pageDelimiter-row").hide();
+                            $("#strategy-row, #emptyLines-row, #pageDelimiter-row, #customPageDelimiter-row").hide();
                             break;
                         case "docx":
                             $("#strategy-row").show();
-                            $("#emptyLines-row, #pageDelimiter-row").hide();
+                            $("#emptyLines-row, #pageDelimiter-row, #customPageDelimiter-row").hide();
                             break;
                         case "txt":
-                            $("#strategy-row, #emptyLines-row, #pageDelimiter-row").show();
+                            $("#strategy-row, #emptyLines-row, #pageDelimiter-row, #customPageDelimiter-row").show();
                     }
                 })
             });

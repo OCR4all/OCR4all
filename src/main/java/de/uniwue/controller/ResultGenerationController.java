@@ -82,6 +82,7 @@ public class ResultGenerationController {
                @RequestParam(value = "resultStrategy", required = true) String resultStrategy,
                @RequestParam(value = "preserveEmptyLines", required = true) Boolean preserveEmptyLines,
                @RequestParam(value = "addPageDelimiter", required = true) Boolean addPageDelimiter,
+               @RequestParam(value = "customPageDelimiter", required = true) String customPageDelimiter,
                HttpSession session, HttpServletResponse response
            ) {
         ResultGenerationHelper resultGenerationHelper = provideHelper(session, response);
@@ -98,7 +99,8 @@ public class ResultGenerationController {
                     resultType,
                     resultStrategy,
                     preserveEmptyLines,
-                    addPageDelimiter);
+                    addPageDelimiter,
+                    customPageDelimiter);
         } catch (IOException | UnsupportedFormatVersionException | Docx4JException | JAXBException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resultGenerationHelper.resetProgress();

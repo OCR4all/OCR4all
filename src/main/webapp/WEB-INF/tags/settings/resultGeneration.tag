@@ -66,5 +66,18 @@
                 </form>
             </td>
         </tr>
+        <tr id="customPageDelimiter-row">
+            <td>
+                <p>
+                    Custom page delimiter
+                    <br/>
+                    <span cass="userInfo">Add a custom page delimiter (instead of '###')</span>
+                </p>
+            </td>
+            <td style="padding-left: 50px">
+                <label for="custom_page_delimiter"></label>
+                <input placeholder="###" id="custom_page_delimiter" type="text" class="validate">
+            </td>
+        </tr>
     </tbody>
 </table>

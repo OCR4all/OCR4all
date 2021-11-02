@@ -971,7 +971,7 @@ public class BatchWorkflow {
 			}
 
 			helper.executeProcess(worker.getAvailablePageIds(), type.name(), strategy.getProcessName(),
-					isPreserveEmptyLines, isAddPageDelimiter);
+					isPreserveEmptyLines, isAddPageDelimiter, "###");
 		});
 	}
 
