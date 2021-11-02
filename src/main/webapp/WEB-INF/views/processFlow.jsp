@@ -40,12 +40,15 @@
                                 processSettings[process] =
                                     { "maxContourRemovalSize" : $('input[name="maxContourRemovalSize"]').val() };
                                 break;
-                            case "segmentationDummy":
+                            case "segmentationKraken":
+                                processSettings[process] =
+                                    { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked') };
+                                break;
+                            case "segmentationKraken":
                                 processSettings[process] =
                                     { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked') };
                                 break;
                             case "regionExtraction":
-
                                 processSettings[process] = {
                                     "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
                                     "maxskew" : $('input[id="regionExtraction--maxskew"]').val(),
@@ -272,11 +275,11 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><p>Segmentation (Dummy)</p></td>
+                                        <td><p>Segmentation (Kraken)</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runSegmentationDummyProcess" data-id="segmentationDummy" checked="checked" />
-                                                <label for="runSegmentationDummyProcess"></label>
+                                                <input type="checkbox" class="filled-in" id="runSegmentationKrakenProcess" data-id="segmentationKraken" checked="checked" />
+                                                <label for="runSegmentationKrakenProcess"></label>
                                             </p>
                                         </td>
                                     </tr>
@@ -345,10 +348,10 @@
                                         <s:despeckling></s:despeckling>
                                     </div>
                                 </li>
-                                <li data-id="segmentationDummy">
-                                    <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation (Dummy)</div>
+                                <li data-id="segmentationKraken">
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation (Kraken)</div>
                                     <div class="collapsible-body">
-                                        <s:segmentationDummy></s:segmentationDummy>
+                                        <s:segmentationKraken></s:segmentationKraken>
                                     </div>
                                 </li>
                                 <li data-id="lineSegmentation">
@@ -414,10 +417,10 @@
                                         </div>
                                     </div>
                                 </li>
-                                <li data-id="segmentationDummy">
-                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Segmentation (Dummy)</div>
+                                <li data-id="segmentationKraken">
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Segmentation (Kraken)</div>
                                     <div class="collapsible-body">
-                                        <div class="status"><p>Status: <span>No Segmentation (Dummy) process running</span></p></div>
+                                        <div class="status"><p>Status: <span>No Segmentation (Kraken) process running</span></p></div>
                                         <div class="progress">
                                             <div class="determinate"></div>
                                         </div>

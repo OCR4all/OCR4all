@@ -59,8 +59,7 @@ public class ProcessFlowHelper {
         }
 
         // Convert to required data type
-        String[] processedPagesArr = processedPages.toArray(new String[processedPages.size()]);
-        return processedPagesArr;
+        return processedPages.toArray(new String[processedPages.size()]);
     }
 
     /**

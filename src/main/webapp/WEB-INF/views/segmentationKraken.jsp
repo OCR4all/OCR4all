@@ -3,11 +3,11 @@
 <%@ taglib prefix="s" tagdir="/WEB-INF/tags/settings" %>
 <t:html>
     <t:head imageList="true" processHandler="true">
-        <title>OCR4all - Region Segmentation (Dummy)</title>
+        <title>OCR4all - Region Segmentation (Kraken)</title>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initializeProcessUpdate("segmentationDummy", [ 0 ], [ 1 ], false);
+                initializeProcessUpdate("segmentationKraken", [ 0 ], [ 1 ], false);
 
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
@@ -19,7 +19,7 @@
 
                 // Process handling (execute for all pages with current settings)
                 $('button[data-id="execute"]').click(function() {
-                    var selectedPages = getSelectedPages();
+                    let selectedPages = getSelectedPages();
                     if( selectedPages.length === 0 ) {
                         $('#modal_errorhandling').modal('open');
                         return;
@@ -27,7 +27,7 @@
                     $.post( "ajax/segmentation/exists", { "pageIds[]" : selectedPages } )
                     .done(function( data ) {
                         if(data === false) {
-                            var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};
+                            let ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};
                             // Execute segmentation process
                             executeProcess(ajaxParams);
                         }
@@ -40,15 +40,15 @@
                     });
                 });
                 $('#agree').click(function() {
-                    var selectedPages = getSelectedPages();
-                    var ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};
+                    let selectedPages = getSelectedPages();
+                    let ajaxParams =  { "pageIds[]" : selectedPages, "imageType" : $('#imageType').val()};
                     // Execute segmentation process
                     executeProcess(ajaxParams);
                 });
             });
         </script>
     </t:head>
-    <t:body heading="Segmentation (Dummy)" imageList="true" processModals="true">
+    <t:body heading="Region Segmentation (Kraken)" imageList="true" processModals="true">
         <div class="container includes-list">
             <div class="section">
                 <button data-id="execute" class="btn waves-effect waves-light">
@@ -64,7 +64,7 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
                         <div class="collapsible-body">
-                            <s:segmentationDummy></s:segmentationDummy>
+                            <s:segmentationKraken></s:segmentationKraken>
                         </div>
                     </li>
                     <li>
@@ -73,6 +73,14 @@
                             <div class="status"><p>Status: <span>No Segmentation process running</span></p></div>
                             <div class="progress">
                                 <div class="determinate"></div>
+                            </div>
+                            <div class="console">
+                                <ul class="tabs">
+                                    <li class="tab" data-refid="consoleOut" class="active"><a href="#consoleOut">Console Output</a></li>
+                                    <li class="tab" data-refid="consoleErr"><a href="#consoleErr">Console Error</a></li>
+                                </ul>
+                                <div id="consoleOut"><pre></pre></div>
+                                <div id="consoleErr"><pre></pre></div>
                             </div>
                         </div>
                     </li>
