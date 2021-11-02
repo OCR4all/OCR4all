@@ -37,6 +37,7 @@
                             <ul>
                                 <li><a href="SegmentationLarex">LAREX</a></li>
                                 <li><a href="SegmentationDummy">Dummy</a></li>
+                                <li><a href="SegmentationKraken">Kraken</a></li>
                             <%--<li><a href="SegmentationPixelClassifier">Pixel Classifier</a></li>--%>
                             </ul>
                         </div>

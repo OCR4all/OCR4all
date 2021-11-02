@@ -223,7 +223,7 @@ public class ProcessHandler {
 
         process = processBuilder.start();
 
-        if (fetchProcessConsole == true) {
+        if (fetchProcessConsole) {
             // Execute stream handlers in new threads to be able to fetch stream contents continuously
             // Use Consumers to redirect stream contents to appropriate appending method
             new Thread(new StreamHandler(process.getInputStream(), (out) -> appendConsoleOutput(out))).start();
