@@ -10,14 +10,14 @@
  * 4. Call "cancelProcess()" to cancel the current process execution
  */
 
-var globalInProgress = false;
-var globalProgressInterval = null;
-var globalConsoleStream = { "out" : "", "err" : "" };
+let globalInProgress = false;
+let globalProgressInterval = null;
+let globalConsoleStream = { "out" : "", "err" : "" };
 
-var globalController = "";
-var globalCollapsibleOpenStandard = [];
-var globalCollapsibleOpenOnAction = [];
-var globalUpdateConsole = false;
+let globalController = "";
+let globalCollapsibleOpenStandard = [];
+let globalCollapsibleOpenOnAction = [];
+let globalUpdateConsole = false;
 
 function isProcessRunning() {
     return globalInProgress;
@@ -48,7 +48,7 @@ function selectActiveTab() {
 // Remove error notification icon if user clicks on consoleErr tab
 $(document).ready(function() {
     $('li.tab a').on('click', function() {
-        var clickedTabIcon = $(this).find('i.material-icons');
+        let clickedTabIcon = $(this).find('i.material-icons');
         if( clickedTabIcon.length > 0 ) {
             clickedTabIcon.remove();
             $('ul.tabs').tabs('select_tab', $(this).parent('li').attr('data-refid'));
@@ -166,7 +166,7 @@ function updateProcessStatus(initial) {
             return;
         }
 
-        var ongoingProgress = globalInProgress;
+        let ongoingProgress = globalInProgress;
         if( globalInProgress === false ) {
             globalInProgress = true;
             $('.status span').html("Ongoing").attr("class", "orange-text");

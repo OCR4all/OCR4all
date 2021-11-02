@@ -64,6 +64,28 @@ public class SegmentationKrakenController {
     }
 
     /**
+     * Response to the request to return the output of the lineSegmentation process
+     *
+     * @param streamType Type of the console output (out | err)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Console output
+     */
+    @RequestMapping(value = "/ajax/segmentationKraken/console" , method = RequestMethod.GET)
+    public @ResponseBody String console(
+            @RequestParam("streamType") String streamType,
+            HttpSession session, HttpServletResponse response
+    ) {
+        SegmentationKrakenHelper segmentationKrakenHelper = provideHelper(session, response);
+        if (segmentationKrakenHelper == null)
+            return "";
+
+        if (streamType.equals("err"))
+            return segmentationKrakenHelper.getProcessHandler().getConsoleErr();
+        return segmentationKrakenHelper.getProcessHandler().getConsoleOut();
+    }
+
+    /**
      * Response to the request to execute the process
      *
      * @param pageIds Ids of specified pages

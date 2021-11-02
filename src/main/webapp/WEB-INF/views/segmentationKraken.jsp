@@ -7,7 +7,7 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initializeProcessUpdate("segmentationKraken", [ 0 ], [ 1 ], false);
+                initializeProcessUpdate("segmentationKraken", [ 0 ], [ 1 ], true);
 
                 $('#imageType').on('change', function() {
                     $('#bookname').val($('#imageType').val());
