@@ -65,27 +65,6 @@ public class EvaluationHelper {
     }
 
     /**
-     * Returns the absolute path of all ".gt.txt" files for the pages in the processState
-     *
-     * @return List of ".gt.txt" files
-     * @throws IOException 
-     */
-    public List<String> getGtTextFilesOfPages(List<String> pageIds){
-        List<String> GtOfPages = new ArrayList<String>();
-        for(String pageId : pageIds) {
-            File[] directories = new File(projConf.PAGE_DIR + pageId).listFiles(File::isDirectory);
-            if (directories != null && directories.length != 0) {
-                for(File dir : directories) {
-                    File[] GtFiles = dir.listFiles((d, name) -> name.endsWith(projConf.GT_EXT));
-                    for(File gtFile :GtFiles)
-                        GtOfPages.add(gtFile.getAbsolutePath());
-                }
-            }
-        }
-        return GtOfPages;
-    }
-
-    /**
      * Executes image Evaluation of all pages
      * Achieved with the help of the external python program "calamari-eval"
      *
@@ -96,48 +75,20 @@ public class EvaluationHelper {
     public void execute(List<String> pageIds, List<String> cmdArgs) throws IOException {
         progress = 0;
 
-        List<String> command = new ArrayList<String>();
-        command.add("--gt");
-        // Create temp json file with all segment images (to not overload parameter list)
-		// Temp file in a temp folder named "calamari-<random numbers>.json"
-        File segmentListFile = File.createTempFile("calamari-",".json");
-        segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
-        ObjectMapper mapper = new ObjectMapper();
+        List<String> command = new ArrayList<>();
 
-        final List<String> gtFiles = new ArrayList<String>();
         for(String pageId : pageIds) {
             if(procStateCol.groundTruthState(pageId)) {
-                gtFiles.add(new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).getAbsolutePath());
+                command.add(new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).getAbsolutePath());
             }
         }
 
-        ArrayNode gtList = mapper.createArrayNode();
-
-		for (String gtFile : gtFiles) {
-			// Add affected line segment images with their absolute path to the json file
-			gtList.add(gtFile);
-		}
-
-        ObjectNode segmentObj = mapper.createObjectNode();
-        segmentObj.set("gt", gtList);
-        ObjectWriter writer = mapper.writer();
-        writer.writeValue(segmentListFile, segmentObj); 
-        command.add(segmentListFile.toString());
-
-        
         progress = 20;
         command.addAll(cmdArgs);
-        command.add("--no_progress_bars");
-
-        command.add("--dataset");
-        command.add("PAGEXML");
-        command.add("--pred_ext");
-        command.add(".xml");
-        command.add("--skip_empty_gt");
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        processHandler.startProcess("calamari-eval", command, false);
+        processHandler.startProcess("calamari-eval-helper", command, false);
 
         progress = 100;
     }

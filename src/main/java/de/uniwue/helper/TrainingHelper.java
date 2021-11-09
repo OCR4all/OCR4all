@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -228,21 +229,20 @@ public class TrainingHelper {
             trainingDir.mkdir();
 
         List<String> command = new ArrayList<String>();
-        command.add("--files");
+        command.add("--train.images");
         // Create temp json file with all segment images (to not overload parameter list)
 		// Temp file in a temp folder named "calamari-<random numbers>.json"
-        File segmentListFile = File.createTempFile("calamari-",".json");
-        segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode gtList = mapper.createArrayNode();
-        for (String gtFile : getImagesWithGt()) {
-            // Add affected line segment images with their absolute path to the json file
-        	gtList.add(gtFile);
+        File segmentListFile = File.createTempFile("calamari-",".files");
+        segmentListFile.deleteOnExit();
+
+        List<String> content = new ArrayList<>();
+        for (String pageId : getPagesWithGt()) {
+            // Add affected images with their absolute path to the file
+            content.add(projConf.getImageDirectoryByType(projectImageType) + pageId +
+                    projConf.getImageExtensionByType(projectImageType));
         }
-        ObjectNode segmentObj = mapper.createObjectNode();
-        segmentObj.set("files", gtList);
-        ObjectWriter writer = mapper.writer();
-        writer.writeValue(segmentListFile, segmentObj);
+        Files.write(segmentListFile.toPath(), content, StandardOpenOption.APPEND);
+
         command.add(segmentListFile.toString());
         System.out.println(segmentListFile);
 
@@ -251,10 +251,13 @@ public class TrainingHelper {
         command.add("--best_models_dir");
         command.add(trainingDir.getAbsolutePath());
 
-        command.add("--no_progress_bars");
+        command.add("--train.gt_extension");
+        command.add(".xml");
 
-        command.add("--dataset");
-        command.add("PAGEXML");
+        command.add("--train");
+        command.add("PageXML");
+
+        System.out.println(command);
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
@@ -289,7 +292,7 @@ public class TrainingHelper {
     /**
      * Deletion of old process related files
      *
-     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param projectName Identifiers of the pages (e.g 0002,0003)
      * @throws IOException
      */
     public void deleteOldFiles(String projectName, String trainingId) throws IOException {

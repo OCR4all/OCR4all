@@ -10,7 +10,7 @@
                     <td><p>Number of parallel threads for program execution</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="recognition--processes" data-setting="--processes" type="number" />
+                            <input id="recognition--processes" data-setting="--pipeline.num_processes" type="number" />
                             <label for="recognition--processes" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
                         </div>
                     </td>
@@ -32,43 +32,29 @@
                     <td><p>Print additional information</p></td>
                     <td>
                         <p>
-                            <input type="checkbox" class="filled-in" data-setting="--verbose" id="recognition--verbose" checked="checked"/>
+                            <input type="checkbox" class="filled-in" data-setting="--verbose True" id="recognition--verbose" checked="checked"/>
                             <label for="recognition--verbose"></label>
                         </p>
                     </td>
                  </tr>
-                <tr>
-                    <td><p>Generate word level Page XML output</p></td>
-                    <td>
-                        <p>
-                            <input type="checkbox" class="filled-in" data-setting="--pagexml_word_level" id="recognition--word_level"/>
-                            <label for="recognition--word_level"></label>
-                        </p>
-                    </td>
-                </tr>
+<%--                <tr>--%>
+<%--                    <td><p>Generate word level Page XML output</p></td>--%>
+<%--                    <td>--%>
+<%--                        <p>--%>
+<%--                            <input type="checkbox" class="filled-in" data-setting="--pagexml_word_level" id="recognition--word_level"/>--%>
+<%--                            <label for="recognition--word_level"></label>--%>
+<%--                        </p>--%>
+<%--                    </td>--%>
+<%--                </tr>--%>
                  <tr>
                     <td><p>Number of lines to process in parallel (Batch size)</p></td>
                     <td>
                         <div class="input-field">
-                            <input id="recognition--batch_size" data-setting="--batch_size" type="number" step="1" value="5"/>
+                            <input id="recognition--batch_size" data-setting="--pipeline.batch_size" type="number" step="1" value="5"/>
                             <label for="recognition--batch_size" data-type="int" data-error="Has to be Int">Default: 1</label>
                         </div>
                     </td>
                 </tr>
-                 <tr>
-                    <td><p>The voting algorithm to use</p></td>
-                    <td>
-                        <div class="input-field">
-                            <select id="recognition--voter" data-setting="--voter" name="voter">
-                                <option value="confidence_voter_default_ctc">confidence_voter_default_ctc</option>
-                                <option value="confidence_voter_fuzzy_ctc">confidence_voter_fuzzy_ctc</option>
-                                <option value="sequence_voter">sequence_voter</option>
-                            </select>
-                            <label></label>
-                        </div>
-                    </td>
-                 </tr>
-
 				<tr>
 					<td><p>Estimate skew angle for every region without one</p></td>
 					<td>
