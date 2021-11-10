@@ -6,11 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
 import de.uniwue.feature.ProcessHandler;
@@ -76,6 +71,7 @@ public class EvaluationHelper {
         progress = 0;
 
         List<String> command = new ArrayList<>();
+        command.add("calamari-eval-wrapper");
 
         for(String pageId : pageIds) {
             if(procStateCol.groundTruthState(pageId)) {
@@ -84,11 +80,10 @@ public class EvaluationHelper {
         }
 
         progress = 20;
-        command.addAll(cmdArgs);
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
-        processHandler.startProcess("calamari-eval-helper", command, false);
+        processHandler.startProcess("ocr4all-helper-scripts", command, false);
 
         progress = 100;
     }
