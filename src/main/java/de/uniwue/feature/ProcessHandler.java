@@ -73,7 +73,7 @@ public class ProcessHandler {
          * Constructor
          *
          * @param process Process to watch
-         * @param consumeInputLine Consumer to pass the process to
+         * @param consumeProcess Consumer to pass the process to
          */
         public ProcessCompletionNotifier(Process process, Consumer<Process> consumeProcess) {
             this.process = process;
@@ -144,23 +144,33 @@ public class ProcessHandler {
     }
 
     /**
-     * Extends existing console std.out with new content
-     * Will be used as consumer by the StreamHandler 
-     *
-     * @param consoleOut New std.out content of the process
-     */
-    private void appendConsoleOutput(String consoleOut) {
-        this.consoleOut += consoleOut + System.lineSeparator();
-    }
-
-    /**
      * Extends existing console std.err with new content
      * Will be used as consumer by the StreamHandler 
      *
-     * @param consoleOut New std.err content of the process
+     * @param content New ontent of the process
+     * @param type Type of console logging
      */
-    private void appendConsoleError(String consoleErr) {
-        this.consoleErr += consoleErr + System.lineSeparator();
+    private void filterAndAppendConsoleOutput(String content, String type) {
+        // This is a makeshift solution to certain external Python scripts logging stdout / info to stderr in their latest version
+        // While this isn't the most elegant solution it will be replaced in the upcoming rewrite of OCR4all anyways
+        if(content.startsWith("INFO")){
+            content = content.replaceFirst("(?:INFO\\s.*processing/)(.{4})/(.+):\\s(.*)", "Page: $1 | Line: $2 | Prediction: $3");
+            content = content.replaceFirst("(?:INFO\\s.*calamari_ocr\\.scripts\\.predict:\\s)(.+)", "$1");
+            type = "out";
+        }else if(content.startsWith("WARNING:root:Torch version")){
+            type = "skip";
+        }
+        switch(type){
+            case "out":
+                this.consoleOut += content + System.lineSeparator();
+                break;
+            case "err":
+                this.consoleErr += content + System.lineSeparator();
+                break;
+            case "skip":
+                break;
+        }
+
     }
 
     /**
@@ -226,8 +236,8 @@ public class ProcessHandler {
         if (fetchProcessConsole) {
             // Execute stream handlers in new threads to be able to fetch stream contents continuously
             // Use Consumers to redirect stream contents to appropriate appending method
-            new Thread(new StreamHandler(process.getInputStream(), (out) -> appendConsoleOutput(out))).start();
-            new Thread(new StreamHandler(process.getErrorStream(), (err) -> appendConsoleError(err))).start();
+            new Thread(new StreamHandler(process.getInputStream(), (out) -> filterAndAppendConsoleOutput(out, "out"))).start();
+            new Thread(new StreamHandler(process.getErrorStream(), (err) -> filterAndAppendConsoleOutput(err, "err"))).start();
         }
 
         if (runInBackground) {
