@@ -3,10 +3,7 @@ package de.uniwue.helper;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,12 +14,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.uniwue.config.ProjectConfiguration;
 import de.uniwue.feature.ProcessConflictDetector;
@@ -264,31 +259,26 @@ public class RecognitionHelper {
         if (cmdArgsWork.contains("--checkpoint")) {
             index = cmdArgsWork.indexOf("--checkpoint");
             for(String ckpt : extractModelsOfJoinedString(cmdArgsWork.get(index + 1))) {
-                if (new File(ckpt).exists() == false)
+                if (!new File(ckpt).exists())
                     throw new IOException("Model does not exist under the specified path");
             }
         }
 
-        List<String> command = new ArrayList<String>();
-        List<String> lineSegmentImages = getLineSegmentImagesForCurrentProcess(pageIds);
-        command.add("--files");
+        List<String> command = new ArrayList<>();
+        command.add("--data.images");
         // Create temp json file with all segment images (to not overload parameter list)
 		// Temp file in a temp folder named "calamari-<random numbers>.json"
-        File segmentListFile = File.createTempFile("calamari-",".json");
-        segmentListFile.deleteOnExit(); // Delete if OCR4all terminates
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode segmentList = mapper.createArrayNode();
+        File segmentListFile = File.createTempFile("calamari-",".files");
+        segmentListFile.deleteOnExit();
+
+        List<String> content = new ArrayList<>();
         for (String pageId : pageIds) {
-            // Add affected images with their absolute path to the json file
-            segmentList.add(projConf.getImageDirectoryByType(projectImageType) + pageId +
+            // Add affected images with their absolute path to the file
+            content.add(projConf.getImageDirectoryByType(projectImageType) + pageId +
                                 projConf.getImageExtensionByType(projectImageType));
         }
-        ObjectNode segmentObj = mapper.createObjectNode();
-        segmentObj.set("files", segmentList);
-        ObjectWriter writer = mapper.writer();
-        writer.writeValue(segmentListFile, segmentObj);
+        Files.write(segmentListFile.toPath(), content, StandardOpenOption.APPEND);
         command.add(segmentListFile.toString());
-
 
         //Add checkpoints
         Iterator<String> cmdArgsIterator = cmdArgsWork.iterator();
@@ -300,14 +290,23 @@ public class RecognitionHelper {
             }
         }
 
-        command.add("--no_progress_bars");
-
-        command.add("--dataset");
-        command.add("PAGEXML");
+        command.add("--data");
+        command.add("PageXML");
         // Set output extension to input extension in order to overwrite the original file
         // (default would've been .pred.xml)
-        command.add("--extension");
+        command.add("--data.gt_extension");
         command.add(".xml");
+        command.add("--data.pred_extension");
+        command.add(".xml");
+
+        command.add("--data.text_index");
+        command.add("1");
+
+        command.add("--verbose");
+        command.add("True");
+
+        command.add("--predictor.progress_bar");
+        command.add("False");
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
@@ -322,7 +321,7 @@ public class RecognitionHelper {
         RecognitionRunning = false;
 
         // Clean up temp segmentListFile
-        segmentListFile.delete();
+        // segmentListFile.delete();
     }
 
     /**

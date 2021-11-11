@@ -119,7 +119,6 @@ public class RecognitionController {
         RecognitionHelper recognitionHelper = provideHelper(session, response);
         if (recognitionHelper == null)
             return "";
-
         if (streamType.equals("err"))
             return recognitionHelper.getProcessHandler().getConsoleErr();
         return recognitionHelper.getProcessHandler().getConsoleOut();

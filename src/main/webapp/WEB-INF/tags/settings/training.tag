@@ -43,7 +43,7 @@
                 <td>
                     <div class="input-field flex">
                         <!-- Temporary fix for faulty resizing of materialize-textarea -->
-                        <input id="training--whitelist" data-setting="--whitelist" type="text" spellcheck="false"/>
+                        <input id="training--whitelist" data-setting="--codec.include_files" type="text" spellcheck="false"/>
                         <label for="training--whitelist">Default: A-Za-z0-9</label>
                         <a class="waves-effect waves-light dropdown-button btn whitelist-button" data-constrainWidth="false" href="#" data-activates="whitelist-select"><i class="material-icons">play_for_work</i></a>
                         <ul id="whitelist-select" class="dropdown-content"></ul>
@@ -54,7 +54,7 @@
                 <td><p>Keep codec of the loaded model(s)</p></td>
                 <td>
                     <p>
-                        <input type="checkbox" class="filled-in" data-setting="--keep_loaded_codec" id="training--keep_loaded_codec" />
+                        <input type="checkbox" class="filled-in" data-setting="--codec.keep_loaded True" id="training--keep_loaded_codec" />
                         <label for="training--keep_loaded_codec"></label>
                     </p>
                 </td>
@@ -100,15 +100,15 @@
                     </div>
                 </td>
             </tr>
-            <tr>
-                <td><p>Skip retraining on real data only (faster but less accurate)</p></td>
-                <td>
-                    <p>
-                        <input type="checkbox" class="filled-in" data-setting="--only_train_on_augmented" id="training--only_train_on_augmented" />
-                        <label for="training--only_train_on_augmented"></label>
-                    </p>
-                </td>
-            </tr>
+<%--            <tr>--%>
+<%--                <td><p>Skip retraining on real data only (faster but less accurate)</p></td>--%>
+<%--                <td>--%>
+<%--                    <p>--%>
+<%--                        <input type="checkbox" class="filled-in" data-setting="--only_train_on_augmented" id="training--only_train_on_augmented" />--%>
+<%--                        <label for="training--only_train_on_augmented"></label>--%>
+<%--                    </p>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
                 <%-- END Will be used to generate dropdown elements for each model --%>
             </tbody>
         </table>
@@ -127,7 +127,7 @@
                 </td>
                 <td>
                     <div class="input-field">
-                        <input id="training--early_stopping_nbest" data-setting="--early_stopping_nbest" type="number" value="5"/>
+                        <input id="training--early_stopping_nbest" data-setting="--early_stopping.n_to_go" type="number" value="5"/>
                         <label for="training--early_stopping_nbest" data-type="int" data-error="Has to be integer">Default: 10 (Integer value)</label>
                     </div>
                 </td>
@@ -140,7 +140,7 @@
                 </p></td>
                 <td>
                     <div class="input-field">
-                        <input id="training--early_stopping_frequency" data-setting="--early_stopping_frequency" type="number"/>
+                        <input id="training--early_stopping_frequency" data-setting="--early_stopping.frequency" type="number"/>
                         <label for="training--early_stopping_frequency" data-type="int" data-error="Has to be integer">Default: # GT lines / 2 (Integer value)</label>
                     </div>
                 </td>
@@ -155,7 +155,7 @@
                 </td>
                 <td>
                     <div class="input-field">
-                        <input id="training--max_iters" data-setting="--max_iters" type="number" />
+                        <input id="training--max_iters" data-setting="--trainer.epochs" type="number" />
                         <label for="training--max_iters" data-type="int" data-error="Has to be integer">Default: 1000000 (Integer value)</label>
                     </div>
                 </td>
@@ -175,19 +175,19 @@
                     </div>
                 </td>
             </tr>
-            <tr>
-                <td><p>Hardware type</p></td>
-                <td>
-                    <div class="input-field">
-                        <i class="material-icons prefix">perm_data_setting</i>
-                        <select id="hardwareType" name="hardwareType" class="suffix ignoreParam">
-                            <option value="CPU">CPU</option>
-                            <option value="GPU">GPU</option>
-                        </select>
-                        <label></label>
-                    </div>
-                </td>
-            </tr>
+<%--            <tr>--%>
+<%--                <td><p>Hardware type</p></td>--%>
+<%--                <td>--%>
+<%--                    <div class="input-field">--%>
+<%--                        <i class="material-icons prefix">perm_data_setting</i>--%>
+<%--                        <select id="hardwareType" name="hardwareType" class="suffix ignoreParam">--%>
+<%--                            <option value="CPU">CPU</option>--%>
+<%--                            <option value="GPU">GPU</option>--%>
+<%--                        </select>--%>
+<%--                        <label></label>--%>
+<%--                    </div>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
             <tr>
                 <td>
                 	<p>Load data on the fly instead of preloading it<br>
@@ -196,80 +196,80 @@
 				</td>
                 <td>
                     <p>
-                        <input type="checkbox" class="filled-in" data-setting="--train_data_on_the_fly" id="training--train_data_on_the_fly" />
+                        <input type="checkbox" class="filled-in" data-setting="-train.preload True" id="training--train_data_on_the_fly" />
                         <label for="training--train_data_on_the_fly"></label>
                     </p>
                 </td>
             </tr>
-            <tr>
-                <td><p>Console output frequency</p></td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--display" data-setting="--display" type="number" value="50"/>
-                        <label for="training--display" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td><p>The frequency how often to write checkpoints during training</p></td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--checkpoint_frequency" data-setting="--checkpoint_frequency" type="number" />
-                        <label for="training--checkpoint_frequency" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>
-                        Average this many iterations for:
-                        <br />
-                        <span class="userInfo">computing an average loss, label error rate and training time</span>
+<%--            <tr>--%>
+<%--                <td><p>Console output frequency</p></td>--%>
+<%--                <td>--%>
+<%--                    <div class="input-field">--%>
+<%--                        <input id="training--display" data-setting="--display" type="number" value="50"/>--%>
+<%--                        <label for="training--display" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>--%>
+<%--                    </div>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
+<%--            <tr>--%>
+<%--                <td><p>The frequency how often to write checkpoints during training</p></td>--%>
+<%--                <td>--%>
+<%--                    <div class="input-field">--%>
+<%--                        <input id="training--checkpoint_frequency" data-setting="--checkpoint_frequency" type="number" />--%>
+<%--                        <label for="training--checkpoint_frequency" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>--%>
+<%--                    </div>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
+<%--            <tr>--%>
+<%--                <td>--%>
+<%--                    <p>--%>
+<%--                        Average this many iterations for:--%>
+<%--                        <br />--%>
+<%--                        <span class="userInfo">computing an average loss, label error rate and training time</span>--%>
 
-                    </p>
-                </td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--stats_size" data-setting="--stats_size" type="number" />
-                        <label for="training--stats_size" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td><p>The default direction of text</p></td>
-                <td>
-                    <div class="input-field">
-                        <select id="training--bidi_dir" data-setting="--bidi_dir" name="voter">
-                            <option value="ltr">left to right</option>
-                            <option value="rtl">right to left</option>
-                        </select>
-                        <label></label>
-                    </div>
-                </td>
-            </tr>
+<%--                    </p>--%>
+<%--                </td>--%>
+<%--                <td>--%>
+<%--                    <div class="input-field">--%>
+<%--                        <input id="training--stats_size" data-setting="--stats_size" type="number" />--%>
+<%--                        <label for="training--stats_size" data-type="int" data-error="Has to be integer">Default: 1000 (Integer value)</label>--%>
+<%--                    </div>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
+<%--            <tr>--%>
+<%--                <td><p>The default direction of text</p></td>--%>
+<%--                <td>--%>
+<%--                    <div class="input-field">--%>
+<%--                        <select id="training--bidi_dir" data-setting="--data.pre_proc.processors.3.bidi_direction" name="voter">--%>
+<%--                            <option value="ltr">left to right</option>--%>
+<%--                            <option value="rtl">right to left</option>--%>
+<%--                        </select>--%>
+<%--                        <label></label>--%>
+<%--                    </div>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
             <tr>
                 <td><p>The batch size to use for training</p></td>
                 <td>
                     <div class="input-field">
-                        <input id="training--batch_size" data-setting="--batch_size" type="number" step="1" value="3"/>
+                        <input id="training--batch_size" data-setting="--train.batch_size" type="number" step="1" value="3"/>
                         <label for="training--batch_size" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
                     </div>
                 </td>
             </tr>
-            <tr>
-                <td><p>Padding (left right) of the line</p></td>
-                <td>
-                    <div class="input-field">
-                        <input id="training--pad" data-setting="--pad" type="number" />
-                        <label for="training--pad" data-type="int" data-error="Has to be integer">Default: 16 (Integer value)</label>
-                    </div>
-                </td>
-            </tr>
+<%--            <tr>--%>
+<%--                <td><p>Padding (left right) of the line</p></td>--%>
+<%--                <td>--%>
+<%--                    <div class="input-field">--%>
+<%--                        <input id="training--pad" data-setting="--pad" type="number" />--%>
+<%--                        <label for="training--pad" data-type="int" data-error="Has to be integer">Default: 16 (Integer value)</label>--%>
+<%--                    </div>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
             <tr>
                 <td><p>The line height</p></td>
                 <td>
                     <div class="input-field">
-                        <input id="training--line" data-setting="--line" type="number" />
+                        <input id="training--line" data-setting="--data.line_height" type="number" />
                         <label for="training--line" data-type="int" data-error="Has to be integer">Default: 48 (Integer value)</label>
                     </div>
                 </td>
@@ -299,7 +299,7 @@
                 </td>
                 <td>
                     <div class="input-field">
-                        <input id="training--seed" data-setting="--seed" type="number" />
+                        <input id="training--seed" data-setting="--trainer.random_seed" type="number" />
                         <label for="training--seed" data-type="int" data-error="Has to be integer">Default: 0</label>
                     </div>
                 </td>
@@ -308,7 +308,7 @@
                 <td><p>Do no skip invalid gt, instead raise an exception</p></td>
                 <td>
                     <p>
-                        <input type="checkbox" class="filled-in" data-setting="--no_skip_invalid_gt" id="training--no_skip_invalid_gt" />
+                        <input type="checkbox" class="filled-in" data-setting="--data.skip_invalid False" id="training--no_skip_invalid_gt" />
                         <label for="training--no_skip_invalid_gt"></label>
                     </p>
                 </td>
