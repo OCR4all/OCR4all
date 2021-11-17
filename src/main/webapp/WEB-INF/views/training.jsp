@@ -166,7 +166,7 @@
                         return;
                     }
 
-                    // In case of a custom training identifier, check for existance first
+                    // In case of a custom training identifier, check for existence first
                     if ($('#trainingId').val() !== "") {
                         $.post( "ajax/training/exists" , { "trainingId" : $('#trainingId').val() })
                         .done(function( data ) {

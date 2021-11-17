@@ -830,7 +830,7 @@ public class BatchWorkflow {
 					// Ends model list
 					if (argument.startsWith("--")) {
 						if (buffer.length() == 0)
-							throw new IllegalArgumentException("the argmuent --checkpoint requires at leas one model");
+							throw new IllegalArgumentException("the argmuent --checkpoint requires at least one model");
 
 						arguments.add(buffer.toString());
 
@@ -857,7 +857,7 @@ public class BatchWorkflow {
 
 			if (buffer != null) {
 				if (buffer.length() == 0)
-					throw new IllegalArgumentException("the argmuent --checkpoint requires at leas one model");
+					throw new IllegalArgumentException("the argmuent --checkpoint requires at least one model");
 
 				arguments.add(buffer.toString());
 			}

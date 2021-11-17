@@ -1597,8 +1597,8 @@ if (Vel) {
   });
 })(jQuery);;(function ($) {
 
-  // Add posibility to scroll to selected option
-  // usefull for select for example
+  // Add possibility to scroll to selected option
+  // useful for select for example
   $.fn.scrollTo = function (elem) {
     $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(elem).offset().top);
     return this;
@@ -3106,7 +3106,7 @@ if (Vel) {
       ripple.className = 'waves-ripple';
       el.appendChild(ripple);
 
-      // Get click coordinate and element witdh
+      // Get click coordinate and element width
       var pos = offset(el);
       var relativeY = e.pageY - pos.top;
       var relativeX = e.pageX - pos.left;
@@ -3174,7 +3174,7 @@ if (Vel) {
       var relativeY = ripple.getAttribute('data-y');
       var scale = ripple.getAttribute('data-scale');
 
-      // Get delay beetween mousedown and mouse leave
+      // Get delay between mousedown and mouse leave
       var diff = Date.now() - Number(ripple.getAttribute('data-hold'));
       var delay = 350 - diff;
 
@@ -3804,7 +3804,7 @@ if (Vel) {
         var removeMenu = function (restoreNav) {
           panning = false;
           menuOut = false;
-          // Reenable scrolling
+          // Re-enable scrolling
           $('body').css({
             overflow: '',
             width: ''
@@ -5102,7 +5102,7 @@ if (Vel) {
           if (newOption) activateOption(options, newOption);
         }
 
-        // Automaticaly clean filter query so user can search again by starting letters
+        // Automatically clean filter query so user can search again by starting letters
         setTimeout(function () {
           filterQuery = [];
         }, 1000);

@@ -67,7 +67,7 @@
 		};
 		
 		/*
-		 * External API so that users can perform search programatically. 
+		 * External API so that users can perform search programmatically.
 		 * */
 		this.search = function (submittedVal) {
 			val = submittedVal;

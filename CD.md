@@ -1,6 +1,6 @@
-# Continous Deployment with GitHub, Travis and Artifactory
+# Continuous Deployment with GitHub, Travis and Artifactory
 
-## Continous Integration mit Travis
+## Continuous Integration mit Travis
 
 * Erstellen `.travis.yml` für CI mit Travis, z. B.:
 

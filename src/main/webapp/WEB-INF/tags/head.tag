@@ -85,7 +85,7 @@
                     $(this).parent().addClass("selected");
             });
 
-            // Initialize select form elements (multi-select elements will be loaded seperately)
+            // Initialize select form elements (multi-select elements will be loaded separately)
             $('select').not('select[multiple]').material_select();
 
             // Initialize modals
