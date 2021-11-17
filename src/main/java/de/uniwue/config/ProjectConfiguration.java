@@ -20,7 +20,7 @@ public final class ProjectConfiguration {
         for (Field classVar : classVars) {
             if (!Modifier.isFinal(classVar.getModifiers())) {
                 try {
-                    // projectDir ends with File.seperator (is stored like this in session)
+                    // projectDir ends with File.separator (is stored like this in session)
                     //classVar.set(this, projectDir + File.separator + classVar.get(this));
                     classVar.set(this, projectDir + classVar.get(this));
                 } catch (IllegalArgumentException | IllegalAccessException e) {

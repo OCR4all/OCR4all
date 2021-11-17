@@ -87,7 +87,7 @@ $(document).ready(function() {
         handleProcessDataSelection();
     });
 
-    //Calls the models Version warning, if it wasnt already displayed
+    //Calls the models Version warning, if it wasn't already displayed
     if(window.localStorage.getItem('OCR4all_webVersionWarning') === null){
         $('#modal_version_warning').modal();
         setTimeout(function(){ $('#modal_version_warning').modal('open'); }, 1000);

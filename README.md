@@ -40,7 +40,7 @@ OCR4all is under active development and consequently, frequent releases containi
 ## Contact, Authors, and Helping Hands
 
 * **Dr. Christian Reul** (*project lead*) - mail: christian.reul@uni-wuerzburg.de
-* **Maximilan Wehner** (*user support and guides*) - mail: maximilian.wehner@uni-wuerzburg.de
+* **Florian Langhanki** (*user support and guides*) - mail: florian.langhanki@uni-wuerzburg.de
 
 ### Developers
 
@@ -64,6 +64,7 @@ OCR4all is under active development and consequently, frequent releases containi
 * **Alexander Hartelt** (*OCR4all*)
 * **Nico Balbach** (*OCR4all and LAREX*)
 * **Christine Grundig** (*ideas and feedback*)
+* **Maximilan Wehner** (*user support and guides*)
 * ...
 
 

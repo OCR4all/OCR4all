@@ -106,7 +106,7 @@
                                 currentProcessInterval = setInterval(initiateProgressHandling, 1000);
                             }
                             else {
-                                // Final update of the last exectued process status
+                                // Final update of the last executed process status
                                 updateProcessFlowStatus(lastExecutedProcess);
                             }
 
@@ -114,7 +114,7 @@
                             updateProcessFlowStatus(process);
                         }
                         else {
-                            // Update progress continously
+                            // Update progress continuously
                             updateProcessFlowStatus(process);
                         }
 
