@@ -11,7 +11,9 @@ import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SegmentationKrakenHelper {
     /**
@@ -51,6 +53,11 @@ public class SegmentationKrakenHelper {
     private boolean segmentationRunning = false;
 
     /**
+     * Last time the images/pagexml are modified
+     */
+    private Map<String,Long> imagesLastModified;
+
+    /**
      * Constructor
      *
      * @param projDir Path to the project directory
@@ -67,12 +74,40 @@ public class SegmentationKrakenHelper {
      * Returns the progress of the process
      *
      * @return Progress percentage
+     * @throws IOException
      */
-    public int getProgress() {
+    public int getProgress() throws IOException {
+        // Prevent function from calculation progress if process is not running
         if (!segmentationRunning)
             return progress;
-        // TODO
-        return 0;
+
+        int modifiedCount = 0;
+        if(imagesLastModified != null) {
+            for(String pagexml : imagesLastModified.keySet()) {
+                if(imagesLastModified.get(pagexml) < new File(pagexml).lastModified()) {
+                    modifiedCount++;
+                }
+            }
+            progress = (modifiedCount*100) / imagesLastModified.size();
+        } else {
+            progress = -1;
+        }
+        return progress;
+    }
+
+    /**
+     * Initializes the structure with which the progress of the process can be monitored
+     *
+     * @param pageIds Identifiers of the chosen pages (e.g 0002,0003)
+     * @throws IOException
+     */
+    public void initialize(List<String> pageIds) throws IOException {
+        // Init the listener for image modification
+        imagesLastModified = new HashMap<>();
+        for(String pageId: pageIds) {
+            final String pageXML = projConf.OCR_DIR + pageId + projConf.CONF_EXT;
+            imagesLastModified.put(pageXML,new File(pageXML).lastModified());
+        }
     }
 
     /**
@@ -105,12 +140,12 @@ public class SegmentationKrakenHelper {
         segmentationHelper.deleteOldFiles(pageIds);
 
         String projectSpecificPreprocExtension = projConf.getImageExtensionByType(projectImageType);
+        initialize(pageIds);
 
-        int processedPages = 0;
         // generates XML files for each page
         File segmentationTypeDir = new File(projConf.getImageDirectoryByType(segmentationImageType));
         if (segmentationTypeDir.exists()){
-            List<String> command = new ArrayList<String>();
+            List<String> command = new ArrayList<>();
             command.add("kraken");
 
             File[] imageFiles = segmentationTypeDir.listFiles((d, name) -> name.endsWith(projectSpecificPreprocExtension));
@@ -123,6 +158,7 @@ public class SegmentationKrakenHelper {
             processHandler = new ProcessHandler();
             processHandler.setFetchProcessConsole(true);
             processHandler.startProcess("ocr4all-helper-scripts", command, false);
+            getProgress();
         }
         segmentationRunning = false;
         progress = 100;
@@ -142,6 +178,7 @@ public class SegmentationKrakenHelper {
     public void cancelProcess() {
         if (processHandler != null)
             processHandler.stopProcess();
+        segmentationRunning = false;
     }
 
     /**

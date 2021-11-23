@@ -127,7 +127,7 @@ public class SegmentationKrakenController {
      * @return Current progress (range: 0 - 100)
      */
     @RequestMapping(value = "/ajax/segmentationKraken/progress" , method = RequestMethod.GET)
-    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) {
+    public @ResponseBody int progress(HttpSession session, HttpServletResponse response) throws IOException {
         SegmentationKrakenHelper segmentationKrakenHelper = provideHelper(session, response);
         if (segmentationKrakenHelper == null)
             return -1;

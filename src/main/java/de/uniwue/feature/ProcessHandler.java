@@ -213,7 +213,7 @@ public class ProcessHandler {
         // Reset process completion state in case of multiple usages of this instance
         processCompleted = false;
 
-        List<String> command = new ArrayList<String>();
+        List<String> command = new ArrayList<>();
         command.add(programPath);
         command.addAll(cmdArguments);
         ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -243,7 +243,7 @@ public class ProcessHandler {
         if (runInBackground) {
             // Execute process in a new Thread with the help of a process notifier
             // To be able to get the process completion state the waitForProcessCompletion method is passed as consumer
-            new Thread(new ProcessCompletionNotifier(process, (proc) -> waitForProcessCompletion(proc))).start();
+            new Thread(new ProcessCompletionNotifier(process, this::waitForProcessCompletion)).start();
         }
         else {
             waitForProcessCompletion(process);
