@@ -157,7 +157,7 @@ public class ProcessHandler {
             content = content.replaceFirst("(?:INFO\\s.*processing/)(.{4})/(.+):\\s(.*)", "Page: $1 | Line: $2 | Prediction: $3");
             content = content.replaceFirst("(?:INFO\\s.*calamari_ocr\\.scripts\\.predict:\\s)(.+)", "$1");
             type = "out";
-        }else if(content.startsWith("WARNING:root:Torch version")){
+        }else if(content.startsWith("WARNING:root:Torch version") || content.startsWith("(slice(")){
             type = "skip";
         }
         switch(type){
