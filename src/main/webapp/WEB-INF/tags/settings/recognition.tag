@@ -37,15 +37,6 @@
                         </p>
                     </td>
                  </tr>
-<%--                <tr>--%>
-<%--                    <td><p>Generate word level Page XML output</p></td>--%>
-<%--                    <td>--%>
-<%--                        <p>--%>
-<%--                            <input type="checkbox" class="filled-in" data-setting="--pagexml_word_level" id="recognition--word_level"/>--%>
-<%--                            <label for="recognition--word_level"></label>--%>
-<%--                        </p>--%>
-<%--                    </td>--%>
-<%--                </tr>--%>
                  <tr>
                     <td><p>Number of lines to process in parallel (Batch size)</p></td>
                     <td>
@@ -64,6 +55,33 @@
 						</p>
 					</td>
 				</tr>
+                <tr>
+                    <td><p>Output confidences</p></td>
+                    <td>
+                        <p>
+                            <input type="checkbox" class="filled-in" data-setting="--data.output_confidences" id="recognition--output_confidences"/>
+                            <label for="recognition--output_confidences"></label>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Output words and glyphs</p></td>
+                    <td>
+                        <p>
+                            <input type="checkbox" class="filled-in" data-setting="--data.output_glyphs" id="recognition--output_glyphs"/>
+                            <label for="recognition--output_glyphs"></label>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Number of lines to process in parallel (Batch size)</p></td>
+                    <td>
+                        <div class="input-field">
+                            <input id="recognition--max_glyph_alternatives" data-setting="--data.max_glyph_alternatives" type="number" step="1" value="1"/>
+                            <label for="recognition--max_glyph_alternatives" data-type="int" data-error="Has to be Int">Default: 1</label>
+                        </div>
+                    </td>
+                </tr>
 				<tr>
 					<td><p>Maximum estimated skew of a region</p></td>
 					<td>

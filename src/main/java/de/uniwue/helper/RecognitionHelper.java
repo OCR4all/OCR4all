@@ -265,6 +265,18 @@ public class RecognitionHelper {
         }
 
         List<String> command = new ArrayList<>();
+        // Ugly hack but helpers will be rewritten for the next release anyways. Don't use as basis for future code!
+        if(cmdArgsWork.contains("--data.output_glyphs")){
+            cmdArgsWork.remove("--data.output_glyphs");
+            command.add("--data.output_glyphs");
+            command.add("True");
+        }
+        if(cmdArgsWork.contains("--data.output_confidences")){
+            cmdArgsWork.remove("--data.output_confidences");
+            command.add("--data.output_confidences");
+            command.add("True");
+        }
+
         command.add("--data.images");
         // Create temp json file with all segment images (to not overload parameter list)
 		// Temp file in a temp folder named "calamari-<random numbers>.json"
