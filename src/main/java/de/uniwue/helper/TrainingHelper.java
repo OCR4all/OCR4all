@@ -244,8 +244,6 @@ public class TrainingHelper {
         Files.write(segmentListFile.toPath(), content, StandardOpenOption.APPEND);
 
         command.add(segmentListFile.toString());
-        System.out.println(segmentListFile);
-
 
         command.addAll(cmdArgsWork);
         command.add("--best_models_dir");
@@ -256,8 +254,6 @@ public class TrainingHelper {
 
         command.add("--train");
         command.add("PageXML");
-
-        System.out.println(command);
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
