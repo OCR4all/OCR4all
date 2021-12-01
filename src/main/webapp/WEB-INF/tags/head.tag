@@ -26,16 +26,6 @@
 
     <!-- Hot fix patches -->
     <script type="text/javascript">
-        /* Regularly ping backend to avoid session time out during long running jobs like training, recognition or
-         * line segmentation
-         */
-        function keepAlive() {
-            let httpRequest = new XMLHttpRequest();
-            httpRequest.open('GET', "/restricted_file_url");
-            httpRequest.send(null);
-        }
-        setInterval(keepAlive, 100000);
-
         /* Fix Chrome select drop down close on first click.
          * Needed for materialize css v0.100.2 (fixed in v1.0.0 and higher)
          * https://github.com/InfomediaLtd/angular2-materialize/issues/444#issuecomment-497063955
@@ -85,10 +75,12 @@
     <!--Collapsible elements (e.g. side navigation)-->
     <script type="text/javascript">
         $(document).ready(function() {
+            /* Regularly ping backend to avoid session time out during long running jobs like training, recognition or
+             * line segmentation
+             */
             setInterval(function(){
-                $.get('/');
+                $.get('ajax/team/sysenv');
             }, 8400);
-
             // Navigation button (used if screen size is too small)
             $(".button-collapse").sideNav();
 
