@@ -96,9 +96,7 @@ public class BatchProcessManager {
 			}
 
 		synchronized (scheduled) {
-			for (BatchWorkflow batch : new ArrayList<>(scheduled))
-				if (!BatchWorkflow.State.scheduled.equals(batch.getState()))
-					scheduled.remove(batch);
+			scheduled.removeIf(batch -> !BatchWorkflow.State.scheduled.equals(batch.getState()));
 
 			// if a sequential process is running, do not schedule additional processes
 			if (isRunning && !isSequentialRunning)
@@ -304,8 +302,7 @@ public class BatchProcessManager {
 		for (BatchWorkflow batch : new ArrayList<BatchWorkflow>(processes.values()))
 			overviews.add(new BatchWorkflowOverview(batch));
 
-		Collections.sort(overviews,
-				(BatchWorkflowOverview o1, BatchWorkflowOverview o2) -> o1.getCreated().compareTo(o2.getCreated()));
+		overviews.sort((BatchWorkflowOverview o1, BatchWorkflowOverview o2) -> o1.getCreated().compareTo(o2.getCreated()));
 
 		return overviews;
 	}
@@ -321,7 +318,7 @@ public class BatchProcessManager {
 		for (BatchWorkflow batch : new ArrayList<BatchWorkflow>(running.values()))
 			overviews.add(new BatchWorkflowOverview(batch));
 
-		Collections.sort(overviews, (BatchWorkflowOverview o1, BatchWorkflowOverview o2) -> {
+		overviews.sort((BatchWorkflowOverview o1, BatchWorkflowOverview o2) -> {
 			if (o1.getStart() == null)
 				return 1;
 			else if (o2.getStart() == null)
@@ -345,7 +342,7 @@ public class BatchProcessManager {
 			if (batch.isDone())
 				overviews.add(new BatchWorkflowOverview(batch));
 
-		Collections.sort(overviews, (BatchWorkflowOverview o1, BatchWorkflowOverview o2) -> {
+		overviews.sort((BatchWorkflowOverview o1, BatchWorkflowOverview o2) -> {
 			if (o1.getFinish() == null)
 				return 1;
 			else if (o2.getFinish() == null)
@@ -519,7 +516,7 @@ public class BatchProcessManager {
 
 		schedule();
 
-		Collections.sort(expunge, (BatchWorkflowOverview o1, BatchWorkflowOverview o2) -> {
+		expunge.sort((BatchWorkflowOverview o1, BatchWorkflowOverview o2) -> {
 			if (o1.getFinish() == null)
 				return 1;
 			else if (o2.getFinish() == null)

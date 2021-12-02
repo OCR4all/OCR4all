@@ -35,9 +35,8 @@ public class ImageResize {
      *
      * @param img Mat of the img
      * @return Mat representation of the scaled image file
-     * @throws IOException 
      */
-    public Mat getScaledImage(final Mat img) throws IOException {
+    public Mat getScaledImage(final Mat img) {
         Dimension dimension = getDimension(img);
         if (dimension != null) {
             Imgproc.resize(img, img, new Size(dimension.width, dimension.height) );
@@ -53,7 +52,6 @@ public class ImageResize {
      * @return Calculated dimension
      */
     private Dimension getDimension(final Mat img) {
-        Dimension dimension = null;
         if (resizeHeight != -1 || resizeWidth != -1) {
             if (resizeHeight != -1 && resizeWidth != -1) {
                 return new Dimension(resizeWidth,resizeHeight);
@@ -67,6 +65,6 @@ public class ImageResize {
                 return new Dimension((int) (img.cols() / factor), resizeHeight);
             }
         }
-        return dimension;
+        return null;
     }
 }

@@ -22,12 +22,11 @@ public class TeamController {
      */
     @RequestMapping("/Team")
     public ModelAndView show(HttpSession session, HttpServletResponse response) {
-        ModelAndView mv = new ModelAndView("team");
-        return mv;
+        return new ModelAndView("team");
     }
     /**
      * Gets OCR4all from System Environment
-     * @return
+     * @return ocr4all version
      */
     @RequestMapping(value ="ajax/team/sysenv" , method = RequestMethod.GET)
     public @ResponseBody String getSys(

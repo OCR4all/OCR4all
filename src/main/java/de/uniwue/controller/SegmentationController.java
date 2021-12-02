@@ -25,7 +25,7 @@ public class SegmentationController {
      * @return Returns the helper object of the process
      */
     public SegmentationHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (GenericController.isSessionValid(session, response) == false)
+        if (!GenericController.isSessionValid(session, response))
             return null;
 
         // Keep a single helper object in session
@@ -43,7 +43,7 @@ public class SegmentationController {
     /**
      * Response to the request to check if old process related files exist
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param session Session of the user
      * @param response Response to the request
      * @return Information if files exist

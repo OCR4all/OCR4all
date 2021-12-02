@@ -31,7 +31,7 @@ public class PreprocessingController {
      * @return Returns the helper object of the process
      */
     public PreprocessingHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (GenericController.isSessionValid(session, response) == false)
+        if (!GenericController.isSessionValid(session, response))
             return null;
 
         // Keep a single helper object in session
@@ -67,8 +67,8 @@ public class PreprocessingController {
     /**
      * Response to the request to return the preprocessing status and output information
      *
-     * @param pageIds[] Identifiers of the pages (e.g 0002,0003)
-     * @param cmdArgs[] Command line arguments for preprocessing process
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param cmdArgs Command line arguments for preprocessing process
      * @param session Session of the user
      * @param response Response to the request
      * @param inProcessFlow Indicates if the process is executed within the ProcessFlow
@@ -84,7 +84,7 @@ public class PreprocessingController {
         if (preprocessingHelper == null)
             return;
 
-        List<String> cmdArgList = new ArrayList<String>();
+        List<String> cmdArgList = new ArrayList<>();
         if (cmdArgs != null)
             cmdArgList = Arrays.asList(cmdArgs);
 

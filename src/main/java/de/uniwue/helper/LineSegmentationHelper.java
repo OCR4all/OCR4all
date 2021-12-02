@@ -205,7 +205,7 @@ public class LineSegmentationHelper {
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");
         for (String pageId : allPageIds) {
         	String imageFile = projConf.getImageDirectoryByType(projectImageType) + pageId + projConf.getImageExtensionByType(projectImageType);
-            if (procStateCol.segmentationState(pageId) == true && new File(imageFile).exists())
+            if (procStateCol.segmentationState(pageId) && new File(imageFile).exists())
                 validPageIds.add(pageId);
         }
 
@@ -246,7 +246,7 @@ public class LineSegmentationHelper {
      */
     public boolean doOldFilesExist(String[] pageIds){
         for(String pageId : pageIds) {
-            if (procStateCol.lineSegmentationState(pageId) == true)
+            if (procStateCol.lineSegmentationState(pageId))
                 return true;
         }
         return false;

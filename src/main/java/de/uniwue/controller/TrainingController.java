@@ -31,7 +31,7 @@ public class TrainingController {
      * @return Returns the helper object of the process
      */
     public TrainingHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (GenericController.isSessionValid(session, response) == false)
+        if (!GenericController.isSessionValid(session, response))
             return null;
 
         // Keep a single helper object in session
@@ -67,7 +67,7 @@ public class TrainingController {
     /**
      * Response to the request to return the training status and output information
      *
-     * @param cmdArgs[] Command line arguments for training process
+     * @param cmdArgs Command line arguments for training process
      * @param trainingId Custom identifier to name the training directory
      * @param session Session of the user
      * @param response Response to the request

@@ -53,7 +53,7 @@ public class GenericHelper {
         // File depth of 1 -> no recursive (file)listing 
         Files.walk(Paths.get(projConf.getImageDirectoryByType(imageType)), 1)
         .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.isFile())
+        .filter(File::isFile)
         .filter(fileEntry -> fileEntry.getName().endsWith(imageExtension))
         .sorted()
         .forEach(
@@ -70,9 +70,7 @@ public class GenericHelper {
      */
     public boolean checkIfImageDirectoryExists(String imageType) {
         String imageDir = projConf.getImageDirectoryByType(imageType);
-        if (new File(imageDir).exists())
-            return true;
-        return false;
+        return new File(imageDir).exists();
     }
 
     /**
@@ -87,9 +85,7 @@ public class GenericHelper {
 
         File[] files = imageDir.listFiles((d, name) -> name.endsWith(imageTypeExt));
 
-        if (files.length > 0)
-            return true;
-        return false;
+        return files.length > 0;
     }
 
     /**

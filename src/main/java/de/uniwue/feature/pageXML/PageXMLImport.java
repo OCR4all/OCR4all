@@ -116,9 +116,7 @@ public class PageXMLImport {
         Element coords = (Element) regionElement.getElementsByTagName("Coords").item(0);
         ArrayList<Point> points = extractPoints(coords);
 
-        ImageRegion imageRegion = new ImageRegion(id, points);
-
-        return imageRegion;
+        return new ImageRegion(id, points);
     }
 
     /**
@@ -182,9 +180,8 @@ public class PageXMLImport {
         }
 
         String id = readingOrderList.getAttribute("id");
-        ReadingOrder readingOrder = new ReadingOrder(id, regionRefIndices);
 
-        return readingOrder;
+        return new ReadingOrder(id, regionRefIndices);
     }
 
     /**

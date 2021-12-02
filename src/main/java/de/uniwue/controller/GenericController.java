@@ -88,7 +88,7 @@ import de.uniwue.helper.GenericHelper;
     public static List<String> getProcessList(HttpSession session) {
         List<String> processList = (List<String>) session.getAttribute("processList");
         if (processList == null)
-            processList = new ArrayList<String>();
+            processList = new ArrayList<>();
 
         return processList;
     }
@@ -129,7 +129,7 @@ import de.uniwue.helper.GenericHelper;
      * @return Returns the helper object of the process
      */
     public GenericHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (isSessionValid(session, response) == false)
+        if (!isSessionValid(session, response))
             return null;
 
         // Keep a single helper object in session

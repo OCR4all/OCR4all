@@ -91,9 +91,7 @@ public class Page {
             regionRefIndices.add(regRefIdx);
         }
 
-        ReadingOrder readingOrder = new ReadingOrder("oID", regionRefIndices);
-
-        return readingOrder;
+        return new ReadingOrder("oID", regionRefIndices);
     }
 
     /**
@@ -103,19 +101,17 @@ public class Page {
      */
     private ArrayList<TextRegion> putMarginaliaLast(
             ArrayList<TextRegion> textRegions) {
-        ArrayList<TextRegion> marginalia = new ArrayList<TextRegion>();
-        ArrayList<TextRegion> notMarginalia = new ArrayList<TextRegion>();
+        ArrayList<TextRegion> marginalia = new ArrayList<>();
+        ArrayList<TextRegion> notMarginalia = new ArrayList<>();
 
-        for (int i = 0; i < textRegions.size(); i++) {
-            TextRegion region = textRegions.get(i);
-
+        for (TextRegion region : textRegions) {
             if (region.getType().equals("marginalia")) {
                 marginalia.add(region);
             } else {
                 notMarginalia.add(region);
             }
         }
-        textRegions = new ArrayList<TextRegion>();
+        textRegions = new ArrayList<>();
         textRegions.addAll(notMarginalia);
         textRegions.addAll(marginalia);
 

@@ -34,14 +34,14 @@ public class ImageDespeckle {
         final Mat inverted = new Mat();
         Core.bitwise_not(result, inverted);
 
-        final ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        final ArrayList<MatOfPoint> contours = new ArrayList<>();
         final Mat hierarchy = new Mat();
         Imgproc.findContours(inverted, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         inverted.release();
         hierarchy.release();
 
         if (contours.size() > 1) {
-            final ArrayList<MatOfPoint> toRemove = new ArrayList<MatOfPoint>();
+            final ArrayList<MatOfPoint> toRemove = new ArrayList<>();
             for (final MatOfPoint contour : contours) {
                 double area = Imgproc.contourArea(contour);
                 if (area < maxContourRemovalSize) {

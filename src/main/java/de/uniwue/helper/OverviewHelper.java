@@ -66,7 +66,7 @@ public class OverviewHelper {
      *     ...
      * }
      */
-    private Map<String, PageOverview> overview = new HashMap<String, PageOverview>();
+    private Map<String, PageOverview> overview = new HashMap<>();
 
     /**
      * Helper object for process handling
@@ -200,7 +200,7 @@ public class OverviewHelper {
     public void initialize() throws IOException {
         File origImgFolder = new File(projConf.ORIG_IMG_DIR);
         if (origImgFolder.exists()) {
-            for (final File fileEntry : origImgFolder.listFiles()) {
+            for (final File fileEntry : Objects.requireNonNull(origImgFolder.listFiles())) {
                 String fileName = fileEntry.getName();
                 // Only load files with appropriate image extension
                 if (!("." + FilenameUtils.getExtension(fileName)).equals(projConf.IMG_EXT))
@@ -232,7 +232,7 @@ public class OverviewHelper {
         // File depth of 1 -> no recursive (file)listing
         Files.walk(Paths.get(projConf.PAGE_DIR + pageId), 1)
         .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.isFile())
+        .filter(File::isFile)
         .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
         .filter(fileEntry -> !fileEntry.getName().endsWith(projConf.BINR_IMG_EXT))
         .filter(fileEntry -> !fileEntry.getName().endsWith(projConf.GRAY_IMG_EXT))
@@ -251,7 +251,7 @@ public class OverviewHelper {
             List<String> segmentIds = new ArrayList<String>();
             Files.walk(Paths.get(segmentDir.getAbsolutePath()), 1)
             .map(Path::toFile)
-            .filter(fileEntry -> fileEntry.isFile())
+            .filter(File::isFile)
             .filter(fileEntry -> fileEntry.getName().endsWith(projConf.getImageExtensionByType(imageType)))
             .sorted()
             .forEach(
@@ -302,9 +302,7 @@ public class OverviewHelper {
      * @return status of the projectDir
      */
     public boolean checkProjectDir() {
-        if(!new File(projConf.PROJECT_DIR).exists())
-            return false;
-        return true;
+        return new File(projConf.PROJECT_DIR).exists();
 
     }
 
@@ -314,9 +312,7 @@ public class OverviewHelper {
      * @return validation status of the projectDir
      */
     public boolean validateProjectDir() {
-        if(!new File(projConf.ORIG_IMG_DIR).exists())
-            return false;
-        return true;
+        return new File(projConf.ORIG_IMG_DIR).exists();
 
     }
 
@@ -335,13 +331,11 @@ public class OverviewHelper {
         // File depth of 1 -> no recursive (file)listing
         Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
         .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.isFile())
+        .filter(File::isFile)
         .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
         .sorted()
         .forEach(
-            fileEntry -> {
-                imagesToConvert.add(fileEntry);
-            }
+                imagesToConvert::add
         );
 
         // Check for images with incorrect format
@@ -351,10 +345,7 @@ public class OverviewHelper {
         File[] imagesWithCorrectNaming = listFilesMatching(new File(projConf.ORIG_IMG_DIR),"^\\d{4,}" + projConf.IMG_EXT);
         File[] imagesAll = new File(projConf.ORIG_IMG_DIR).listFiles((d, name) -> name.endsWith(projConf.IMG_EXT));
         // Check for images with incorrect naming
-        if (imagesWithCorrectNaming.length != imagesAll.length)
-            return false;
-
-        return true;
+        return imagesWithCorrectNaming.length == imagesAll.length;
     }
 
     /**
@@ -368,8 +359,8 @@ public class OverviewHelper {
 		// Check for every folder inside the inputs folder that consists of
 		// numbers and may therefore be legacy data
 		if(project.exists()) {
-			long numberDirectories = Arrays.stream(project.listFiles())
-					.filter(f -> f.isDirectory())
+			long numberDirectories = Arrays.stream(Objects.requireNonNull(project.listFiles()))
+					.filter(File::isDirectory)
 					.filter(f -> f.getName().matches("\\d{4}"))
 					.count();
 			return numberDirectories > 0;
@@ -398,7 +389,7 @@ public class OverviewHelper {
     public void convertLegacyToLatest() throws IOException {
         String dir = projConf.PREPROC_DIR;
 
-        List<String> command = new ArrayList<String>();
+        List<String> command = new ArrayList<>();
         command.add("legacy-convert");
 
         command.add("-p");
@@ -453,7 +444,7 @@ public class OverviewHelper {
      * @return Map of projects (key = projName | value = path)
      */
     public static TreeMap<String, String> listProjects(){
-        TreeMap<String, String> projects = new TreeMap<String, String>();
+        TreeMap<String, String> projects = new TreeMap<>();
 
         File projDataDir = new File(ProjectConfiguration.PROJ_DATA_DIR);
         if (!projDataDir.exists())
@@ -473,21 +464,21 @@ public class OverviewHelper {
      * @throws IOException
      */
     public void convertImagesToPNG() throws IOException {
-        if (stopProcess == true)
+        if (stopProcess)
             return;
-        ArrayList<Predicate<File>> allPredicates = new ArrayList<Predicate<File>>();
+        ArrayList<Predicate<File>> allPredicates = new ArrayList<>();
         for (String ext : projConf.CONVERT_IMG_EXTS)
             allPredicates.add(fileEntry -> fileEntry.getName().endsWith(ext));
 
         // File depth of 1 -> no recursive (file)listing
         Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
         .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.isFile())
+        .filter(File::isFile)
         .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
         .sorted()
         .forEach(
             fileEntry -> {
-                if (stopProcess == true)
+                if (stopProcess)
                     return;
                 Mat image = Imgcodecs.imread(fileEntry.getAbsolutePath());
                 /*
@@ -523,17 +514,17 @@ public class OverviewHelper {
      * @throws IOException
      */
     public void renameFiles() throws IOException {
-        if (stopProcess == true)
+        if (stopProcess)
             return;
         ArrayList<File> imageFiles = new ArrayList<File>();
         // File depth of 1 -> no recursive (file)listing
         Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
         .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.isFile())
+        .filter(File::isFile)
         .filter(fileEntry -> fileEntry.getName().endsWith(projConf.IMG_EXT))
         .sorted()
         .forEach(
-            fileEntry -> { imageFiles.add(fileEntry); }
+                imageFiles::add
         );
 
         int minimumFormatLength = String.valueOf(imageFiles.size()).length();
@@ -542,14 +533,14 @@ public class OverviewHelper {
             minimumFormatLength = projConf.minimumNameLength;
 
         // Build formatting possibility
-        String format = "";
+        StringBuilder format = new StringBuilder();
         for (int i = 1; i <= minimumFormatLength; i++)
-            format = format + 0;
-        DecimalFormat df = new DecimalFormat(format);
+            format.append(0);
+        DecimalFormat df = new DecimalFormat(format.toString());
 
         int formattingCounter = 1;
         for (File file : imageFiles) {
-            if (stopProcess == true)
+            if (stopProcess)
                 return;
 
             if (!file.getName().equals(projConf.ORIG_IMG_DIR + df.format(formattingCounter) + projConf.IMG_EXT)) {
@@ -610,7 +601,7 @@ public class OverviewHelper {
         // File depth of 1 -> no recursive (file)listing
         Files.walk(Paths.get(projConf.ORIG_IMG_DIR), 1)
         .map(Path::toFile)
-        .filter(fileEntry -> fileEntry.isFile())
+        .filter(File::isFile)
         .filter(allPredicates.stream().reduce(w -> false, Predicate::or))
         .sorted()
         .forEach(
@@ -630,7 +621,7 @@ public class OverviewHelper {
      */
     public int getProgress() {
         // Prevent function from calculation progress if process is not running
-        if (overviewRunning == false)
+        if (!overviewRunning)
             return progress;
         if(pdfConversionFlag) {
             if (pagesToConvert < 0) {
@@ -647,17 +638,17 @@ public class OverviewHelper {
                 for (String processType : processState.get(fileName).keySet()) {
                     files += 1;
 
-                    if (processState.get(fileName).get(processType) == true) {
+                    if (processState.get(fileName).get(processType)) {
                         processedFiles += 1;
                         continue;
                     }
 
-                    if (processType == "backup") {
+                    if (Objects.equals(processType, "backup")) {
                         if (new File(projConf.BACKUP_IMG_DIR + fileName).exists())
                             processState.get(fileName).put(processType, true);
                     }
 
-                    if (processType == "pngConversion") {
+                    if (Objects.equals(processType, "pngConversion")) {
                         if (new File(projConf.ORIG_IMG_DIR + FilenameUtils.removeExtension(fileName) + projConf.IMG_EXT).exists())
                             processState.get(fileName).put(processType, true);
                     }
@@ -696,9 +687,7 @@ public class OverviewHelper {
         if (pngInDir.length == 0) {
 
             File[] pdfInDir = dir.listFiles((d, name) -> name.endsWith("pdf"));
-            if(pdfInDir.length > 0) {
-                return true;
-            }
+            return pdfInDir.length > 0;
         }
         return false;
     }
@@ -987,15 +976,11 @@ public class OverviewHelper {
      */
     public boolean checkGTC(String pathToFile, Boolean binary, Boolean gray) throws IOException {
         File file = new File(pathToFile);
-        if(((binary && pathToFile.endsWith(projConf.BINR_IMG_EXT))
+        return (binary && pathToFile.endsWith(projConf.BINR_IMG_EXT))
                 || (gray && pathToFile.endsWith(projConf.GRAY_IMG_EXT))
                 || pathToFile.endsWith(projConf.GT_EXT)
                 || pathToFile.endsWith("xml")
-                || file.isDirectory())) {
-            return true;
-        } else {
-            return false;
-        }
+                || file.isDirectory();
     }
 
     /**
@@ -1039,10 +1024,9 @@ public class OverviewHelper {
      */
     public String getProjDir() {
         String[] dirs = zipName.split(File.separator);
-        String relZipName = dirs[dirs.length-3]+ File.separator +
+        return dirs[dirs.length-3]+ File.separator +
                             dirs[dirs.length-2]+ File.separator +
                             dirs[dirs.length -1];
-        return relZipName;
     }
 
 }

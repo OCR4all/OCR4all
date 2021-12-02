@@ -87,8 +87,7 @@ public class RecognitionHelper {
      *     ...
      * }
      */
-    private TreeMap<String,TreeMap<String, TreeMap<String, Boolean>>> processState =
-        new TreeMap<String, TreeMap<String, TreeMap<String, Boolean>>>();
+    private TreeMap<String,TreeMap<String, TreeMap<String, Boolean>>> processState = new TreeMap<>();
 
     /**
      * Constructor
@@ -157,7 +156,7 @@ public class RecognitionHelper {
      */
     public int getProgress() throws IOException {
         // Prevent function from calculation progress if process is not running
-        if (RecognitionRunning == false)
+        if (!RecognitionRunning)
             return progress;
 
         int modifiedCount = 0;
@@ -182,7 +181,7 @@ public class RecognitionHelper {
      */
     public List<String> extractModelsOfJoinedString(String joinedckptString){
         String [] checkpoints = joinedckptString.split(ProjectConfiguration.MODEL_EXT + " ");
-        List<String> ckptList = new ArrayList<String>();
+        List<String> ckptList = new ArrayList<>();
         Iterator <String> ckptIterator= Arrays.asList(checkpoints).iterator();
         while (ckptIterator.hasNext()) {
             String ckpt = ckptIterator.next();
@@ -406,7 +405,7 @@ public class RecognitionHelper {
         for(String pageId : processState.keySet()) {
             for(String segmentId :processState.get(pageId).keySet()) {
                 for (String lineSegmentId : processState.get(pageId).get(segmentId).keySet()) {
-                    if (processState.get(pageId).get(segmentId).get(lineSegmentId) == true)
+                    if (processState.get(pageId).get(segmentId).get(lineSegmentId))
                         continue;
 
                     FileUtils.writeStringToFile(new File(projConf.PAGE_DIR + pageId + File.separator +
@@ -424,7 +423,7 @@ public class RecognitionHelper {
      */
     public boolean doOldFilesExist(String[] pageIds) {
         for (String pageId : pageIds) {
-            if (procStateCol.recognitionState(pageId) == true)
+            if (procStateCol.recognitionState(pageId))
                 return true;
         }
         return false;

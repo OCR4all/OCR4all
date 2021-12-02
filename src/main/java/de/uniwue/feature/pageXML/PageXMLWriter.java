@@ -29,17 +29,17 @@ public class PageXMLWriter {
      * @param points
      */
     private static void addPoints2017(Document document, Element coordsElement, Point[] points) {
-        String pointCoords = "";
+        StringBuilder pointCoords = new StringBuilder();
 
-        for (int i = 0; i < points.length; i++) {
-            int x = (int) points[i].x;
-            int y = (int) points[i].y;
+        for (Point point : points) {
+            int x = (int) point.x;
+            int y = (int) point.y;
 
-            pointCoords += x + "," + y + " ";
+            pointCoords.append(x).append(",").append(y).append(" ");
         }
 
-        pointCoords = pointCoords.substring(0, pointCoords.length() - 1);
-        coordsElement.setAttribute("points", pointCoords);
+        pointCoords = new StringBuilder(pointCoords.substring(0, pointCoords.length() - 1));
+        coordsElement.setAttribute("points", pointCoords.toString());
     }
 
     /**
@@ -50,10 +50,10 @@ public class PageXMLWriter {
      * @param points
      */
     private static void addPoints2010(Document document, Element coordsElement, Point[] points) {
-        for (int i = 0; i < points.length; i++) {
+        for (Point point : points) {
             Element pointElement = document.createElement("Point");
-            pointElement.setAttribute("x", "" + (int) (points[i].x));
-            pointElement.setAttribute("y", "" + (int) (points[i].y));
+            pointElement.setAttribute("x", "" + (int) (point.x));
+            pointElement.setAttribute("y", "" + (int) (point.y));
             coordsElement.appendChild(pointElement);
         }
     }

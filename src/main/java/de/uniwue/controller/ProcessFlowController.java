@@ -33,7 +33,7 @@ public class ProcessFlowController {
      * @return Returns the helper object of the process
      */
     public ProcessFlowHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (GenericController.isSessionValid(session, response) == false)
+        if (!GenericController.isSessionValid(session, response))
             return null;
 
         // Keep a single helper object in session
@@ -369,7 +369,7 @@ public class ProcessFlowController {
         // Set cancel information
         session.setAttribute("cancelProcessFlow", true);
 
-        if (terminate != null && terminate == true) {
+        if (terminate != null && terminate) {
             // Cancel current process
             switch(currentProcess) {
                 case "preprocessing":     new PreprocessingController().cancel(session, response); break;
@@ -377,7 +377,7 @@ public class ProcessFlowController {
                 case "segmentationKraken": new SegmentationKrakenController().cancel(session, response); break;
                 case "lineSegmentation":  new LineSegmentationController().cancel(session, response); break;
                 case "recognition":       new RecognitionController().cancel(session, response); break;
-                default: return;
+                default:
             }
         }
     }
@@ -404,11 +404,11 @@ public class ProcessFlowController {
         // Therefore inform the user about this action
         for (String process : processes) {
             switch(process) {
-                case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response) == true) return true; break;
-                case "despeckling":       if(new DespecklingController().filesExists(pageIds, session, response) == true) return true; break;
-                case "segmentationKraken": if(new SegmentationKrakenController().filesExists(pageIds, session, response) == true) return true; break;
-                case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response) == true) return true; break;
-                case "recognition":       if(new RecognitionController().filesExists(pageIds, session, response) == true) return true; break;
+                case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response)) return true; break;
+                case "despeckling":       if(new DespecklingController().filesExists(pageIds, session, response)) return true; break;
+                case "segmentationKraken": if(new SegmentationKrakenController().filesExists(pageIds, session, response)) return true; break;
+                case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response)) return true; break;
+                case "recognition":       if(new RecognitionController().filesExists(pageIds, session, response)) return true; break;
                 default: break;
             }
         }

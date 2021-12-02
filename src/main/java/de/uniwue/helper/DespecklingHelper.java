@@ -68,7 +68,7 @@ public class DespecklingHelper {
         double i = 1;
         int totalPages = pageIds.size();
         for (String pageId : pageIds) {
-            if (stop == true) 
+            if (stop)
                 break;
 
             final Mat mat = Imgcodecs.imread(projConf.BINR_IMG_DIR + File.separator + pageId + projConf.BINR_IMG_EXT);
@@ -78,7 +78,7 @@ public class DespecklingHelper {
             mat.release();
             // Save if process is not stopped 
             // (despeckling can take a while, since the last stop test)
-            if(stop == false) {
+            if(!stop) {
 				Imgcodecs.imwrite(projConf.DESP_IMG_DIR + File.separator + pageId + projConf.DESP_IMG_EXT, despeckled);
 				progress = (int) (i / totalPages * 100);
 				i = i + 1;
@@ -95,7 +95,7 @@ public class DespecklingHelper {
      * @return Progress of preprocessAllPages function
      */
     public int getProgress() {
-        if (stop == true)
+        if (stop)
             return -1;
         return progress;
     }
@@ -136,7 +136,7 @@ public class DespecklingHelper {
      */
     public boolean doOldFilesExist(String[] pageIds) {
         for (String pageId : pageIds) {
-            if (procStateCol.despecklingState(pageId) == true)
+            if (procStateCol.despecklingState(pageId))
                 return true;
         }
         return false;

@@ -162,7 +162,7 @@ public class OverviewController {
             procDir.mkdir();
 
         // Resets the session, so that all previous moduleHelper attributes are discarded
-        if (resetSession == true)
+        if (resetSession)
             session.invalidate();
 
         // Store necessary project related variables in session (serves as entry point)

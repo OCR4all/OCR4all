@@ -29,7 +29,7 @@ public class DespecklingController {
      * @return Returns the helper object of the process
      */
     public DespecklingHelper provideHelper(HttpSession session, HttpServletResponse response) {
-        if (GenericController.isSessionValid(session, response) == false)
+        if (!GenericController.isSessionValid(session, response))
             return null;
 
         // Keep a single helper object in session

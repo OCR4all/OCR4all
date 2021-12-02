@@ -120,7 +120,7 @@ public class EvaluationHelper {
      */
     public ArrayList<String> getValidPageIds() throws IOException {
         // Get all pages and check which one were already recognized
-        ArrayList<String> validPageIds = new ArrayList<String>();
+        ArrayList<String> validPageIds = new ArrayList<>();
         ArrayList<String> allPageIds = genericHelper.getPageList("Original");
 
 		for(String pageId : allPageIds) {

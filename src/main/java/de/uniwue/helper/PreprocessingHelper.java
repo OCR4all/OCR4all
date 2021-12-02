@@ -78,7 +78,7 @@ public class PreprocessingHelper {
      */
     public int getProgress() {
         // Prevent function from calculation progress if process is not running
-        if (preprocessingRunning == false)
+        if (!preprocessingRunning)
             return progress;
 
         int imageCount = 0;
@@ -86,7 +86,7 @@ public class PreprocessingHelper {
         // Identify how many segments are already processed
         for (String pageId : processState.keySet()) {
             imageCount += 1;
-            if (processState.get(pageId) == true) {
+            if (processState.get(pageId)) {
                 processedImageCount += 1;
                 continue;
             }
@@ -133,7 +133,7 @@ public class PreprocessingHelper {
      */
     public void initializeProcessState(List<String> pageIds) throws IOException {
         // Initialize the status structure
-        processState = new TreeMap<String, Boolean>();
+        processState = new TreeMap<>();
         for(String pageId : pageIds) {
             processState.put(pageId, false);
         }
@@ -161,7 +161,7 @@ public class PreprocessingHelper {
         deleteOldFiles(pageIds);
         initializeProcessState(pageIds);
 
-        List<String> command = new ArrayList<String>();
+        List<String> command = new ArrayList<>();
         for (String pageId : pageIds) {
             // Add affected pages with their absolute path to the command list
             command.add(projConf.ORIG_IMG_DIR + pageId + projConf.IMG_EXT);
@@ -225,7 +225,7 @@ public class PreprocessingHelper {
      */
     public boolean doOldFilesExist(String[] pageIds) {
         for(String pageId : pageIds) {
-            if (procStateCol.preprocessingState(pageId) == true)
+            if (procStateCol.preprocessingState(pageId))
                 return true;
         }
         return false;

@@ -39,9 +39,7 @@ public class ProcessStateCollector {
      * @return "Preprocessing" state of the page
      */
     public boolean preprocessingState(String pageId) {
-        if (!new File(projConf.getImageDirectoryByType(imageType) + pageId + projConf.getImageExtensionByType(imageType)).exists())
-            return false;
-        return true;
+        return new File(projConf.getImageDirectoryByType(imageType) + pageId + projConf.getImageExtensionByType(imageType)).exists();
     }
 
 
@@ -52,9 +50,7 @@ public class ProcessStateCollector {
      * @return "Despeckling" state of the page
      */
     public boolean despecklingState(String pageId) {
-        if (!new File(projConf.DESP_IMG_DIR  + pageId + projConf.DESP_IMG_EXT).exists())
-            return false;
-        return true;
+        return new File(projConf.DESP_IMG_DIR + pageId + projConf.DESP_IMG_EXT).exists();
     }
 
     /**
@@ -64,10 +60,7 @@ public class ProcessStateCollector {
      * @return "Segmentation" state of the page
      */
     public boolean segmentationState(String pageId) {
-        if (!new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).exists()) {
-            return false;
-        }
-        return true;
+        return new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).exists();
     }
 
 

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
@@ -74,7 +75,7 @@ public class BatchController {
 	public @ResponseBody List<String> getProjects() {
 		List<String> projects = new ArrayList<>(OverviewHelper.listProjects().keySet());
 
-		Collections.sort(projects, String::compareToIgnoreCase);
+		projects.sort(String::compareToIgnoreCase);
 
 		return projects;
 	}
@@ -114,12 +115,12 @@ public class BatchController {
 
 		ProjectOverview report = new ProjectOverview(name, type);
 
-		for (final File fileEntry : inputFolder.listFiles())
+		for (final File fileEntry : Objects.requireNonNull(inputFolder.listFiles()))
 			if (fileEntry.isFile()
 					&& FilenameUtils.getExtension(fileEntry.getName()).equals(BatchWorkflow.sourceImageExtension))
 				report.getPages().add(FilenameUtils.removeExtension(fileEntry.getName()));
 
-		Collections.sort(report.getPages(), String::compareToIgnoreCase);
+		report.getPages().sort(String::compareToIgnoreCase);
 
 		for (String page : report.getPages())
 			report.getPageStates().add(new PageState(page, processStateCollector.preprocessingState(page),
@@ -140,7 +141,7 @@ public class BatchController {
 	public @ResponseBody List<String> getModels() throws IOException {
 		List<String> models = new ArrayList<>(RecognitionHelper.listModels().keySet());
 
-		Collections.sort(models, String::compareToIgnoreCase);
+		models.sort(String::compareToIgnoreCase);
 
 		return models;
 	}

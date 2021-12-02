@@ -38,7 +38,7 @@ public class ReadingOrder {
     public String findIndex(String regionRef) {
         String index = "";
         for(RegionRefIndexed regRef : regionRefIndices) {
-            if(regRef.getRegionRef().toString().equals(regionRef)) {
+            if(regRef.getRegionRef().equals(regionRef)) {
                 index = regRef.getIndex();
                 break;
             }

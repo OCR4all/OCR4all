@@ -10,6 +10,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -72,7 +73,7 @@ public class TrainingHelper {
      * @return Progress percentage
      */
     public int getProgress() {
-        if (trainingRunning == false)
+        if (!trainingRunning)
             return progress;
         // TODO
         return 0;
@@ -139,11 +140,11 @@ public class TrainingHelper {
         });
 
         // Find all values of directories with Integer naming
-        List<Integer> trainingIds = new ArrayList<Integer>();
+        List<Integer> trainingIds = new ArrayList<>();
         trainingIds.add(-1);
         for (File trainingDir : trainingDirectories) {
 			// Filter out empty directories
-			if(trainingDir.list().length > 0) {
+			if(Objects.requireNonNull(trainingDir.list()).length > 0) {
 				try {
 					trainingIds.add(Integer.parseInt(trainingDir.getName()));
 				} catch (NumberFormatException e) {
@@ -279,10 +280,7 @@ public class TrainingHelper {
      */
     public boolean doOldFilesExist(String projectName, String trainingId) {
         File projectModelDir = new File(ProjectConfiguration.PROJ_MODEL_CUSTOM_DIR + File.separator + projectName + File.separator + trainingId);
-        if (projectModelDir.exists())
-            return true;
-
-        return false;
+        return projectModelDir.exists();
     }
 
     /**
