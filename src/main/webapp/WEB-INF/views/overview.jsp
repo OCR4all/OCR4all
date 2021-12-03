@@ -15,7 +15,7 @@
                 // Initialize project data selection
                 initializeProjectDataSelection('ajax/overview/listProjects');
 
-                var datatableReloadIntveral = null;
+                let datatableReloadInterval = null;
                 // Responsible for initializing and updating datatable contents
                 function datatable(){
                     // Allow reinitializing DataTable with new data
@@ -23,7 +23,8 @@
                         $('#overviewTable').DataTable().clear().destroy();
                     }
 
-                    var overviewTable = $('#overviewTable').DataTable( {
+                    let overviewTable = $('#overviewTable').DataTable( {
+                        stateSave: true,
                         ajax : {
                             "type"   : "GET",
                             "url"    : "ajax/overview/list",
@@ -32,7 +33,7 @@
                                 openCollapsibleEntriesExclusively([0]);
                                 $('#projectDir').addClass('invalid').focus();
                                 // Prevent datatable from reloading an invalid directory
-                                clearInterval(datatableReloadIntveral);
+                                clearInterval(datatableReloadInterval);
                             }
                         },
                         columns: [
@@ -62,7 +63,7 @@
                             $('select').material_select();
 
                             // Update overview continuously
-                            datatableReloadIntveral = setInterval( function() {
+                            datatableReloadInterval = setInterval(function() {
                                 overviewTable.ajax.reload(null, false);
                             }, 10000);
                         },
@@ -142,7 +143,7 @@
                             openCollapsibleEntriesExclusively([0]);
                             $('#projectDir').addClass('invalid').focus();
                             // Prevent datatable from reloading an invalid directory
-                            clearInterval(datatableReloadIntveral);
+                            clearInterval(datatableReloadInterval);
                             $('#modal_checkDir_failed').modal('open');
                         }
                     })
@@ -215,7 +216,7 @@
                                 openCollapsibleEntriesExclusively([0]);
                                 $('#projectDir').addClass('invalid').focus();
                                 // Prevent datatable from reloading an invalid directory
-                                clearInterval(datatableReloadIntveral);
+                                clearInterval(datatableReloadInterval);
 
                                 $('#modal_checkDir_failed').modal('open');
                             }
