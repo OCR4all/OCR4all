@@ -24,7 +24,7 @@
                     }
 
                     let overviewTable = $('#overviewTable').DataTable( {
-                        stateSave: true,
+                        "stateSave": true,
                         ajax : {
                             "type"   : "GET",
                             "url"    : "ajax/overview/list",
@@ -61,11 +61,6 @@
 
                             // Initialize select input
                             $('select').material_select();
-
-                            // Update overview continuously
-                            datatableReloadInterval = setInterval(function() {
-                                overviewTable.ajax.reload(null, false);
-                            }, 10000);
                         },
                     });
                 }
