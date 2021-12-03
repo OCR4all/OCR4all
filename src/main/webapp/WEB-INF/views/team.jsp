@@ -17,9 +17,9 @@
                         <a href="mailto:christian.reul@uni-wuerzburg.de">christian.reul@uni-wuerzburg.de</a>
                     </li>
                     <li class="collection-item">
-                        <h6>Maximilian Wehner</h6>
+                        <h6>Florian Langhanki</h6>
                         <h6><i>User support and guides</i></h6>
-                        <a href="mailto:maximilian.wehner@uni-wuerzburg.de">maximilian.wehner@uni-wuerzburg.de</a>
+                        <a href="mailto:florian.langhanki@uni-wuerzburg.de">florian.langhanki@uni-wuerzburg.de</a>
                     </li>
                 </ul>
             </div>
@@ -58,6 +58,7 @@
             </div>
             <div class="col l12 s12">
                 <ul class="collection">
+                    <li class="collection-item">Maximilian Wehner (User support and guides)</li>
                     <li class="collection-item">Nico Balbach (OCR4all and LAREX)</li>
                     <li class="collection-item">Dennis Christ (OCR4all)</li>
                     <li class="collection-item">Alexander Hartelt (OCR4all)</li>
