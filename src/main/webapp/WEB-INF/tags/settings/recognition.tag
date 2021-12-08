@@ -74,7 +74,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><p>Number of lines to process in parallel (Batch size)</p></td>
+                    <td><p>Maximum number of glyph alternatives to output</p></td>
                     <td>
                         <div class="input-field">
                             <input id="recognition--max_glyph_alternatives" data-setting="--data.max_glyph_alternatives" type="number" step="1" value="1"/>
