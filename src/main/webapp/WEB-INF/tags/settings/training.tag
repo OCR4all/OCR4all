@@ -251,8 +251,8 @@
                 <td><p>The batch size to use for training</p></td>
                 <td>
                     <div class="input-field">
-                        <input id="training--batch_size" data-setting="--train.batch_size" type="number" step="1" value="3"/>
-                        <label for="training--batch_size" data-type="int" data-error="Has to be integer">Default: 1 (Integer value)</label>
+                        <input id="training--batch_size" data-setting="--train.batch_size" type="number" step="1" value="5"/>
+                        <label for="training--batch_size" data-type="int" data-error="Has to be integer">Default: 5 (Integer value)</label>
                     </div>
                 </td>
             </tr>
