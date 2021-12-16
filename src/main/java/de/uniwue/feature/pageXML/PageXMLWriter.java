@@ -23,7 +23,7 @@ public class PageXMLWriter {
 
     /**
      * PageXML 2017
-     * 
+     *
      * @param document
      * @param coordsElement
      * @param points
@@ -44,7 +44,7 @@ public class PageXMLWriter {
 
     /**
      * PageXML 2010
-     * 
+     *
      * @param document
      * @param coordsElement
      * @param points
@@ -60,12 +60,12 @@ public class PageXMLWriter {
 
     /**
      * Create pageXML document containing the dummy segmentation for an image
-     * 
+     *
      * @param image
      * @param imageFilename
      * @param pageXMLVersion
      * @return pageXML document or null if parse error
-     * @throws ParserConfigurationException 
+     * @throws ParserConfigurationException
      */
     public static Document getPageXML(final Mat image, String imageFilename, String pageXMLVersion) throws ParserConfigurationException {
         if (!pageXMLVersion.equals("2019-07-15") && !pageXMLVersion.equals("2017-07-15") && !pageXMLVersion.equals("2010-03-19")) {
@@ -93,7 +93,7 @@ public class PageXMLWriter {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         String date = sdf.format(new Date());
 
-        Node creatorTextNode = document.createTextNode("User123");
+        Node creatorTextNode = document.createTextNode("OCR4all");
         Node createdTextNode = document.createTextNode(date);
         Node changedTextNode = document.createTextNode(date);
 
@@ -145,11 +145,11 @@ public class PageXMLWriter {
 
     /**
      * Save document to outputFolder
-     * 
+     *
      * @param document
      * @param imageFilename
      * @param outputFolder
-     * @throws TransformerException 
+     * @throws TransformerException
      */
     public static void saveDocument(Document document, String imageFilename, String outputFolder) throws TransformerException {
         // write content into xml file
