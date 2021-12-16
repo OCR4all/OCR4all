@@ -39,7 +39,7 @@ public class ImageResize {
     public Mat getScaledImage(final Mat img) {
         Dimension dimension = getDimension(img);
         if (dimension != null) {
-            Imgproc.resize(img, img, new Size(dimension.width, dimension.height) );
+            Imgproc.resize(img, img, new Size(dimension.width, dimension.height), 0, 0, Imgproc.INTER_AREA );
         }
 
         return img;

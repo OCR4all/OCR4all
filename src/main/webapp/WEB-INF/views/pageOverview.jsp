@@ -36,7 +36,7 @@
                         }
                         else {
                             $(el).find('i[data-info="broken-image"]').first().remove();
-                            $(el).find('img').first().attr('src', 'data:image/jpeg;base64, ' + data);
+                            $(el).find('img').first().attr('src', 'data:image/png;base64, ' + data);
                         }
                     })
                     .fail(function( data ) {
