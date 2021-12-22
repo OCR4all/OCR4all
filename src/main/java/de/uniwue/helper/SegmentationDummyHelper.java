@@ -7,6 +7,7 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import de.uniwue.feature.ProcessStateCollector;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.w3c.dom.Document;
@@ -26,6 +27,11 @@ public class SegmentationDummyHelper {
      * Possible values: { Binary, Gray }
      */
     private String projectImageType;
+
+    /**
+     * Object to determine process states
+     */
+    private ProcessStateCollector procStateCol;
 
 
     /**
@@ -47,6 +53,7 @@ public class SegmentationDummyHelper {
     public SegmentationDummyHelper(String projDir, String projectImageType) {
         this.projectImageType = projectImageType;
         projConf = new ProjectConfiguration(projDir);
+        procStateCol = new ProcessStateCollector(projConf, projectImageType);
     }
 
     /**
@@ -55,8 +62,8 @@ public class SegmentationDummyHelper {
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param segmentationImageType Image type of the segmentation (binary, despeckled)
      * @throws IOException
-     * @throws TransformerException 
-     * @throws ParserConfigurationException 
+     * @throws TransformerException
+     * @throws ParserConfigurationException
      */
     public void execute(List<String> pageIds, String segmentationImageType) throws IOException, ParserConfigurationException, TransformerException {
         stop = false;
@@ -77,19 +84,18 @@ public class SegmentationDummyHelper {
         if (segmentationTypeDir.exists()){
             File[] imageFiles = segmentationTypeDir.listFiles((d, name) -> name.endsWith(projectSpecificPreprocExtension));
             for (File file : imageFiles) {
-                if (pageIds.contains(file.getName().replace(projectSpecificPreprocExtension, "")) && stop == false) {
-                    extractXML(file,projConf.OCR_DIR, segmentationImageType);
+                if (pageIds.contains(file.getName().replace(projectSpecificPreprocExtension, "")) && !stop) {
+                    extractXML(file, projConf.OCR_DIR, segmentationImageType);
                     progress = (int) ((double) processedPages / pageIds.size() * 100);
                 }
             }
         }
-
         progress = 100;
     }
 
     /**
      * Extract a Dummy PAGE XML from an image file with one paragraph
-     *  
+     *
      * @param file Image file to create a PAGE XML for
      * @param outputFolder Folder to save PAGE XML in
      * @param segmentationImageType Image type of the segmentation (binary, despeckled)
@@ -139,5 +145,36 @@ public class SegmentationDummyHelper {
      */
     public int getConflictType(List<String> currentProcesses, boolean inProcessFlow) {
         return ProcessConflictDetector.segmentationDummyConflict(currentProcesses, inProcessFlow);
+    }
+
+    /**
+     * Checks if process related files already exist
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @return Information if files exist
+     */
+    public boolean doOldFilesExist(String[] pageIds) {
+        for (String pageId : pageIds) {
+            if (procStateCol.segmentationState(pageId))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Deletion of old process related files
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     */
+    public void deleteOldFiles(List<String> pageIds) {
+        if (!new File(projConf.OCR_DIR).exists())
+            return;
+
+        // Delete image and PageXML files
+        for (String pageId : pageIds) {
+            File segXml = new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT);
+            if (segXml.exists())
+                segXml.delete();
+        }
     }
 }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import de.uniwue.helper.SegmentationKrakenHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -113,6 +114,26 @@ public class SegmentationDummyController {
             return -1;
 
         return segmentationDummyHelper.getProgress();
+    }
+
+    /**
+     * Response to the request to check if old process related files exist
+     *
+     * @param pageIds Identifiers of the pages (e.g 0002,0003)
+     * @param session Session of the user
+     * @param response Response to the request
+     * @return Information if files exist
+     */
+    @RequestMapping(value = "/ajax/segmentationDummy/exists" , method = RequestMethod.POST)
+    public @ResponseBody boolean filesExists(
+            @RequestParam("pageIds[]") String[] pageIds,
+            HttpSession session, HttpServletResponse response
+    ) {
+        SegmentationDummyHelper segmentationDummyHelper = provideHelper(session, response);
+        if (segmentationDummyHelper == null)
+            return false;
+
+        return segmentationDummyHelper.doOldFilesExist(pageIds);
     }
 
     /**

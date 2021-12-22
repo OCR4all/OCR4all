@@ -18,16 +18,19 @@
                 $('.collapsible').eq(1).collapsible('open', 0);
 
                 function getProcessesToExecute() {
-                    var processesToExecute = [];
+                    let processesToExecute = [];
                     $.each($('#processSelection input[type="checkbox"]'), function() {
-                        if( $(this).is(':checked') )
-                            processesToExecute.push($(this).attr('data-id'));
+                        if( $(this).is(':checked') ){
+                            let dataId = $(this).attr('data-id');
+                            let processId = dataId === "segmentation" ? $("#segmentation-selector").val() : dataId;
+                            processesToExecute.push(processId);
+                        }
                     });
                     return processesToExecute;
                 }
 
                 function getProcessSettings(processesToExecute) {
-                    var processSettings = {};
+                    let processSettings = {};
                     $.each(processesToExecute, function(index, process) {
                         switch(process) {
                             case "preprocessing":
@@ -44,17 +47,10 @@
                                 processSettings[process] =
                                     { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked') };
                                 break;
-                            case "segmentationKraken":
+                            case "segmentationDummy":
+                                // Pass appropriate settings element to select parameters from
                                 processSettings[process] =
                                     { "imageType" : $('#imageType').val(), "replace" : $('#replace').prop('checked') };
-                                break;
-                            case "regionExtraction":
-                                processSettings[process] = {
-                                    "spacing" : $('input[id="spacing"]').val(), "usespacing" : $('input[id=usespacing]').prop('checked'),
-                                    "maxskew" : $('input[id="regionExtraction--maxskew"]').val(),
-                                    "skewsteps" : $('input[id="regionExtraction--skewsteps"]').val(),
-                                    "parallel" : $('.collapsible[data-id="settings"] li[data-id="regionExtraction"]').find($('[data-setting="--parallel"]')).val()
-                                };
                                 break;
                             default: break;
                         }
@@ -68,7 +64,7 @@
                     $('[data-setting="--parallel"]').val(parallelSetting).change();
                     $('li[data-id="recognition"]').find('[data-setting="--processes"]').val(parallelSetting).change();
                 });
-                // Set available threads as default 
+                // Set available threads as default
                 $.get( "ajax/generic/threads" )
                 .done(function( data ) {
                     if( !$.isNumeric(data) || Math.floor(data) != data || data < 0 )
@@ -77,8 +73,8 @@
                     $('#parallelGlobal').val(data).change();
                 });
 
-                var currentProcessInterval = null;
-                var lastExecutedProcess = "";
+                let currentProcessInterval = null;
+                let lastExecutedProcess = "";
                 // Handles progress updates of all processes
                 function initiateProgressHandling() {
                     $.get( "ajax/processFlow/current" )
@@ -125,9 +121,9 @@
                     // Execute processflow with explicit JSON content setting
                     // Otherwise the request cannot map the transferred data correctly
                     $.ajax({
-                        headers: { 
+                        headers: {
                             'Accept': 'application/json',
-                            'Content-Type': 'application/json' 
+                            'Content-Type': 'application/json'
                         },
                         'type': 'POST',
                         'url': "ajax/processFlow/execute",
@@ -154,7 +150,7 @@
                     });
 
                     // Trigger progress handling of processflow processes
-                    setTimeout(initiateProgressHandling, 1000);	
+                    setTimeout(initiateProgressHandling, 1000);
                 }
                 // Start processflow execution
                 $('button[data-id="execute"]').click(function() {
@@ -164,7 +160,7 @@
                         return;
                     }
 
-                    var processesToExecute = getProcessesToExecute();
+                    let processesToExecute = getProcessesToExecute();
                     if( processesToExecute.length === 0 ) {
                         $('#modal_noprocsel').modal('open');
                         return;
@@ -229,6 +225,31 @@
                     }
                     executeProcessFlow(selectedPages, processesToExecute);
                 });
+
+                $("#segmentation-selector").change(function() {
+                   const segMode = $(this).val();
+                   const $lineSegCheckbox = $("#runLineSegmentationProcess");
+
+                   const $dummyProgress = $("#segmentationDummyProgress");
+                   const $krakenProgress = $("#segmentationKrakenProgress");
+
+                   switch(segMode){
+                       case "segmentationKraken":
+                           $lineSegCheckbox.prop("checked", false);
+
+                           $dummyProgress.hide();
+                           $krakenProgress.show();
+                           break;
+                       case "segmentationDummy":
+                           $lineSegCheckbox.prop("checked", true);
+
+                           $dummyProgress.show();
+                           $krakenProgress.hide();
+                           break;
+                       default:
+                           break;
+                   }
+                });
                 // Check if processflow execution is running
                 initiateProgressHandling();
             });
@@ -275,19 +296,27 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><p>Segmentation (Kraken)</p></td>
+                                        <td>
+                                            <div class="input-field" style="width: 15em; margin-left: 0 !important">
+                                                <select id="segmentation-selector">
+                                                    <option value="segmentationKraken" selected>Segmentation (Kraken)</option>
+                                                    <option value="segmentationDummy">Segmentation (Dummy)</option>
+                                                </select>
+                                            </div>
+                                        </td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runSegmentationKrakenProcess" data-id="segmentationKraken" checked="checked" />
-                                                <label for="runSegmentationKrakenProcess"></label>
+                                                <input type="checkbox" class="filled-in" id="runSegmentationProcess" data-id="segmentation" checked="checked" />
+                                                <label for="runSegmentationProcess"></label>
                                             </p>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><p>Line Segmentation</p></td>
+                                        <td>
+                                            <p>Line Segmentation</p></td>
                                         <td>
                                             <p>
-                                                <input type="checkbox" class="filled-in" id="runLineSegmentationProcess" data-id="lineSegmentation" checked="checked" />
+                                                <input type="checkbox" class="filled-in" id="runLineSegmentationProcess" data-id="lineSegmentation"/>
                                                 <label for="runLineSegmentationProcess"></label>
                                             </p>
                                         </td>
@@ -349,7 +378,7 @@
                                     </div>
                                 </li>
                                 <li data-id="segmentationKraken">
-                                    <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation (Kraken)</div>
+                                    <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation</div>
                                     <div class="collapsible-body">
                                         <s:segmentationKraken></s:segmentationKraken>
                                     </div>
@@ -417,7 +446,16 @@
                                         </div>
                                     </div>
                                 </li>
-                                <li data-id="segmentationKraken">
+                                <li id="segmentationDummyProgress" data-id="segmentationDummy" style="display: none;">
+                                    <div class="collapsible-header"><i class="material-icons">info_outline</i>Segmentation (Dummy)</div>
+                                    <div class="collapsible-body">
+                                        <div class="status"><p>Status: <span>No Segmentation (Dummy) process running</span></p></div>
+                                        <div class="progress">
+                                            <div class="determinate"></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li id="segmentationKrakenProgress" data-id="segmentationKraken">
                                     <div class="collapsible-header"><i class="material-icons">info_outline</i>Segmentation (Kraken)</div>
                                     <div class="collapsible-body">
                                         <div class="status"><p>Status: <span>No Segmentation (Kraken) process running</span></p></div>

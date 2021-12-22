@@ -24,7 +24,7 @@ import de.uniwue.model.ProcessFlowData;
  */
 @Controller
 public class ProcessFlowController {
-	
+
     /**
      * Manages the helper object and stores it in the session
      *
@@ -128,7 +128,7 @@ public class ProcessFlowController {
     }
 
     /**
-     * Helper function to execute the doSegmentationDummy process via its Controller
+     * Helper function to execute the doSegmentationKraken process via its Controller
      *
      * @param pageIds Identifiers of the pages (e.g 0002,0003)
      * @param segmentationImageType Type of the images (binary,despeckled)
@@ -163,7 +163,6 @@ public class ProcessFlowController {
             response.setStatus(531); //531 = Custom: Exited due to invalid input
             return;
         }
-
         new SegmentationDummyController().execute(pageIds, (String)segmentationImageType, session, response, true);
     }
 
@@ -223,7 +222,7 @@ public class ProcessFlowController {
     public boolean needsExit(HttpSession session, HttpServletResponse response) {
         // Error in process execution or canceling of process flow execution was triggered
         Boolean cancelProcessFlow = (Boolean) session.getAttribute("cancelProcessFlow");
-        if (response.getStatus() != 200 || cancelProcessFlow == true) {
+        if (response.getStatus() != 200 || cancelProcessFlow) {
             session.setAttribute("currentProcess", "");
             GenericController.removeFromProcessList(session, "processFlow");
             return true;
@@ -290,16 +289,14 @@ public class ProcessFlowController {
             if (needsExit(session, response))
                 return;
         }
-
-//        if (processes.contains("segmentationDummy")) {
-//            session.setAttribute("currentProcess", "segmentationDummy");
-//            pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
-//            Map<String, Object> settings = processSettings.get("segmentationDummy");
-//            doSegmentationDummy(pageIds, settings.get("imageType"), session, response);
-//            if (needsExit(session, response))
-//                return;
-//        }
-
+        if (processes.contains("segmentationDummy")) {
+            session.setAttribute("currentProcess", "segmentationDummy");
+            pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
+            Map<String, Object> settings = processSettings.get("segmentationDummy");
+            doSegmentationDummy(pageIds, settings.get("imageType"), session, response);
+            if (needsExit(session, response))
+                return;
+        }
         if (processes.contains("segmentationKraken")) {
             session.setAttribute("currentProcess", "segmentationKraken");
             pageIds = processFlowHelper.getValidPageIds(pageIds, "preprocessing");
@@ -375,6 +372,7 @@ public class ProcessFlowController {
                 case "preprocessing":     new PreprocessingController().cancel(session, response); break;
                 case "despeckling":       new DespecklingController().cancel(session, response); break;
                 case "segmentationKraken": new SegmentationKrakenController().cancel(session, response); break;
+                case "segmentationDummy": new SegmentationDummyController().cancel(session, response); break;
                 case "lineSegmentation":  new LineSegmentationController().cancel(session, response); break;
                 case "recognition":       new RecognitionController().cancel(session, response); break;
                 default:
@@ -407,7 +405,8 @@ public class ProcessFlowController {
                 case "preprocessing":     if(new PreprocessingController().filesExists(pageIds, session, response)) return true; break;
                 case "despeckling":       if(new DespecklingController().filesExists(pageIds, session, response)) return true; break;
                 case "segmentationKraken": if(new SegmentationKrakenController().filesExists(pageIds, session, response)) return true; break;
-                case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response)) return true; break;
+                case "segmentationDummy": if(new SegmentationDummyController().filesExists(pageIds, session, response)) return true; break;
+                 case "lineSegmentation":  if(new LineSegmentationController().filesExists(pageIds, session, response)) return true; break;
                 case "recognition":       if(new RecognitionController().filesExists(pageIds, session, response)) return true; break;
                 default: break;
             }
