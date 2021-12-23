@@ -255,6 +255,10 @@ public class TrainingHelper {
 
         command.add("--train");
         command.add("PageXML");
+        
+        command.add("--trainer.progress_bar");
+        command.add("False");
+
 
         processHandler = new ProcessHandler();
         processHandler.setFetchProcessConsole(true);
