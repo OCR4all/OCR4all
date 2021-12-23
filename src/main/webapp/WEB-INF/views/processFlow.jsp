@@ -377,7 +377,7 @@
                                         <s:despeckling></s:despeckling>
                                     </div>
                                 </li>
-                                <li data-id="segmentationKraken">
+                                <li data-id="segmentationKraken" style="display: none;">
                                     <div class="collapsible-header"><i class="material-icons">settings</i>Segmentation</div>
                                     <div class="collapsible-body">
                                         <s:segmentationKraken></s:segmentationKraken>
