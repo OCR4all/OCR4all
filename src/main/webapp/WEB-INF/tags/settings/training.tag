@@ -60,13 +60,16 @@
                 </td>
             </tr>
             <tr>
-                <td><p>Pretraining</p></td>
+                <td>
+                    <p>Pretraining</p>
+                    <span class="userInfo">It's highly advised to train based on one or more available models!</span><br/>
+                </td>
                 <td>
                     <div class="input-field">
                         <i class="material-icons prefix">queue_play_next</i>
                         <select id="pretrainingType" name="pretrainingType" class="suffix ignoreParam">
-                            <option value="from_scratch">Train all models from scratch</option>
-                            <option value="single_model" selected>Train all models based on one available model</option>
+                            <option value="from_scratch" selected>Train all models from scratch</option>
+                            <option value="single_model">Train all models based on one available model</option>
                             <option value="multiple_models">Train each model based on different available models</option>
                         </select>
                         <label></label>

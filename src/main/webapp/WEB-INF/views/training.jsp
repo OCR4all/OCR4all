@@ -23,10 +23,6 @@
                     $("#pretrainingDummySelect").material_select();
                 });
 
-                $('tr[data-id="pretrainingTr"]').not('#pretrainingDummyTr').remove();
-                clonePretrainingElement("", $('#pretrainingDummyTr'), "All");
-
-
                 let currentHardwareType = "";
                 // Handle hardware type dropdown menu including default settings
                 $('#hardwareType').on('change', function() {
@@ -203,6 +199,7 @@
                     $('#training--whitelist').trigger('focus');
                 });
             });
+
         </script>
     </t:head>
     <t:body heading="Training" processModals="true">
