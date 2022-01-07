@@ -62,18 +62,18 @@
 
                 <ul class="collapsible" data-collapsible="expandable">
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
-                        <div class="collapsible-body">
-                            <s:segmentationDummy></s:segmentationDummy>
-                        </div>
-                    </li>
-                    <li>
                         <div class="collapsible-header"><i class="material-icons">info_outline</i>Status</div>
                         <div class="collapsible-body">
                             <div class="status"><p>Status: <span>No Segmentation process running</span></p></div>
                             <div class="progress">
                                 <div class="determinate"></div>
                             </div>
+                        </div>
+                    </li>
+                    <li style="display: none;">
+                        <div class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
+                        <div class="collapsible-body">
+                            <s:segmentationDummy></s:segmentationDummy>
                         </div>
                     </li>
                 </ul>
