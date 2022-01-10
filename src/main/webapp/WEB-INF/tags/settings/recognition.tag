@@ -59,7 +59,7 @@
                     <td><p>Output confidences</p></td>
                     <td>
                         <p>
-                            <input type="checkbox" class="filled-in" data-setting="--data.output_confidences" id="recognition--output_confidences"/>
+                            <input type="checkbox" class="filled-in" data-setting="--data.output_confidences" id="recognition--output_confidences" checked="checked"/>
                             <label for="recognition--output_confidences"></label>
                         </p>
                     </td>
@@ -68,7 +68,7 @@
                     <td><p>Output words and glyphs</p></td>
                     <td>
                         <p>
-                            <input type="checkbox" class="filled-in" data-setting="--data.output_glyphs" id="recognition--output_glyphs"/>
+                            <input type="checkbox" class="filled-in" data-setting="--data.output_glyphs" id="recognition--output_glyphs" checked="checked"/>
                             <label for="recognition--output_glyphs"></label>
                         </p>
                     </td>
