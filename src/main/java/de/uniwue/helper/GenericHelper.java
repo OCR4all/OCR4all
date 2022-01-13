@@ -111,6 +111,7 @@ public class GenericHelper {
             List<String> imagePathList = new ArrayList<>();
             if(imageMap.containsKey(imageName)) { imagePathList = imageMap.get(imageName); }
             imagePathList.add(image.getAbsolutePath());
+            Collections.sort(imagePathList);
             imageMap.put(imageName, imagePathList);
         }
         return imageMap;
