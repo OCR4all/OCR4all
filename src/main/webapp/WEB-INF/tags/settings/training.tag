@@ -63,6 +63,7 @@
                 <td>
                     <p>Pretraining</p>
                     <span class="userInfo">It's highly advised to train based on one or more available models!</span><br/>
+                    <span class="userWarning">Please note that if you're using a model with a deeper network structure ('deep3_' prefix) you have <br/>to adjust the network structure accordingly (see: 'Settings (Advanced)' → 'The network structure')</span>
                 </td>
                 <td>
                     <div class="input-field">
@@ -205,7 +206,9 @@
                     <p>
                         The network structure
                         <br />
-                        <span class="userInfo">Example: cnn=40:3x3,pool=2x2,cnn=60:3x3,pool=2x2,lstm=200,dropout=0.5</span>
+                        <span class="userInfo">Default: cnn=40:3x3,pool=2x2,cnn=60:3x3,pool=2x2,lstm=200,dropout=0.5</span>
+                        <br />
+                        <span class="userInfo">deep3: cnn=40:3x3,pool=2x2,cnn=60:3x3,pool=2x2,cnn=120:3x3,lstm=200,lstm=200,lstm=200,dropout=0.5</span>
                     </p>
                 </td>
                 <td>
