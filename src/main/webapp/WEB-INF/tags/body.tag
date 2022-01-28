@@ -80,7 +80,7 @@
                             <li class="select-all">
                                 <div class="row" id="filter-option-row">
                                     <div class="col s1">
-                                        <input type="checkbox" class="" id="selectFilter" style="position: relative !important"/>
+                                        <input type="checkbox" id="selectFilter" style="position: absolute !important"/>
                                         <label for="selectFilter"></label>
                                     </div>
                                     <div class="col s2" id="filter-select-text">
