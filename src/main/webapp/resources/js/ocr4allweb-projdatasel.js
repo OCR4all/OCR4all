@@ -86,11 +86,4 @@ $(document).ready(function() {
     $('select[data-projdataseltype]').on('change', function() {
         handleProcessDataSelection();
     });
-
-    //Calls the models Version warning, if it wasn't already displayed
-    if(window.localStorage.getItem('OCR4all_webVersionWarning') === null){
-        $('#modal_version_warning').modal();
-        setTimeout(function(){ $('#modal_version_warning').modal('open'); }, 1000);
-        window.localStorage.setItem('OCR4all_webVersionWarning', true);
-    }
 });

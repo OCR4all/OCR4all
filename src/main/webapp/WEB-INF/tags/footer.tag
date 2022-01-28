@@ -7,22 +7,19 @@
     <script type="text/javascript">
         $(document).ready(function()
         {
-            var OCR4ALL_VERSION = "UNKNOWN";
-            var LAREX_VERSION = "UNKNOWN"
+            let OCR4ALL_VERSION = "UNKNOWN";
+            let LAREX_VERSION = "UNKNOWN"
             $.get("ajax/team/sysenv")
                 .done(function getEnv(data) {
-                    var env = data.split("\n");
-                    OCR4ALL_VERSION = "OCR4all ver: " + env[0];
-                    LAREX_VERSION =   "  LAREX ver: " + env[1];
+                    const env = data.split("\n");
+                    OCR4ALL_VERSION = "OCR4all: v" + env[0];
+                    LAREX_VERSION =   "  LAREX: v" + env[1];
                     $("#OCR4all_Version").html(OCR4ALL_VERSION);
                     $("#LAREX_Version").html(LAREX_VERSION);
                 })
 
         })
-
-        function openVersionWarning(){
-            $('#modal_version_warning').modal('open');
-        }
+        
     </script>
     <div class="container">
         <div>
@@ -54,7 +51,7 @@
         </div>
     </div>
     <div class="col footer-version">
-        <div class="row" id="OCR4all_Version_container" onclick="openVersionWarning()"><span id="OCR4all_Version"></span><i class="material-icons" id="version_icon">report</i></div>
+        <div class="row" id="OCR4all_Version_container"><span id="OCR4all_Version"></span></div>
         <div class="row"><span id="LAREX_Version"></span></div>
     </div>
     <div class="container footer-copyright">

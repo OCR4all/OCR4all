@@ -38,7 +38,6 @@
                                 <li><a href="SegmentationLarex">LAREX</a></li>
                                 <li><a href="SegmentationDummy">Dummy</a></li>
                                 <li><a href="SegmentationKraken">Kraken</a></li>
-                            <%--<li><a href="SegmentationPixelClassifier">Pixel Classifier</a></li>--%>
                             </ul>
                         </div>
                     </li>
@@ -117,25 +116,6 @@
                             </div>
                             <div class="modal-footer">
                                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                            </div>
-                        </div>
-                        <!-- Version models warning -->
-                        <div id="modal_version_warning" class="modal">
-                            <div class="modal-content ">
-                                <h4 class="red-text center-align">Important Advice!</h4>
-                                <p>
-                                    For efficient data processing OCR4all combines various components. Due to necessary updates of our OCR engine Calamari, models trained with earlier OCR4all versions will not work with this new version. Please note that, in all likelihood, this will be a one-time issue and will not be the case for future updates.
-                                </p>
-                                <p>
-                                    The standard <a href="https://github.com/Calamari-OCR/calamari_models" target="_blank">mixed model ensembles</a> have already been retrained. Your self-trained models will have to be retrained using the "Training" submodule and your current Ground Truth (as well as an optional updated default model for "Pretraining").
-                                </p>
-                                <p>
-                                    If you need to retrain many models with extensive amounts of GT, thereby overstressing your own hardware, we are happy to help you out.
-                                    Please do not hesitate to contact us <a href="mailto:ocr4all@uni-wuerzburg.de">ocr4all@uni-wuerzburg.de</a> if you need help or have any further questions.
-                                </p>
-                            </div>
-                            <div class="modal-footer">
-                                  <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
                             </div>
                         </div>
                         <!-- Execute failed -->
