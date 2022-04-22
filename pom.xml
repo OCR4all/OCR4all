@@ -9,7 +9,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <spring.version>4.3.18.RELEASE</spring.version>
+        <spring.version>5.2.21.RELEASE</spring.version>
 
         <!-- Java version -->
         <maven.compiler.source>1.8</maven.compiler.source>
