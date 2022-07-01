@@ -179,12 +179,12 @@
         <repository>
             <id>central</id>
             <name>artifactory-releases</name>
-            <url>http://artifactory-ls6.informatik.uni-wuerzburg.de/artifactory/libs-snapshot</url>
+            <url>https://artifactory-ls6.informatik.uni-wuerzburg.de/artifactory/libs-snapshot</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
             <name>artifactory-snapshots</name>
-            <url>http://artifactory-ls6.informatik.uni-wuerzburg.de/artifactory/libs-snapshot</url>
+            <url>https://artifactory-ls6.informatik.uni-wuerzburg.de/artifactory/libs-snapshot</url>
         </snapshotRepository>
     </distributionManagement>
 
