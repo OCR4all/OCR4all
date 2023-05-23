@@ -39,19 +39,19 @@
 				<label for="preprocessing--skip_empty_gt"></label>
 			</td>
 		</tr>
-		<tr>
-			<td><p>Non existing file handling mode</p></td>
-			<td>
-				<div class="input-field">
-					<select id="evaluation--non_existing_file_handling_mode" data-setting="--non_existing_file_handling_mode" name="eval_non_mode">
-						<option value="skip">Skip files</option>
-						<option value="empty">Treat as empty files</option>
-						<option value="error">Throw an error</option>
-					</select>
-					<label></label>
-				</div>
-			</td>
-		</tr>
+<%--		<tr>--%>
+<%--			<td><p>Non existing file handling mode</p></td>--%>
+<%--			<td>--%>
+<%--				<div class="input-field">--%>
+<%--					<select id="evaluation--non_existing_file_handling_mode" data-setting="--non_existing_file_handling_mode" name="eval_non_mode">--%>
+<%--						<option value="skip">Skip files</option>--%>
+<%--						<option value="empty">Treat as empty files</option>--%>
+<%--						<option value="error">Throw an error</option>--%>
+<%--					</select>--%>
+<%--					<label></label>--%>
+<%--				</div>--%>
+<%--			</td>--%>
+<%--		</tr>--%>
 	</tbody>
 </table>
     </c:when>
