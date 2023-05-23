@@ -75,7 +75,7 @@
                                 <td>
                                     <div class="input-field">
                                         <input id="lineSegmentation--minscale" data-setting="--minscale" type="number" step="1" />
-                                        <label for="lineSegmentation--minscale" data-type="int" data-error="Has to be integer">Default: 12</label>
+                                        <label for="lineSegmentation--minscale" data-type="int" data-error="Has to be integer">Default: 5</label>
                                     </div>
                                 </td>
                             </tr>
