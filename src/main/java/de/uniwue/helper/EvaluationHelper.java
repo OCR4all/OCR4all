@@ -78,7 +78,7 @@ public class EvaluationHelper {
                 command.add(new File(projConf.OCR_DIR + pageId + projConf.CONF_EXT).getAbsolutePath());
             }
         }
-
+        command.addAll(cmdArgs);
         progress = 20;
 
         processHandler = new ProcessHandler();
@@ -116,7 +116,7 @@ public class EvaluationHelper {
      * Returns the Ids of the pages, for which recognition process was already executed
      *
      * @return List of valid page Ids
-     * @throws IOException 
+     * @throws IOException
      */
     public ArrayList<String> getValidPageIds() throws IOException {
         // Get all pages and check which one were already recognized
