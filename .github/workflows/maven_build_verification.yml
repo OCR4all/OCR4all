@@ -1,0 +1,27 @@
+name: Build verification with Maven
+
+on:
+  push:
+    branches: [ master, staging, dev ]
+  pull_request:
+    branches: [ master, staging, dev ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 8
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+    - name: Restore Maven cache
+      uses: skjolber/maven-cache-github-action@v1
+      with:
+        step: restore
+    - name: Build with Maven
+      run: mvn install --file pom.xml
+
