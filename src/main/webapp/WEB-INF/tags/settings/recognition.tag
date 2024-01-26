@@ -11,7 +11,7 @@
                     <td>
                         <div class="input-field">
                             <input id="recognition--processes" data-setting="--pipeline.num_processes" type="number" />
-                            <label for="recognition--processes" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                            <label for="recognition--processes" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threads (Int value)</label>
                         </div>
                     </td>
                 </tr>

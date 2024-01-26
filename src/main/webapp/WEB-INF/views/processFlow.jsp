@@ -344,7 +344,7 @@
                                         <td>
                                             <div class="input-field">
                                                 <input id="parallelGlobal" type="number" step="1" />
-                                                <label for="parallelGlobal" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                                                <label for="parallelGlobal" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threads (Int value)</label>
                                             </div>
                                         </td>
                                     </tr>
