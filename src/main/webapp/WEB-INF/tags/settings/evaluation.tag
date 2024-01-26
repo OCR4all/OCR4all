@@ -11,7 +11,7 @@
                     <td>
                         <div class="input-field">
                             <input id="evaluation--num_threads" data-setting="--num_threads" type="number" />
-                            <label for="evaluation--num_threads" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                            <label for="evaluation--num_threads" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threads (Int value)</label>
                         </div>
                     </td>
                 </tr>

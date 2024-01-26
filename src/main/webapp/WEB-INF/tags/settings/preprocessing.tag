@@ -20,7 +20,7 @@
                     <td>
                         <div class="input-field">
                             <input id="preprocessing--parallel" data-setting="--parallel" type="number" />
-                            <label for="preprocessing--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threats (Int value)</label>
+                            <label for="preprocessing--parallel" data-type="int" data-error="Has to be integer">Default: 1 | Current: Available threads (Int value)</label>
                         </div>
                     </td>
                 </tr>
