@@ -1,6 +1,7 @@
 name: Build verification with Maven
 
 on:
+  workflow_dispatch:
   push:
     branches: [ master, staging, dev ]
   pull_request:
